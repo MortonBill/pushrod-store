@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Order confirmed — PUSHROD</title>
+<link rel="stylesheet" href="/static/css/store.css">
+</head>
+<body>
+<header class="top">
+  <div class="logo"><a href="/" style="color:inherit"><span class="brandname">PUSHROD</span></a><small>GARAGE GEAR</small></div>
+  <div class="tagline" id="tagline"></div>
+</header>
+<main>
+  <div class="notice">
+    <h2>Order confirmed. Thanks!</h2>
+    <p>Your payment went through and your gear is headed to the printer.</p>
+    <p id="fulfill-status" style="margin-top:.6rem;color:var(--muted)">Sending your order to fulfillment…</p>
+  </div>
+  <p><a href="/">← Back to the garage</a></p>
+</main>
+<script>
+fetch('/api/brand').then(r => r.json()).then(b => {
+  document.querySelectorAll('.brandname').forEach(e => e.textContent = b.name);
+  const t = b.theme, r = document.documentElement.style;
+  Object.entries({bg:t.bg,bg2:t.bg2,card:t.card,accent:t.accent,accent2:t.accent2,text:t.text,muted:t.muted})
+    .forEach(([k,v]) => r.setProperty('--'+k, v));
+});
+const sid = new URLSearchParams(location.search).get('session_id');
+if (sid) {
+  fetch('/api/fulfill?session_id=' + encodeURIComponent(sid))
+    .then(r => r.json().then(j => ({ok: r.ok, j})))
+    .then(({ok, j}) => {
+      document.getElementById('fulfill-status').textContent = ok
+        ? 'Fulfillment order #' + j.printful_order_id + ' submitted — Printful is printing your gear.'
+        : 'Fulfillment note: ' + (j.error || 'pending');
+    })
+    .catch(e => { document.getElementById('fulfill-status').textContent = 'Fulfillment note: ' + e.message; });
+} else {
+  document.getElementById('fulfill-status').textContent = '';
+}
+localStorage.removeItem('pushrod_cart');
+</script>
+</body>
+</html>

@@ -1,0 +1,1313 @@
+{
+  "brand": "TBD (tier-store brand not yet named)",
+  "pricing_status": "CONFIRMED 2026-09-26 — prices verified against Printful by Bill (margins confirmed). Set from competitor research (merch-plan-brief/report.md, verified 2026-09-21), priced at/below the indie anchor per Bill's volume-over-margin philosophy. Tees $26; hats $24; pullovers $44; mugs $15; signs $19; decals $4; banners $14; patches $6; keychains $10; flags $25.",
+  "volume_schedule": [
+    {
+      "min_units": 48,
+      "max_units": 95,
+      "basis": "50% of MSRP"
+    },
+    {
+      "min_units": 96,
+      "max_units": 191,
+      "basis": "base wholesale less 3%"
+    },
+    {
+      "min_units": 192,
+      "max_units": 383,
+      "basis": "base wholesale less 6%"
+    },
+    {
+      "min_units": 384,
+      "max_units": null,
+      "basis": "written production quote"
+    }
+  ],
+  "minimums": {
+    "opening_order_units": 48,
+    "reorder_units": 24,
+    "per_design_color_units": 6
+  },
+  "products": [
+    {
+      "sku": "RE-CT-T001",
+      "type": "tee",
+      "title": "Patina & Pride",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t001-patina-pride.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T002",
+      "type": "tee",
+      "title": "Farm Fresh",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t002-farm-fresh.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T003",
+      "type": "tee",
+      "title": "Workhorse",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t003-workhorse.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T004",
+      "type": "tee",
+      "title": "Haul It",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t004-haul-it.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T005",
+      "type": "tee",
+      "title": "Three on the Tree",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t005-three-on-the-tree.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T006",
+      "type": "tee",
+      "title": "Six in a Row",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t006-six-in-a-row.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T007",
+      "type": "tee",
+      "title": "Shop Truck",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t007-shop-truck.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T008",
+      "type": "tee",
+      "title": "Barn Find",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t008-barn-find.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T009",
+      "type": "tee",
+      "title": "Two-Tone",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t009-two-tone.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T010",
+      "type": "tee",
+      "title": "Straight Six",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t010-straight-six.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T011",
+      "type": "tee",
+      "title": "Torque Over Horsepower",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t011-torque-over-horsepower.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T012",
+      "type": "tee",
+      "title": "Granny Gear",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t012-granny-gear.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T013",
+      "type": "tee",
+      "title": "Long Bed Legend",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t013-long-bed-legend.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T014",
+      "type": "tee",
+      "title": "Feed Store Run",
+      "base_color": "tan",
+      "design_file": "tees/re-ct-t014-feed-store-run.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T015",
+      "type": "tee",
+      "title": "Fence-Line Cruiser",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t015-fence-line-cruiser.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T016",
+      "type": "tee",
+      "title": "Tailgate Talks",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t016-tailgate-talks.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T017",
+      "type": "tee",
+      "title": "Oil Field Tested",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t017-oil-field-tested.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T018",
+      "type": "tee",
+      "title": "Ranch Ready",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t018-ranch-ready.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T019",
+      "type": "tee",
+      "title": "Wood Bed",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t019-wood-bed.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T020",
+      "type": "tee",
+      "title": "Split Bench",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t020-split-bench.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T021",
+      "type": "tee",
+      "title": "Hay Hauler",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t021-hay-hauler.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T022",
+      "type": "tee",
+      "title": "Rusted But Running",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t022-rusted-but-running.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T023",
+      "type": "tee",
+      "title": "Patina Is a Paint Job",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t023-patina-is-a-paint-job.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T024",
+      "type": "tee",
+      "title": "Sun-Faded & Proud",
+      "base_color": "tan",
+      "design_file": "tees/re-ct-t024-sun-faded-proud.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T025",
+      "type": "tee",
+      "title": "Dusty But Trusty",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t025-dusty-but-trusty.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T026",
+      "type": "tee",
+      "title": "Column Shift",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t026-column-shift.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T027",
+      "type": "tee",
+      "title": "Manual Everything",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t027-manual-everything.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T028",
+      "type": "tee",
+      "title": "Crank Windows",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t028-crank-windows.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T029",
+      "type": "tee",
+      "title": "AM Radio",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t029-am-radio.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T030",
+      "type": "tee",
+      "title": "Half-Ton Hero",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t030-half-ton-hero.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T031",
+      "type": "tee",
+      "title": "Still Pulling",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t031-still-pulling.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T032",
+      "type": "tee",
+      "title": "Grandpa's Truck",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t032-grandpas-truck.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T033",
+      "type": "tee",
+      "title": "First Truck",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t033-first-truck.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T034",
+      "type": "tee",
+      "title": "Hand-Me-Down Hauler",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t034-hand-me-down-hauler.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T035",
+      "type": "tee",
+      "title": "One Bench, Three Friends",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t035-one-bench-three-friends.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T036",
+      "type": "tee",
+      "title": "Tailgate Down",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t036-tailgate-down.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T037",
+      "type": "tee",
+      "title": "Bed Full, Tank Empty",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t037-bed-full-tank-empty.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T038",
+      "type": "tee",
+      "title": "Eight-Foot Bed",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t038-eight-foot-bed.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T039",
+      "type": "tee",
+      "title": "Mud Flaps & Pride",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t039-mud-flaps-pride.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T040",
+      "type": "tee",
+      "title": "Gravel Road",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t040-gravel-road.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T041",
+      "type": "tee",
+      "title": "Spare Tire Society",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t041-spare-tire-society.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T042",
+      "type": "tee",
+      "title": "Tow Chain",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t042-tow-chain.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T043",
+      "type": "tee",
+      "title": "Leaf Spring Logic",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t043-leaf-spring-logic.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T044",
+      "type": "tee",
+      "title": "Dipstick Wisdom",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t044-dipstick-wisdom.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T045",
+      "type": "tee",
+      "title": "Points & Condenser",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t045-points-condenser.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T046",
+      "type": "tee",
+      "title": "Drum Brakes & Determination",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t046-drum-brakes-determination.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T047",
+      "type": "tee",
+      "title": "Carburetor & Coffee",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t047-carburetor-coffee.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T048",
+      "type": "tee",
+      "title": "Slow Truck, Fast Life",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t048-slow-truck-fast-life.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T049",
+      "type": "tee",
+      "title": "Farm Use",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t049-farm-use.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T050",
+      "type": "tee",
+      "title": "Pickup Forever",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t050-pickup-forever.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T051",
+      "type": "tee",
+      "title": "Grease Under Nails",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t051-grease-under-nails.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T052",
+      "type": "tee",
+      "title": "Wrench & Winch",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t052-wrench-winch.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T053",
+      "type": "tee",
+      "title": "Shop Dog Approved",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t053-shop-dog-approved.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T054",
+      "type": "tee",
+      "title": "Tailgate Coffee",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t054-tailgate-coffee.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T055",
+      "type": "tee",
+      "title": "Barn Raising",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t055-barn-raising.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T056",
+      "type": "tee",
+      "title": "Hail Season Survivor",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t056-hail-season-survivor.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T057",
+      "type": "tee",
+      "title": "Year-Round Worker",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t057-year-round-worker.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T058",
+      "type": "tee",
+      "title": "Since 1974",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t058-since-1974.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T059",
+      "type": "tee",
+      "title": "Full Size & Proud",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t059-full-size-proud.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-T060",
+      "type": "tee",
+      "title": "RestorationEssentials™ Crest",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t060-heritage-crest.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-H001",
+      "type": "hat",
+      "title": "Patina & Pride Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h001-patina-pride.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H002",
+      "type": "hat",
+      "title": "Farm Fresh Patch",
+      "base_color": "Brown",
+      "design_file": "hats/re-ct-h002-farm-fresh.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H003",
+      "type": "hat",
+      "title": "Workhorse Patch",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-ct-h003-workhorse.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H004",
+      "type": "hat",
+      "title": "Haul It Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h004-haul-it.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H005",
+      "type": "hat",
+      "title": "Three on the Tree Patch",
+      "base_color": "Olive",
+      "design_file": "hats/re-ct-h005-three-on-the-tree.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H006",
+      "type": "hat",
+      "title": "Six in a Row Patch",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-ct-h006-six-in-a-row.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H007",
+      "type": "hat",
+      "title": "Shop Truck Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h007-shop-truck.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H008",
+      "type": "hat",
+      "title": "Barn Find Patch",
+      "base_color": "Brown",
+      "design_file": "hats/re-ct-h008-barn-find.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H009",
+      "type": "hat",
+      "title": "Two-Tone Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h009-two-tone.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H010",
+      "type": "hat",
+      "title": "Straight Six Patch",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-ct-h010-straight-six.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H011",
+      "type": "hat",
+      "title": "Torque Wins Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h011-torque-wins.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H012",
+      "type": "hat",
+      "title": "Granny Gear Patch",
+      "base_color": "Olive",
+      "design_file": "hats/re-ct-h012-granny-gear.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H013",
+      "type": "hat",
+      "title": "Long Bed Legend Patch",
+      "base_color": "Brown",
+      "design_file": "hats/re-ct-h013-long-bed-legend.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H014",
+      "type": "hat",
+      "title": "Feed Store Run Patch",
+      "base_color": "Tan",
+      "design_file": "hats/re-ct-h014-feed-store-run.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H015",
+      "type": "hat",
+      "title": "Fence-Line Cruiser Patch",
+      "base_color": "Olive",
+      "design_file": "hats/re-ct-h015-fence-line-cruiser.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H016",
+      "type": "hat",
+      "title": "Tailgate Talks Patch",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-ct-h016-tailgate-talks.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H017",
+      "type": "hat",
+      "title": "Oil Field Tested Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h017-oil-field-tested.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H018",
+      "type": "hat",
+      "title": "Ranch Ready Patch",
+      "base_color": "Brown",
+      "design_file": "hats/re-ct-h018-ranch-ready.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H019",
+      "type": "hat",
+      "title": "Wood Bed Patch",
+      "base_color": "Forest",
+      "design_file": "hats/re-ct-h019-wood-bed.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H020",
+      "type": "hat",
+      "title": "Split Bench Patch",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-ct-h020-split-bench.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H021",
+      "type": "hat",
+      "title": "Hay Hauler Patch",
+      "base_color": "Olive",
+      "design_file": "hats/re-ct-h021-hay-hauler.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H022",
+      "type": "hat",
+      "title": "Crank Windows Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h022-crank-windows.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H023",
+      "type": "hat",
+      "title": "Column Shift Patch",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-ct-h023-column-shift.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H024",
+      "type": "hat",
+      "title": "AM Radio Patch",
+      "base_color": "Brown",
+      "design_file": "hats/re-ct-h024-am-radio.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H025",
+      "type": "hat",
+      "title": "Rusted But Running Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h025-rusted-but-running.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H026",
+      "type": "hat",
+      "title": "Half-Ton Hero Patch",
+      "base_color": "Olive",
+      "design_file": "hats/re-ct-h026-half-ton-hero.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H027",
+      "type": "hat",
+      "title": "Dusty But Trusty Patch",
+      "base_color": "Tan",
+      "design_file": "hats/re-ct-h027-dusty-but-trusty.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H028",
+      "type": "hat",
+      "title": "Grandpa's Truck Patch",
+      "base_color": "Brown",
+      "design_file": "hats/re-ct-h028-grandpas-truck.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H029",
+      "type": "hat",
+      "title": "Still Pulling Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h029-still-pulling.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H030",
+      "type": "hat",
+      "title": "Manual Everything Patch",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-ct-h030-manual-everything.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H031",
+      "type": "hat",
+      "title": "Pickup Forever Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h031-pickup-forever.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H032",
+      "type": "hat",
+      "title": "Bed Full, Tank Empty Patch",
+      "base_color": "Olive",
+      "design_file": "hats/re-ct-h032-bed-full-tank-empty.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H033",
+      "type": "hat",
+      "title": "Mud Flaps & Pride Patch",
+      "base_color": "Brown",
+      "design_file": "hats/re-ct-h033-mud-flaps-pride.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H034",
+      "type": "hat",
+      "title": "Farm Use Patch",
+      "base_color": "Tan",
+      "design_file": "hats/re-ct-h034-farm-use.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H035",
+      "type": "hat",
+      "title": "Slow Truck, Fast Life Patch",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-ct-h035-slow-truck-fast-life.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H036",
+      "type": "hat",
+      "title": "Grease Under Nails Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h036-grease-under-nails.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H037",
+      "type": "hat",
+      "title": "Shop Dog Approved Patch",
+      "base_color": "Brown",
+      "design_file": "hats/re-ct-h037-shop-dog-approved.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H038",
+      "type": "hat",
+      "title": "Wrench & Winch Patch",
+      "base_color": "Olive",
+      "design_file": "hats/re-ct-h038-wrench-winch.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H039",
+      "type": "hat",
+      "title": "Tailgate Coffee Patch",
+      "base_color": "Forest",
+      "design_file": "hats/re-ct-h039-tailgate-coffee.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-H040",
+      "type": "hat",
+      "title": "RestorationEssentials™ Roundel",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h040-heritage-roundel.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-M001",
+      "type": "mug",
+      "title": "Patina & Pride Mug",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-ct-m001-patina-pride-mug.webp",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-CT-M002",
+      "type": "mug",
+      "title": "Farm Fresh Mug",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-ct-m002-farm-fresh-mug.webp",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-CT-M003",
+      "type": "mug",
+      "title": "Tailgate Coffee Mug",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-ct-m003-tailgate-coffee-mug.webp",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-CT-M004",
+      "type": "mug",
+      "title": "Shop Truck Mug",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-ct-m004-shop-truck-mug.webp",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-CT-M005",
+      "type": "mug",
+      "title": "Torque Wins Mug",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-ct-m005-torque-wins-mug.webp",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-CT-M006",
+      "type": "mug",
+      "title": "Barn Find Mug",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-ct-m006-barn-find-mug.webp",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-CT-M007",
+      "type": "sign",
+      "title": "Farm Fresh Garage Sign",
+      "base_color": "distressed tin",
+      "design_file": "misc/re-ct-m007-farm-fresh-sign.webp",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-CT-M008",
+      "type": "sign",
+      "title": "Barn Find Metal Sign",
+      "base_color": "distressed tin",
+      "design_file": "misc/re-ct-m008-barn-find-sign.webp",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-CT-M009",
+      "type": "sign",
+      "title": "Shop Truck Rules Sign",
+      "base_color": "distressed tin",
+      "design_file": "misc/re-ct-m009-shop-truck-rules-sign.webp",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-CT-M010",
+      "type": "sign",
+      "title": "Patina & Pride Barn Sign",
+      "base_color": "distressed tin",
+      "design_file": "misc/re-ct-m010-patina-pride-sign.webp",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-CT-M011",
+      "type": "sign",
+      "title": "Workhorse Shop Sign",
+      "base_color": "distressed tin",
+      "design_file": "misc/re-ct-m011-workhorse-sign.webp",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-CT-M012",
+      "type": "decal",
+      "title": "Straight Six Decal",
+      "base_color": "vinyl decal, weatherproof",
+      "design_file": "misc/re-ct-m012-straight-six-decal.webp",
+      "msrp": 4.0
+    },
+    {
+      "sku": "RE-CT-M013",
+      "type": "decal",
+      "title": "Six in a Row Decal",
+      "base_color": "vinyl decal, weatherproof",
+      "design_file": "misc/re-ct-m013-six-in-a-row-decal.webp",
+      "msrp": 4.0
+    },
+    {
+      "sku": "RE-CT-M014",
+      "type": "decal",
+      "title": "Granny Gear Decal",
+      "base_color": "vinyl decal, weatherproof",
+      "design_file": "misc/re-ct-m014-granny-gear-decal.webp",
+      "msrp": 4.0
+    },
+    {
+      "sku": "RE-CT-M015",
+      "type": "decal",
+      "title": "Long Bed Legend Decal",
+      "base_color": "vinyl decal, weatherproof",
+      "design_file": "misc/re-ct-m015-long-bed-legend-decal.webp",
+      "msrp": 4.0
+    },
+    {
+      "sku": "RE-CT-M016",
+      "type": "patch",
+      "title": "Ranch Ready Patch",
+      "base_color": "embroidered twill patch",
+      "design_file": "misc/re-ct-m016-ranch-ready-patch.webp",
+      "msrp": 6.0
+    },
+    {
+      "sku": "RE-CT-M017",
+      "type": "patch",
+      "title": "Oil Field Tested Patch",
+      "base_color": "embroidered twill patch",
+      "design_file": "misc/re-ct-m017-oil-field-tested-patch.webp",
+      "msrp": 6.0
+    },
+    {
+      "sku": "RE-CT-M018",
+      "type": "keychain",
+      "title": "Piston Keychain",
+      "base_color": "antique brass",
+      "design_file": "misc/re-ct-m018-piston-keychain.webp",
+      "msrp": 10.0
+    },
+    {
+      "sku": "RE-CT-M019",
+      "type": "keychain",
+      "title": "Wrench Keychain",
+      "base_color": "antique brass",
+      "design_file": "misc/re-ct-m019-wrench-keychain.webp",
+      "msrp": 10.0
+    },
+    {
+      "sku": "RE-CT-M020",
+      "type": "flag",
+      "title": "Fence-Line Cruiser Flag",
+      "base_color": "canvas flag",
+      "design_file": "misc/re-ct-m020-fence-line-cruiser-flag.webp",
+      "msrp": 25.0
+    },
+    {
+      "sku": "RE-CT-S001",
+      "type": "sweatshirt",
+      "title": "Patina & Pride Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t001-patina-pride.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S002",
+      "type": "sweatshirt",
+      "title": "Farm Fresh Pullover",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t002-farm-fresh.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S003",
+      "type": "sweatshirt",
+      "title": "Workhorse Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t003-workhorse.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S004",
+      "type": "sweatshirt",
+      "title": "Haul It Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t004-haul-it.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S005",
+      "type": "sweatshirt",
+      "title": "Three on the Tree Pullover",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t005-three-on-the-tree.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S006",
+      "type": "sweatshirt",
+      "title": "Six in a Row Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t006-six-in-a-row.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S007",
+      "type": "sweatshirt",
+      "title": "Shop Truck Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t007-shop-truck.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S008",
+      "type": "sweatshirt",
+      "title": "Barn Find Pullover",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t008-barn-find.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S009",
+      "type": "sweatshirt",
+      "title": "Two-Tone Pullover",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t009-two-tone.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S010",
+      "type": "sweatshirt",
+      "title": "Straight Six Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t010-straight-six.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S011",
+      "type": "sweatshirt",
+      "title": "Torque Over Horsepower Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t011-torque-over-horsepower.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S012",
+      "type": "sweatshirt",
+      "title": "Granny Gear Pullover",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t012-granny-gear.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S013",
+      "type": "sweatshirt",
+      "title": "Long Bed Legend Pullover",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t013-long-bed-legend.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S014",
+      "type": "sweatshirt",
+      "title": "Feed Store Run Pullover",
+      "base_color": "tan",
+      "design_file": "tees/re-ct-t014-feed-store-run.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S015",
+      "type": "sweatshirt",
+      "title": "Fence-Line Cruiser Pullover",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t015-fence-line-cruiser.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S016",
+      "type": "sweatshirt",
+      "title": "Tailgate Talks Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t016-tailgate-talks.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S017",
+      "type": "sweatshirt",
+      "title": "Oil Field Tested Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t017-oil-field-tested.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S018",
+      "type": "sweatshirt",
+      "title": "Ranch Ready Pullover",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t018-ranch-ready.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S019",
+      "type": "sweatshirt",
+      "title": "Wood Bed Pullover",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t019-wood-bed.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S020",
+      "type": "sweatshirt",
+      "title": "Split Bench Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t020-split-bench.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S021",
+      "type": "sweatshirt",
+      "title": "Hay Hauler Pullover",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t021-hay-hauler.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S022",
+      "type": "sweatshirt",
+      "title": "Rusted But Running Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t022-rusted-but-running.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S023",
+      "type": "sweatshirt",
+      "title": "Patina Is a Paint Job Pullover",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t023-patina-is-a-paint-job.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S024",
+      "type": "sweatshirt",
+      "title": "Sun-Faded & Proud Pullover",
+      "base_color": "tan",
+      "design_file": "tees/re-ct-t024-sun-faded-proud.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S025",
+      "type": "sweatshirt",
+      "title": "Dusty But Trusty Pullover",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t025-dusty-but-trusty.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S026",
+      "type": "sweatshirt",
+      "title": "Column Shift Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t026-column-shift.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S027",
+      "type": "sweatshirt",
+      "title": "Manual Everything Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t027-manual-everything.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S028",
+      "type": "sweatshirt",
+      "title": "Crank Windows Pullover",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t028-crank-windows.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S029",
+      "type": "sweatshirt",
+      "title": "AM Radio Pullover",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t029-am-radio.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S030",
+      "type": "sweatshirt",
+      "title": "Half-Ton Hero Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t030-half-ton-hero.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S031",
+      "type": "sweatshirt",
+      "title": "Still Pulling Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t031-still-pulling.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S032",
+      "type": "sweatshirt",
+      "title": "Grandpa's Truck Pullover",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t032-grandpas-truck.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S033",
+      "type": "sweatshirt",
+      "title": "First Truck Pullover",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t033-first-truck.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S034",
+      "type": "sweatshirt",
+      "title": "Hand-Me-Down Hauler Pullover",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t034-hand-me-down-hauler.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S035",
+      "type": "sweatshirt",
+      "title": "One Bench, Three Friends Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t035-one-bench-three-friends.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S036",
+      "type": "sweatshirt",
+      "title": "Tailgate Down Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t036-tailgate-down.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S037",
+      "type": "sweatshirt",
+      "title": "Bed Full, Tank Empty Pullover",
+      "base_color": "olive",
+      "design_file": "tees/re-ct-t037-bed-full-tank-empty.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S038",
+      "type": "sweatshirt",
+      "title": "Eight-Foot Bed Pullover",
+      "base_color": "forest",
+      "design_file": "tees/re-ct-t038-eight-foot-bed.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S039",
+      "type": "sweatshirt",
+      "title": "Mud Flaps & Pride Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-ct-t039-mud-flaps-pride.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-S040",
+      "type": "sweatshirt",
+      "title": "Gravel Road Pullover",
+      "base_color": "brown",
+      "design_file": "tees/re-ct-t040-gravel-road.webp",
+      "msrp": 44.0
+    }
+  ]
+}

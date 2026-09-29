@@ -1,0 +1,1401 @@
+{
+ "brand": "PUSHROD",
+ "pricing_status": "CONFIRMED 2026-09-26 — prices verified against Printful by Bill (margins confirmed). Set from competitor research (merch-plan-brief/report.md, verified 2026-09-21), priced at/below the indie anchor per Bill's volume-over-margin philosophy. Tees $26; hats $24; pullovers $44; mugs $15; signs $19; decals $4; banners $14; patches $6; keychains $10; flags $25.",
+ "volume_schedule": [
+  {
+   "min_units": 48,
+   "max_units": 95,
+   "basis": "50% of MSRP"
+  },
+  {
+   "min_units": 96,
+   "max_units": 191,
+   "basis": "base wholesale less 3%"
+  },
+  {
+   "min_units": 192,
+   "max_units": 383,
+   "basis": "base wholesale less 6%"
+  },
+  {
+   "min_units": 384,
+   "max_units": null,
+   "basis": "written production quote"
+  }
+ ],
+ "minimums": {
+  "opening_order_units": 48,
+  "reorder_units": 24,
+  "per_design_color_units": 6
+ },
+ "products": [
+  {
+   "sku": "PR-T001",
+   "type": "tee",
+   "title": "Pushrod™ Crest",
+   "base_color": "black",
+   "design_file": "tees/pr-t001-pushrod-crest.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T002",
+   "type": "tee",
+   "title": "Finned Fury",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t002-finned-fury.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T003",
+   "type": "tee",
+   "title": "Kickstart King",
+   "base_color": "navy",
+   "design_file": "tees/pr-t003-kickstart-king.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T004",
+   "type": "tee",
+   "title": "Torque It",
+   "base_color": "olive",
+   "design_file": "tees/pr-t004-torque-it.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T005",
+   "type": "tee",
+   "title": "Points & Fire",
+   "base_color": "navy",
+   "design_file": "tees/pr-t005-points-and-fire.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T006",
+   "type": "tee",
+   "title": "Carb Life",
+   "base_color": "cream",
+   "design_file": "tees/pr-t006-carb-life.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T007",
+   "type": "tee",
+   "title": "Feel the Gap",
+   "base_color": "forest",
+   "design_file": "tees/pr-t007-feel-the-gap.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T008",
+   "type": "tee",
+   "title": "Timed Right",
+   "base_color": "brown",
+   "design_file": "tees/pr-t008-timed-right.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T009",
+   "type": "tee",
+   "title": "Garage Nights",
+   "base_color": "black",
+   "design_file": "tees/pr-t009-garage-nights.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T010",
+   "type": "tee",
+   "title": "Shop Rag Wisdom",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t010-shop-rag-wisdom.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T011",
+   "type": "tee",
+   "title": "V-Twin Heart",
+   "base_color": "burgundy",
+   "design_file": "tees/pr-t011-vtwin-heart.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T012",
+   "type": "tee",
+   "title": "Pushrod™ Power",
+   "base_color": "forest",
+   "design_file": "tees/pr-t012-pushrod-power.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T013",
+   "type": "tee",
+   "title": "Inline Four",
+   "base_color": "navy",
+   "design_file": "tees/pr-t013-inline-four.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T014",
+   "type": "tee",
+   "title": "Piston Slap",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t014-piston-slap.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T015",
+   "type": "tee",
+   "title": "Oil Is Life",
+   "base_color": "brown",
+   "design_file": "tees/pr-t015-oil-is-life.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T016",
+   "type": "tee",
+   "title": "Chain Drive",
+   "base_color": "black",
+   "design_file": "tees/pr-t016-chain-drive.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T017",
+   "type": "tee",
+   "title": "Clean Jets",
+   "base_color": "olive",
+   "design_file": "tees/pr-t017-clean-jets.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T018",
+   "type": "tee",
+   "title": "Dwell On It",
+   "base_color": "cream",
+   "design_file": "tees/pr-t018-dwell-on-it.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T019",
+   "type": "tee",
+   "title": "Compression Test",
+   "base_color": "navy",
+   "design_file": "tees/pr-t019-compression-test.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T020",
+   "type": "tee",
+   "title": "Valve Lash",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t020-valve-lash.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T021",
+   "type": "tee",
+   "title": "Pushrod™ Shop Tee",
+   "base_color": "black",
+   "design_file": "tees/pr-t021-pushrod-shop-tee.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T022",
+   "type": "tee",
+   "title": "Torque & Oil",
+   "base_color": "black",
+   "design_file": "tees/pr-t022-torque-and-oil.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T023",
+   "type": "tee",
+   "title": "Grease & Glory",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t023-grease-and-glory.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T024",
+   "type": "tee",
+   "title": "Finned & Free",
+   "base_color": "black",
+   "design_file": "tees/pr-t024-finned-and-free.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T025",
+   "type": "tee",
+   "title": "Spark Chasers",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t025-points-patrol.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T026",
+   "type": "tee",
+   "title": "Carb Kings",
+   "base_color": "black",
+   "design_file": "tees/pr-t026-carb-kings.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T027",
+   "type": "tee",
+   "title": "Grease & Thunder",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t027-grease-and-thunder.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T028",
+   "type": "tee",
+   "title": "Pushrod™ Garage Badge",
+   "base_color": "black",
+   "design_file": "tees/pr-t028-pushrod-garage-badge.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T029",
+   "type": "tee",
+   "title": "Oily Hands",
+   "base_color": "black",
+   "design_file": "tees/pr-t029-oily-hands.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T030",
+   "type": "tee",
+   "title": "Grease Stains",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t030-grease-under-nails.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T031",
+   "type": "tee",
+   "title": "Shop Floor",
+   "base_color": "black",
+   "design_file": "tees/pr-t031-shop-floor.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T032",
+   "type": "tee",
+   "title": "Busted Knuckles",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t032-busted-knuckles.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T033",
+   "type": "tee",
+   "title": "Wrench Life",
+   "base_color": "black",
+   "design_file": "tees/pr-t033-wrench-life.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T034",
+   "type": "tee",
+   "title": "Pushrod™ Garage Est. 2026",
+   "base_color": "black",
+   "design_file": "tees/pr-t034-pushrod-garage-est2026.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T035",
+   "type": "tee",
+   "title": "Garage Open House",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t035-garage-open-house.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T036",
+   "type": "tee",
+   "title": "Swap Meet",
+   "base_color": "black",
+   "design_file": "tees/pr-t036-swap-meet.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T037",
+   "type": "tee",
+   "title": "Cammed Up",
+   "base_color": "black",
+   "design_file": "tees/pr-t037-cammed-up.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T038",
+   "type": "tee",
+   "title": "Flathead",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t038-flathead-art.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T039",
+   "type": "tee",
+   "title": "Magneto",
+   "base_color": "navy",
+   "design_file": "tees/pr-t039-magneto.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T040",
+   "type": "tee",
+   "title": "Big Bore",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t040-big-bore.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T041",
+   "type": "tee",
+   "title": "Stroked",
+   "base_color": "black",
+   "design_file": "tees/pr-t041-stroked.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T042",
+   "type": "tee",
+   "title": "Ride On",
+   "base_color": "black",
+   "design_file": "tees/pr-t042-skull-helmet-ride-on.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T043",
+   "type": "tee",
+   "title": "Born to Wrench",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t043-born-to-wrench.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T044",
+   "type": "tee",
+   "title": "Ace Mechanic",
+   "base_color": "black",
+   "design_file": "tees/pr-t044-aces-high.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T045",
+   "type": "tee",
+   "title": "Loud & Proud",
+   "base_color": "black",
+   "design_file": "tees/pr-t045-loud-and-proud.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T046",
+   "type": "tee",
+   "title": "No Trailer Queens",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t046-no-trailer-queens.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T047",
+   "type": "tee",
+   "title": "Wrenched Not Waxed",
+   "base_color": "black",
+   "design_file": "tees/pr-t047-wrenched-not-waxed.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T048",
+   "type": "tee",
+   "title": "Therapist by the Mile",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t048-therapist-by-the-mile.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T049",
+   "type": "tee",
+   "title": "I Brake for Parts Stores",
+   "base_color": "black",
+   "design_file": "tees/pr-t049-brake-for-parts.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T050",
+   "type": "tee",
+   "title": "Yes, I Need Another Project",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t050-another-project.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T051",
+   "type": "tee",
+   "title": "Retirement Plan",
+   "base_color": "black",
+   "design_file": "tees/pr-t051-retirement-plan.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T052",
+   "type": "tee",
+   "title": "Still Kickin'",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t052-still-kickin.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T053",
+   "type": "tee",
+   "title": "Classic, Not Old",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t053-classic-not-old.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T054",
+   "type": "tee",
+   "title": "Aged to Perfection",
+   "base_color": "black",
+   "design_file": "tees/pr-t054-aged-to-perfection.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T055",
+   "type": "tee",
+   "title": "Open Road",
+   "base_color": "black",
+   "design_file": "tees/pr-t055-open-road.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T056",
+   "type": "tee",
+   "title": "Two Lanes",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t056-two-lanes.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T057",
+   "type": "tee",
+   "title": "Chase the Horizon",
+   "base_color": "navy",
+   "design_file": "tees/pr-t057-chase-the-horizon.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T058",
+   "type": "tee",
+   "title": "Garage Muse",
+   "base_color": "black",
+   "design_file": "tees/pr-t058-garage-muse.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T059",
+   "type": "tee",
+   "title": "Ride Free Wings",
+   "base_color": "black",
+   "design_file": "tees/pr-t059-ride-free-wings.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-T060",
+   "type": "tee",
+   "title": "Pushrod™ Wings",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t060-pushrod-wings.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "PR-H001",
+   "type": "hat",
+   "title": "Pushrod™ Badge",
+   "base_color": "Black",
+   "design_file": "hats/pr-h001-pushrod-badge.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H002",
+   "type": "hat",
+   "title": "Kick Starter",
+   "base_color": "Charcoal",
+   "design_file": "hats/pr-h002-kickstart-arm.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H003",
+   "type": "hat",
+   "title": "V-Twin Shield",
+   "base_color": "Navy",
+   "design_file": "hats/pr-h003-vtwin-emblem.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H004",
+   "type": "hat",
+   "title": "Torque Spec 65",
+   "base_color": "Black",
+   "design_file": "hats/pr-h004-torque-spec.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H005",
+   "type": "hat",
+   "title": "Points & Spark",
+   "base_color": "Dark Brown",
+   "design_file": "hats/pr-h005-points-condenser.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H006",
+   "type": "hat",
+   "title": "Carb King",
+   "base_color": "Black",
+   "design_file": "hats/pr-h006-carb-king.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H007",
+   "type": "hat",
+   "title": "Finned Cool",
+   "base_color": "Olive",
+   "design_file": "hats/pr-h007-finned-cool.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H008",
+   "type": "hat",
+   "title": "Kick Only",
+   "base_color": "Black",
+   "design_file": "hats/pr-h008-kick-only.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H009",
+   "type": "hat",
+   "title": "Timing Mark",
+   "base_color": "Charcoal",
+   "design_file": "hats/pr-h009-timing-marks.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H010",
+   "type": "hat",
+   "title": "Shop Wisdom",
+   "base_color": "Black",
+   "design_file": "hats/pr-h010-shop-wisdom.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H011",
+   "type": "hat",
+   "title": "Pushrod™ Co.",
+   "base_color": "Navy",
+   "design_file": "hats/pr-h011-pushrod-co.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H012",
+   "type": "hat",
+   "title": "Pushrod™ Star",
+   "base_color": "Black",
+   "design_file": "hats/pr-h012-pushrod-star.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H013",
+   "type": "hat",
+   "title": "Piston Crown",
+   "base_color": "Black",
+   "design_file": "hats/pr-h013-piston-crown.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H014",
+   "type": "hat",
+   "title": "Thunder Twin",
+   "base_color": "Black",
+   "design_file": "hats/pr-h014-thunder-twin.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H015",
+   "type": "hat",
+   "title": "45 Degrees",
+   "base_color": "Black",
+   "design_file": "hats/pr-h015-45-degrees.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H016",
+   "type": "hat",
+   "title": "Heavy Iron",
+   "base_color": "Black",
+   "design_file": "hats/pr-h016-heavy-iron.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H017",
+   "type": "hat",
+   "title": "Wings Banner",
+   "base_color": "Black",
+   "design_file": "hats/pr-h017-wings-banner.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H018",
+   "type": "hat",
+   "title": "Skull Helmet",
+   "base_color": "Black",
+   "design_file": "hats/pr-h018-skull-helmet.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H019",
+   "type": "hat",
+   "title": "Pushrod™ MC",
+   "base_color": "Black",
+   "design_file": "hats/pr-h019-pushrod-mc.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H020",
+   "type": "hat",
+   "title": "Distress Badge",
+   "base_color": "Charcoal",
+   "design_file": "hats/pr-h020-distress-badge.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H021",
+   "type": "hat",
+   "title": "Leather Pushrod™",
+   "base_color": "Black",
+   "design_file": "hats/pr-h021-leather-pushrod.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H022",
+   "type": "hat",
+   "title": "Wings Piston",
+   "base_color": "Black",
+   "design_file": "hats/pr-h022-wings-piston.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H023",
+   "type": "hat",
+   "title": "Skull Ride",
+   "base_color": "Charcoal",
+   "design_file": "hats/pr-h023-skull-ride.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H024",
+   "type": "hat",
+   "title": "Ride Or Wrench",
+   "base_color": "Black",
+   "design_file": "hats/pr-h024-ride-wrench.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H025",
+   "type": "hat",
+   "title": "Pushrod™ Roundel",
+   "base_color": "Navy",
+   "design_file": "hats/pr-h025-pushrod-roundel.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H026",
+   "type": "hat",
+   "title": "Garage Built",
+   "base_color": "Black",
+   "design_file": "hats/pr-h026-garage-built.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H027",
+   "type": "hat",
+   "title": "Camo Wings",
+   "base_color": "Camo",
+   "design_file": "hats/pr-h027-camo-wings.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H028",
+   "type": "hat",
+   "title": "Skull Kickstart",
+   "base_color": "Black",
+   "design_file": "hats/pr-h028-skull-kickstart.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H029",
+   "type": "hat",
+   "title": "Pushrod™ Nation",
+   "base_color": "Charcoal",
+   "design_file": "hats/pr-h029-pushrod-nation.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H030",
+   "type": "hat",
+   "title": "Leather Side",
+   "base_color": "Black",
+   "design_file": "hats/pr-h030-leather-side.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H031",
+   "type": "hat",
+   "title": "Wrench Gang",
+   "base_color": "Black",
+   "design_file": "hats/pr-h031-wrench-gang.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H032",
+   "type": "hat",
+   "title": "Iron Wings",
+   "base_color": "Black",
+   "design_file": "hats/pr-h032-red-wings.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H033",
+   "type": "hat",
+   "title": "Cast Iron",
+   "base_color": "Charcoal",
+   "design_file": "hats/pr-h033-cast-iron.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H034",
+   "type": "hat",
+   "title": "Skull Thunder",
+   "base_color": "Navy",
+   "design_file": "hats/pr-h034-skull-thunder.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H035",
+   "type": "hat",
+   "title": "White Roundel",
+   "base_color": "Black",
+   "design_file": "hats/pr-h035-white-roundel.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H036",
+   "type": "hat",
+   "title": "Oil & Iron",
+   "base_color": "Black",
+   "design_file": "hats/pr-h036-oil-iron.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H037",
+   "type": "hat",
+   "title": "Diamond Pushrod™",
+   "base_color": "Black",
+   "design_file": "hats/pr-h037-diamond-pushrod.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H038",
+   "type": "hat",
+   "title": "Since 1969",
+   "base_color": "Camo",
+   "design_file": "hats/pr-h038-since-1969.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H039",
+   "type": "hat",
+   "title": "Kickstart Cult",
+   "base_color": "Black",
+   "design_file": "hats/pr-h039-kickstart-cult.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-H040",
+   "type": "hat",
+   "title": "Skull Banner",
+   "base_color": "Black",
+   "design_file": "hats/pr-h040-skull-banner.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "PR-M001",
+   "type": "mug",
+   "title": "Kickstart Coffee Mug",
+   "base_color": "matte black ceramic",
+   "design_file": "misc/pr-m001-kickstart-mug.webp",
+   "msrp": 15.0
+  },
+  {
+   "sku": "PR-M002",
+   "type": "mug",
+   "title": "Torque Specs Coffee Mug",
+   "base_color": "matte black ceramic",
+   "design_file": "misc/pr-m002-torque-specs-mug.webp",
+   "msrp": 15.0
+  },
+  {
+   "sku": "PR-M003",
+   "type": "mug",
+   "title": "Garage Nights Coffee Mug",
+   "base_color": "matte black ceramic",
+   "design_file": "misc/pr-m003-garage-nights-mug.webp",
+   "msrp": 15.0
+  },
+  {
+   "sku": "PR-M004",
+   "type": "metal sign",
+   "title": "Pushrod™ Garage Embossed Metal Sign",
+   "base_color": "blackened steel with rust-red enamel accents",
+   "design_file": "misc/pr-m004-pushrod-garage-sign.webp",
+   "msrp": 19.0
+  },
+  {
+   "sku": "PR-M005",
+   "type": "metal sign",
+   "title": "Points and Condenser Embossed Metal Sign",
+   "base_color": "aged steel with teal and cream enamel",
+   "design_file": "misc/pr-m005-points-condenser-sign.webp",
+   "msrp": 19.0
+  },
+  {
+   "sku": "PR-M006",
+   "type": "metal sign",
+   "title": "Ride Em Dont Trailer Em Metal Sign",
+   "base_color": "blackened steel with cream and rust-red enamel",
+   "design_file": "misc/pr-m006-ride-em-sign.webp",
+   "msrp": 19.0
+  },
+  {
+   "sku": "PR-M007",
+   "type": "decal",
+   "title": "Carb Life Shop Decal Sheet",
+   "base_color": "white vinyl backing",
+   "design_file": "misc/pr-m007-carb-life-decals.webp",
+   "msrp": 4.0
+  },
+  {
+   "sku": "PR-M008",
+   "type": "decal",
+   "title": "Fins and Chrome Decal",
+   "base_color": "white vinyl backing",
+   "design_file": "misc/pr-m008-fins-chrome-decal.webp",
+   "msrp": 4.0
+  },
+  {
+   "sku": "PR-M009",
+   "type": "decal",
+   "title": "Timing Marks Advance Decal",
+   "base_color": "white vinyl backing",
+   "design_file": "misc/pr-m009-timing-marks-decal.webp",
+   "msrp": 4.0
+  },
+  {
+   "sku": "PR-M010",
+   "type": "metal sign",
+   "title": "Timing Is Everything Metal Sign",
+   "base_color": "blackened steel with distressed cream enamel",
+   "design_file": "misc/pr-m010-timing-sign.webp",
+   "msrp": 19.0
+  },
+  {
+   "sku": "PR-M011",
+   "type": "metal sign",
+   "title": "Fuel Fire Air Metal Sign",
+   "base_color": "blackened steel with flame-orange enamel",
+   "design_file": "misc/pr-m011-fuel-fire-air-sign.webp",
+   "msrp": 19.0
+  },
+  {
+   "sku": "PR-M012",
+   "type": "banner",
+   "title": "Pushrod™ V-Twin Garage Flag",
+   "base_color": "distressed black fabric with white print",
+   "design_file": "misc/pr-m012-pushrod-flag.webp",
+   "msrp": 14.0
+  },
+  {
+   "sku": "PR-M013",
+   "type": "banner",
+   "title": "Built in the Garage Checkered Flag",
+   "base_color": "black fabric with checkered border",
+   "design_file": "misc/pr-m013-forged-in-garage.webp",
+   "msrp": 14.0
+  },
+  {
+   "sku": "PR-M014",
+   "type": "patch",
+   "title": "Pushrod™ V-Twin Rocker Patch",
+   "base_color": "charcoal twill with merrowed black border",
+   "design_file": "misc/pr-m014-pushrod-rocker-patch.webp",
+   "msrp": 6.0
+  },
+  {
+   "sku": "PR-M015",
+   "type": "patch",
+   "title": "Jet It Right Carburetor Patch",
+   "base_color": "olive twill with merrowed red border",
+   "design_file": "misc/pr-m015-carburetor-patch.webp",
+   "msrp": 6.0
+  },
+  {
+   "sku": "PR-M016",
+   "type": "keychain",
+   "title": "Desert Rider Etched Keychain",
+   "base_color": "brushed stainless steel with leather strap",
+   "design_file": "misc/pr-m016-etched-rider-keychain.webp",
+   "msrp": 10.0
+  },
+  {
+   "sku": "PR-M017",
+   "type": "keychain",
+   "title": "Cobalt Piston Enamel Keychain",
+   "base_color": "cobalt enamel with antique gold outline",
+   "design_file": "misc/pr-m017-piston-enamel-keychain.webp",
+   "msrp": 10.0
+  },
+  {
+   "sku": "PR-M018",
+   "type": "banner",
+   "title": "Ride Loud Monochrome Flag",
+   "base_color": "worn black fabric with white print",
+   "design_file": "misc/pr-m018-ride-loud-flag.webp",
+   "msrp": 14.0
+  },
+  {
+   "sku": "PR-M019",
+   "type": "banner",
+   "title": "Midnight Workbench Canvas Banner",
+   "base_color": "warm lamp-lit oil-painting palette",
+   "design_file": "misc/pr-m019-workbench-banner.webp",
+   "msrp": 14.0
+  },
+  {
+   "sku": "PR-M020",
+   "type": "decal",
+   "title": "Tune Up Shop Decal Sheet Vol 2",
+   "base_color": "white vinyl backing",
+   "design_file": "misc/pr-m020-tune-up-decals.webp",
+   "msrp": 4.0
+  },
+  {
+   "sku": "PR-S001",
+   "type": "sweatshirt",
+   "title": "Pushrod™ Crest Pullover",
+   "base_color": "black",
+   "design_file": "tees/pr-t001-pushrod-crest.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S002",
+   "type": "sweatshirt",
+   "title": "Pushrod™ Shop Tee Pullover",
+   "base_color": "black",
+   "design_file": "tees/pr-t021-pushrod-shop-tee.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S003",
+   "type": "sweatshirt",
+   "title": "Grease & Thunder Pullover",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t027-grease-and-thunder.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S004",
+   "type": "sweatshirt",
+   "title": "Carb Kings Pullover",
+   "base_color": "black",
+   "design_file": "tees/pr-t026-carb-kings.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S005",
+   "type": "sweatshirt",
+   "title": "Grease & Glory Pullover",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t023-grease-and-glory.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S006",
+   "type": "sweatshirt",
+   "title": "Pushrod™ Garage Badge Pullover",
+   "base_color": "black",
+   "design_file": "tees/pr-t028-pushrod-garage-badge.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S007",
+   "type": "sweatshirt",
+   "title": "Finned & Free Pullover",
+   "base_color": "black",
+   "design_file": "tees/pr-t024-finned-and-free.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S008",
+   "type": "sweatshirt",
+   "title": "Spark Chasers Pullover",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t025-points-patrol.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S009",
+   "type": "sweatshirt",
+   "title": "Torque & Oil Pullover",
+   "base_color": "black",
+   "design_file": "tees/pr-t022-torque-and-oil.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S010",
+   "type": "sweatshirt",
+   "title": "Pushrod™ Power Pullover",
+   "base_color": "forest",
+   "design_file": "tees/pr-t012-pushrod-power.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S011",
+   "type": "sweatshirt",
+   "title": "Pushrod™ Wings Pullover",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t060-pushrod-wings.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S012",
+   "type": "sweatshirt",
+   "title": "Aged to Perfection Pullover",
+   "base_color": "black",
+   "design_file": "tees/pr-t054-aged-to-perfection.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S013",
+   "type": "sweatshirt",
+   "title": "Kickstart King Pullover",
+   "base_color": "navy",
+   "design_file": "tees/pr-t003-kickstart-king.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S014",
+   "type": "sweatshirt",
+   "title": "Timed Right Pullover",
+   "base_color": "brown",
+   "design_file": "tees/pr-t008-timed-right.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S015",
+   "type": "sweatshirt",
+   "title": "Ride On Pullover",
+   "base_color": "black",
+   "design_file": "tees/pr-t042-skull-helmet-ride-on.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S016",
+   "type": "sweatshirt",
+   "title": "Born to Wrench Pullover",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t043-born-to-wrench.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S017",
+   "type": "sweatshirt",
+   "title": "Ace Mechanic Pullover",
+   "base_color": "black",
+   "design_file": "tees/pr-t044-aces-high.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S018",
+   "type": "sweatshirt",
+   "title": "Loud & Proud Pullover",
+   "base_color": "black",
+   "design_file": "tees/pr-t045-loud-and-proud.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S019",
+   "type": "sweatshirt",
+   "title": "Still Kickin' Pullover",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t052-still-kickin.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S020",
+   "type": "sweatshirt",
+   "title": "Ride Free Wings Pullover",
+   "base_color": "black",
+   "design_file": "tees/pr-t059-ride-free-wings.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S021",
+   "type": "sweatshirt",
+   "title": "Finned Fury Pullover",
+   "description": "Deep cooling fins and a V-twin front view in vintage garage-poster style. For the air-cooled faithful who count fins like horsepower. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t002-finned-fury.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S022",
+   "type": "sweatshirt",
+   "title": "Torque It Pullover",
+   "description": "Condensed vintage type with a torque wrench crossing behind it. The shop-floor commandment — torque it, don't guess it. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "olive",
+   "design_file": "tees/pr-t004-torque-it.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S023",
+   "type": "sweatshirt",
+   "title": "Garage Nights Pullover",
+   "description": "A garage door half open at night, shop light glowing over a waiting motorcycle. For everyone who does their best work after dark. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "black",
+   "design_file": "tees/pr-t009-garage-nights.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S024",
+   "type": "sweatshirt",
+   "title": "Shop Rag Wisdom Pullover",
+   "description": "A grease-stained shop rag draped over an adjustable wrench. The most honest tool in the box, worn proud. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t010-shop-rag-wisdom.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S025",
+   "type": "sweatshirt",
+   "title": "V-Twin Heart Pullover",
+   "description": "A heart built from a piston, connecting rod, and twin cylinders. Wear your motor on your chest. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "burgundy",
+   "design_file": "tees/pr-t011-vtwin-heart.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S026",
+   "type": "sweatshirt",
+   "title": "Piston Slap Pullover",
+   "description": "A worn piston rocking in its bore, motion lines flying. Every old motor has a voice. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t014-piston-slap.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S027",
+   "type": "sweatshirt",
+   "title": "Oil Is Life Pullover",
+   "description": "A vintage oil can pouring a glossy golden stream. No oil, no motor, no ride. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "brown",
+   "design_file": "tees/pr-t015-oil-is-life.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S028",
+   "type": "sweatshirt",
+   "title": "Oily Hands Pullover",
+   "description": "Oil-blackened hands gripping a greasy wrench under stamped OILY HANDS lettering. The mark of real work. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "black",
+   "design_file": "tees/pr-t029-oily-hands.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S029",
+   "type": "sweatshirt",
+   "title": "Grease Stains Pullover",
+   "description": "A grease-stained fist holding a fouled spark plug under bold GREASE STAINS type. Worn proud, never washed off. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t030-grease-under-nails.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S030",
+   "type": "sweatshirt",
+   "title": "Shop Floor Pullover",
+   "description": "Scattered wrenches, a drain pan, and fresh oil on cracked concrete under SHOP FLOOR lettering. Home turf. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "black",
+   "design_file": "tees/pr-t031-shop-floor.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S031",
+   "type": "sweatshirt",
+   "title": "Busted Knuckles Pullover",
+   "description": "A scarred fist wrapped around a combination wrench under BUSTED KNUCKLES type. Every scar is a lesson. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t032-busted-knuckles.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S032",
+   "type": "sweatshirt",
+   "title": "Wrench Life Pullover",
+   "description": "A pegboard wall of well-worn wrenches and sockets under a single work light, stamped WRENCH LIFE. For the lifers. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "black",
+   "design_file": "tees/pr-t033-wrench-life.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S033",
+   "type": "sweatshirt",
+   "title": "Pushrod™ Garage Est. 2026 Pullover",
+   "description": "Faux-vintage 1970s poster with a classic motorcycle and garage door, PUSHROD™ GARAGE in retro orange with an EST. 2026 ribbon. Nostalgia you can wear. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "black",
+   "design_file": "tees/pr-t034-pushrod-garage-est2026.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S034",
+   "type": "sweatshirt",
+   "title": "Garage Open House Pullover",
+   "description": "Warm light spilling from an open garage over vintage bikes and tool chests, OPEN HOUSE in retro cream type. Everybody's welcome. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t035-garage-open-house.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S035",
+   "type": "sweatshirt",
+   "title": "Swap Meet Pullover",
+   "description": "Retro swap-meet poster with tables of engines, pistons, and chrome under SWAP MEET and PUSHROD™ GARAGE lettering. For the parts hunter. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "black",
+   "design_file": "tees/pr-t036-swap-meet.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S036",
+   "type": "sweatshirt",
+   "title": "No Trailer Queens Pullover",
+   "description": "A road-worn, bug-splattered vintage bike under NO TRAILER QUEENS lettering. Ridden, not trailered. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t046-no-trailer-queens.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S037",
+   "type": "sweatshirt",
+   "title": "Wrenched Not Waxed Pullover",
+   "description": "A work-worn wrench crossed over a polishing cloth with a red slash under WRENCHED NOT WAXED. Function over shine. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "black",
+   "design_file": "tees/pr-t047-wrenched-not-waxed.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S038",
+   "type": "sweatshirt",
+   "title": "Therapist by the Mile Pullover",
+   "description": "A vintage bike parked outside a little office door under MY THERAPIST CHARGES BY THE MILE. Two wheels beat a couch. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t048-therapist-by-the-mile.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S039",
+   "type": "sweatshirt",
+   "title": "I Brake for Parts Stores Pullover",
+   "description": "A vintage bike screeching to a halt at a parts-store window under I BRAKE FOR PARTS STORES. Resistance is futile. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "black",
+   "design_file": "tees/pr-t049-brake-for-parts.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "PR-S040",
+   "type": "sweatshirt",
+   "title": "Yes, I Need Another Project Pullover",
+   "description": "A garage crammed with half-finished bike projects under YES, I NEED ANOTHER PROJECT. Denial, worn proud. Printed big on a heavyweight pullover fleece — the shop-uniform version of a PUSHROD™ classic.",
+   "base_color": "charcoal",
+   "design_file": "tees/pr-t050-another-project.webp",
+   "pricing": "quote",
+   "msrp": 44.0
+  },
+  {
+   "sku": "7B-T001",
+   "type": "tee",
+   "title": "Seven-Brand Badge Tee",
+   "base_color": "black",
+   "design_file": "tees/7b-t001-seven-brand-badge.webp",
+   "msrp": 26.0
+  },
+  {
+   "sku": "7B-H001",
+   "type": "hat",
+   "title": "Seven-Brand Badge Hat",
+   "base_color": "Black",
+   "design_file": "hats/7b-h001-seven-brand-badge.webp",
+   "msrp": 24.0
+  },
+  {
+   "sku": "7B-S001",
+   "type": "sweatshirt",
+   "title": "Seven-Brand Badge Pullover",
+   "base_color": "black",
+   "design_file": "sweats/7b-s001-seven-brand-badge.webp",
+   "msrp": 44.0
+  },
+  {
+   "sku": "7B-M001",
+   "type": "mug",
+   "title": "Seven-Brand Badge Mug",
+   "base_color": "matte black ceramic",
+   "design_file": "misc/7b-m001-seven-brand-badge.webp",
+   "msrp": 15.0
+  },
+  {
+   "sku": "7B-M002",
+   "type": "decal",
+   "title": "Seven-Brand Badge Decal",
+   "base_color": "white/clear vinyl",
+   "design_file": "misc/7b-m002-seven-brand-decal.webp",
+   "msrp": 4.0
+  },
+  {
+   "sku": "7B-M003",
+   "type": "patch",
+   "title": "Seven-Brand Badge Patch",
+   "base_color": "black twill/orange merrow",
+   "design_file": "misc/7b-m003-seven-brand-patch.webp",
+   "msrp": 6.0
+  }
+ ]
+}

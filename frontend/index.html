@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PUSHROD</title>
+<link rel="stylesheet" href="/static/css/store.css">
+</head>
+<body>
+<header class="top">
+  <div class="logo"><span class="brandname">PUSHROD</span><small>GARAGE GEAR</small></div>
+  <div class="tagline" id="tagline"></div>
+  <button class="cartbtn" id="cartbtn">Cart (<span id="cartcount">0</span>)</button>
+</header>
+<main>
+  <div class="doors" id="doors"></div>
+  <div class="toolbar">
+    <select id="ftype">
+      <option value="all">All gear</option>
+    </select>
+    <input id="q" type="search" placeholder="Search the garage…">
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+<div class="drawer" id="drawer">
+  <header><strong>Your cart</strong><button class="btn ghost" id="closex">Close</button></header>
+  <div class="items" id="cartitems"></div>
+  <footer>
+    <div class="total"><span>Total</span><span id="ctotal">$0.00</span></div>
+    <div id="stripe-note" style="color:var(--muted);font-size:.85rem;margin-bottom:.6rem"></div>
+    <button class="btn" id="cobtn" style="width:100%">Checkout</button>
+  </footer>
+</div>
+<footer class="page"><span class="brandname">PUSHROD</span> — garage-built gear. Secure test checkout.</footer>
+<script src="/static/js/store.js"></script>
+</body>
+</html>

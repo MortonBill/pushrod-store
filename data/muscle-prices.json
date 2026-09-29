@@ -1,0 +1,1286 @@
+{
+  "brand": "RESTORATION ESSENTIALS",
+  "pricing_status": "CONFIRMED 2026-09-26 — prices verified against Printful by Bill (margins confirmed). Set from competitor research (merch-plan-brief/report.md, verified 2026-09-21), priced at/below the indie anchor per Bill's volume-over-margin philosophy. Tees $26; hats $24; pullovers $44; mugs $15; signs $19; decals $4; banners $14; patches $6; keychains $10; flags $25.",
+  "products": [
+    {
+      "sku": "RE-MC-T001",
+      "type": "tee",
+      "title": "Big Block",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t001-big-block.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T002",
+      "type": "tee",
+      "title": "Four on the Floor",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t002-four-on-the-floor.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T003",
+      "type": "tee",
+      "title": "Quarter Mile",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t003-quarter-mile.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T004",
+      "type": "tee",
+      "title": "Burnout Box",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t004-burnout-box.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T005",
+      "type": "tee",
+      "title": "Christmas Tree",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t005-christmas-tree.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T006",
+      "type": "tee",
+      "title": "Tunnel Ram",
+      "base_color": "olive",
+      "design_file": "tees/re-mc-t006-tunnel-ram.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T007",
+      "type": "tee",
+      "title": "Solid Lifters",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t007-solid-lifters.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T008",
+      "type": "tee",
+      "title": "Holeshot",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t008-holeshot.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T009",
+      "type": "tee",
+      "title": "Line Lock",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t009-line-lock.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T010",
+      "type": "tee",
+      "title": "Dial It In",
+      "base_color": "cream",
+      "design_file": "tees/re-mc-t010-dial-it-in.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T011",
+      "type": "tee",
+      "title": "1320",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t011-1320.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T012",
+      "type": "tee",
+      "title": "Four-Barrel",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t012-four-barrel.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T013",
+      "type": "tee",
+      "title": "Dual Quads",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t013-dual-quads.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T014",
+      "type": "tee",
+      "title": "Holeshot",
+      "base_color": "olive",
+      "design_file": "tees/re-mc-t014-holeshot.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T015",
+      "type": "tee",
+      "title": "Torque Monster",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t015-torque-monster.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T016",
+      "type": "tee",
+      "title": "Big Block 454",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t016-big-block-454.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T017",
+      "type": "tee",
+      "title": "440",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t017-440.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T018",
+      "type": "tee",
+      "title": "428",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t018-428.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T019",
+      "type": "tee",
+      "title": "Redline",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t019-redline.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T020",
+      "type": "tee",
+      "title": "Green Light",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t020-green-light.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T021",
+      "type": "tee",
+      "title": "Stage Them Deep",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t021-stage-them-deep.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T022",
+      "type": "tee",
+      "title": "Traction Bars",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t022-traction-bars.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T023",
+      "type": "tee",
+      "title": "Ladder Bars",
+      "base_color": "olive",
+      "design_file": "tees/re-mc-t023-ladder-bars.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T024",
+      "type": "tee",
+      "title": "Wheelie Bars",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t024-wheelie-bars.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T025",
+      "type": "tee",
+      "title": "Bottle Fed",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t025-bottle-fed.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T026",
+      "type": "tee",
+      "title": "Blown",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t026-blown.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T027",
+      "type": "tee",
+      "title": "Blower Scoop",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t027-blower-scoop.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T028",
+      "type": "tee",
+      "title": "Domed Pistons",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t028-domed-pistons.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T029",
+      "type": "tee",
+      "title": "Forged",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t029-forged.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T030",
+      "type": "tee",
+      "title": "Cammed",
+      "base_color": "olive",
+      "design_file": "tees/re-mc-t030-cammed.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T031",
+      "type": "tee",
+      "title": "Lift & Duration",
+      "base_color": "cream",
+      "design_file": "tees/re-mc-t031-lift-and-duration.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T032",
+      "type": "tee",
+      "title": "Roller Rockers",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t032-roller-rockers.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T033",
+      "type": "tee",
+      "title": "Adjustable Pushrods",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t033-adjustable-pushrods.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T034",
+      "type": "tee",
+      "title": "Headers",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t034-headers.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T035",
+      "type": "tee",
+      "title": "Straight Pipes",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t035-straight-pipes.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T036",
+      "type": "tee",
+      "title": "Slicks",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t036-slicks.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T037",
+      "type": "tee",
+      "title": "Four Speed",
+      "base_color": "olive",
+      "design_file": "tees/re-mc-t037-four-speed.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T038",
+      "type": "tee",
+      "title": "Shifter Ball",
+      "base_color": "cream",
+      "design_file": "tees/re-mc-t038-shifter-ball.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T039",
+      "type": "tee",
+      "title": "Grab Both Tires",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t039-grab-both-tires.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T040",
+      "type": "tee",
+      "title": "Burnout Smoke",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t040-burnout-smoke.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T041",
+      "type": "tee",
+      "title": "Torque Plate",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t041-torque-plate.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T042",
+      "type": "tee",
+      "title": "Windage Tray",
+      "base_color": "olive",
+      "design_file": "tees/re-mc-t042-windage-tray.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T043",
+      "type": "tee",
+      "title": "Deep Sump",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t043-deep-sump.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T044",
+      "type": "tee",
+      "title": "Oil & Iron",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t044-oil-and-iron.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T045",
+      "type": "tee",
+      "title": "Carburetor Cutaway",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t045-carburetor-cutaway.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T046",
+      "type": "tee",
+      "title": "Jet Size",
+      "base_color": "cream",
+      "design_file": "tees/re-mc-t046-jet-size.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T047",
+      "type": "tee",
+      "title": "Accelerator Pump",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t047-accelerator-pump.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T048",
+      "type": "tee",
+      "title": "Manual Choke",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t048-manual-choke.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T049",
+      "type": "tee",
+      "title": "Time Slip",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t049-time-slip.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T050",
+      "type": "tee",
+      "title": "Win Light",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t050-win-light.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T051",
+      "type": "tee",
+      "title": "Break Out",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t051-break-out.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T052",
+      "type": "tee",
+      "title": "Tree Got Me",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t052-tree-got-me.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T053",
+      "type": "tee",
+      "title": "Saturday Night Strip",
+      "base_color": "olive",
+      "design_file": "tees/re-mc-t053-saturday-night-strip.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T054",
+      "type": "tee",
+      "title": "Strip Tech",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t054-strip-tech.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T055",
+      "type": "tee",
+      "title": "Horsepower",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t055-horsepower.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T056",
+      "type": "tee",
+      "title": "Torque Spec",
+      "base_color": "cream",
+      "design_file": "tees/re-mc-t056-torque-spec.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T057",
+      "type": "tee",
+      "title": "Compression Check",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t057-compression-check.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T058",
+      "type": "tee",
+      "title": "High Compression",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t058-high-compression.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T059",
+      "type": "tee",
+      "title": "Wedge Head",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t059-wedge-head.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-T060",
+      "type": "tee",
+      "title": "Oval Port",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t060-oval-port.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MC-H001",
+      "type": "hat",
+      "title": "Big Block Badge",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h001-big-block-badge.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H002",
+      "type": "hat",
+      "title": "1320",
+      "base_color": "Navy",
+      "design_file": "hats/re-mc-h002-1320.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H003",
+      "type": "hat",
+      "title": "Holeshot",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mc-h003-holeshot.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H004",
+      "type": "hat",
+      "title": "Christmas Tree",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h004-christmas-tree.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H005",
+      "type": "hat",
+      "title": "Four Speed",
+      "base_color": "Olive",
+      "design_file": "hats/re-mc-h005-four-speed.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H006",
+      "type": "hat",
+      "title": "Redline",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h006-redline.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H007",
+      "type": "hat",
+      "title": "Burnout Box",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mc-h007-burnout-box.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H008",
+      "type": "hat",
+      "title": "454",
+      "base_color": "Dark Brown",
+      "design_file": "hats/re-mc-h008-454.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H009",
+      "type": "hat",
+      "title": "Solid Lifters",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h009-solid-lifters.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H010",
+      "type": "hat",
+      "title": "Tunnel Ram",
+      "base_color": "Navy",
+      "design_file": "hats/re-mc-h010-tunnel-ram.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H011",
+      "type": "hat",
+      "title": "Dual Quads",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h011-dual-quads.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H012",
+      "type": "hat",
+      "title": "Line Lock",
+      "base_color": "Olive",
+      "design_file": "hats/re-mc-h012-line-lock.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H013",
+      "type": "hat",
+      "title": "Torque Monster",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mc-h013-torque-monster.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H014",
+      "type": "hat",
+      "title": "Line Lock",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h014-line-lock.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H015",
+      "type": "hat",
+      "title": "Dial In",
+      "base_color": "Navy",
+      "design_file": "hats/re-mc-h015-dial-in.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H016",
+      "type": "hat",
+      "title": "Four Barrel",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h016-four-barrel.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H017",
+      "type": "hat",
+      "title": "Time Slip",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mc-h017-time-slip.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H018",
+      "type": "hat",
+      "title": "Green Light",
+      "base_color": "Olive",
+      "design_file": "hats/re-mc-h018-green-light.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H019",
+      "type": "hat",
+      "title": "Stage Deep",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h019-stage-deep.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H020",
+      "type": "hat",
+      "title": "Slicks",
+      "base_color": "Dark Brown",
+      "design_file": "hats/re-mc-h020-slicks.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H021",
+      "type": "hat",
+      "title": "Blown",
+      "base_color": "Navy",
+      "design_file": "hats/re-mc-h021-blown.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H022",
+      "type": "hat",
+      "title": "Domed",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h022-domed.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H023",
+      "type": "hat",
+      "title": "Forged",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mc-h023-forged.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H024",
+      "type": "hat",
+      "title": "Cammed",
+      "base_color": "Olive",
+      "design_file": "hats/re-mc-h024-cammed.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H025",
+      "type": "hat",
+      "title": "Headers",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h025-headers.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H026",
+      "type": "hat",
+      "title": "Straight Pipes",
+      "base_color": "Dark Brown",
+      "design_file": "hats/re-mc-h026-straight-pipes.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H027",
+      "type": "hat",
+      "title": "Shifter",
+      "base_color": "Navy",
+      "design_file": "hats/re-mc-h027-shifter.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H028",
+      "type": "hat",
+      "title": "Grab Traction",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h028-grab-traction.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H029",
+      "type": "hat",
+      "title": "Win Light",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mc-h029-win-light.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H030",
+      "type": "hat",
+      "title": "Oil & Iron",
+      "base_color": "Olive",
+      "design_file": "hats/re-mc-h030-oil-and-iron.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H031",
+      "type": "hat",
+      "title": "Wedge",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h031-wedge.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H032",
+      "type": "hat",
+      "title": "Torque Plate",
+      "base_color": "Navy",
+      "design_file": "hats/re-mc-h032-torque-plate.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H033",
+      "type": "hat",
+      "title": "11:1",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mc-h033-11-to-1.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H034",
+      "type": "hat",
+      "title": "Tach",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h034-tach.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H035",
+      "type": "hat",
+      "title": "Ladder Bars",
+      "base_color": "Olive",
+      "design_file": "hats/re-mc-h035-ladder-bars.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H036",
+      "type": "hat",
+      "title": "Bottle Fed",
+      "base_color": "Dark Brown",
+      "design_file": "hats/re-mc-h036-bottle-fed.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H037",
+      "type": "hat",
+      "title": "Strip Nights",
+      "base_color": "Navy",
+      "design_file": "hats/re-mc-h037-strip-nights.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H038",
+      "type": "hat",
+      "title": "Garage Built",
+      "base_color": "Black",
+      "design_file": "hats/re-mc-h038-garage-built.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H039",
+      "type": "hat",
+      "title": "Strip Proven",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mc-h039-strip-proven.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-H040",
+      "type": "hat",
+      "title": "Big Block V8",
+      "base_color": "Olive",
+      "design_file": "hats/re-mc-h040-big-block-v8.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MC-M001",
+      "type": "mug",
+      "title": "Big Block Coffee Mug",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-mc-m001-big-block-coffee-mug.webp",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-MC-M002",
+      "type": "mug",
+      "title": "1320 Coffee Mug",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-mc-m002-1320-coffee-mug.webp",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-MC-M003",
+      "type": "mug",
+      "title": "Burnout Box Coffee Mug",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-mc-m003-burnout-box-coffee-mug.webp",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-MC-M004",
+      "type": "mug",
+      "title": "Redline Coffee Mug",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-mc-m004-redline-coffee-mug.webp",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-MC-M005",
+      "type": "metal sign",
+      "title": "Big Block Garage Metal Sign",
+      "base_color": "blackened steel with cream and rust-red enamel accents",
+      "design_file": "misc/re-mc-m005-big-block-garage-sign.webp",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-MC-M006",
+      "type": "metal sign",
+      "title": "Quarter Mile Garage Sign",
+      "base_color": "blackened steel with cream and teal enamel accents",
+      "design_file": "misc/re-mc-m006-quarter-mile-garage-sign.webp",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-MC-M007",
+      "type": "metal sign",
+      "title": "Four Speed Shop Metal Sign",
+      "base_color": "blackened steel with cream and blue enamel accents",
+      "design_file": "misc/re-mc-m007-four-speed-shop-sign.webp",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-MC-M008",
+      "type": "metal sign",
+      "title": "Torque Monster Metal Sign",
+      "base_color": "blackened steel with cream and rust-red enamel accents",
+      "design_file": "misc/re-mc-m008-torque-monster-sign.webp",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-MC-M009",
+      "type": "metal sign",
+      "title": "Christmas Tree Metal Sign",
+      "base_color": "blackened steel with green and cream enamel accents",
+      "design_file": "misc/re-mc-m009-christmas-tree-sign.webp",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-MC-M010",
+      "type": "decal sheet",
+      "title": "Muscle Era Decal Sheet",
+      "base_color": "white vinyl backing",
+      "design_file": "misc/re-mc-m010-muscle-era-decal-sheet.webp",
+      "msrp": 4.0
+    },
+    {
+      "sku": "RE-MC-M011",
+      "type": "decal sheet",
+      "title": "Drag Strip Decal Sheet",
+      "base_color": "white vinyl backing",
+      "design_file": "misc/re-mc-m011-drag-strip-decal-sheet.webp",
+      "msrp": 4.0
+    },
+    {
+      "sku": "RE-MC-M012",
+      "type": "keychain",
+      "title": "Piston Keychain",
+      "base_color": "brushed metal with red enamel",
+      "design_file": "misc/re-mc-m012-piston-keychain.webp",
+      "msrp": 10.0
+    },
+    {
+      "sku": "RE-MC-M013",
+      "type": "keychain",
+      "title": "Shifter Keychain",
+      "base_color": "brushed metal with black enamel",
+      "design_file": "misc/re-mc-m013-shifter-keychain.webp",
+      "msrp": 10.0
+    },
+    {
+      "sku": "RE-MC-M014",
+      "type": "flag",
+      "title": "Burnout Box Shop Flag",
+      "base_color": "black canvas with cream print",
+      "design_file": "misc/re-mc-m014-burnout-box-flag.webp",
+      "msrp": 25.0
+    },
+    {
+      "sku": "RE-MC-M015",
+      "type": "flag",
+      "title": "1320 Strip Flag",
+      "base_color": "navy canvas with cream print",
+      "design_file": "misc/re-mc-m015-1320-strip-flag.webp",
+      "msrp": 25.0
+    },
+    {
+      "sku": "RE-MC-M016",
+      "type": "banner",
+      "title": "Shop Night Banner",
+      "base_color": "black vinyl with cream and red print",
+      "design_file": "misc/re-mc-m016-shop-night-banner.webp",
+      "msrp": 14.0
+    },
+    {
+      "sku": "RE-MC-M017",
+      "type": "patch",
+      "title": "Big Block Embroidered Patch",
+      "base_color": "black twill with cream and red thread",
+      "design_file": "misc/re-mc-m017-big-block-patch.webp",
+      "msrp": 6.0
+    },
+    {
+      "sku": "RE-MC-M018",
+      "type": "patch",
+      "title": "Holeshot Embroidered Patch",
+      "base_color": "black twill with cream and orange thread",
+      "design_file": "misc/re-mc-m018-holeshot-patch.webp",
+      "msrp": 6.0
+    },
+    {
+      "sku": "RE-MC-M019",
+      "type": "metal sign",
+      "title": "Tune By Ear Metal Sign",
+      "base_color": "blackened steel with cream and teal enamel accents",
+      "design_file": "misc/re-mc-m019-tune-by-ear-sign.webp",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-MC-M020",
+      "type": "mug",
+      "title": "Green Light Coffee Mug",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-mc-m020-green-light-coffee-mug.webp",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-MC-S001",
+      "type": "sweatshirt",
+      "title": "Big Block Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t001-big-block.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S002",
+      "type": "sweatshirt",
+      "title": "Four on the Floor Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t002-four-on-the-floor.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S003",
+      "type": "sweatshirt",
+      "title": "Quarter Mile Pullover",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t003-quarter-mile.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S004",
+      "type": "sweatshirt",
+      "title": "Burnout Box Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t004-burnout-box.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S005",
+      "type": "sweatshirt",
+      "title": "Christmas Tree Pullover",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t005-christmas-tree.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S006",
+      "type": "sweatshirt",
+      "title": "Tunnel Ram Pullover",
+      "base_color": "olive",
+      "design_file": "tees/re-mc-t006-tunnel-ram.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S007",
+      "type": "sweatshirt",
+      "title": "Solid Lifters Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t007-solid-lifters.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S008",
+      "type": "sweatshirt",
+      "title": "Holeshot Pullover",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t008-holeshot.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S009",
+      "type": "sweatshirt",
+      "title": "Line Lock Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t009-line-lock.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S010",
+      "type": "sweatshirt",
+      "title": "Dial It In Pullover",
+      "base_color": "cream",
+      "design_file": "tees/re-mc-t010-dial-it-in.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S011",
+      "type": "sweatshirt",
+      "title": "1320 Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t011-1320.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S012",
+      "type": "sweatshirt",
+      "title": "Four-Barrel Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t012-four-barrel.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S013",
+      "type": "sweatshirt",
+      "title": "Dual Quads Pullover",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t013-dual-quads.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S014",
+      "type": "sweatshirt",
+      "title": "Holeshot Pullover",
+      "base_color": "olive",
+      "design_file": "tees/re-mc-t014-holeshot.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S015",
+      "type": "sweatshirt",
+      "title": "Torque Monster Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t015-torque-monster.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S016",
+      "type": "sweatshirt",
+      "title": "Big Block 454 Pullover",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t016-big-block-454.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S017",
+      "type": "sweatshirt",
+      "title": "440 Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t017-440.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S018",
+      "type": "sweatshirt",
+      "title": "428 Pullover",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t018-428.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S019",
+      "type": "sweatshirt",
+      "title": "Redline Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t019-redline.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S020",
+      "type": "sweatshirt",
+      "title": "Green Light Pullover",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t020-green-light.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S021",
+      "type": "sweatshirt",
+      "title": "Stage Them Deep Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t021-stage-them-deep.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S022",
+      "type": "sweatshirt",
+      "title": "Traction Bars Pullover",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t022-traction-bars.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S023",
+      "type": "sweatshirt",
+      "title": "Ladder Bars Pullover",
+      "base_color": "olive",
+      "design_file": "tees/re-mc-t023-ladder-bars.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S024",
+      "type": "sweatshirt",
+      "title": "Wheelie Bars Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t024-wheelie-bars.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S025",
+      "type": "sweatshirt",
+      "title": "Bottle Fed Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t025-bottle-fed.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S026",
+      "type": "sweatshirt",
+      "title": "Blown Pullover",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t026-blown.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S027",
+      "type": "sweatshirt",
+      "title": "Blower Scoop Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t027-blower-scoop.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S028",
+      "type": "sweatshirt",
+      "title": "Domed Pistons Pullover",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t028-domed-pistons.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S029",
+      "type": "sweatshirt",
+      "title": "Forged Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t029-forged.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S030",
+      "type": "sweatshirt",
+      "title": "Cammed Pullover",
+      "base_color": "olive",
+      "design_file": "tees/re-mc-t030-cammed.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S031",
+      "type": "sweatshirt",
+      "title": "Lift & Duration Pullover",
+      "base_color": "cream",
+      "design_file": "tees/re-mc-t031-lift-and-duration.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S032",
+      "type": "sweatshirt",
+      "title": "Roller Rockers Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t032-roller-rockers.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S033",
+      "type": "sweatshirt",
+      "title": "Adjustable Pushrods Pullover",
+      "base_color": "navy",
+      "design_file": "tees/re-mc-t033-adjustable-pushrods.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S034",
+      "type": "sweatshirt",
+      "title": "Headers Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t034-headers.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S035",
+      "type": "sweatshirt",
+      "title": "Straight Pipes Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t035-straight-pipes.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S036",
+      "type": "sweatshirt",
+      "title": "Slicks Pullover",
+      "base_color": "forest",
+      "design_file": "tees/re-mc-t036-slicks.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S037",
+      "type": "sweatshirt",
+      "title": "Four Speed Pullover",
+      "base_color": "olive",
+      "design_file": "tees/re-mc-t037-four-speed.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S038",
+      "type": "sweatshirt",
+      "title": "Shifter Ball Pullover",
+      "base_color": "cream",
+      "design_file": "tees/re-mc-t038-shifter-ball.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S039",
+      "type": "sweatshirt",
+      "title": "Grab Both Tires Pullover",
+      "base_color": "black",
+      "design_file": "tees/re-mc-t039-grab-both-tires.webp",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MC-S040",
+      "type": "sweatshirt",
+      "title": "Burnout Smoke Pullover",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mc-t040-burnout-smoke.webp",
+      "msrp": 44.0
+    }
+  ]
+}

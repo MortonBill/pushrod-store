@@ -1,0 +1,89 @@
+"""
+Order fulfillment glue: paid cart -> Printful order.
+
+Called AFTER Stripe confirms payment (webhook checkout.session.completed in
+production; the /api/fulfill endpoint in v1 local testing). Converts our
+cart lines into Printful order items via printful_mapping.json and submits
+a CONFIRMED order so Printful prints and ships without further action.
+
+Every fulfilled order gets our external_id: "pushrod-<stripe-session-id>"
+so it is idempotent and traceable in both systems.
+"""
+import json
+import logging
+import os
+
+from .printful_client import PrintfulClient, PrintfulConfigError
+
+log = logging.getLogger("pushrod.fulfill")
+
+
+def load_mapping(mapping_path):
+    if not os.path.exists(mapping_path):
+        return {}
+    with open(mapping_path) as f:
+        data = json.load(f)
+    return data.get("mappings", {})
+
+
+def mapping_key(sku, size):
+    return f"{sku}:{size}" if size else sku
+
+
+def build_order_items(cart_lines, products_by_sku, mapping):
+    """cart_lines: [{sku, size|None, qty}]. Raises ValueError listing any
+    SKU+size with no Printful mapping so the failure is explicit, not silent."""
+    items, unmapped = [], []
+    for line in cart_lines:
+        key = mapping_key(line["sku"], line.get("size"))
+        m = mapping.get(key)
+        if not m:
+            unmapped.append(key)
+            continue
+        items.append({
+            "catalog_variant_id": m["catalog_variant_id"],
+            "quantity": line["qty"],
+            "placement": m.get("placement", "front"),
+            "technique": m.get("technique", "dtg"),
+            "file_url": m["print_file_url"],
+        })
+    if unmapped:
+        raise ValueError(
+            "No Printful mapping for: " + ", ".join(unmapped) +
+            ". Add them to printful_mapping.json (see printful_mapping.example.json)."
+        )
+    return items
+
+
+def fulfill_paid_order(stripe_session_id, customer_email, shipping_address,
+                       cart_lines, products_by_sku, mapping_path,
+                       order_prefix="pushrod"):
+    """Create + confirm the Printful order for a paid Stripe session.
+    Returns the Printful order payload. order_prefix namespaces the
+    idempotency external_id per brand (pushrod-*, re-*, gateway-*)."""
+    mapping = load_mapping(mapping_path)
+    order_items = build_order_items(cart_lines, products_by_sku, mapping)
+    recipient = {
+        "name": shipping_address.get("name", ""),
+        "address1": shipping_address.get("line1", ""),
+        "city": shipping_address.get("city", ""),
+        "state_code": shipping_address.get("state", ""),
+        "country_code": shipping_address.get("country", "US"),
+        "zip": shipping_address.get("postal_code", ""),
+        "email": customer_email,
+    }
+    if shipping_address.get("line2"):
+        recipient["address2"] = shipping_address["line2"]
+    if shipping_address.get("phone"):
+        recipient["phone"] = shipping_address["phone"]
+
+    client = PrintfulClient()  # raises PrintfulConfigError without a token
+    external_id = f"{order_prefix}-{stripe_session_id}"[:32]
+    order = client.create_order(
+        recipient=recipient,
+        order_items=order_items,
+        external_id=external_id,
+        confirm=True,  # draft -> submitted: Printful prints and ships
+    )
+    log.info("Printful order created for %s: %s", stripe_session_id, order.get("id"))
+    return order

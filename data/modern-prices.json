@@ -1,0 +1,1606 @@
+{
+  "brand": "RESTORATION ESSENTIALS",
+  "pricing_status": "CONFIRMED 2026-09-26 — prices verified against Printful by Bill (margins confirmed). Set from competitor research (merch-plan-brief/report.md, verified 2026-09-21), priced at/below the indie anchor per Bill's volume-over-margin philosophy. Tees $26; hats $24; pullovers $44; mugs $15; signs $19; decals $4; banners $14; patches $6; keychains $10; flags $25.",
+  "products": [
+    {
+      "sku": "RE-MP-T001",
+      "type": "tee",
+      "title": "Dyno Proven",
+      "description": "A rising horsepower curve sweeps off a dyno gauge under bold DYNO PROVEN lettering. For the builder who tunes with a laptop and proves it with numbers.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t001-dyno-proven.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T002",
+      "type": "tee",
+      "title": "Fuel Injected",
+      "description": "A stylized fuel injector with spray lines under FUEL INJECTED block type. For the builder who left the carburetor era behind and never looked back.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t002-fuel-injected.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T003",
+      "type": "tee",
+      "title": "Restomod",
+      "description": "A shield badge with RESTOMOD across the center and wrench-and-piston wings. Classic lines outside, modern running gear underneath.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t003-restomod.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T004",
+      "type": "tee",
+      "title": "Pro Touring",
+      "description": "A sweeping road-course ribbon with PRO TOURING in speed-line type. Built to turn, stop, and go — not just sit.",
+      "base_color": "olive",
+      "design_file": "tees/re-mp-t004-pro-touring.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T005",
+      "type": "tee",
+      "title": "Small-Block Swap",
+      "description": "A V8 block with an engine hoist chain over SMALL-BLOCK SWAP lettering. The swap is the project; the tee says it out loud.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t005-small-block-swap.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T006",
+      "type": "tee",
+      "title": "Overdrive",
+      "description": "A gear-and-arrow motif under OVERDRIVE — highway legs for a vintage chassis. Cruises at 75, sips fuel like it means it.",
+      "base_color": "maroon",
+      "design_file": "tees/re-mp-t006-overdrive.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T007",
+      "type": "tee",
+      "title": "Coilovers",
+      "description": "A threaded shock absorber with spring coils around COILOVERS. Dialed in, corner weighted, ready for the next turn.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t007-coilovers.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T008",
+      "type": "tee",
+      "title": "Four-Wheel Discs",
+      "description": "A cross-drilled brake rotor with caliper over FOUR-WHEEL DISCS. Stops like a modern car, looks like a classic.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t008-four-wheel-discs.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T009",
+      "type": "tee",
+      "title": "Standalone ECU",
+      "description": "A control module with wiring-harness lines fanning out under STANDALONE ECU. The brain of the build — tuned, not guessed.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t009-standalone-ecu.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T010",
+      "type": "tee",
+      "title": "Wideband Tuned",
+      "description": "An air-fuel gauge needle in the sweet spot under WIDEBAND TUNED. Tuned by the numbers, not by the seat of the pants.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t010-wideband-tuned.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T011",
+      "type": "tee",
+      "title": "Corner Carver",
+      "description": "A car slicing through a switchback curve with CORNER CARVER speed type. For the driver who plans the weekend around the twisty road.",
+      "base_color": "olive",
+      "design_file": "tees/re-mp-t011-corner-carver.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T012",
+      "type": "tee",
+      "title": "Boost Friendly",
+      "description": "A turbo compressor wheel spinning under BOOST FRIENDLY. Power-adder ready — the block was built for it.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t012-boost-friendly.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T013",
+      "type": "tee",
+      "title": "E85",
+      "description": "A bold fuel-badge E85 with corn-stalk accents. Corn-fed horsepower — cheap octane, big smiles.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t013-e85.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T014",
+      "type": "tee",
+      "title": "Data Log It",
+      "description": "A jagged data-log trace across graph paper under DATA LOG IT. If it isn't logged, it didn't happen.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t014-data-log-it.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T015",
+      "type": "tee",
+      "title": "Street / Strip",
+      "description": "A split badge — STREET on one side, STRIP on the other, divided by a Christmas tree light. Drives to the track, runs, drives home.",
+      "base_color": "maroon",
+      "design_file": "tees/re-mp-t015-street-strip.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T016",
+      "type": "tee",
+      "title": "Modern Muscle Manners",
+      "description": "A polite piston tipping its hat under MODERN MUSCLE MANNERS. Starts easy, idles smooth, runs hard — good manners, big power.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t016-modern-muscle-manners.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T017",
+      "type": "tee",
+      "title": "Modern Heart",
+      "description": "A piston inside a heart outline with MODERN HEART below. Classic looks, modern heart — the restomod credo in one tee.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t017-modern-heart.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T018",
+      "type": "tee",
+      "title": "Roll Cage Ready",
+      "description": "A triangulated roll-cage hoop graphic under ROLL CAGE READY. Built stout enough for the tech inspector's approval.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t018-roll-cage-ready.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T019",
+      "type": "tee",
+      "title": "Tune It Right",
+      "description": "A wrench crossing a laptop with a fuel curve over TUNE IT RIGHT. Measure twice, flash once.",
+      "base_color": "olive",
+      "design_file": "tees/re-mp-t019-tune-it-right.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T020",
+      "type": "tee",
+      "title": "Timing Is Everything",
+      "description": "A distributor curve plot with spark lines over TIMING IS EVERYTHING. A few degrees is the difference between quick and quicker.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t020-timing-is-everything.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T021",
+      "type": "tee",
+      "title": "Fuel Map",
+      "description": "A 3D fuel-map grid surface with FUEL MAP below. The tune lives in the table — this one is filled in right.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t021-fuel-map.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T022",
+      "type": "tee",
+      "title": "Ignition Advance",
+      "description": "A spark plug throwing a big blue spark under IGNITION ADVANCE. Advance the timing, advance the cause.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t022-ignition-advance.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T023",
+      "type": "tee",
+      "title": "Rev Happy",
+      "description": "A tach needle pegged near the top under REV HAPPY. Built to breathe upstairs and happy to prove it.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t023-rev-happy.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T024",
+      "type": "tee",
+      "title": "Idle Smooth",
+      "description": "A smooth cam-lobe sine wave under IDLE SMOOTH. Modern cam, modern manners — idles like it has nothing to prove.",
+      "base_color": "maroon",
+      "design_file": "tees/re-mp-t024-idle-smooth.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T025",
+      "type": "tee",
+      "title": "Shift At Seven",
+      "description": "A big numeral 7 with tach sweep under SHIFT AT SEVEN. The shift light's gospel, printed large.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t025-shift-at-seven.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T026",
+      "type": "tee",
+      "title": "Redline Respect",
+      "description": "A redline arc badge with REDLINE RESPECT. Respect it and the engine lives; ignore it and buy pistons.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t026-redline-respect.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T027",
+      "type": "tee",
+      "title": "Dyno Day",
+      "description": "A rollers-and-drum dyno graphic under DYNO DAY. Strap it down, spin it up, write down the numbers.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t027-dyno-day.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T028",
+      "type": "tee",
+      "title": "Power To The Pavement",
+      "description": "Tire marks launching off the tee bottom under POWER TO THE PAVEMENT. All that tuning ends right here — at the contact patch.",
+      "base_color": "olive",
+      "design_file": "tees/re-mp-t028-power-to-the-pavement.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T029",
+      "type": "tee",
+      "title": "Grip And Go",
+      "description": "A tire tread block pattern with GRIP AND GO. Hook up, hold on.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t029-grip-and-go.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T030",
+      "type": "tee",
+      "title": "Big Brakes",
+      "description": "An oversized drilled rotor filling a wheel circle under BIG BRAKES. Speed is a question; stopping is the answer.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t030-big-brakes.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T031",
+      "type": "tee",
+      "title": "Adjustable Everything",
+      "description": "A shock with clicker knobs and wrenches under ADJUSTABLE EVERYTHING. If it doesn't have a knob, it doesn't belong on the build.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t031-adjustable-everything.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T032",
+      "type": "tee",
+      "title": "Cammed And Tuned",
+      "description": "A camshaft profile with lift dots under CAMMED AND TUNED. The cam sets the personality; the tune sets the manners.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t032-cammed-and-tuned.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T033",
+      "type": "tee",
+      "title": "Heads And Cam",
+      "description": "A cylinder head with ports and a cam under HEADS AND CAM. The classic combo that wakes up any modern V8.",
+      "base_color": "maroon",
+      "design_file": "tees/re-mp-t033-heads-and-cam.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T034",
+      "type": "tee",
+      "title": "Bolt-On Build",
+      "description": "A hex bolt head pattern under BOLT-ON BUILD. No machining, no drama — just weekends and wrenches.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t034-bolt-on-build.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T035",
+      "type": "tee",
+      "title": "Weekend Warrior",
+      "description": "A calendar page circled SAT-SUN under WEEKEND WARRIOR. Monday through Friday pays for it; the weekend builds it.",
+      "base_color": "olive",
+      "design_file": "tees/re-mp-t035-weekend-warrior.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T036",
+      "type": "tee",
+      "title": "Daily Driven",
+      "description": "A sunrise-over-commute badge with DAILY DRIVEN. It runs the errands AND runs the numbers.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t036-daily-driven.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T037",
+      "type": "tee",
+      "title": "Modern V8 Swap",
+      "description": "A clean V8 silhouette badge with MODERN V8 SWAP. New heart, old soul — the formula that never gets old.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t037-modern-v8-swap.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T038",
+      "type": "tee",
+      "title": "Wired For Power",
+      "description": "A wiring harness branching like a tree under WIRED FOR POWER. Every sensor home, every ground clean.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t038-wired-for-power.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T039",
+      "type": "tee",
+      "title": "Coil On Plug",
+      "description": "Eight coil packs in a row over COIL ON PLUG. No distributor to argue with — just fire on command.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t039-coil-on-plug.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T040",
+      "type": "tee",
+      "title": "Sequential Injection",
+      "description": "Eight injector pulses in sequence under SEQUENTIAL INJECTION. Every cylinder gets its drink, right on time.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t040-sequential-injection.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T041",
+      "type": "tee",
+      "title": "Closed Loop",
+      "description": "A feedback-loop circular arrow with an O2 sensor under CLOSED LOOP. The computer listens, the engine behaves.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t041-closed-loop.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T042",
+      "type": "tee",
+      "title": "Knock Smart",
+      "description": "A knock sensor puck with sound waves under KNOCK SMART. It hears what your ears can't — and pulls timing before it costs you.",
+      "base_color": "maroon",
+      "design_file": "tees/re-mp-t042-knock-smart.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T043",
+      "type": "tee",
+      "title": "Torque Management",
+      "description": "A torque curve being shaped by a hand under TORQUE MANAGEMENT. Power is nothing without delivery.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t043-torque-management.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T044",
+      "type": "tee",
+      "title": "Three Pedals",
+      "description": "Three pedal pads — clutch, brake, gas — under THREE PEDALS. The manual swap is a statement, and this is it.",
+      "base_color": "olive",
+      "design_file": "tees/re-mp-t044-three-pedals.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T045",
+      "type": "tee",
+      "title": "Six-Speed Swap",
+      "description": "A six-gate shift pattern under SIX-SPEED SWAP. Six forward reasons to ditch the slushbox.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t045-six-speed-swap.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T046",
+      "type": "tee",
+      "title": "Row Your Own",
+      "description": "A shifter lever mid-throw under ROW YOUR OWN. Nobody tunes your shifts for you — that's the point.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t046-row-your-own.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T047",
+      "type": "tee",
+      "title": "Launch Control",
+      "description": "A tach needle on a two-step limiter under LAUNCH CONTROL. Hold the button, floor it, let go of your worries.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t047-launch-control.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T048",
+      "type": "tee",
+      "title": "Traction Management",
+      "description": "A tire gripping a road surface under TRACTION MANAGEMENT. The computer decides how much you get — and when.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t048-traction-management.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T049",
+      "type": "tee",
+      "title": "Apex Everything",
+      "description": "A racing line clipping an apex cone under APEX EVERYTHING. Late in, early out, gone.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t049-apex-everything.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T050",
+      "type": "tee",
+      "title": "Brake Late",
+      "description": "A brake zone marker board under BRAKE LATE. The fast guys make their time here — deep, smooth, committed.",
+      "base_color": "maroon",
+      "design_file": "tees/re-mp-t050-brake-late.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T051",
+      "type": "tee",
+      "title": "Turn In",
+      "description": "A steering wheel at full lock under TURN IN. Commit to the corner and the car follows.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t051-turn-in.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T052",
+      "type": "tee",
+      "title": "Late Apex",
+      "description": "A corner diagram showing the late-apex line under LATE APEX. Slow in, fast out — the line that pays.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t052-late-apex.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T053",
+      "type": "tee",
+      "title": "G-Force Rated",
+      "description": "A lateral-G meter pegged sideways under G-FORCE RATED. Sticks hard enough to move your lunch.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t053-g-force-rated.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T054",
+      "type": "tee",
+      "title": "Skid Pad Hero",
+      "description": "A car sliding a perfect circle under SKID PAD HERO. Round and round until the tires talk.",
+      "base_color": "olive",
+      "design_file": "tees/re-mp-t054-skid-pad-hero.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T055",
+      "type": "tee",
+      "title": "Sticky Tires",
+      "description": "A soft-compound tire with heat waves under STICKY TIRES. The cheapest horsepower is grip.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t055-sticky-tires.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T056",
+      "type": "tee",
+      "title": "Square Setup",
+      "description": "Four equal tire-and-wheel icons under SQUARE SETUP. Same rubber at all four corners — rotate and conquer.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t056-square-setup.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T057",
+      "type": "tee",
+      "title": "Negative Camber",
+      "description": "A tilted wheel angle diagram under NEGATIVE CAMBER. Lean it in and watch the cornering speeds climb.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t057-negative-camber.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T058",
+      "type": "tee",
+      "title": "Corner Weighted",
+      "description": "Four scales under four wheels under CORNER WEIGHTED. Balanced on the scales before it's balanced on the road.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t058-corner-weighted.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T059",
+      "type": "tee",
+      "title": "Dyno Numbers Don't Lie",
+      "description": "A dyno sheet with big numbers under DYNO NUMBERS DON'T LIE. Opinions are free; the printout costs twenty bucks.",
+      "base_color": "maroon",
+      "design_file": "tees/re-mp-t059-dyno-numbers.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-T060",
+      "type": "tee",
+      "title": "Built To Drive",
+      "description": "A key turning in an ignition with road ahead under BUILT TO DRIVE. Trailers are for race cars; this one drives home.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t060-built-to-drive.webp",
+      "ip_clearance": "PASS",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-MP-H001",
+      "type": "hat",
+      "title": "Dyno Proven Patch",
+      "description": "A circular embroidered patch — dyno curve with DYNO PROVEN in bold cream thread. The shop-proven badge for the trucker front panel.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h001-dyno-proven-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H002",
+      "type": "hat",
+      "title": "Fuel Injected Patch",
+      "description": "A fuel injector emblem with FUEL INJECTED — clean two-tone thread work for the front panel.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h002-fuel-injected-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H003",
+      "type": "hat",
+      "title": "Restomod Patch",
+      "description": "A shield badge with RESTOMOD — the restomod mark, stitched bold and simple.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h003-restomod-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H004",
+      "type": "hat",
+      "title": "Pro Touring Patch",
+      "description": "A track-ribbon emblem with PRO TOURING. For the hat that goes to every autocross.",
+      "base_color": "Navy",
+      "design_file": "hats/re-mp-h004-pro-touring-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H005",
+      "type": "hat",
+      "title": "Small-Block Swap Patch",
+      "description": "A V8 block emblem with SMALL-BLOCK SWAP. The swap badge, front and center.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h005-small-block-swap-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H006",
+      "type": "hat",
+      "title": "Overdrive Patch",
+      "description": "A gear-and-arrow patch with OVERDRIVE. Highway gears, hat version.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h006-overdrive-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H007",
+      "type": "hat",
+      "title": "Coilovers Patch",
+      "description": "A coilover shock emblem with COILOVERS. Suspension talk, stitched small.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h007-coilovers-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H008",
+      "type": "hat",
+      "title": "Wideband Patch",
+      "description": "An air-fuel gauge emblem with WIDEBAND. Tuned by the numbers.",
+      "base_color": "Navy",
+      "design_file": "hats/re-mp-h008-wideband-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H009",
+      "type": "hat",
+      "title": "Standalone ECU Patch",
+      "description": "A control-module emblem with STANDALONE ECU. The brain of the build, on the brim of the hat.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h009-ecu-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H010",
+      "type": "hat",
+      "title": "E85 Patch",
+      "description": "A fuel-badge patch with E85. Corn-fed and proud.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h010-e85-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H011",
+      "type": "hat",
+      "title": "Corner Carver Patch",
+      "description": "A switchback emblem with CORNER CARVER. The twisty-road badge.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h011-corner-carver-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H012",
+      "type": "hat",
+      "title": "Boost Friendly Patch",
+      "description": "A turbo wheel emblem with BOOST FRIENDLY. Power-adder ready.",
+      "base_color": "Navy",
+      "design_file": "hats/re-mp-h012-boost-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H013",
+      "type": "hat",
+      "title": "Data Log It Patch",
+      "description": "A data-trace emblem with DATA LOG IT. If it isn't logged, it didn't happen.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h013-data-log-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H014",
+      "type": "hat",
+      "title": "Street / Strip Patch",
+      "description": "A split badge with STREET / STRIP. Drives there, runs, drives home.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h014-street-strip-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H015",
+      "type": "hat",
+      "title": "Tune It Right Patch",
+      "description": "A wrench-and-laptop emblem with TUNE IT RIGHT. Measure twice, flash once.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h015-tune-it-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H016",
+      "type": "hat",
+      "title": "Dyno Day Patch",
+      "description": "A dyno-drum emblem with DYNO DAY. Strap it down and spin it up.",
+      "base_color": "Navy",
+      "design_file": "hats/re-mp-h016-dyno-day-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H017",
+      "type": "hat",
+      "title": "Modern V8 Patch",
+      "description": "A V8 badge with MODERN V8. New heart, old soul.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h017-modern-v8-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H018",
+      "type": "hat",
+      "title": "Daily Driven Patch",
+      "description": "A sunrise-road badge with DAILY DRIVEN. Errands and e.t.s.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h018-daily-driven-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H019",
+      "type": "hat",
+      "title": "Brake Late Patch",
+      "description": "A brake-zone marker emblem with BRAKE LATE. Deep, smooth, committed.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h019-brake-late-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H020",
+      "type": "hat",
+      "title": "Apex Patch",
+      "description": "An apex-cone emblem with APEX. Clip it and go.",
+      "base_color": "Navy",
+      "design_file": "hats/re-mp-h020-apex-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H021",
+      "type": "hat",
+      "title": "G-Force Patch",
+      "description": "A lateral-G meter emblem with G-FORCE. Sticks hard.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h021-g-force-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H022",
+      "type": "hat",
+      "title": "Idle Smooth Patch",
+      "description": "A smooth wave emblem with IDLE SMOOTH. Modern manners.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h022-idle-smooth-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H023",
+      "type": "hat",
+      "title": "Rev Happy Patch",
+      "description": "A high-needle tach emblem with REV HAPPY. Built to breathe upstairs.",
+      "base_color": "Navy",
+      "design_file": "hats/re-mp-h023-rev-happy-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H024",
+      "type": "hat",
+      "title": "Grip Patch",
+      "description": "A tread-block emblem with GRIP. Hook up, hold on.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h024-grip-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H025",
+      "type": "hat",
+      "title": "Torque Patch",
+      "description": "A torque-curve emblem with TORQUE. Power is nothing without delivery.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h025-torque-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H026",
+      "type": "hat",
+      "title": "Shift Patch",
+      "description": "A shift-pattern emblem with SHIFT. The six-gate gospel.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h026-shift-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H027",
+      "type": "hat",
+      "title": "Redline Patch",
+      "description": "A redline-arc emblem with REDLINE. Respect it.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h027-redline-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H028",
+      "type": "hat",
+      "title": "Camber Patch",
+      "description": "A tilted-wheel diagram emblem with CAMBER. Lean it in.",
+      "base_color": "Navy",
+      "design_file": "hats/re-mp-h028-camber-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H029",
+      "type": "hat",
+      "title": "Traction Patch",
+      "description": "A gripping-tire emblem with TRACTION. The computer decides.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h029-traction-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H030",
+      "type": "hat",
+      "title": "Launch Patch",
+      "description": "A limiter-needle emblem with LAUNCH. Hold the button, floor it.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h030-launch-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H031",
+      "type": "hat",
+      "title": "Coil On Plug Patch",
+      "description": "A coil-pack row emblem with COIL ON PLUG. Fire on command.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h031-coil-on-plug-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H032",
+      "type": "hat",
+      "title": "Three Pedals Patch",
+      "description": "Three pedal pads with THREE PEDALS. The manual-swap statement.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h032-three-pedals-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H033",
+      "type": "hat",
+      "title": "Six-Speed Patch",
+      "description": "A six-gate pattern emblem with SIX-SPEED. Ditch the slushbox.",
+      "base_color": "Navy",
+      "design_file": "hats/re-mp-h033-six-speed-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H034",
+      "type": "hat",
+      "title": "Row Your Own Patch",
+      "description": "A shifter emblem with ROW YOUR OWN. Nobody tunes your shifts for you.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h034-row-your-own-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H035",
+      "type": "hat",
+      "title": "Sticky Patch",
+      "description": "A hot-tire emblem with STICKY. The cheapest horsepower is grip.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h035-sticky-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H036",
+      "type": "hat",
+      "title": "Skid Pad Patch",
+      "description": "A skid-ring emblem with SKID PAD. Round and round until the tires talk.",
+      "base_color": "Navy",
+      "design_file": "hats/re-mp-h036-skid-pad-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H037",
+      "type": "hat",
+      "title": "Square Setup Patch",
+      "description": "Four equal wheels with SQUARE SETUP. Rotate and conquer.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h037-square-setup-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H038",
+      "type": "hat",
+      "title": "Knock Smart Patch",
+      "description": "A knock-sensor emblem with KNOCK SMART. Hears what your ears can't.",
+      "base_color": "Black",
+      "design_file": "hats/re-mp-h038-knock-smart-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H039",
+      "type": "hat",
+      "title": "Closed Loop Patch",
+      "description": "A feedback-loop emblem with CLOSED LOOP. The computer listens.",
+      "base_color": "Charcoal",
+      "design_file": "hats/re-mp-h039-closed-loop-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-H040",
+      "type": "hat",
+      "title": "Track Addict Patch",
+      "description": "TRACK ADDICT embroidered patch in bold speed type. For the driver who plans the weekend around the track.",
+      "base_color": "Navy",
+      "design_file": "hats/re-mp-h040-track-addict-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-MP-M001",
+      "type": "mug",
+      "title": "Fuel Injected Coffee Mug",
+      "description": "Bold FUEL INJECTED type over a stylized fuel injector on a matte black wrap. For the builder who left the carburetor era behind.",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-mp-m001-fuel-injected-mug.webp",
+      "ip_clearance": "PASS",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-MP-M002",
+      "type": "mug",
+      "title": "Standalone ECU Coffee Mug",
+      "description": "Control-module graphic with wiring-harness lines under STANDALONE ECU. The brain of the build — tuned, not guessed.",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-mp-m002-standalone-ecu-mug.webp",
+      "ip_clearance": "PASS",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-MP-M003",
+      "type": "mug",
+      "title": "Shift at 7K Coffee Mug",
+      "description": "SHIFT AT 7K over a tach sweeping toward the redline. Built to rev, poured to drink.",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-mp-m003-shift-at-7k-mug.webp",
+      "ip_clearance": "PASS",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-MP-M004",
+      "type": "mug",
+      "title": "Wideband Tuned Coffee Mug",
+      "description": "WIDEBAND TUNED with an air-fuel gauge needle in the sweet spot. Tuned by the numbers, not the seat of the pants.",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-mp-m004-wideband-tuned-mug.webp",
+      "ip_clearance": "PASS",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-MP-M005",
+      "type": "metal sign",
+      "title": "Dyno Proven Dyno Sheet Metal Sign",
+      "description": "Embossed dyno sheet with horsepower and torque curves under a bold DYNO PROVEN header. Proof, not promises — ready to hang.",
+      "base_color": "blackened steel with cream and orange enamel",
+      "design_file": "misc/re-mp-m005-dyno-proven-sign.webp",
+      "ip_clearance": "PASS",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-MP-M006",
+      "type": "metal sign",
+      "title": "Fuel Injection Garage Metal Sign",
+      "description": "Embossed tin shop sign for the fuel-injection faithful. Pre-drilled corners, ready for the wall.",
+      "base_color": "blackened steel with teal and cream enamel",
+      "design_file": "misc/re-mp-m006-fuel-injection-sign.webp",
+      "ip_clearance": "PASS",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-MP-M007",
+      "type": "metal sign",
+      "title": "Torque Wins Garage Metal Sign",
+      "description": "Embossed tin tribute to torque: big type, bold numbers. For the builder who counts torque, not excuses.",
+      "base_color": "aged steel with orange and cream enamel",
+      "design_file": "misc/re-mp-m007-torque-wins-sign.webp",
+      "ip_clearance": "PASS",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-MP-M008",
+      "type": "metal sign",
+      "title": "Timing Metal Sign",
+      "description": "Embossed tin sign celebrating ignition timing — degrees of advance, set with a light and locked down.",
+      "base_color": "aged steel with teal and cream enamel",
+      "design_file": "misc/re-mp-m008-timing-sign.webp",
+      "ip_clearance": "PASS",
+      "msrp": 19.0
+    },
+    {
+      "sku": "RE-MP-M009",
+      "type": "decal set",
+      "title": "Decal Set 1",
+      "description": "A shop-worthy trio of fuel-injected performance decals on die-cut UV vinyl. Sticks to glass, toolboxes, and tool chests.",
+      "base_color": "UV vinyl with black and cream print",
+      "design_file": "misc/re-mp-m009-decal-set-1.webp",
+      "ip_clearance": "PASS",
+      "msrp": 4.0
+    },
+    {
+      "sku": "RE-MP-M010",
+      "type": "decal set",
+      "title": "Decal Set 2",
+      "description": "A second set of modern-performance decals — cammed-and-tuned attitude in die-cut UV vinyl.",
+      "base_color": "UV vinyl with orange and black print",
+      "design_file": "misc/re-mp-m010-decal-set-2.webp",
+      "ip_clearance": "PASS",
+      "msrp": 4.0
+    },
+    {
+      "sku": "RE-MP-M011",
+      "type": "embroidered patch",
+      "title": "Dyno Proven Embroidered Patch",
+      "description": "High-stitch embroidered patch with a dyno-curve motif. Sew it on the shop jacket or the cooler bag.",
+      "base_color": "black twill with cream and orange thread",
+      "design_file": "misc/re-mp-m011-dyno-proven-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 6.0
+    },
+    {
+      "sku": "RE-MP-M012",
+      "type": "embroidered patch",
+      "title": "Shift at 7K Embroidered Patch",
+      "description": "Embroidered patch with a tach-at-redline graphic. For the driver who shifts where the power lives.",
+      "base_color": "charcoal twill with cream and red thread",
+      "design_file": "misc/re-mp-m012-shift-at-7k-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 6.0
+    },
+    {
+      "sku": "RE-MP-M013",
+      "type": "vinyl banner",
+      "title": "Fuel Injected Shop Banner",
+      "description": "Full-color grommeted banner with a fuel-injector graphic under FUEL INJECTED. Garage-wall ready.",
+      "base_color": "heavy vinyl with full-color print",
+      "design_file": "misc/re-mp-m013-fuel-injected-banner.webp",
+      "ip_clearance": "PASS",
+      "msrp": 14.0
+    },
+    {
+      "sku": "RE-MP-M014",
+      "type": "vinyl banner",
+      "title": "Dyno Tune Banner",
+      "description": "Full-color grommeted banner: dyno sheet art under DYNO TUNE. Hang it over the lift and get to work.",
+      "base_color": "heavy vinyl with full-color print",
+      "design_file": "misc/re-mp-m014-dyno-tune-banner.webp",
+      "ip_clearance": "PASS",
+      "msrp": 14.0
+    },
+    {
+      "sku": "RE-MP-M015",
+      "type": "vinyl banner",
+      "title": "Restomod Garage Banner",
+      "description": "Full-color grommeted banner celebrating the restomod craft — classic lines, modern running gear.",
+      "base_color": "heavy vinyl with full-color print",
+      "design_file": "misc/re-mp-m015-restomod-banner.webp",
+      "ip_clearance": "PASS",
+      "msrp": 14.0
+    },
+    {
+      "sku": "RE-MP-M016",
+      "type": "flag",
+      "title": "Pro Touring Flag",
+      "description": "A bold pro-touring flag with coilover art. Flies over the shop, the trailer, or the paddock.",
+      "base_color": "polyester with full-color print",
+      "design_file": "misc/re-mp-m016-pro-touring-flag.webp",
+      "ip_clearance": "PASS",
+      "msrp": 25.0
+    },
+    {
+      "sku": "RE-MP-M017",
+      "type": "mug",
+      "title": "E85 Coffee Mug",
+      "description": "A bold E85 fuel badge with corn-stalk accents. Corn-fed horsepower in every pour.",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-mp-m017-e85-mug.webp",
+      "ip_clearance": "PASS",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-MP-M018",
+      "type": "mug",
+      "title": "Wideband Coffee Mug",
+      "description": "WIDEBAND TUNED with a lambda gauge in the sweet zone. Reads right, tastes right.",
+      "base_color": "matte black ceramic",
+      "design_file": "misc/re-mp-m018-wideband-mug.webp",
+      "ip_clearance": "PASS",
+      "msrp": 15.0
+    },
+    {
+      "sku": "RE-MP-M019",
+      "type": "decal set",
+      "title": "Decal Set 3",
+      "description": "FUEL INJECTED, CAMMED AND TUNED, and TORQUE WINS in bold die-cut vinyl. Three decals, one attitude.",
+      "base_color": "UV vinyl with orange, teal, and black print",
+      "design_file": "misc/re-mp-m019-decal-set-3.webp",
+      "ip_clearance": "PASS",
+      "msrp": 4.0
+    },
+    {
+      "sku": "RE-MP-M020",
+      "type": "embroidered patch",
+      "title": "Tune It Right Embroidered Patch",
+      "description": "Embroidered TUNE IT RIGHT patch in bold block letters. The shop motto, sewn on.",
+      "base_color": "black twill with cream thread",
+      "design_file": "misc/re-mp-m020-tune-it-right-patch.webp",
+      "ip_clearance": "PASS",
+      "msrp": 6.0
+    },
+    {
+      "sku": "RE-MP-S001",
+      "type": "sweatshirt",
+      "title": "Dyno Proven Pullover",
+      "description": "A rising horsepower curve sweeps off a dyno gauge under bold DYNO PROVEN lettering. For the builder who tunes with a laptop and proves it with numbers. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t001-dyno-proven.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S002",
+      "type": "sweatshirt",
+      "title": "Fuel Injected Pullover",
+      "description": "A stylized fuel injector with spray lines under FUEL INJECTED block type. For the builder who left the carburetor era behind and never looked back. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t002-fuel-injected.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S003",
+      "type": "sweatshirt",
+      "title": "Restomod Pullover",
+      "description": "A shield badge with RESTOMOD across the center and wrench-and-piston wings. Classic lines outside, modern running gear underneath. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t003-restomod.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S004",
+      "type": "sweatshirt",
+      "title": "Pro Touring Pullover",
+      "description": "A sweeping road-course ribbon with PRO TOURING in speed-line type. Built to turn, stop, and go — not just sit. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "olive",
+      "design_file": "tees/re-mp-t004-pro-touring.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S005",
+      "type": "sweatshirt",
+      "title": "Small-Block Swap Pullover",
+      "description": "A V8 block with an engine hoist chain over SMALL-BLOCK SWAP lettering. The swap is the project; the tee says it out loud. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t005-small-block-swap.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S006",
+      "type": "sweatshirt",
+      "title": "Overdrive Pullover",
+      "description": "A gear-and-arrow motif under OVERDRIVE — highway legs for a vintage chassis. Cruises at 75, sips fuel like it means it. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "maroon",
+      "design_file": "tees/re-mp-t006-overdrive.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S007",
+      "type": "sweatshirt",
+      "title": "Coilovers Pullover",
+      "description": "A threaded shock absorber with spring coils around COILOVERS. Dialed in, corner weighted, ready for the next turn. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t007-coilovers.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S008",
+      "type": "sweatshirt",
+      "title": "Four-Wheel Discs Pullover",
+      "description": "A cross-drilled brake rotor with caliper over FOUR-WHEEL DISCS. Stops like a modern car, looks like a classic. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t008-four-wheel-discs.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S009",
+      "type": "sweatshirt",
+      "title": "Standalone ECU Pullover",
+      "description": "A control module with wiring-harness lines fanning out under STANDALONE ECU. The brain of the build — tuned, not guessed. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t009-standalone-ecu.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S010",
+      "type": "sweatshirt",
+      "title": "Wideband Tuned Pullover",
+      "description": "An air-fuel gauge needle in the sweet spot under WIDEBAND TUNED. Tuned by the numbers, not by the seat of the pants. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t010-wideband-tuned.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S011",
+      "type": "sweatshirt",
+      "title": "Corner Carver Pullover",
+      "description": "A car slicing through a switchback curve with CORNER CARVER speed type. For the driver who plans the weekend around the twisty road. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "olive",
+      "design_file": "tees/re-mp-t011-corner-carver.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S012",
+      "type": "sweatshirt",
+      "title": "Boost Friendly Pullover",
+      "description": "A turbo compressor wheel spinning under BOOST FRIENDLY. Power-adder ready — the block was built for it. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t012-boost-friendly.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S013",
+      "type": "sweatshirt",
+      "title": "E85 Pullover",
+      "description": "A bold fuel-badge E85 with corn-stalk accents. Corn-fed horsepower — cheap octane, big smiles. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t013-e85.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S014",
+      "type": "sweatshirt",
+      "title": "Data Log It Pullover",
+      "description": "A jagged data-log trace across graph paper under DATA LOG IT. If it isn't logged, it didn't happen. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t014-data-log-it.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S015",
+      "type": "sweatshirt",
+      "title": "Street / Strip Pullover",
+      "description": "A split badge — STREET on one side, STRIP on the other, divided by a Christmas tree light. Drives to the track, runs, drives home. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "maroon",
+      "design_file": "tees/re-mp-t015-street-strip.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S016",
+      "type": "sweatshirt",
+      "title": "Modern Muscle Manners Pullover",
+      "description": "A polite piston tipping its hat under MODERN MUSCLE MANNERS. Starts easy, idles smooth, runs hard — good manners, big power. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t016-modern-muscle-manners.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S017",
+      "type": "sweatshirt",
+      "title": "Roll Cage Ready Pullover",
+      "description": "A triangulated roll-cage hoop graphic under ROLL CAGE READY. Built stout enough for the tech inspector's approval. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t018-roll-cage-ready.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S018",
+      "type": "sweatshirt",
+      "title": "Tune It Right Pullover",
+      "description": "A wrench crossing a laptop with a fuel curve over TUNE IT RIGHT. Measure twice, flash once. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "olive",
+      "design_file": "tees/re-mp-t019-tune-it-right.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S019",
+      "type": "sweatshirt",
+      "title": "Timing Is Everything Pullover",
+      "description": "A distributor curve plot with spark lines over TIMING IS EVERYTHING. A few degrees is the difference between quick and quicker. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t020-timing-is-everything.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S020",
+      "type": "sweatshirt",
+      "title": "Fuel Map Pullover",
+      "description": "A 3D fuel-map grid surface with FUEL MAP below. The tune lives in the table — this one is filled in right. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t021-fuel-map.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S021",
+      "type": "sweatshirt",
+      "title": "Shift At Seven Pullover",
+      "description": "A big numeral 7 with tach sweep under SHIFT AT SEVEN. The shift light's gospel, printed large. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t025-shift-at-seven.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S022",
+      "type": "sweatshirt",
+      "title": "Redline Respect Pullover",
+      "description": "A redline arc badge with REDLINE RESPECT. Respect it and the engine lives; ignore it and buy pistons. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t026-redline-respect.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S023",
+      "type": "sweatshirt",
+      "title": "Dyno Day Pullover",
+      "description": "A rollers-and-drum dyno graphic under DYNO DAY. Strap it down, spin it up, write down the numbers. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t027-dyno-day.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S024",
+      "type": "sweatshirt",
+      "title": "Power To The Pavement Pullover",
+      "description": "Tire marks launching off the tee bottom under POWER TO THE PAVEMENT. All that tuning ends right here — at the contact patch. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "olive",
+      "design_file": "tees/re-mp-t028-power-to-the-pavement.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S025",
+      "type": "sweatshirt",
+      "title": "Big Brakes Pullover",
+      "description": "An oversized drilled rotor filling a wheel circle under BIG BRAKES. Speed is a question; stopping is the answer. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t030-big-brakes.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S026",
+      "type": "sweatshirt",
+      "title": "Cammed And Tuned Pullover",
+      "description": "A camshaft profile with lift dots under CAMMED AND TUNED. The cam sets the personality; the tune sets the manners. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t032-cammed-and-tuned.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S027",
+      "type": "sweatshirt",
+      "title": "Heads And Cam Pullover",
+      "description": "A cylinder head with ports and a cam under HEADS AND CAM. The classic combo that wakes up any modern V8. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "maroon",
+      "design_file": "tees/re-mp-t033-heads-and-cam.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S028",
+      "type": "sweatshirt",
+      "title": "Daily Driven Pullover",
+      "description": "A sunrise-over-commute badge with DAILY DRIVEN. It runs the errands AND runs the numbers. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t036-daily-driven.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S029",
+      "type": "sweatshirt",
+      "title": "Modern V8 Swap Pullover",
+      "description": "A clean V8 silhouette badge with MODERN V8 SWAP. New heart, old soul — the formula that never gets old. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t037-modern-v8-swap.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S030",
+      "type": "sweatshirt",
+      "title": "Wired For Power Pullover",
+      "description": "A wiring harness branching like a tree under WIRED FOR POWER. Every sensor home, every ground clean. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t038-wired-for-power.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S031",
+      "type": "sweatshirt",
+      "title": "Coil On Plug Pullover",
+      "description": "Eight coil packs in a row over COIL ON PLUG. No distributor to argue with — just fire on command. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t039-coil-on-plug.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S032",
+      "type": "sweatshirt",
+      "title": "Three Pedals Pullover",
+      "description": "Three pedal pads — clutch, brake, gas — under THREE PEDALS. The manual swap is a statement, and this is it. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "olive",
+      "design_file": "tees/re-mp-t044-three-pedals.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S033",
+      "type": "sweatshirt",
+      "title": "Six-Speed Swap Pullover",
+      "description": "A six-gate shift pattern under SIX-SPEED SWAP. Six forward reasons to ditch the slushbox. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t045-six-speed-swap.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S034",
+      "type": "sweatshirt",
+      "title": "Launch Control Pullover",
+      "description": "A tach needle on a two-step limiter under LAUNCH CONTROL. Hold the button, floor it, let go of your worries. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "navy",
+      "design_file": "tees/re-mp-t047-launch-control.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S035",
+      "type": "sweatshirt",
+      "title": "Apex Everything Pullover",
+      "description": "A racing line clipping an apex cone under APEX EVERYTHING. Late in, early out, gone. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t049-apex-everything.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S036",
+      "type": "sweatshirt",
+      "title": "Brake Late Pullover",
+      "description": "A brake zone marker board under BRAKE LATE. The fast guys make their time here — deep, smooth, committed. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "maroon",
+      "design_file": "tees/re-mp-t050-brake-late.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S037",
+      "type": "sweatshirt",
+      "title": "G-Force Rated Pullover",
+      "description": "A lateral-G meter pegged sideways under G-FORCE RATED. Sticks hard enough to move your lunch. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "charcoal",
+      "design_file": "tees/re-mp-t053-g-force-rated.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S038",
+      "type": "sweatshirt",
+      "title": "Sticky Tires Pullover",
+      "description": "A soft-compound tire with heat waves under STICKY TIRES. The cheapest horsepower is grip. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t055-sticky-tires.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S039",
+      "type": "sweatshirt",
+      "title": "Dyno Numbers Don't Lie Pullover",
+      "description": "A dyno sheet with big numbers under DYNO NUMBERS DON'T LIE. Opinions are free; the printout costs twenty bucks. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "maroon",
+      "design_file": "tees/re-mp-t059-dyno-numbers.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    },
+    {
+      "sku": "RE-MP-S040",
+      "type": "sweatshirt",
+      "title": "Built To Drive Pullover",
+      "description": "A key turning in an ignition with road ahead under BUILT TO DRIVE. Trailers are for race cars; this one drives home. Printed big on a heavyweight pullover fleece — the shop-uniform version of a RestorationEssentials™ classic.",
+      "base_color": "black",
+      "design_file": "tees/re-mp-t060-built-to-drive.webp",
+      "ip_clearance": "PASS",
+      "msrp": 44.0
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+# Brand #3 — UNIFIED GATEWAY (brand id: gateway)
+# The 4-door gateway: all four SKU lines merged, sorted by SKU, routed by
+# prefix (Bill 2026-09-26: "one big catalog that sorts by sku when the
+# gateway selection is accessed"). Empty sku_prefixes = serve everything.
+# Same codebase; select with BRAND=gateway.
+brand:
+  id: gateway
+  name: Merch Gateway
+  tagline: "Every line. One catalog."
+  sku_prefixes: []        # empty = no filter; all prefixes served
+  ownership:
+    "PR-": pushrod
+    "7B-": pushrod
+    "RE-MC-": restorationessentials
+    "RE-CT-": restorationessentials
+    "RE-MP-": restorationessentials
+  # The 4 doors: label + SKU prefix each door filters to. Shoppers pick a
+  # door, the grid filters to that prefix (sorted by SKU); "All doors"
+  # shows the whole unified catalog.
+  doors:
+    - { label: "PUSHROD Garage Gear", prefix: "PR-", blurb: "Air-cooled shop gear" }
+    - { label: "Muscle Car",          prefix: "RE-MC-", blurb: "Big-cube American iron" }
+    - { label: "RestoMod",            prefix: "RE-MP-", blurb: "Modern performance" }
+    - { label: "Truck",               prefix: "RE-CT-", blurb: "Classic trucks" }
+
+theme:
+  bg: "#121212"
+  bg2: "#1a1a1a"
+  card: "#222222"
+  accent: "#f59e0b"
+  accent2: "#dc2626"
+  text: "#f5f0e6"
+  muted: "#a8a29e"
+  font_display: "'Arial Black','Helvetica Neue',sans-serif"
+  font_body: "'Helvetica Neue',Arial,sans-serif"
+
+# All four catalog sources merged; SKU collisions are a hard error at startup.
+# Paths are relative to the project root (resolved by the app at startup).
+catalog:
+  catalogs:
+    - csv: "data/pushrod-catalog.csv"
+      prices_json: "data/pushrod-prices.json"
+    - csv: "data/muscle-catalog.csv"
+      prices_json: "data/muscle-prices.json"
+    - csv: "data/modern-catalog.csv"
+      prices_json: "data/modern-prices.json"
+    - csv: "data/truck-catalog.csv"
+      prices_json: "data/truck-prices.json"
+  image_base: "/img"
+
+pricing:
+  allow_draft_prices: true
+  draft_label: "Intro price"
+
+store:
+  currency: usd
+  order_prefix: "gateway"
+  stripe_secret_key_env: "STRIPE_TEST_SECRET_KEY"
+  stripe_publishable_key_env: "STRIPE_TEST_PUBLISHABLE_KEY"
+  stripe_webhook_secret_env: "STRIPE_WEBHOOK_SECRET"
+  printful_api_key_env: "PRINTFUL_API_TOKEN"
+  printful_dry_run: false

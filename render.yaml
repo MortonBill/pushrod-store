@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: pushrod-store
+    runtime: python
+    plan: starter            # $7/mo
+    buildCommand: bash render-build.sh
+    startCommand: gunicorn --chdir backend --bind 0.0.0.0:$PORT --workers 2 --timeout 120 app:app
+    envVars:
+      - key: BRAND
+        value: gateway       # 4-door unified catalog
+      - key: PYTHONUNBUFFERED
+        value: 1
+      # Set in the Render dashboard (never in git):
+      # STRIPE_TEST_SECRET_KEY, STRIPE_TEST_PUBLISHABLE_KEY,
+      # STRIPE_WEBHOOK_SECRET, PRINTFUL_API_TOKEN

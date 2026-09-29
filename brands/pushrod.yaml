@@ -1,0 +1,59 @@
+# Brand #1 — PUSHROD storefront (brand id: pushrod, SKU prefix PR-)
+brand:
+  id: pushrod
+  name: PUSHROD
+  tagline: "Garage-built gear for the air-cooled faithful"
+  # SKU prefixes this brand store serves. Gateway routes shoppers here when
+  # the SKU starts with one of these.
+  sku_prefixes:
+    - "PR-"
+  # Unified-catalog ownership: which brand owns each prefix (for the 4-door gateway)
+  ownership:
+    "PR-": pushrod
+    "RE-MC-": restorationessentials
+    "RE-CT-": restorationessentials
+    "RE-MP-": restorationessentials
+
+theme:
+  bg: "#14100c"
+  bg2: "#1e1812"
+  card: "#241c14"
+  accent: "#f59e0b"      # amber
+  accent2: "#dc2626"      # shop red
+  text: "#f3ead8"        # warm off-white
+  muted: "#a89a80"
+  font_display: "'Arial Black','Helvetica Neue',sans-serif"
+  font_body: "'Helvetica Neue',Arial,sans-serif"
+
+# Catalog sources of truth (never edited by the store — read-only).
+# Multiple sources merge into one unified catalog; SKU collisions across
+# sources are a hard error at startup.
+catalog:
+  catalogs:
+    - csv: "/home/hatch/workspace/your_files/pushrod-merch/catalog-index.csv"
+      prices_json: "/home/hatch/workspace/your_files/pushrod-merch/wholesale-catalog.json"
+  image_base: "/img"     # served from static/img -> pushrod-merch symlinks
+
+# Pricing policy: ONLY prices confirmed in the library's price list are sellable.
+# draft_msrp values are flagged as DRAFT in the UI. SKUs with no price are
+# listed as "Price TBD" and cannot be added to cart. Never invent prices.
+pricing:
+  allow_draft_prices: true
+  draft_label: "Intro price"
+
+store:
+  currency: usd
+  # Order idempotency prefix for Printful external_id (per-brand).
+  order_prefix: "pushrod"
+  # Stripe: TEST MODE ONLY in v1. Key must start with sk_test_. Live keys are
+  # refused at runtime (see app.py).
+  stripe_secret_key_env: "STRIPE_TEST_SECRET_KEY"
+  stripe_publishable_key_env: "STRIPE_TEST_PUBLISHABLE_KEY"
+  stripe_webhook_secret_env: "STRIPE_WEBHOOK_SECRET"
+  # Printful: REAL API v2 client (backend/fulfillment/printful_client.py).
+  # Token from PRINTFUL_API_TOKEN env var — generate in the Printful dashboard:
+  # printful.com -> Stores -> your store -> Settings -> API. Fulfillment is
+  # dead without it; the client raises a clear error naming these steps.
+  # PRINTFUL_DRY_RUN=1 is an offline-dev escape hatch only, never the default.
+  printful_api_key_env: "PRINTFUL_API_TOKEN"
+  printful_dry_run: false
