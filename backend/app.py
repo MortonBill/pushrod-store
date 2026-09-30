@@ -116,6 +116,20 @@ if stripe_key and not stripe_key.startswith("sk_test_"):
 stripe.api_key = stripe_key or None
 STRIPE_READY = bool(stripe_key)
 
+# Connect routing (Bill 2026-09-30): AI Tools for Today (acct_1TttobEq0rLRALyr)
+# is a Connect Express account inside the Restoration Essentials master login —
+# it has no separate dashboard login or API keys. The platform's test key acts
+# on its behalf via the Stripe-Account header, so charges land in the AI Tools
+# for Today bucket. Unset = charge the platform (master) account directly.
+STRIPE_CONNECT_ACCOUNT_ID = os.environ.get(
+    store_cfg.get("stripe_connect_account_id_env",
+                  "STRIPE_CONNECT_ACCOUNT_ID"), "").strip() or None
+
+
+def _stripe_acct():
+    return {"stripe_account": STRIPE_CONNECT_ACCOUNT_ID} \
+        if STRIPE_CONNECT_ACCOUNT_ID else {}
+
 app = Flask(__name__, static_folder=os.path.join(FRONTEND, "static"))
 
 
@@ -237,6 +251,7 @@ def api_checkout():
             [{"sku": l["sku"], "size": l["size"], "qty": l["qty"]} for l in lines])},
         success_url=base + "/checkout/success?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=base + "/checkout/cancel",
+        **_stripe_acct(),
     )
     return jsonify({"checkout_url": session.url})
 
@@ -249,7 +264,7 @@ def api_fulfill():
     if not STRIPE_READY:
         return jsonify({"error": "Stripe not configured"}), 503
     try:
-        session = stripe.checkout.Session.retrieve(session_id)
+        session = stripe.checkout.Session.retrieve(session_id, **_stripe_acct())
     except Exception as e:
         return jsonify({"error": f"cannot retrieve session: {e}"}), 400
     if session.payment_status != "paid":
@@ -327,7 +342,8 @@ def mapping_status():
 
 
 if __name__ == "__main__":
-    log.info("brand=%s products=%d purchasable=%d stripe_ready=%s",
+    log.info("brand=%s products=%d purchasable=%d stripe_ready=%s stripe_connect=%s",
              BRAND_ID, len(PRODUCTS),
-             sum(1 for p in PRODUCTS if p["purchasable"]), STRIPE_READY)
+             sum(1 for p in PRODUCTS if p["purchasable"]), STRIPE_READY,
+             STRIPE_CONNECT_ACCOUNT_ID or "platform")
     app.run(host="127.0.0.1", port=int(os.environ.get("PORT", 8091)))

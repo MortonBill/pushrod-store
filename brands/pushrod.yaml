@@ -50,6 +50,10 @@ store:
   stripe_secret_key_env: "STRIPE_TEST_SECRET_KEY"
   stripe_publishable_key_env: "STRIPE_TEST_PUBLISHABLE_KEY"
   stripe_webhook_secret_env: "STRIPE_WEBHOOK_SECRET"
+  # Connect: AI Tools for Today (acct_1TttobEq0rLRALyr) is an Express account
+  # inside the master login; the platform test key charges it via the
+  # Stripe-Account header (see app.py). Unset = charge the master directly.
+  stripe_connect_account_id_env: "STRIPE_CONNECT_ACCOUNT_ID"
   # Printful: REAL API v2 client (backend/fulfillment/printful_client.py).
   # Token from PRINTFUL_API_TOKEN env var — generate in the Printful dashboard:
   # printful.com -> Stores -> your store -> Settings -> API. Fulfillment is
