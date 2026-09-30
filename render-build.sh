@@ -24,12 +24,18 @@ done
 cd ../..
 
 # Sanity: catalog loads, all SKUs priced.
+# Honest purchasability (Bill 2026-09-30): 43 SKUs (metal signs, banners,
+# keychains, flags, decal sets) have no Printful equivalent and are
+# intentionally NOT purchasable — the storefront renders them unavailable
+# and checkout blocks them. The build must NOT require them to be
+# purchasable; it requires every SKU to be priced and the catalog complete.
 BRAND=gateway python3 -c "
 import sys, os
 sys.path.insert(0, 'backend')
 os.environ['BRAND'] = 'gateway'
 import app
 assert len(app.PRODUCTS) == 642, f'expected 642 products, got {len(app.PRODUCTS)}'
-assert all(p['purchasable'] for p in app.PRODUCTS), 'unpriced SKUs present'
-print('catalog OK:', len(app.PRODUCTS), 'products, all priced')
+assert all(p['price'] is not None for p in app.PRODUCTS), 'unpriced SKUs present'
+n_purch = sum(1 for p in app.PRODUCTS if p['purchasable'])
+print(f'catalog OK: {len(app.PRODUCTS)} products, all priced, {n_purch} purchasable')
 "
