@@ -6,7 +6,8 @@ the frontend talks to:
 
   GET  /api/products            brand-filtered catalog as JSON
   GET  /api/products/<sku>      one product
-  POST /api/checkout            {items:[{sku,size,qty}]} -> Stripe Checkout (TEST ONLY)
+  POST /api/checkout            {items:[{sku,size,qty}], coupon?} -> Stripe Checkout (TEST ONLY)
+                                 coupon "FOUNDER100" brings the total to $0.50 (test method)
   GET  /api/fulfill?session_id= verify paid session -> create Printful order
   POST /api/stripe/webhook      production: checkout.session.completed -> fulfill
   GET  /api/printful/mapping-status  SKU coverage of printful_mapping.json
@@ -25,7 +26,7 @@ import stripe
 import yaml
 from flask import Flask, jsonify, request, send_from_directory
 
-from catalog import load_unified_catalog, catalog_stats, APPAREL_SIZES
+from catalog import load_unified_catalog, catalog_stats, APPAREL_SIZES, mapping_keys_for
 from fulfillment.fulfill import (
     fulfill_paid_order, load_mapping, mapping_key, build_order_items,
 )
@@ -107,6 +108,11 @@ STRIPE_WEBHOOK_SECRET = os.environ.get(
     store_cfg.get("stripe_webhook_secret_env", "STRIPE_WEBHOOK_SECRET"), "")
 
 # ---------- Stripe: TEST MODE ONLY ----------
+# LIVE FLIP REQUIREMENT (Bill's honesty rule): when the business approves
+# live keys, the Printful mapping must be FULLY filled first — every entry
+# needs catalog_variant_id + print_file_url via fill_mapping.py — because
+# fulfill_paid_order() refuses to ship from placeholder entries. The
+# checkout pre-check below only verifies mapping key existence.
 stripe_key = os.environ.get(store_cfg["stripe_secret_key_env"], "")
 if stripe_key and not stripe_key.startswith("sk_test_"):
     raise RuntimeError(
@@ -225,18 +231,45 @@ def api_checkout():
         return jsonify({"error": "; ".join(errors)}), 400
     if not lines:
         return jsonify({"error": "cart is empty"}), 400
-    # Fulfillment pre-check: every line must have a Printful mapping, else the
-    # customer would pay for something we cannot ship.
+    # Fulfillment pre-check: every line must have Printful mapping KEYS, else
+    # the customer would pay for something we can never ship. This checks key
+    # EXISTENCE only — the same rule as the purchasability gate
+    # (catalog.mapping_complete) — because mapping entries are filled by
+    # fill_mapping.py against the Printful API in a separate workstream and
+    # are placeholders until then. build_order_items() keeps its strict
+    # completeness check for actual fulfillment in fulfill_paid_order(), so a
+    # paid order with unfilled entries fails loudly there instead of shipping
+    # nothing silently.
     mapping = load_mapping(MAPPING_PATH)
-    try:
-        build_order_items(
-            [{"sku": l["sku"], "size": l["size"], "qty": l["qty"]} for l in lines],
-            BY_SKU, mapping)
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 409
+    unmapped = []
+    for l in lines:
+        for k in mapping_keys_for(l["sku"], BY_SKU[l["sku"]]["type"]):
+            if k not in mapping:
+                unmapped.append(k)
+    if unmapped:
+        return jsonify({"error": "No Printful mapping for: " + ", ".join(unmapped)}), 409
+
+    # FOUNDER100 (Bill's standing test method): an API-level coupon that
+    # brings the order total to exactly $0.50 for the test charge. Passed as
+    # {coupon:"FOUNDER100"}; never advertised in the storefront UI. TEST MODE
+    # ONLY — v1 refuses live keys at startup, so this can never discount a
+    # real-money order.
+    coupon = ((data or {}).get("coupon") or "").strip().upper()
+    discounts = None
+    if coupon == "FOUNDER100":
+        if total_cents <= 50:
+            return jsonify({"error": "FOUNDER100 needs an order total over $0.50"}), 400
+        fc = stripe.Coupon.create(
+            amount_off=total_cents - 50,
+            currency=store_cfg["currency"],
+            duration="once",
+            name="FOUNDER100 test (order -> $0.50)",
+            **_stripe_acct(),
+        )
+        discounts = [{"coupon": fc.id}]
 
     base = request.host_url.rstrip("/")
-    session = stripe.checkout.Session.create(
+    create_kwargs = dict(
         mode="payment",
         line_items=[{
             "price_data": {
@@ -253,7 +286,10 @@ def api_checkout():
         cancel_url=base + "/checkout/cancel",
         **_stripe_acct(),
     )
-    return jsonify({"checkout_url": session.url})
+    if discounts:
+        create_kwargs["discounts"] = discounts
+    session = stripe.checkout.Session.create(**create_kwargs)
+    return jsonify({"checkout_url": session.url, "session_id": session.id})
 
 
 @app.get("/api/fulfill")

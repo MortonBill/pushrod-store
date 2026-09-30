@@ -198,7 +198,14 @@ async function checkout() {
     const j = await r.json();
     if (!r.ok) throw new Error(j.error || 'checkout failed');
     save([]); location.href = j.checkout_url;   // Stripe Checkout (TEST mode)
-  } catch (e) { alert('Checkout error: ' + e.message); }
+  } catch (e) {
+    // Inline error, never a blocking alert(): a modal alert freezes the page
+    // and makes the button look dead ("inert"). The #stripe-note line sits
+    // right above the button in the cart drawer.
+    const sc = $('#stripe-note');
+    if (sc) sc.textContent = 'Checkout error: ' + e.message;
+    else alert('Checkout error: ' + e.message);
+  }
   btn.disabled = false; btn.textContent = 'Checkout';
 }
 
