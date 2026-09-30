@@ -259,13 +259,18 @@ def api_checkout():
     if coupon == "FOUNDER100":
         if total_cents <= 50:
             return jsonify({"error": "FOUNDER100 needs an order total over $0.50"}), 400
-        fc = stripe.Coupon.create(
-            amount_off=total_cents - 50,
-            currency=store_cfg["currency"],
-            duration="once",
-            name="FOUNDER100 test (order -> $0.50)",
-            **_stripe_acct(),
-        )
+        try:
+            fc = stripe.Coupon.create(
+                amount_off=total_cents - 50,
+                currency=store_cfg["currency"],
+                duration="once",
+                name="FOUNDER100 test (order -> $0.50)",
+                **_stripe_acct(),
+            )
+        except stripe.error.StripeError as e:
+            log.warning("stripe Coupon.create failed: %r", e)
+            msg = getattr(e, "user_message", None) or str(e) or "coupon failed"
+            return jsonify({"error": f"Stripe error: {msg}"}), 502
         discounts = [{"coupon": fc.id}]
 
     base = request.host_url.rstrip("/")
@@ -288,7 +293,14 @@ def api_checkout():
     )
     if discounts:
         create_kwargs["discounts"] = discounts
-    session = stripe.checkout.Session.create(**create_kwargs)
+    try:
+        session = stripe.checkout.Session.create(**create_kwargs)
+    except stripe.error.StripeError as e:
+        # Never a bare 500: surface the Stripe failure as JSON so the
+        # storefront shows it inline (and logs carry the diagnosis).
+        log.warning("stripe checkout Session.create failed: %r", e)
+        msg = getattr(e, "user_message", None) or str(e) or "checkout failed"
+        return jsonify({"error": f"Stripe error: {msg}"}), 502
     return jsonify({"checkout_url": session.url, "session_id": session.id})
 
 
