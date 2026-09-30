@@ -101,7 +101,7 @@ check("fulfill creates printful order", r.status_code == 200 and "printful_order
 
 # 8. gateway-ready: brand filter excludes nothing for pushrod, prefix model intact
 prods = client.get("/api/products").get_json()
-check("160 products served", len(prods) == 160)
+check("156 products served", len(prods) == 156)
 check("all PR- owned by pushrod", all(p["owner"] == "pushrod" for p in prods))
 
 print()

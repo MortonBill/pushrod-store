@@ -670,14 +670,6 @@
    "msrp": 24.0
   },
   {
-   "sku": "PR-H021",
-   "type": "hat",
-   "title": "Leather Pushrod™",
-   "base_color": "Black",
-   "design_file": "hats/pr-h021-leather-pushrod.webp",
-   "msrp": 24.0
-  },
-  {
    "sku": "PR-H022",
    "type": "hat",
    "title": "Wings Piston",
@@ -710,14 +702,6 @@
    "msrp": 24.0
   },
   {
-   "sku": "PR-H026",
-   "type": "hat",
-   "title": "Garage Built",
-   "base_color": "Black",
-   "design_file": "hats/pr-h026-garage-built.webp",
-   "msrp": 24.0
-  },
-  {
    "sku": "PR-H027",
    "type": "hat",
    "title": "Camo Wings",
@@ -739,14 +723,6 @@
    "title": "Pushrod™ Nation",
    "base_color": "Charcoal",
    "design_file": "hats/pr-h029-pushrod-nation.webp",
-   "msrp": 24.0
-  },
-  {
-   "sku": "PR-H030",
-   "type": "hat",
-   "title": "Leather Side",
-   "base_color": "Black",
-   "design_file": "hats/pr-h030-leather-side.webp",
    "msrp": 24.0
   },
   {
@@ -787,14 +763,6 @@
    "title": "White Roundel",
    "base_color": "Black",
    "design_file": "hats/pr-h035-white-roundel.webp",
-   "msrp": 24.0
-  },
-  {
-   "sku": "PR-H036",
-   "type": "hat",
-   "title": "Oil & Iron",
-   "base_color": "Black",
-   "design_file": "hats/pr-h036-oil-iron.webp",
    "msrp": 24.0
   },
   {

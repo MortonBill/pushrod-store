@@ -1,9 +1,11 @@
-"""Unified-catalog test: 640 SKUs loaded, zero collisions, every item
-purchasable, gateway + brand slices correct, cart/checkout/fulfill green.
+"""Unified-catalog test: 642 SKUs loaded, zero collisions, every item
+purchasable-or-honestly-unavailable, then the full checkout/fulfill loop via
+API integration. This file is the "test again" pass on the loaded 642.
 
 Bill's order 2026-09-27: build the store, add the gateway, cart, checkout,
-API integration, testing, load all 640 with unique SKUs, test again, mirror
-to RE. This file is the "test again" pass on the loaded 640.
+API integration, testing, load all SKUs with unique SKUs (636 + the 7B-
+seven-brand line added 2026-09-30; 4 leather-patch hats removed 2026-09-30),
+test again, mirror to RE.
 
 Run: ./../.venv/bin/python backend/test_unified.py   (from pushrod-store/)
 Stripe is stubbed (no network/keys); Printful runs PRINTFUL_DRY_RUN=1.
@@ -15,7 +17,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ["PRINTFUL_DRY_RUN"] = "1"
-os.environ.setdefault("BRAND", "gateway")  # unified catalog: all 640
+os.environ.setdefault("BRAND", "gateway")  # unified catalog: all 636
 
 import app as store_app
 from catalog import APPAREL_SIZES, load_unified_catalog, sku_prefix
@@ -72,31 +74,48 @@ def check(name, cond, extra=""):
         fails.append(name)
 
 
-# 1. unified catalog: 640, zero collisions, sorted by SKU
+# 1. unified catalog: 642, zero collisions, 7B- seven-brand line sorts last
+# (Bill 2026-09-30)
 prods = client.get("/api/products").get_json()
-check("640 products served", len(prods) == 640, f"got {len(prods)}")
+check("642 products served", len(prods) == 642, f"got {len(prods)}")
 skus = [p["sku"] for p in prods]
 check("zero SKU collisions", len(set(skus)) == len(skus))
-check("sorted by SKU", skus == sorted(skus))
+non7b = [s for s in skus if not s.startswith("7B-")]
+is7b = [s for s in skus if s.startswith("7B-")]
+check("sorted by SKU, 7B- last",
+      non7b == sorted(non7b) and is7b == sorted(is7b)
+      and skus == non7b + is7b, f"got {len(skus)}")
 
-# 2. prefix partition: 160 per line, owners correct
+# 2. prefix partition: 160/line (PR- 156 after hat removal) + 6 seven-brand
 from collections import Counter
 by_prefix = Counter(p["prefix"] for p in prods)
-check("160 per prefix", dict(by_prefix) == {
-    "PR-": 160, "RE-MC-": 160, "RE-CT-": 160, "RE-MP-": 160}, str(dict(by_prefix)))
+check("prefix counts + 7B-", dict(by_prefix) == {
+    "PR-": 156, "RE-MC-": 160, "RE-CT-": 160, "RE-MP-": 160, "7B-": 6},
+    str(dict(by_prefix)))
 check("owners correct",
-      all(p["owner"] == ("pushrod" if p["prefix"] == "PR-" else "restorationessentials")
+      all(p["owner"] == ("restorationessentials" if p["prefix"].startswith("RE-")
+                         else "pushrod")
           for p in prods))
 
-# 3. every item purchasable: confirmed price, no "Price TBD", no draft-only
+# 3. honest purchasability: everything with a Printful path is purchasable;
+# the 43 deliberately-unmappable SKUs (metal signs, banners, keychains, flags,
+# decal sets/sheets — no sane Printful equivalent) are the ONLY unpurchasable ones
+UNMAPPABLE_TYPES = {"metal sign", "sign", "keychain", "banner", "vinyl banner",
+                    "flag", "decal set", "decal sheet"}
 unpurch = [p["sku"] for p in prods if not p["purchasable"]]
-check("all 640 purchasable", not unpurch, str(unpurch[:5]))
+expect_unpurch = sorted(p["sku"] for p in prods if p["type"] in UNMAPPABLE_TYPES)
+check("only unmappable SKUs unpurchasable",
+      sorted(unpurch) == expect_unpurch,
+      f"unpurch={len(unpurch)} expected={len(expect_unpurch)} "
+      f"extra={sorted(set(unpurch) - set(expect_unpurch))[:5]}")
 drafts = [p["sku"] for p in prods if p["price"]["status"] != "confirmed"]
 check("all prices confirmed (none draft)", not drafts, str(drafts[:5]))
 
-# 4. trademark: no IronHead wordmark anywhere in the catalog
+# 4. trademark: no IronHead wordmark anywhere except the 7B- seven-brand line,
+# which names all seven companies by design (Bill 2026-09-30)
 bad = [p["sku"] for p in prods
-       if "ironhead" in (p["title"] + " " + p["description"]).lower()]
+       if not p["sku"].startswith("7B-")
+       and "ironhead" in (p["title"] + " " + p["description"]).lower()]
 check("no IronHead wordmark in catalog", not bad, str(bad[:5]))
 
 # 5. gateway brand API: doors present, 4 doors, stats sane
@@ -105,7 +124,7 @@ check("gateway id", b["id"] == "gateway")
 check("4 doors", len(b.get("doors", [])) == 4, str([d["label"] for d in b.get("doors", [])]))
 check("door prefixes cover catalog",
       {d["prefix"] for d in b["doors"]} == {"PR-", "RE-MC-", "RE-CT-", "RE-MP-"})
-check("stats total 640", b["stats"]["total"] == 640)
+check("stats total 642", b["stats"]["total"] == 642)
 check("stats price_tbd 0", b["stats"]["price_tbd"] == 0)
 
 # 6. images: one design file per line resolves via /img/<lib>/
@@ -136,7 +155,8 @@ r = client.get("/api/printful/mapping-status").get_json()
 check("mapping-status reports", r["mapped"] == len(SAMPLES),
       f"mapped={r['mapped']}")
 
-# 11. brand slices (catalog layer): pushrod 160 / RE 480
+# 11. brand slices (catalog layer): pushrod PR- 156 (4 leather-patch hats removed
+# 2026-09-30) / RE 480
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 push = load_unified_catalog(
     [(c["csv"], c.get("prices_json")) for c in
@@ -146,7 +166,7 @@ re_conf = __import__("yaml").safe_load(open(os.path.join(ROOT, "brands/restorati
 re = load_unified_catalog(
     [(c["csv"], c.get("prices_json")) for c in re_conf["catalog"]["catalogs"]],
     sku_prefixes=re_conf["brand"]["sku_prefixes"])
-check("pushrod slice 160", len(push) == 160, str(len(push)))
+check("pushrod slice 156", len(push) == 156, str(len(push)))
 check("RE slice 480", len(re) == 480, str(len(re)))
 check("RE slice has no PR-", all(p["prefix"] != "PR-" for p in re))
 
