@@ -96,13 +96,16 @@ def load_catalog(csv_path, prices_json_path=None, sku_prefixes=None):
                 "purchasable": price is not None,
                 "needs_size": row["type"].strip() in SIZED_TYPES,
             })
-    products.sort(key=lambda p: p["sku"])
+    # Bill 2026-09-30: the 7B- seven-brand line sorts LAST in the catalog so
+    # daily shoppers see the brand lines first; 7B- stays purchasable.
+    products.sort(key=lambda p: (p["prefix"] == "7B-", p["sku"]))
     return products
 
 
 def load_unified_catalog(sources, sku_prefixes=None):
     """Merge multiple (csv_path, prices_json_path) catalog sources into one
-    unified product list, sorted by SKU. Asserts ZERO duplicate SKUs across
+    unified product list, sorted by SKU with the 7B- seven-brand line last
+    (Bill 2026-09-30). Asserts ZERO duplicate SKUs across
     sources — the unified-catalog rule (Bill 2026-09-26: one big catalog that
     sorts by sku when the gateway selection is accessed; ownership partitions
     by prefix). sku_prefixes filters to a brand's prefixes (None/empty = all,
@@ -118,7 +121,7 @@ def load_unified_catalog(sources, sku_prefixes=None):
                     f"{seen[sku]} and {csv_path} — resolve before serving")
             seen[sku] = csv_path
             products.append(p)
-    products.sort(key=lambda p: p["sku"])
+    products.sort(key=lambda p: (p["prefix"] == "7B-", p["sku"]))
     return products
 
 

@@ -14,6 +14,10 @@ header.top{position:sticky;top:0;z-index:10;background:var(--bg2);
   display:flex;align-items:center;gap:1rem}
 .logo{font-family:'Arial Black','Helvetica Neue',sans-serif;font-size:1.6rem;
   letter-spacing:.12em;color:var(--accent)}
+.brandlogo{height:2.6rem;width:auto;vertical-align:middle;margin-right:.6rem}
+.brandnav{display:flex;gap:1rem;align-items:center;white-space:nowrap}
+.brandnav a{font-size:.9rem;font-weight:600}
+footer.page .sister{font-size:.8rem;color:var(--muted)}
 .logo small{display:block;font-size:.6rem;letter-spacing:.3em;color:var(--muted);
   font-family:'Helvetica Neue',Arial,sans-serif}
 .tagline{color:var(--muted);font-size:.85rem;flex:1}
