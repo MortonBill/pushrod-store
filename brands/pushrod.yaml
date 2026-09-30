@@ -1,7 +1,7 @@
 # Brand #1 — PUSHROD storefront (brand id: pushrod, SKU prefix PR-)
 brand:
   id: pushrod
-  name: PUSHROD
+  name: PUSHROD™
   tagline: "Garage-built gear for the air-cooled faithful"
   # SKU prefixes this brand store serves. Gateway routes shoppers here when
   # the SKU starts with one of these.

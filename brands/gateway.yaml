@@ -5,7 +5,7 @@
 # Same codebase; select with BRAND=gateway.
 brand:
   id: gateway
-  name: Merch Gateway
+  name: PUSHROD™
   tagline: "Every line. One catalog."
   sku_prefixes: []        # empty = no filter; all prefixes served
   ownership:
@@ -18,7 +18,7 @@ brand:
   # door, the grid filters to that prefix (sorted by SKU); "All doors"
   # shows the whole unified catalog.
   doors:
-    - { label: "PUSHROD Garage Gear", prefix: "PR-", blurb: "Air-cooled shop gear" }
+    - { label: "PUSHROD™ Garage Gear", prefix: "PR-", blurb: "Air-cooled shop gear" }
     - { label: "Muscle Car",          prefix: "RE-MC-", blurb: "Big-cube American iron" }
     - { label: "RestoMod",            prefix: "RE-MP-", blurb: "Modern performance" }
     - { label: "Truck",               prefix: "RE-CT-", blurb: "Classic trucks" }
