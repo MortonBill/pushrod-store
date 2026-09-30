@@ -67,16 +67,30 @@ theme = brand["theme"]
 catalog_cfg = brand["catalog"]
 store_cfg = brand["store"]
 
-PRODUCTS = load_unified_catalog(
-    [(c["csv"], c.get("prices_json")) for c in catalog_sources(catalog_cfg)],
-    sku_prefixes=brand["brand"]["sku_prefixes"],
-)
-BY_SKU = {p["sku"]: p for p in PRODUCTS}
+PRODUCTS = None  # assigned below after the mapping loads
+BY_SKU = {}
 
 MAPPING_PATH = os.environ.get(
     "PRINTFUL_MAPPING",
     os.path.join(BASE, "fulfillment", "printful_mapping.json"),
 )
+
+# Honest purchasability (Bill 2026-09-30): the Printful mapping loads ONCE at
+# startup and gates the catalog — a product is purchasable only when it has a
+# price AND every required mapping key exists (all 6 sizes for tee/sweatshirt,
+# bare SKU otherwise). No mapping entry, no sale: the storefront renders such
+# cards unavailable and checkout can never 409 on them.
+MAPPING = load_mapping(MAPPING_PATH)
+
+PRODUCTS = load_unified_catalog(
+    [(c["csv"], c.get("prices_json")) for c in catalog_sources(catalog_cfg)],
+    sku_prefixes=brand["brand"]["sku_prefixes"],
+    mapping=MAPPING,
+)
+BY_SKU = {p["sku"]: p for p in PRODUCTS}
+_unpurch = sum(1 for p in PRODUCTS if not p["purchasable"])
+log.info("printful mapping: %d keys, %d/%d products purchasable",
+         len(MAPPING), len(PRODUCTS) - _unpurch, len(PRODUCTS))
 
 # Merch-library roots for /img/<lib>/... (keys match catalog.IMAGE_LIBS).
 # Bundled under data/img/ for portable deploys; DATA_DIR env overrides.

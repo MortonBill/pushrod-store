@@ -32,13 +32,20 @@ def mapping_key(sku, size):
 
 def build_order_items(cart_lines, products_by_sku, mapping):
     """cart_lines: [{sku, size|None, qty}]. Raises ValueError listing any
-    SKU+size with no Printful mapping so the failure is explicit, not silent."""
+    SKU+size with no Printful mapping so the failure is explicit, not silent.
+
+    A mapping entry with a null/empty catalog_variant_id or print_file_url
+    (placeholder awaiting the API fill) counts as unmapped — it can never
+    produce a shippable order."""
     items, unmapped = [], []
     for line in cart_lines:
         key = mapping_key(line["sku"], line.get("size"))
         m = mapping.get(key)
         if not m:
             unmapped.append(key)
+            continue
+        if not m.get("catalog_variant_id") or not m.get("print_file_url"):
+            unmapped.append(f"{key} (mapping incomplete — no variant/file yet)")
             continue
         items.append({
             "catalog_variant_id": m["catalog_variant_id"],

@@ -29,7 +29,7 @@ import sys, os
 sys.path.insert(0, 'backend')
 os.environ['BRAND'] = 'gateway'
 import app
-assert len(app.PRODUCTS) == 642, f'expected 642 products, got {len(app.PRODUCTS)}'
+assert len(app.PRODUCTS) == 646, f'expected 646 products, got {len(app.PRODUCTS)}'
 assert all(p['purchasable'] for p in app.PRODUCTS), 'unpriced SKUs present'
 print('catalog OK:', len(app.PRODUCTS), 'products, all priced')
 "

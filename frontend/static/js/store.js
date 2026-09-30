@@ -60,7 +60,11 @@ function buildTypeFilter() {
 
 /* ---------- grid ---------- */
 function priceHTML(p) {
-  if (!p.purchasable) return '<span class="tbd">Price TBD</span>';
+  // Honest purchasability: unpriced -> "Price TBD"; priced but not yet
+  // fulfillable (Printful mapping incomplete) -> "Unavailable", never sold.
+  if (!p.purchasable) return p.price
+    ? '<span class="tbd">Unavailable</span>'
+    : '<span class="tbd">Price TBD</span>';
   const d = p.price.status === 'draft' ? ' <span class="draft">intro price</span>' : '';
   return `<span class="price">$${p.price.amount.toFixed(2)}${d}</span>`;
 }
