@@ -53,17 +53,22 @@ def pf(method, path, payload=None, retries=3):
             raise RuntimeError(f"Printful {method} {path} -> HTTP {e.code}: {body}")
 
 
-def gh(method, path, payload=None):
+def gh(method, path, payload=None, retries=4):
     data = json.dumps(payload).encode() if payload is not None else None
-    req = urllib.request.Request(GH_API + path, data=data, method=method,
-                                 headers={"Accept": "application/vnd.github+json", **UA})
-    if data:
-        req.add_header("Content-Type", "application/json")
-    add_surrogate_to_request(req, "custom.github", allowed_hosts=("api.github.com",))
-    try:
-        return read_json_response(urllib.request.urlopen(req, timeout=120))
-    except urllib.error.HTTPError as e:
-        raise RuntimeError(f"GitHub {method} {path} -> HTTP {e.code}: {e.read()[:300]}")
+    for attempt in range(retries):
+        req = urllib.request.Request(GH_API + path, data=data, method=method,
+                                     headers={"Accept": "application/vnd.github+json", **UA})
+        if data:
+            req.add_header("Content-Type", "application/json")
+        add_surrogate_to_request(req, "custom.github", allowed_hosts=("api.github.com",))
+        try:
+            return read_json_response(urllib.request.urlopen(req, timeout=120))
+        except urllib.error.HTTPError as e:
+            body = e.read()[:300]
+            if e.code in (502, 503, 504) and attempt < retries - 1:
+                time.sleep(5 * (attempt + 1))
+                continue
+            raise RuntimeError(f"GitHub {method} {path} -> HTTP {e.code}: {body}")
 
 
 # ---------------------------------------------------------------- products
@@ -183,10 +188,24 @@ def push_print_files(dry_run=False):
     try:
         ref = gh("GET", f"/repos/{PF_REPO_OWNER}/{PF_REPO_NAME}/git/refs/heads/{PF_BRANCH}")
         parent = ref["object"]["sha"]
+        empty_repo = False
     except RuntimeError as e:
-        if "404" not in str(e):
+        # empty repo -> 409 "Git Repository is empty." ; missing branch -> 404
+        if "404" not in str(e) and "empty" not in str(e):
             raise
         parent = None
+        empty_repo = "empty" in str(e)
+
+    if empty_repo:
+        # the git-database blob API 409s on a repo with zero commits; seed one
+        seed = base64.b64encode(
+            b"# pushrod-print-files\nPublic print-ready PNGs for PushRod store fulfillment.\n"
+        ).decode()
+        gh("PUT", f"/repos/{PF_REPO_OWNER}/{PF_REPO_NAME}/contents/README.md",
+           {"message": "initial commit", "content": seed, "branch": PF_BRANCH})
+        ref = gh("GET", f"/repos/{PF_REPO_OWNER}/{PF_REPO_NAME}/git/refs/heads/{PF_BRANCH}")
+        parent = ref["object"]["sha"]
+        print("seeded initial commit")
 
     blobs = []
     for i, (rel, full) in enumerate(entries):

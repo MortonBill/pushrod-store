@@ -58,9 +58,13 @@ def mapping_complete(sku, ptype, mapping):
     This is the honest-purchasability gate (Bill 2026-09-30): a product with
     a price but no Printful mapping must never be sold, or the customer pays
     for something we cannot ship (checkout 409 trap).
+
+    Key presence alone is not enough: the mapped values must be non-null.
+    A sku whose entry exists but has no catalog_variant_id or print_file_url
+    is NOT fulfillable and must not be sold.
     """
     m = mapping or {}
-    return all(k in m for k in mapping_keys_for(sku, ptype))
+    return all(m.get(k) for k in mapping_keys_for(sku, ptype))
 
 
 def sku_prefix(sku):

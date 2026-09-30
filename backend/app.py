@@ -26,7 +26,7 @@ import stripe
 import yaml
 from flask import Flask, jsonify, request, send_from_directory
 
-from catalog import load_unified_catalog, catalog_stats, APPAREL_SIZES, mapping_keys_for
+from catalog import load_unified_catalog, catalog_stats, APPAREL_SIZES, mapping_keys_for, mapping_complete
 from fulfillment.fulfill import (
     fulfill_paid_order, load_mapping, mapping_key, build_order_items,
 )
@@ -231,21 +231,17 @@ def api_checkout():
         return jsonify({"error": "; ".join(errors)}), 400
     if not lines:
         return jsonify({"error": "cart is empty"}), 400
-    # Fulfillment pre-check: every line must have Printful mapping KEYS, else
-    # the customer would pay for something we can never ship. This checks key
-    # EXISTENCE only — the same rule as the purchasability gate
-    # (catalog.mapping_complete) — because mapping entries are filled by
-    # fill_mapping.py against the Printful API in a separate workstream and
-    # are placeholders until then. build_order_items() keeps its strict
-    # completeness check for actual fulfillment in fulfill_paid_order(), so a
-    # paid order with unfilled entries fails loudly there instead of shipping
-    # nothing silently.
+    # Fulfillment pre-check: every line must have COMPLETE Printful mapping
+    # (non-null values, not just keys) — the same rule as the purchasability
+    # gate (catalog.mapping_complete). A customer must never pay for something
+    # we cannot ship. build_order_items() keeps its strict completeness check
+    # for actual fulfillment in fulfill_paid_order(), so a paid order with
+    # unfilled entries fails loudly there instead of shipping nothing silently.
     mapping = load_mapping(MAPPING_PATH)
     unmapped = []
     for l in lines:
-        for k in mapping_keys_for(l["sku"], BY_SKU[l["sku"]]["type"]):
-            if k not in mapping:
-                unmapped.append(k)
+        if not mapping_complete(l["sku"], BY_SKU[l["sku"]]["type"], mapping):
+            unmapped.append(l["sku"])
     if unmapped:
         return jsonify({"error": "No Printful mapping for: " + ", ".join(unmapped)}), 409
 
@@ -287,6 +283,7 @@ def api_checkout():
         } for l in lines],
         metadata={"cart": json.dumps(
             [{"sku": l["sku"], "size": l["size"], "qty": l["qty"]} for l in lines])},
+        shipping_address_collection={"allowed_countries": ["US"]},
         success_url=base + "/checkout/success?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=base + "/checkout/cancel",
         **_stripe_acct(),
@@ -318,12 +315,17 @@ def api_fulfill():
     if session.payment_status != "paid":
         return jsonify({"error": f"session not paid (status={session.payment_status})"}), 402
     cart = json.loads(session.metadata.get("cart", "[]"))
-    addr = session.shipping_details.address if session.shipping_details else {}
+    ship = session.shipping_details or {}
+    cust = session.customer_details or {}
+    addr = (ship.get("address") if isinstance(ship, dict) else ship.address) or {}
+    if not isinstance(addr, dict):
+        addr = {}
     try:
         order = fulfill_paid_order(
             stripe_session_id=session.id,
-            customer_email=session.customer_details.email,            shipping_address={
-                "name": session.shipping_details.name if session.shipping_details else "",
+            customer_email=(cust.get("email") if isinstance(cust, dict) else cust.email) or "",
+            shipping_address={
+                "name": (ship.get("name") if isinstance(ship, dict) else ship.name) or "",
                 "line1": addr.get("line1", ""), "line2": addr.get("line2", ""),
                 "city": addr.get("city", ""), "state": addr.get("state", ""),
                 "country": addr.get("country", "US"),
@@ -344,10 +346,13 @@ def api_fulfill():
 def stripe_webhook():
     """Production fulfillment path: Stripe calls this on checkout.session.completed."""
     secret = STRIPE_WEBHOOK_SECRET
+    if not secret:
+        # Fail closed: an unsigned webhook must never trigger fulfillment.
+        # Set STRIPE_WEBHOOK_SECRET on Render to enable this endpoint.
+        return jsonify({"error": "webhook secret not configured"}), 503
     payload, sig = request.data, request.headers.get("Stripe-Signature", "")
     try:
-        event = stripe.Webhook.construct_event(payload, sig, secret) if secret \
-            else json.loads(payload)
+        event = stripe.Webhook.construct_event(payload, sig, secret)
     except Exception as e:
         return jsonify({"error": f"bad signature: {e}"}), 400
     if event.get("type") == "checkout.session.completed":
@@ -381,10 +386,7 @@ def mapping_status():
     for p in PRODUCTS:
         if not p["purchasable"]:
             continue
-        if p["needs_size"]:
-            missing += [f"{p['sku']}:{s}" for s in APPAREL_SIZES
-                        if mapping_key(p["sku"], s) not in mapping]
-        elif mapping_key(p["sku"], None) not in mapping:
+        if not mapping_complete(p["sku"], p["type"], mapping):
             missing.append(p["sku"])
     return jsonify({"mapped": len(mapping), "unmapped_keys": missing})
 
