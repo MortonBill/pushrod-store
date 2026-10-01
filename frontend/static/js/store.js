@@ -52,8 +52,9 @@ function renderWholesaleNav() {
   };
 }
 
-/* Unit price, wholesale-aware: approved partners get 20% off the 3 launch
-   blanks. The server re-prices and re-validates everything at checkout. */
+/* Unit price, wholesale-aware: approved partners get 20% off every
+   wholesale-eligible product. The server re-prices and re-validates
+   everything at checkout. */
 function unitCents(p) {
   const retail = Math.round(p.price.amount * 100);
   if (WHOLESALE.logged_in && p.wholesale_eligible && p.purchasable)
@@ -98,8 +99,8 @@ function priceHTML(p) {
     ? '<span class="tbd">Unavailable</span>'
     : '<span class="tbd">Price TBD</span>';
   const d = p.price.status === 'draft' ? ' <span class="draft">intro price</span>' : '';
-  // Partner pricing: approved wholesale partners see 20% off the launch
-  // blanks, retail struck through. Guests see retail only.
+  // Partner pricing: approved wholesale partners see 20% off every
+  // wholesale-eligible product, retail struck through. Guests see retail only.
   if (WHOLESALE.logged_in && p.wholesale_eligible) {
     const w = Math.round(p.price.amount * 100 * 0.8);
     return `<span class="price">${money(w)}</span> <span class="wtag">partner</span> ` +
@@ -202,7 +203,7 @@ function renderCart() {
   if (WHOLESALE.logged_in) {
     const hint = document.createElement('p');
     hint.style.cssText = 'color:var(--muted);font-size:.8rem';
-    hint.textContent = 'Wholesale order: 25+ units per blank (tees / hats / pullovers); opening order 48+ units or $500+. Bulk shipping added at checkout.';
+    hint.textContent = 'Wholesale order: 25+ units per product; opening order 48+ units or $500+. Bulk shipping added at checkout.';
     box.appendChild(hint);
   }
   cart.forEach(i => {

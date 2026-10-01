@@ -286,10 +286,11 @@ def _validate_cart(items, price_fn=None):
 
 
 def _wholesale_price_fn(p):
-    """20%-off partner pricing; rejects anything outside the 3 launch blanks."""
+    """20%-off partner pricing; rejects anything outside the wholesale program
+    (only unpurchasable products — no Printful fulfillment — are excluded)."""
     if not wholesale_mod.is_wholesale_eligible(p):
         return None, (f"{p['sku']} is not in the wholesale program "
-                      f"(launch: tees, hats, pullovers only)")
+                      f"(no Printful fulfillment available for it)")
     retail_cents = int(round(p["price"]["amount"] * 100))
     return wholesale_mod.wholesale_unit_cents(retail_cents), None
 

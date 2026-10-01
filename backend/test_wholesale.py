@@ -42,7 +42,8 @@ check("pullover 44.00 -> 35.20", ws.wholesale_unit_cents(4400) == 3520)
 check("blank tee", ws.blank_for_type("tee") == "Comfort Colors 1717")
 check("blank hat", ws.blank_for_type("hat") == "Yupoong 6606")
 check("blank sweatshirt", ws.blank_for_type("sweatshirt") == "Gildan 18000")
-check("blank unknown", ws.blank_for_type("mug") is None)
+check("blank mug", ws.blank_for_type("mug") == "Ceramic mug")
+check("blank truly unknown", ws.blank_for_type("widget") is None)
 
 check("24 tees rejected",
       any("25+" in e for e in ws.check_wholesale_minimums(
@@ -88,18 +89,29 @@ r = client.get("/wholesale/agreement-body")
 body = r.get_data(as_text=True)
 check("no DRAFT banner (agreement final per Bill 2026-09-30)",
       "DRAFT" not in body and "pending attorney review" not in body)
-check("final approval notice + version 2026-09-30",
+check("final approval notice + version 2026-09-30-r2 (whole-catalog scope)",
       "Approved as final by Bill Morton on 2026-09-30" in body
-      and "Version 2026-09-30" in body)
+      and "Version 2026-09-30-r2" in body
+      and "full PushRod catalog" in body)
 
 # /api/products carries wholesale_eligible (additive; retail untouched)
 r = client.get("/api/products")
 prods = r.get_json()
 check("products API ok", isinstance(prods, list) and len(prods) > 0)
+# whole catalog: every purchasable product is eligible, unpurchasable excluded
+n_elig = sum(1 for p in prods if p.get("wholesale_eligible"))
+n_purch = sum(1 for p in prods if p.get("purchasable"))
+check("all purchasable products wholesale-eligible",
+      n_elig == n_purch, f"eligible={n_elig} purchasable={n_purch}")
+check("unpurchasable products not eligible",
+      all(p.get("wholesale_eligible") is False
+          for p in prods if not p.get("purchasable")))
+mug = next((p for p in prods if p["type"] == "mug" and p["purchasable"]), None)
+check("a purchasable mug exists", mug is not None)
+if mug:
+    check("mug flagged wholesale_eligible", mug.get("wholesale_eligible") is True)
 tee = next((p for p in prods if p["type"] == "tee" and p["purchasable"]), None)
 check("a purchasable tee exists", tee is not None)
-if tee:
-    check("tee flagged wholesale_eligible", tee.get("wholesale_eligible") is True)
 
 # application validation
 r = client.post("/api/wholesale/apply", data={})
@@ -236,17 +248,27 @@ r = client.post("/api/checkout", json={
     "items": [{"sku": tee["sku"], "size": "M", "qty": 25}]})
 check("reorder 25 tees -> 200 (opening rule spent)", r.status_code == 200, r.status_code)
 
-# non-program product rejected at wholesale pricing
+# whole catalog: mug accepted at 20%-off wholesale pricing
 mug = next((p for p in prods if p["type"] == "mug" and p["purchasable"]), None)
 if mug:
     r = client.post("/api/checkout", json={
         "wholesale": True,
         "items": [{"sku": mug["sku"], "qty": 30}]})
-    check("mug rejected from wholesale checkout",
-          r.status_code == 400 and "not in the wholesale program" in r.get_json()["error"],
-          r.status_code)
+    j = r.get_json()
+    check("30 mugs -> 200 wholesale", r.status_code == 200, f"{r.status_code} {j}")
+    if r.status_code == 200:
+        items = captured["line_items"]
+        merch = next(i for i in items if i["quantity"] == 30)
+        ship = next(i for i in items if i["quantity"] == 1)
+        mug_retail = int(round(mug["price"]["amount"] * 100))
+        check("mug partner unit price 20% off",
+              merch["price_data"]["unit_amount"] == int(round(mug_retail * 0.8)),
+              merch["price_data"]["unit_amount"])
+        check("mug bulk ship line 30*150=4500",
+              ship["price_data"]["unit_amount"] == 4500,
+              ship["price_data"]["unit_amount"])
 else:
-    print("SKIP mug wholesale rejection (no purchasable mug)")
+    print("SKIP mug wholesale test (no purchasable mug)")
 
 # FOUNDER100 still works on wholesale orders (standing test method)
 created_coupons = {}

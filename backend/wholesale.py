@@ -29,20 +29,41 @@ from werkzeug.utils import secure_filename
 log = logging.getLogger("pushrod.wholesale")
 
 # ---------- program constants (from the program guide 2026-09-30) ----------
-WHOLESALE_TYPES = {"tee", "hat", "sweatshirt"}  # the 3 launch blanks
+# Bill 2026-09-30 ~20:15 CDT: WHOLE CATALOG at launch — every purchasable
+# product is wholesale-eligible at 20% off, not just the 3 apparel blanks.
+# Products with no Printful fulfillment (unpurchasable) stay excluded:
+# we cannot make or ship them, so no partner may order them either.
 BLANK_NAMES = {
     "tee": "Comfort Colors 1717",
     "hat": "Yupoong 6606",
     "sweatshirt": "Gildan 18000",
+    "mug": "Ceramic mug",
+    "decal": "Vinyl decal",
+    "decal sheet": "Vinyl decal sheet",
+    "decal set": "Vinyl decal set",
+    "patch": "Embroidered patch",
+    "embroidered patch": "Embroidered patch",
+    "keychain": "Keychain",
+    "metal sign": "Metal sign",
+    "sign": "Sign",
+    "banner": "Banner",
+    "vinyl banner": "Vinyl banner",
+    "flag": "Flag",
 }
 WHOLESALE_FACTOR = 0.80            # 20% off retail, flat — no tiers
 BULK_MIN_PER_BLANK = 25           # 25+ units per base product, non-negotiable
 OPENING_MIN_UNITS = 48            # opening order: 48+ units ...
 OPENING_MIN_CENTS = 50000         # ... or $500+ merchandise
-BULK_SHIP_CENTS = {               # bulk-shipping estimate per unit (guide §3)
-    "tee": 116, "hat": 100, "sweatshirt": 200,
+BULK_SHIP_CENTS = {               # bulk-shipping estimate per unit (guide §3).
+    "tee": 116, "hat": 100, "sweatshirt": 200,  # verified (guide §3)
+    # Estimates for the rest of the catalog (Bill 2026-09-30: confirm these):
+    "mug": 150, "decal": 50, "decal sheet": 50, "decal set": 50,
+    "patch": 75, "embroidered patch": 75, "keychain": 75,
+    "metal sign": 350, "sign": 350,
+    "banner": 300, "vinyl banner": 300, "flag": 250,
 }
-AGREEMENT_VERSION = "2026-09-30"  # final per Bill 2026-09-30 (attorney review waived)
+AGREEMENT_VERSION = "2026-09-30-r2"  # r2: whole-catalog scope (Bill 2026-09-30);
+                                     # r1 was 3-blank launch scope
 
 CERT_EXTENSIONS = {"pdf", "jpg", "jpeg", "png"}
 MAX_CERT_BYTES = 10 * 1024 * 1024
@@ -70,8 +91,10 @@ def blank_for_type(ptype):
 
 
 def is_wholesale_eligible(product):
-    return bool(product) and product.get("type") in WHOLESALE_TYPES \
-        and bool(product.get("purchasable"))
+    """Whole catalog: every purchasable product is wholesale-eligible at
+    20% off (Bill 2026-09-30). Unpurchasable products (no Printful
+    fulfillment) are excluded — we cannot make or ship them."""
+    return bool(product) and bool(product.get("purchasable"))
 
 
 def bulk_shipping_cents(lines):
@@ -93,7 +116,7 @@ def check_wholesale_minimums(lines, is_first_order):
             errors.append(
                 f"{blank_for_type(t) or t}: {q} units — "
                 f"wholesale orders need {BULK_MIN_PER_BLANK}+ units per base product "
-                f"(designs and colors may mix within the blank)")
+                f"(designs and colors may mix within the same product)")
     if is_first_order:
         total_units = sum(per_type.values())
         merch_cents = sum(l["unit_cents"] * l["qty"] for l in lines)
