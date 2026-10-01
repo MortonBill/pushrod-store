@@ -6,13 +6,13 @@ the frontend talks to:
 
   GET  /api/products            brand-filtered catalog as JSON
   GET  /api/products/<sku>      one product
-  POST /api/checkout            {items:[{sku,size,qty}], coupon?} -> Stripe Checkout (TEST ONLY)
-                                 coupon "FOUNDER100" brings the total to $0.50 (test method)
+  POST /api/checkout            {items:[{sku,size,qty}], coupon?} -> Stripe Checkout
+                                 coupon "FOUNDER100" brings the total to $0.50 (test mode only)
   GET  /api/fulfill?session_id= verify paid session -> create Printful order
   POST /api/stripe/webhook      production: checkout.session.completed -> fulfill
   GET  /api/printful/mapping-status  SKU coverage of printful_mapping.json
 
-Order flow: customer buys on our site -> Stripe (test mode in v1) ->
+Order flow: customer buys on our site -> Stripe (test or live per STRIPE_MODE) ->
 backend creates the Printful order via API -> Printful prints and ships.
 
 Brand switching is a config change: BRAND env var selects
@@ -108,20 +108,32 @@ ORDER_PREFIX = store_cfg.get("order_prefix", "pushrod")
 STRIPE_WEBHOOK_SECRET = os.environ.get(
     store_cfg.get("stripe_webhook_secret_env", "STRIPE_WEBHOOK_SECRET"), "")
 
-# ---------- Stripe: TEST MODE ONLY ----------
-# LIVE FLIP REQUIREMENT (Bill's honesty rule): when the business approves
-# live keys, the Printful mapping must be FULLY filled first — every entry
-# needs catalog_variant_id + print_file_url via fill_mapping.py — because
-# fulfill_paid_order() refuses to ship from placeholder entries. The
-# checkout pre-check below only verifies mapping key existence.
-stripe_key = os.environ.get(store_cfg["stripe_secret_key_env"], "")
-if stripe_key and not stripe_key.startswith("sk_test_"):
-    raise RuntimeError(
-        "REFUSED: STRIPE_TEST_SECRET_KEY does not start with sk_test_. "
-        "v1 runs in TEST mode only — live keys are never accepted here."
-    )
+# ---------- Stripe: test/live mode switch ----------
+# STRIPE_MODE=live selects the LIVE keypair (Bill 2026-10-01: "turn it all the
+# way up" — the store takes real orders). Live mode refuses to boot unless
+# STRIPE_LIVE_SECRET_KEY is a real live key. Customer protection does not
+# depend on this switch: /api/checkout 409-rejects any line whose Printful
+# mapping is incomplete (same rule as the purchasability gate), so a customer
+# can never pay for something we cannot ship.
+STRIPE_MODE = os.environ.get("STRIPE_MODE", "test").strip().lower()
+if STRIPE_MODE == "live":
+    stripe_key = os.environ.get("STRIPE_LIVE_SECRET_KEY", "")
+    PUBLISHABLE_KEY = os.environ.get("STRIPE_LIVE_PUBLISHABLE_KEY", "")
+    if not stripe_key.startswith("sk_live_"):
+        raise RuntimeError(
+            "REFUSED: STRIPE_MODE=live but STRIPE_LIVE_SECRET_KEY is missing "
+            "or not a live key (must start with sk_live_).")
+else:
+    stripe_key = os.environ.get(store_cfg["stripe_secret_key_env"], "")
+    PUBLISHABLE_KEY = os.environ.get(
+        store_cfg.get("stripe_publishable_key_env", "STRIPE_TEST_PUBLISHABLE_KEY"), "")
+    if stripe_key and not stripe_key.startswith("sk_test_"):
+        raise RuntimeError(
+            "REFUSED: test-mode Stripe key does not start with sk_test_. "
+            "Set STRIPE_MODE=live with STRIPE_LIVE_SECRET_KEY for live keys.")
 stripe.api_key = stripe_key or None
 STRIPE_READY = bool(stripe_key)
+log.info("stripe_mode=%s stripe_ready=%s", STRIPE_MODE, STRIPE_READY)
 
 # Connect routing (Bill 2026-09-30): AI Tools for Today (acct_1TttobEq0rLRALyr)
 # is a Connect Express account inside the Restoration Essentials master login —
@@ -145,8 +157,7 @@ wholesale_mod.init(
     get_product=lambda sku: BY_SKU if sku == "__all__" else BY_SKU.get(sku),
     stripe_ready=STRIPE_READY,
     stripe_acct=_stripe_acct,
-    publishable_key=os.environ.get(
-        store_cfg.get("stripe_publishable_key_env", "STRIPE_TEST_PUBLISHABLE_KEY"), ""),
+    publishable_key=PUBLISHABLE_KEY,
     root_dir=ROOT,
 )
 
@@ -232,6 +243,7 @@ def api_brand():
         "theme": theme, "stats": catalog_stats(PRODUCTS),
         "sizes": APPAREL_SIZES,
         "stripe_ready": STRIPE_READY,
+        "stripe_mode": STRIPE_MODE,
     })
 
 
@@ -342,12 +354,13 @@ def api_checkout():
 
     # FOUNDER100 (Bill's standing test method): an API-level coupon that
     # brings the order total to exactly $0.50 for the test charge. Passed as
-    # {coupon:"FOUNDER100"}; never advertised in the storefront UI. TEST MODE
-    # ONLY — v1 refuses live keys at startup, so this can never discount a
-    # real-money order.
+    # {coupon:"FOUNDER100"}; never advertised in the storefront UI. DISABLED
+    # in live mode — it must never discount a real-money order.
     coupon = ((data or {}).get("coupon") or "").strip().upper()
     discounts = None
     if coupon == "FOUNDER100":
+        if STRIPE_MODE == "live":
+            return jsonify({"error": "FOUNDER100 is a test-mode coupon."}), 400
         if total_cents <= 50:
             return jsonify({"error": "FOUNDER100 needs an order total over $0.50"}), 400
         try:
@@ -428,7 +441,10 @@ def api_fulfill():
         return jsonify({"error": f"cannot retrieve session: {e}"}), 400
     if session.payment_status != "paid":
         return jsonify({"error": f"session not paid (status={session.payment_status})"}), 402
-    cart = json.loads(session.metadata.get("cart", "[]"))
+    # stripe-python 15.x: session.metadata is a StripeObject, not a dict —
+    # .get() raises AttributeError. Attribute/item access + `in` work.
+    meta = session.metadata or {}
+    cart = json.loads(meta["cart"] if "cart" in meta else "[]")
     ship = session.shipping_details or {}
     cust = session.customer_details or {}
     addr = (ship.get("address") if isinstance(ship, dict) else ship.address) or {}
