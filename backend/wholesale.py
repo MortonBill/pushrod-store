@@ -51,8 +51,8 @@ BLANK_NAMES = {
     "flag": "Flag",
 }
 WHOLESALE_FACTOR = 0.80            # 20% off retail, flat — no tiers
-BULK_MIN_PER_BLANK = 25           # 25+ units per base product, non-negotiable
-OPENING_MIN_UNITS = 48            # opening order: 48+ units ...
+BULK_MIN_PER_BLANK = 10           # 10+ units per base product (Bill 2026-09-30)
+OPENING_MIN_UNITS = 50            # opening order: 50+ units (Bill 2026-09-30) ...
 OPENING_MIN_CENTS = 50000         # ... or $500+ merchandise
 BULK_SHIP_CENTS = {               # bulk-shipping estimate per unit (guide §3).
     "tee": 116, "hat": 100, "sweatshirt": 200,  # verified (guide §3)
@@ -62,8 +62,8 @@ BULK_SHIP_CENTS = {               # bulk-shipping estimate per unit (guide §3).
     "metal sign": 350, "sign": 350,
     "banner": 300, "vinyl banner": 300, "flag": 250,
 }
-AGREEMENT_VERSION = "2026-09-30-r2"  # r2: whole-catalog scope (Bill 2026-09-30);
-                                     # r1 was 3-blank launch scope
+AGREEMENT_VERSION = "2026-09-30-r3"  # r3: minimums 50/10 (Bill 2026-09-30);
+                                     # r2 was whole-catalog scope, r1 was 3-blank launch scope
 
 CERT_EXTENSIONS = {"pdf", "jpg", "jpeg", "png"}
 MAX_CERT_BYTES = 10 * 1024 * 1024

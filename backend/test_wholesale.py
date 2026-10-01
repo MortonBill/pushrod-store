@@ -45,30 +45,30 @@ check("blank sweatshirt", ws.blank_for_type("sweatshirt") == "Gildan 18000")
 check("blank mug", ws.blank_for_type("mug") == "Ceramic mug")
 check("blank truly unknown", ws.blank_for_type("widget") is None)
 
-check("24 tees rejected",
-      any("25+" in e for e in ws.check_wholesale_minimums(
-          [{"type": "tee", "qty": 24, "unit_cents": 2080}], True)))
+check("9 tees rejected",
+      any("10+" in e for e in ws.check_wholesale_minimums(
+          [{"type": "tee", "qty": 9, "unit_cents": 2080}], True)))
 check("25 hats first order rejected (25x19.20=$480 < $500 opening)",
       any("Opening order" in e for e in ws.check_wholesale_minimums(
           [{"type": "hat", "qty": 25, "unit_cents": 1920}], True)))
-check("48 tees first order ok",
+check("50 tees first order ok",
       ws.check_wholesale_minimums(
-          [{"type": "tee", "qty": 48, "unit_cents": 2080}], True) == [])
+          [{"type": "tee", "qty": 50, "unit_cents": 2080}], True) == [])
 check("25 tees reorder ok (no opening rule)",
       ws.check_wholesale_minimums(
           [{"type": "tee", "qty": 25, "unit_cents": 2080}], False) == [])
-check("25 tees + 24 hats rejected (hats short)",
+check("10 tees + 9 hats rejected (hats short)",
       any("Yupoong" in e for e in ws.check_wholesale_minimums(
-          [{"type": "tee", "qty": 25, "unit_cents": 2080},
-           {"type": "hat", "qty": 24, "unit_cents": 1920}], False)))
+          [{"type": "tee", "qty": 10, "unit_cents": 2080},
+           {"type": "hat", "qty": 9, "unit_cents": 1920}], False)))
 check("25 tees + 25 hats ok",
       ws.check_wholesale_minimums(
           [{"type": "tee", "qty": 25, "unit_cents": 2080},
            {"type": "hat", "qty": 25, "unit_cents": 1920}], False) == [])
-check("opening $500 merchandise passes with <48 units",
+check("opening $500 merchandise passes with <50 units",
       ws.check_wholesale_minimums(
           [{"type": "sweatshirt", "qty": 15, "unit_cents": 3520}], True) == [] or
-      any("25+" in e for e in ws.check_wholesale_minimums(
+      any("10+" in e for e in ws.check_wholesale_minimums(
           [{"type": "sweatshirt", "qty": 15, "unit_cents": 3520}], True)))
 check("bulk ship 25 tees = $29.00",
       ws.bulk_shipping_cents([{"type": "tee", "qty": 25}]) == 2900)
@@ -219,22 +219,22 @@ store_app.stripe.checkout.Session.create = lambda **kw: FakeSession(**kw)
 
 r = client.post("/api/checkout", json={
     "wholesale": True,
-    "items": [{"sku": tee["sku"], "size": "M", "qty": 24}]})
-check("wholesale 24 tees -> 400 minimums",
-      r.status_code == 400 and "25+" in r.get_json()["error"], r.status_code)
+    "items": [{"sku": tee["sku"], "size": "M", "qty": 9}]})
+check("wholesale 9 tees -> 400 minimums",
+      r.status_code == 400 and "10+" in r.get_json()["error"], r.status_code)
 
 r = client.post("/api/checkout", json={
     "wholesale": True,
-    "items": [{"sku": tee["sku"], "size": "M", "qty": 48}]})
+    "items": [{"sku": tee["sku"], "size": "M", "qty": 50}]})
 j = r.get_json()
-check("wholesale 48 tees -> 200", r.status_code == 200, f"{r.status_code} {j}")
+check("wholesale 50 tees -> 200", r.status_code == 200, f"{r.status_code} {j}")
 if r.status_code == 200:
     items = captured["line_items"]
-    merch = next(i for i in items if i["quantity"] == 48)
+    merch = next(i for i in items if i["quantity"] == 50)
     ship = next(i for i in items if i["quantity"] == 1)
     check("partner unit price 2080", merch["price_data"]["unit_amount"] == 2080,
           merch["price_data"]["unit_amount"])
-    check("bulk ship line 48*116=5568", ship["price_data"]["unit_amount"] == 5568,
+    check("bulk ship line 50*116=5800", ship["price_data"]["unit_amount"] == 5800,
           ship["price_data"]["unit_amount"])
     check("partner in metadata",
           captured["metadata"].get("wholesale_partner") == "PTNR-000001")

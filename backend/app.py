@@ -317,8 +317,8 @@ def api_checkout():
         return jsonify({"error": "cart is empty"}), 400
     ship_cents = 0
     if partner:
-        # Server-side minimums: 25+ units per base product, every order;
-        # opening order additionally 48+ units or $500+ merchandise.
+        # Server-side minimums: 10+ units per base product, every order;
+        # opening order additionally 50+ units or $500+ merchandise.
         wl_lines = [{"type": BY_SKU[l["sku"]]["type"], "qty": l["qty"],
                      "unit_cents": l["unit_cents"]} for l in lines]
         min_errors = wholesale_mod.check_wholesale_minimums(
