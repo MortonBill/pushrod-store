@@ -85,8 +85,12 @@ for path in ["/wholesale", "/wholesale/apply", "/wholesale/login",
     r = client.get(path)
     check(f"page {path} 200", r.status_code == 200, r.status_code)
 r = client.get("/wholesale/agreement-body")
-check("agreement carries DRAFT banner",
-      "DRAFT" in r.get_data(as_text=True) and "pending attorney review" in r.get_data(as_text=True))
+body = r.get_data(as_text=True)
+check("no DRAFT banner (agreement final per Bill 2026-09-30)",
+      "DRAFT" not in body and "pending attorney review" not in body)
+check("final approval notice + version 2026-09-30",
+      "Approved as final by Bill Morton on 2026-09-30" in body
+      and "Version 2026-09-30" in body)
 
 # /api/products carries wholesale_eligible (additive; retail untouched)
 r = client.get("/api/products")

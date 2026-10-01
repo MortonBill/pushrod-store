@@ -8,9 +8,9 @@ Resale-certificate uploads go to WHOLESALE_CERT_DIR (same disk rule).
 
 Agreement acceptance is a REQUIRED CHECKBOX on the application form —
 recorded with timestamp, client IP, and agreement version on the
-application row. Per Bill 2026-09-30 there is no e-signature integration;
-checkbox acceptance is the agreement method. The agreement text itself
-carries a "DRAFT — pending attorney review" banner until counsel signs off.
+application row. Per Bill 2026-09-30 the agreement is FINAL as written
+on his own authority (attorney review waived); there is no e-signature
+integration — checkbox acceptance is the agreement method.
 """
 import hashlib
 import hmac
@@ -42,7 +42,7 @@ OPENING_MIN_CENTS = 50000         # ... or $500+ merchandise
 BULK_SHIP_CENTS = {               # bulk-shipping estimate per unit (guide §3)
     "tee": 116, "hat": 100, "sweatshirt": 200,
 }
-AGREEMENT_VERSION = "2026-09-30-draft"  # bump when counsel finalizes
+AGREEMENT_VERSION = "2026-09-30"  # final per Bill 2026-09-30 (attorney review waived)
 
 CERT_EXTENSIONS = {"pdf", "jpg", "jpeg", "png"}
 MAX_CERT_BYTES = 10 * 1024 * 1024
