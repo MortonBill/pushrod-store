@@ -5,6 +5,7 @@ const money = c => '$' + (c / 100).toFixed(2);
 
 let BRAND = null, PRODUCTS = [], BY_SKU = {};
 let DOOR = 'all';   // gateway door filter: 'all' or a SKU prefix
+let WHOLESALE = { logged_in: false, partner_id: null };
 
 function applyTheme() {
   const t = BRAND.theme, r = document.documentElement.style;
@@ -21,12 +22,43 @@ async function boot() {
   BRAND = await (await fetch('/api/brand')).json();
   PRODUCTS = await (await fetch('/api/products')).json();
   PRODUCTS.forEach(p => BY_SKU[p.sku] = p);
-  applyTheme(); renderCart();
+  try { WHOLESALE = await (await fetch('/api/wholesale/me')).json(); }
+  catch (e) { WHOLESALE = { logged_in: false }; }
+  applyTheme(); renderCart(); renderWholesaleNav();
   buildTypeFilter();
   if (document.getElementById('grid')) { renderDoors(); renderGrid(); }
   if (document.getElementById('pdetail')) renderDetail();
   const sc = $('#stripe-note');
   if (sc && !BRAND.stripe_ready) sc.textContent = 'Checkout unavailable: Stripe test key not configured.';
+}
+
+/* Wholesale partner nav: login state + partner pricing badge. Guests see
+   the program link; approved partners see their ID and log out. */
+function renderWholesaleNav() {
+  const top = document.querySelector('header.top');
+  if (!top || document.getElementById('wsnav')) return;
+  const d = document.createElement('div');
+  d.id = 'wsnav'; d.className = 'brandnav';
+  d.innerHTML = WHOLESALE.logged_in
+    ? `<span style="color:var(--accent)">Partner ${WHOLESALE.partner_id}</span>` +
+      `<a href="#" id="wslogout">Log out</a><a href="/wholesale">Wholesale</a>`
+    : `<a href="/wholesale">Wholesale</a><a href="/wholesale/login">Partner login</a>`;
+  top.appendChild(d);
+  const lo = document.getElementById('wslogout');
+  if (lo) lo.onclick = async e => {
+    e.preventDefault();
+    await fetch('/api/wholesale/logout', { method: 'POST' });
+    location.reload();
+  };
+}
+
+/* Unit price, wholesale-aware: approved partners get 20% off the 3 launch
+   blanks. The server re-prices and re-validates everything at checkout. */
+function unitCents(p) {
+  const retail = Math.round(p.price.amount * 100);
+  if (WHOLESALE.logged_in && p.wholesale_eligible && p.purchasable)
+    return Math.round(retail * 0.8);
+  return retail;
 }
 
 /* ---------- gateway doors + filters ---------- */
@@ -66,6 +98,13 @@ function priceHTML(p) {
     ? '<span class="tbd">Unavailable</span>'
     : '<span class="tbd">Price TBD</span>';
   const d = p.price.status === 'draft' ? ' <span class="draft">intro price</span>' : '';
+  // Partner pricing: approved wholesale partners see 20% off the launch
+  // blanks, retail struck through. Guests see retail only.
+  if (WHOLESALE.logged_in && p.wholesale_eligible) {
+    const w = Math.round(p.price.amount * 100 * 0.8);
+    return `<span class="price">${money(w)}</span> <span class="wtag">partner</span> ` +
+      `<s style="color:var(--muted);font-size:.85rem">${money(Math.round(p.price.amount * 100))}</s>${d}`;
+  }
   return `<span class="price">$${p.price.amount.toFixed(2)}${d}</span>`;
 }
 function renderGrid() {
@@ -160,9 +199,15 @@ function renderCart() {
   if (!cart.length) { box.innerHTML = '<p style="color:var(--muted)">Cart is empty.</p>'; $('#ctotal').textContent = '$0.00'; return; }
   let total = 0;
   box.innerHTML = '';
+  if (WHOLESALE.logged_in) {
+    const hint = document.createElement('p');
+    hint.style.cssText = 'color:var(--muted);font-size:.8rem';
+    hint.textContent = 'Wholesale order: 25+ units per blank (tees / hats / pullovers); opening order 48+ units or $500+. Bulk shipping added at checkout.';
+    box.appendChild(hint);
+  }
   cart.forEach(i => {
     const p = BY_SKU[i.sku]; if (!p || !p.purchasable) return;
-    const unit = Math.round(p.price.amount * 100); total += unit * i.qty;
+    const unit = unitCents(p); total += unit * i.qty;
     const el = document.createElement('div');
     el.className = 'citem';
     el.innerHTML = `
@@ -193,7 +238,7 @@ async function checkout() {
   try {
     const r = await fetch('/api/checkout', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart }),
+      body: JSON.stringify({ items: cart, wholesale: WHOLESALE.logged_in }),
     });
     const j = await r.json();
     if (!r.ok) throw new Error(j.error || 'checkout failed');

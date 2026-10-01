@@ -5,6 +5,12 @@ services:
     plan: starter            # $7/mo
     buildCommand: bash render-build.sh
     startCommand: gunicorn --chdir backend --bind 0.0.0.0:$PORT --workers 2 --timeout 120 app:app
+    # Persistent disk: the wholesale SQLite DB and resale-certificate uploads
+    # live here. Without it, partner accounts/applications vanish on restart.
+    disk:
+      name: pushrod-data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
       - key: BRAND
         value: gateway       # 4-door unified catalog
@@ -12,4 +18,7 @@ services:
         value: 1
       # Set in the Render dashboard (never in git):
       # STRIPE_TEST_SECRET_KEY, STRIPE_TEST_PUBLISHABLE_KEY,
-      # STRIPE_WEBHOOK_SECRET, PRINTFUL_API_TOKEN
+      # STRIPE_WEBHOOK_SECRET, PRINTFUL_API_TOKEN,
+      # WHOLESALE_ADMIN_TOKEN   (secret token protecting /wholesale/admin API),
+      # WHOLESALE_SESSION_SECRET (stable Flask secret so partner logins survive
+      #   restarts; without it sessions break on every deploy)

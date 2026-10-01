@@ -31,6 +31,7 @@ from fulfillment.fulfill import (
     fulfill_paid_order, load_mapping, mapping_key, build_order_items,
 )
 from fulfillment.printful_client import PrintfulConfigError, PrintfulAPIError
+import wholesale as wholesale_mod
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("pushrod")
@@ -138,6 +139,17 @@ def _stripe_acct():
 
 app = Flask(__name__, static_folder=os.path.join(FRONTEND, "static"))
 
+# ---------- wholesale partner program (Bill 2026-09-30: "build it out and wire it up") ----------
+wholesale_mod.init(
+    app,
+    get_product=lambda sku: BY_SKU if sku == "__all__" else BY_SKU.get(sku),
+    stripe_ready=STRIPE_READY,
+    stripe_acct=_stripe_acct,
+    publishable_key=os.environ.get(
+        store_cfg.get("stripe_publishable_key_env", "STRIPE_TEST_PUBLISHABLE_KEY"), ""),
+    root_dir=ROOT,
+)
+
 
 # ---------- storefront pages (static frontend) ----------
 @app.get("/")
@@ -160,6 +172,44 @@ def success_page():
 @app.get("/checkout/cancel")
 def cancel_page():
     return send_from_directory(FRONTEND, "cancel.html")
+
+
+# ---------- wholesale pages ----------
+@app.get("/wholesale")
+def wholesale_home():
+    return send_from_directory(FRONTEND, "wholesale.html")
+
+
+@app.get("/wholesale/apply")
+def wholesale_apply():
+    return send_from_directory(FRONTEND, "apply.html")
+
+
+@app.get("/wholesale/login")
+def wholesale_login():
+    return send_from_directory(FRONTEND, "login.html")
+
+
+@app.get("/wholesale/agreement")
+def wholesale_agreement():
+    return send_from_directory(FRONTEND, "agreement.html")
+
+
+@app.get("/wholesale/agreement-body")
+def wholesale_agreement_body():
+    # Single source of truth for the agreement text: both agreement.html and
+    # apply.html fetch and inject this fragment.
+    return send_from_directory(FRONTEND, "agreement-body.html")
+
+
+@app.get("/wholesale/map")
+def wholesale_map():
+    return send_from_directory(FRONTEND, "map.html")
+
+
+@app.get("/wholesale/admin")
+def wholesale_admin():
+    return send_from_directory(FRONTEND, "admin.html")
 
 
 @app.get("/img/<lib>/<path:filename>")
@@ -187,7 +237,12 @@ def api_brand():
 
 @app.get("/api/products")
 def api_products():
-    return jsonify(PRODUCTS)
+    # wholesale_eligible is additive metadata for the storefront's partner
+    # pricing display; retail guests ignore it.
+    return jsonify([
+        {**p, "wholesale_eligible": wholesale_mod.is_wholesale_eligible(p)}
+        for p in PRODUCTS
+    ])
 
 
 @app.get("/api/products/<sku>")
@@ -196,8 +251,12 @@ def api_product(sku):
     return (jsonify(p), 200) if p else (jsonify({"error": "not found"}), 404)
 
 
-def _validate_cart(items):
-    """Re-price and validate client cart server-side. Never trust client prices."""
+def _validate_cart(items, price_fn=None):
+    """Re-price and validate client cart server-side. Never trust client prices.
+
+    price_fn(product) -> (unit_cents, error_or_None); defaults to retail.
+    Wholesale checkout passes a function applying the 20%-off partner price
+    and rejecting non-program products."""
     lines, total_cents, errors = [], 0, []
     for it in items or []:
         sku = it.get("sku")
@@ -213,24 +272,59 @@ def _validate_cart(items):
         if p["needs_size"] and size not in APPAREL_SIZES:
             errors.append(f"{sku} requires a size ({'/'.join(APPAREL_SIZES)})")
             continue
-        unit_cents = int(round(p["price"]["amount"] * 100))
+        if price_fn is not None:
+            unit_cents, perr = price_fn(p)
+            if perr:
+                errors.append(perr)
+                continue
+        else:
+            unit_cents = int(round(p["price"]["amount"] * 100))
         lines.append({"sku": sku, "title": p["title"], "size": size,
                       "qty": qty, "unit_cents": unit_cents})
         total_cents += unit_cents * qty
     return lines, total_cents, errors
 
 
+def _wholesale_price_fn(p):
+    """20%-off partner pricing; rejects anything outside the 3 launch blanks."""
+    if not wholesale_mod.is_wholesale_eligible(p):
+        return None, (f"{p['sku']} is not in the wholesale program "
+                      f"(launch: tees, hats, pullovers only)")
+    retail_cents = int(round(p["price"]["amount"] * 100))
+    return wholesale_mod.wholesale_unit_cents(retail_cents), None
+
+
 @app.post("/api/checkout")
 def api_checkout():
+    data = request.get_json(force=True)
+    # Wholesale checkout: requires an approved partner session. Retail guest
+    # flow is untouched when the flag is absent.
+    wholesale_requested = bool(data.get("wholesale"))
+    partner = wholesale_mod.current_partner() if wholesale_requested else None
+    if wholesale_requested and not partner:
+        return jsonify({"error": "wholesale checkout requires an approved "
+                                 "partner login"}), 401
     if not STRIPE_READY:
         return jsonify({"error": "Stripe test key not configured. "
                                  "Set STRIPE_TEST_SECRET_KEY (sk_test_...) to enable checkout."}), 503
-    data = request.get_json(force=True)
-    lines, total_cents, errors = _validate_cart(data.get("items"))
+    lines, total_cents, errors = _validate_cart(
+        data.get("items"),
+        price_fn=_wholesale_price_fn if partner else None)
     if errors:
         return jsonify({"error": "; ".join(errors)}), 400
     if not lines:
         return jsonify({"error": "cart is empty"}), 400
+    ship_cents = 0
+    if partner:
+        # Server-side minimums: 25+ units per base product, every order;
+        # opening order additionally 48+ units or $500+ merchandise.
+        wl_lines = [{"type": BY_SKU[l["sku"]]["type"], "qty": l["qty"],
+                     "unit_cents": l["unit_cents"]} for l in lines]
+        min_errors = wholesale_mod.check_wholesale_minimums(
+            wl_lines, is_first_order=not partner["has_ordered"])
+        if min_errors:
+            return jsonify({"error": "; ".join(min_errors)}), 400
+        ship_cents = wholesale_mod.bulk_shipping_cents(wl_lines)
     # Fulfillment pre-check: every line must have COMPLETE Printful mapping
     # (non-null values, not just keys) — the same rule as the purchasability
     # gate (catalog.mapping_complete). A customer must never pay for something
@@ -270,19 +364,35 @@ def api_checkout():
         discounts = [{"coupon": fc.id}]
 
     base = request.host_url.rstrip("/")
-    create_kwargs = dict(
-        mode="payment",
-        line_items=[{
+    line_items = [{
+        "price_data": {
+            "currency": store_cfg["currency"],
+            "unit_amount": l["unit_cents"],
+            "product_data": {"name": f"{brand['brand']['name']} — {l['title']}"
+                                     + (f" ({l['size']})" if l["size"] else "")},
+        },
+        "quantity": l["qty"],
+    } for l in lines]
+    if partner and ship_cents > 0:
+        # Bulk shipping at our cost, shown as an estimate line item —
+        # freight is partner-paid and excluded from minimum calculations.
+        line_items.append({
             "price_data": {
                 "currency": store_cfg["currency"],
-                "unit_amount": l["unit_cents"],
-                "product_data": {"name": f"{brand['brand']['name']} — {l['title']}"
-                                         + (f" ({l['size']})" if l["size"] else "")},
+                "unit_amount": ship_cents,
+                "product_data": {"name": "Bulk shipping (estimate) — partner rate"},
             },
-            "quantity": l["qty"],
-        } for l in lines],
-        metadata={"cart": json.dumps(
-            [{"sku": l["sku"], "size": l["size"], "qty": l["qty"]} for l in lines])},
+            "quantity": 1,
+        })
+        total_cents += ship_cents
+    metadata = {"cart": json.dumps(
+        [{"sku": l["sku"], "size": l["size"], "qty": l["qty"]} for l in lines])}
+    if partner:
+        metadata["wholesale_partner"] = partner["partner_id"]
+    create_kwargs = dict(
+        mode="payment",
+        line_items=line_items,
+        metadata=metadata,
         shipping_address_collection={"allowed_countries": ["US"]},
         success_url=base + "/checkout/success?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=base + "/checkout/cancel",
@@ -298,6 +408,9 @@ def api_checkout():
         log.warning("stripe checkout Session.create failed: %r", e)
         msg = getattr(e, "user_message", None) or str(e) or "checkout failed"
         return jsonify({"error": f"Stripe error: {msg}"}), 502
+    if partner:
+        wholesale_mod.record_wholesale_order(partner["partner_id"], session.id,
+                                             total_cents)
     return jsonify({"checkout_url": session.url, "session_id": session.id})
 
 

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Partner Agreement (DRAFT) — PUSHROD™ Wholesale</title>
+<link rel="stylesheet" href="/static/css/store.css">
+<style>
+.draft-banner{background:#7c2d12;border:2px solid #f59e0b;color:#fff;padding:1rem;border-radius:8px;margin-bottom:1.5rem}
+.terms{max-width:46rem;margin:0 auto;line-height:1.6}
+.terms h3{margin-top:1.6rem;color:var(--accent)}
+.terms .meta{color:var(--muted)}
+.page-wrap{max-width:48rem;margin:2rem auto;padding:0 1rem}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo"><a href="/" style="color:inherit;text-decoration:none"><span class="brandname">PUSHROD™</span></a><small>WHOLESALE</small></div>
+  <nav class="brandnav"><a href="/wholesale">Program</a><a href="/wholesale/apply">Apply</a><a href="/wholesale/map">MAP policy</a></nav>
+</header>
+<main class="page-wrap">
+  <div class="terms" id="terms"><p>Loading agreement…</p></div>
+  <p style="margin-top:2rem"><a href="/wholesale/apply">← Back to the application</a></p>
+</main>
+<script>
+fetch('/wholesale/agreement-body')
+  .then(r => r.text())
+  .then(h => { document.getElementById('terms').innerHTML = h; })
+  .catch(() => { document.getElementById('terms').innerHTML = '<p>Could not load the agreement text.</p>'; });
+fetch('/api/brand').then(r=>r.json()).then(b=>{
+  document.querySelectorAll('.brandname').forEach(e=>e.textContent=b.name);
+});
+</script>
+</body>
+</html>

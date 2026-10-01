@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Partner Login — PUSHROD™ Wholesale</title>
+<link rel="stylesheet" href="/static/css/store.css">
+<style>.page-wrap{max-width:26rem;margin:3rem auto;padding:0 1rem}
+label{display:block;margin:.6rem 0 .2rem}
+input{width:100%;padding:.55rem;border-radius:6px;border:1px solid #555;background:#1a1a1a;color:var(--text);box-sizing:border-box}
+.err{color:#f87171}.okmsg{color:#4ade80}</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo"><a href="/" style="color:inherit;text-decoration:none"><span class="brandname">PUSHROD™</span></a><small>WHOLESALE</small></div>
+  <nav class="brandnav"><a href="/wholesale">Program</a><a href="/wholesale/apply">Apply</a></nav>
+</header>
+<main class="page-wrap">
+<h1>Partner login</h1>
+<div id="msg"></div>
+<form id="loginform">
+<label>Email<input name="email" type="email" required></label>
+<label>Password<input name="password" type="password" required></label>
+<button class="btn" type="submit" style="width:100%;padding:.8rem;margin-top:1rem">Log in</button>
+</form>
+<p style="color:var(--muted)">No account yet? <a href="/wholesale/apply">Apply for wholesale</a>.</p>
+</main>
+<script>
+document.getElementById('loginform').addEventListener('submit', async e => {
+  e.preventDefault();
+  const fd = new FormData(e.target), msg = document.getElementById('msg');
+  const r = await fetch('/api/wholesale/login', {method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({email: fd.get('email'), password: fd.get('password')})});
+  const j = await r.json();
+  if (!r.ok) { msg.innerHTML = '<p class="err">' + (j.error||'login failed') + '</p>'; return; }
+  msg.innerHTML = '<p class="okmsg">Welcome, ' + j.partner_id + ' — partner pricing is live.</p>';
+  setTimeout(()=>location.href='/', 900);
+});
+</script>
+</body>
+</html>

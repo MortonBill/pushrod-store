@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wholesale Application — PUSHROD™</title>
+<link rel="stylesheet" href="/static/css/store.css">
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+.page-wrap{max-width:46rem;margin:2rem auto;padding:0 1rem}
+fieldset{border:1px solid #444;border-radius:8px;padding:1rem;margin-bottom:1.25rem}
+legend{padding:0 .5rem;color:var(--accent);font-weight:bold}
+label{display:block;margin:.6rem 0 .2rem}
+input[type=text],input[type=email],input[type=password],input[type=url],input[type=file],select,textarea{width:100%;padding:.55rem;border-radius:6px;border:1px solid #555;background:#1a1a1a;color:var(--text);box-sizing:border-box}
+textarea{min-height:4rem}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.checks label{display:flex;gap:.5rem;align-items:flex-start;margin:.35rem 0;font-weight:normal}
+.checks input{margin-top:.25rem}
+#card-element{background:#1a1a1a;border:1px solid #555;border-radius:6px;padding:.7rem}
+.draft-banner{background:#7c2d12;border:2px solid #f59e0b;color:#fff;padding:1rem;border-radius:8px;margin-bottom:1rem}
+#terms{max-height:22rem;overflow-y:auto;border:1px solid #444;border-radius:8px;padding:1rem;background:#161616}
+#terms h3{color:var(--accent);margin-top:1.2rem}
+.err{color:#f87171;margin:.75rem 0}
+.okmsg{color:#4ade80;margin:.75rem 0}
+.req{color:#f59e0b}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo"><a href="/" style="color:inherit;text-decoration:none"><span class="brandname">PUSHROD™</span></a><small>WHOLESALE</small></div>
+  <nav class="brandnav"><a href="/wholesale">Program</a><a href="/wholesale/map">MAP policy</a><a href="/wholesale/agreement">Agreement</a></nav>
+</header>
+<main class="page-wrap">
+<h1>Wholesale application</h1>
+<p>Every application is reviewed by a human — decision within 2 business days. <span class="req">*</span> = required.</p>
+<div id="msg"></div>
+<form id="applyform" enctype="multipart/form-data">
+<fieldset><legend>Business identity</legend>
+<div class="row2">
+<div><label>Legal business name <span class="req">*</span><input name="legal_name" type="text" required></label></div>
+<div><label>DBA (if any)<input name="dba" type="text"></label></div>
+</div>
+<div class="row2">
+<div><label>Business type<select name="business_type"><option>LLC</option><option>Corporation</option><option>Sole proprietorship</option><option>Partnership</option><option>Other</option></select></label></div>
+<div><label>EIN <span class="req">*</span><input name="ein" type="text" required placeholder="12-3456789"></label></div>
+</div>
+<label>Business address <span class="req">*</span><textarea name="address" required></textarea></label>
+<div class="row2">
+<div><label>Phone<input name="phone" type="text"></label></div>
+<div><label>Business license (number / issuing authority)<input name="license_info" type="text"></label></div>
+</div>
+</fieldset>
+
+<fieldset><legend>Contact &amp; login</legend>
+<div class="row2">
+<div><label>Contact name <span class="req">*</span><input name="contact_name" type="text" required></label></div>
+<div><label>Contact email <span class="req">*</span><input name="contact_email" type="email" required></label></div>
+</div>
+<label>Choose a password for your partner login (min 8 chars) <span class="req">*</span><input name="password" type="password" required minlength="8"></label>
+</fieldset>
+
+<fieldset><legend>Tax exemption — the gate</legend>
+<p style="color:var(--muted)">No valid resale certificate = no tax exemption and no wholesale account. Name on the certificate must match your business name.</p>
+<label>State resale permit number(s) <span class="req">*</span><input name="resale_permits" type="text" required placeholder="e.g. IA 12-3456789; IL …"></label>
+<label>Signed resale certificate upload (PDF/JPG/PNG, ≤10 MB) <span class="req">*</span><input name="resale_cert" type="file" accept=".pdf,.jpg,.jpeg,.png" required></label>
+</fieldset>
+
+<fieldset><legend>Sales profile</legend>
+<div class="row2">
+<div><label>Business kind<select name="business_kind"><option>Brick-and-mortar</option><option>Ecommerce</option><option>Both</option></select></label></div>
+<div><label>Website URL <span class="req">*</span><input name="website" type="url" required placeholder="https://…"></label></div>
+</div>
+<label>Storefront proof (physical stores: describe location / link photos)<textarea name="storefront_proof"></textarea></label>
+<label>Channels you sell through</label>
+<div class="checks" id="channels">
+<label><input type="checkbox" value="own-website" checked> Own website</label>
+<label><input type="checkbox" value="physical-store"> Physical store</label>
+<label><input type="checkbox" value="amazon"> Amazon</label>
+<label><input type="checkbox" value="ebay"> eBay</label>
+<label><input type="checkbox" value="walmart"> Walmart</label>
+<label><input type="checkbox" value="other-marketplaces"> Other marketplaces</label>
+<label><input type="checkbox" value="craft-fairs"> Craft fairs / markets</label>
+</div>
+<div class="row2">
+<div><label>Product categories of interest<input name="categories" type="text" placeholder="e.g. tees, hats"></label></div>
+<div><label>Estimated first-year wholesale volume<select name="volume_estimate"><option>Under $1,000</option><option>$1,000 – $5,000</option><option>$5,000 – $25,000</option><option>Over $25,000</option></select></label></div>
+</div>
+<label>Trade references (2–3: company, contact, phone/email)<textarea name="trade_refs"></textarea></label>
+</fieldset>
+
+<fieldset><legend>Card on file (prepay)</legend>
+<p style="color:var(--muted)">New partners prepay every order. Your card is tokenized by Stripe — we never see or store the card number.</p>
+<div id="card-element"></div>
+<div id="card-note" style="color:var(--muted);font-size:.85rem;margin-top:.4rem"></div>
+</fieldset>
+
+<fieldset><legend>Agreement</legend>
+<div id="terms"><p>Loading agreement…</p></div>
+<label class="checks" style="margin-top:1rem"><input type="checkbox" id="accept_terms" required>
+<span>I have read and agree to the <a href="/wholesale/agreement" target="_blank">Partner Agreement (DRAFT)</a>, the <a href="/wholesale/map" target="_blank">MAP policy</a>, the brand guidelines, and the channel restrictions. <span class="req">*</span></span></label>
+<p style="color:var(--muted);font-size:.85rem">Checking this box records your acceptance with a timestamp, IP address, and the agreement version shown above.</p>
+</fieldset>
+
+<input type="hidden" name="payment_method_id" id="pm_id">
+<button class="btn" type="submit" id="submitbtn" style="width:100%;padding:.9rem">Submit application</button>
+</form>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+fetch('/wholesale/agreement-body').then(r=>r.text()).then(h=>{$('#terms').innerHTML=h;});
+
+/* Stripe card tokenization: server only ever receives a payment_method id. */
+let stripe = null, card = null, clientSecret = null;
+fetch('/api/wholesale/setup-intent').then(async r => {
+  const j = await r.json();
+  if (!r.ok) { $('#card-note').textContent = 'Card capture unavailable right now (' + (j.error||'error') + ') — you can add a card later.'; return; }
+  clientSecret = j.client_secret;
+  stripe = Stripe(j.publishable_key);
+  card = stripe.elements().create('card');
+  card.mount('#card-element');
+}).catch(() => { $('#card-note').textContent = 'Card capture unavailable — you can add a card later.'; });
+
+$('#applyform').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = $('#submitbtn'), msg = $('#msg');
+  btn.disabled = true; btn.textContent = 'Submitting…'; msg.innerHTML = '';
+  try {
+    if (stripe && card && clientSecret) {
+      const {setupIntent, error} = await stripe.confirmCardSetup(clientSecret, {payment_method: {card}});
+      if (error) throw new Error(error.message);
+      $('#pm_id').value = setupIntent.payment_method;
+    }
+    const fd = new FormData(e.target);
+    fd.set('accept_terms', $('#accept_terms').checked ? '1' : '');
+    fd.set('channels', [...document.querySelectorAll('#channels input:checked')].map(c=>c.value).join(','));
+    const r = await fetch('/api/wholesale/apply', {method:'POST', body: fd});
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || 'submission failed');
+    msg.innerHTML = '<p class="okmsg"><strong>Application received.</strong> ' +
+      'Decision within 2 business days. Your application ID is #' + j.application_id + '.</p>';
+    e.target.reset();
+  } catch (err) {
+    msg.innerHTML = '<p class="err">Error: ' + err.message + '</p>';
+  }
+  btn.disabled = false; btn.textContent = 'Submit application';
+});
+</script>
+</body>
+</html>

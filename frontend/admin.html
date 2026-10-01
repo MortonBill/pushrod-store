@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wholesale Admin — PUSHROD™</title>
+<link rel="stylesheet" href="/static/css/store.css">
+<style>.page-wrap{max-width:60rem;margin:2rem auto;padding:0 1rem}
+input,select,textarea{padding:.5rem;border-radius:6px;border:1px solid #555;background:#1a1a1a;color:var(--text)}
+table{width:100%;border-collapse:collapse;margin-top:1rem}
+th,td{border:1px solid #444;padding:.45rem .6rem;text-align:left;font-size:.9rem;vertical-align:top}
+th{background:#222}.rowdetail{background:#161616;white-space:pre-wrap;font-size:.85rem}
+.err{color:#f87171}.okmsg{color:#4ade80}
+.badge{padding:.15rem .5rem;border-radius:10px;font-size:.8rem}
+.pending{background:#7c2d12}.approved{background:#14532d}.rejected{background:#3f3f46}</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo"><a href="/" style="color:inherit;text-decoration:none"><span class="brandname">PUSHROD™</span></a><small>WHOLESALE ADMIN</small></div>
+</header>
+<main class="page-wrap">
+<h1>Wholesale applications</h1>
+<div id="authbox">
+<label>Admin token <input id="token" type="password" style="width:22rem"></label>
+<button class="btn" id="loadbtn">Load applications</button>
+<div id="msg"></div>
+</div>
+<div id="list"></div>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const token = () => sessionStorage.getItem('ws_admin_token') || '';
+$('#token').value = token();
+$('#loadbtn').onclick = async () => {
+  sessionStorage.setItem('ws_admin_token', $('#token').value);
+  load();
+};
+async function api(path, opts={}) {
+  opts.headers = Object.assign({'X-Admin-Token': token()}, opts.headers||{});
+  const r = await fetch(path, opts);
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || ('HTTP '+r.status_code));
+  return j;
+}
+async function load() {
+  const msg = $('#msg');
+  try {
+    const j = await api('/api/admin/wholesale/applications');
+    msg.innerHTML = '';
+    if (!j.applications.length) { $('#list').innerHTML = '<p>No applications.</p>'; return; }
+    $('#list').innerHTML = '<table><tr><th>ID</th><th>Date</th><th>Status</th><th>Business</th><th>Contact</th><th>Website</th><th>Channels</th><th></th></tr>' +
+      j.applications.map(a => `<tr>
+        <td>${a.id}</td><td>${a.created_at.slice(0,10)}</td>
+        <td><span class="badge ${a.status}">${a.status}</span></td>
+        <td><strong>${a.legal_name}</strong>${a.dba?'<br>'+a.dba:''}</td>
+        <td>${a.contact_name}<br>${a.contact_email}</td>
+        <td><a href="${a.website}" target="_blank">site</a></td>
+        <td>${a.channels||''}</td>
+        <td><button class="btn ghost" onclick="detail(${a.id})">Review</button></td>
+      </tr><tr id="d${a.id}" style="display:none"><td colspan="8" class="rowdetail"></td></tr>`).join('') + '</table>';
+  } catch(e) { msg.innerHTML = '<p class="err">'+e.message+'</p>'; }
+}
+async function detail(id) {
+  const row = document.getElementById('d'+id);
+  const show = row.style.display === 'none';
+  document.querySelectorAll('[id^=d]').forEach(r=>r.style.display='none');
+  if (!show) return;
+  try {
+    const a = await api('/api/admin/wholesale/applications/'+id);
+    row.style.display = '';
+    row.firstElementChild.textContent =
+      `EIN: ${a.ein}\nAddress: ${a.address}\nPhone: ${a.phone||'-'}\n` +
+      `Permits: ${a.resale_permits}\nLicense: ${a.license_info||'-'}\nKind: ${a.business_kind||'-'}\n` +
+      `Storefront proof: ${a.storefront_proof||'-'}\nCategories: ${a.categories||'-'}\n` +
+      `Volume: ${a.volume_estimate||'-'}\nTrade refs: ${a.trade_refs||'-'}\n` +
+      `Cert file: ${a.cert_path}\nCard on file: ${a.payment_method_id?'yes':'no'}\n` +
+      `Agreement: v${a.agreement_version} accepted ${a.accepted_at} from ${a.accepted_ip}\n`;
+    if (a.status === 'pending') {
+      const div = document.createElement('div');
+      div.innerHTML = `<button class="btn" id="ap${id}">Approve → issue partner ID</button>
+        <button class="btn ghost" id="rj${id}">Reject</button> <span id="m${id}"></span>`;
+      row.firstElementChild.appendChild(div);
+      document.getElementById('ap'+id).onclick = async () => {
+        try { const j = await api('/api/admin/wholesale/applications/'+id+'/approve', {method:'POST'});
+          document.getElementById('m'+id).innerHTML = '<span class="okmsg">Approved → <strong>'+j.partner_id+'</strong> ('+j.email+'). They log in with the email + password from their application. No welcome email is sent — Bill handles outreach.</span>';
+          load();
+        } catch(e){ document.getElementById('m'+id).innerHTML = '<span class="err">'+e.message+'</span>'; }
+      };
+      document.getElementById('rj'+id).onclick = async () => {
+        const note = prompt('Rejection note (optional):') || '';
+        try { await api('/api/admin/wholesale/applications/'+id+'/reject', {method:'POST',
+            headers:{'Content-Type':'application/json'}, body: JSON.stringify({note})});
+          load();
+        } catch(e){ document.getElementById('m'+id).innerHTML = '<span class="err">'+e.message+'</span>'; }
+      };
+    }
+  } catch(e) { row.style.display=''; row.firstElementChild.textContent = 'Error: '+e.message; }
+}
+</script>
+</body>
+</html>
