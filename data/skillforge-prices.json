@@ -1,83 +1,131 @@
 {
-  "brand": "SKILLFORGE AI",
-  "pricing_status": "VERIFIED 2026-10-02 against the live SkillForge store (skillforge-ai-im76wv.polsia.io raw HTML) unless noted per product. The $37 one-time price appears verbatim on the live product pages (meta 'Instant $37 one-time PDF download' on Roofer / Auto Repair / Pest Control / Veterinary Practice / Xero PDPs; 'One-time Starter $37' tier text on HVAC / Restaurant / Salon / Real Estate / Bookkeeping PDPs). Two provenance flags: (1) the Electrician PDP's raw HTML did not expose its price string on 2026-10-02 \u2014 $37 carried from the 2026-09-19 brand-framing audit plus the uniform $37 verified live on all 13 sibling trade PDPs; re-confirm on the Electrician PDP at cutover. (2) Polsia Builder Playbook $19 per the 2026-09-19 brand-framing audit \u2014 its JS-rendered PDP did not expose a one-time price in raw HTML on 2026-10-02; re-confirm at cutover. Products whose price cannot be verified FOR THE FILE WE WOULD DELIVER are intentionally absent from this file (they render 'Price TBD' and are not purchasable): SF-PLUM-001 (live $37 PDP exists but no delivery PDF located in the workspace), SF-CONT-001 / SF-DENT-001 / SF-LAND-001 (only local file is the Premium Edition; live Starter $37 vs Premium $199 tier-to-file mapping unresolved), SF-QBO-001 / SF-JOB-001 / SF-STN-001 / SF-DTX-001 / SF-HCP-001 (delivery PDFs verified; live store prices this line on a quarterly model, one-time price unverified), SF-SOC-001 (book built, not yet published on the live store).",
-  "products": [
-    {
-      "msrp": 37.0,
-      "price_source": "2026-09-19 brand-framing audit + uniform $37 verified live on sibling PDPs 2026-10-02; own PDP price string not exposed in raw HTML \u2014 re-confirm at cutover",
-      "sku": "SF-ELEC-001",
-      "title": "The Electrician AI Playbook"
-    },
-    {
-      "msrp": 37.0,
-      "price_source": "live PDP meta 'Instant $37 one-time PDF download' 2026-10-02",
-      "sku": "SF-ROOF-001",
-      "title": "The Roofer AI Playbook"
-    },
-    {
-      "msrp": 37.0,
-      "price_source": "live PDP meta 'Instant $37 one-time PDF download' 2026-10-02",
-      "sku": "SF-AUTO-001",
-      "title": "The Auto Repair AI Playbook"
-    },
-    {
-      "msrp": 37.0,
-      "price_source": "live PDP meta 'Instant $37 one-time PDF download' 2026-10-02",
-      "sku": "SF-PEST-001",
-      "title": "The Pest Control AI Playbook"
-    },
-    {
-      "msrp": 37.0,
-      "price_source": "live PDP meta 'Instant $37 one-time PDF download' 2026-10-02",
-      "sku": "SF-VET-001",
-      "title": "The Veterinary Practice AI Playbook"
-    },
-    {
-      "msrp": 37.0,
-      "price_source": "live PDP carries the $37 one-time tier text 2026-10-02",
-      "sku": "SF-HVAC-001",
-      "title": "The HVAC AI Playbook"
-    },
-    {
-      "msrp": 37.0,
-      "price_source": "live PDP 'One-time Starter $37' tier text 2026-10-02",
-      "sku": "SF-REST-001",
-      "title": "The Restaurant AI Playbook"
-    },
-    {
-      "msrp": 37.0,
-      "price_source": "live PDP 'One-time Starter $37' tier text 2026-10-02",
-      "sku": "SF-SALN-001",
-      "title": "The Salon AI Playbook"
-    },
-    {
-      "msrp": 37.0,
-      "price_source": "live PDP 'One-time Starter $37' tier text 2026-10-02",
-      "sku": "SF-EST-001",
-      "title": "The Real Estate AI Playbook"
-    },
-    {
-      "msrp": 37.0,
-      "price_source": "live PDP 'One-time Starter $37, Premium $199, Lifetime $299, Team $500' tier text 2026-10-02",
-      "sku": "SF-BOOK-001",
-      "title": "The Bookkeeping AI Playbook"
-    },
-    {
-      "msrp": 37.0,
-      "price_source": "live PDP meta 'Instant $37 one-time PDF download' 2026-10-02",
-      "sku": "SF-XERO-001",
-      "title": "The Xero AI Playbook"
-    },
-    {
-      "msrp": 19.0,
-      "price_source": "2026-09-19 brand-framing audit ($19); JS-rendered PDP did not expose a one-time price in raw HTML 2026-10-02 \u2014 re-confirm at cutover",
-      "sku": "SF-BLD-001",
-      "title": "The Polsia Builder Playbook"
-    },
-    {
-      "sku": "SF-SOC-001",
-      "msrp": 37.0,
-      "pricing_status": "confirmed \u2014 live Polsia PDP $37 verified 2026-10-02 (publish task wi_4209018, public checkout page checked)"
-    }
-  ]
+    "brand": "SKILLFORGE AI",
+    "pricing_status": "VERIFIED 2026-10-02 against the live SkillForge store (skillforge-ai-im76wv.polsia.io raw HTML) unless noted per product. The $37 one-time price appears verbatim on the live product pages (meta 'Instant $37 one-time PDF download' on Roofer / Auto Repair / Pest Control / Veterinary Practice / Xero PDPs; 'One-time Starter $37' tier text on HVAC / Restaurant / Salon / Real Estate / Bookkeeping PDPs). Two provenance flags: (1) the Electrician PDP's raw HTML did not expose its price string on 2026-10-02 \u2014 $37 carried from the 2026-09-19 brand-framing audit plus the uniform $37 verified live on all 13 sibling trade PDPs; re-confirm on the Electrician PDP at cutover. (2) Polsia Builder Playbook $19 per the 2026-09-19 brand-framing audit \u2014 its JS-rendered PDP did not expose a one-time price in raw HTML on 2026-10-02; re-confirm at cutover. Products whose price cannot be verified FOR THE FILE WE WOULD DELIVER are intentionally absent from this file (they render 'Price TBD' and are not purchasable): SF-PLUM-001 (live $37 PDP exists but no delivery PDF located in the workspace), SF-CONT-001 / SF-DENT-001 / SF-LAND-001 (only local file is the Premium Edition; live Starter $37 vs Premium $199 tier-to-file mapping unresolved), SF-QBO-001 / SF-JOB-001 / SF-STN-001 / SF-DTX-001 / SF-HCP-001 (delivery PDFs verified; live store prices this line on a quarterly model, one-time price unverified), SF-SOC-001 (book built, not yet published on the live store). UPDATE 2026-10-02 (~11:55 CDT): SF-CONT-001/SF-DENT-001/SF-LAND-001/SF-QBO-001/SF-JOB-001/SF-STN-001/SF-DTX-001/SF-HCP-001 priced at $37 under Bill's standing pricing delegation ('i'll take your recommendations on pricing up or down', volume-over-margin; customer sees one $37 price, no hop jump). SF-PLUM-001 remains unpriced: no delivery PDF exists anywhere in the workspace \u2014 not sellable until the book is in hand.",
+    "products": [
+        {
+            "msrp": 37.0,
+            "price_source": "2026-09-19 brand-framing audit + uniform $37 verified live on sibling PDPs 2026-10-02; own PDP price string not exposed in raw HTML \u2014 re-confirm at cutover",
+            "sku": "SF-ELEC-001",
+            "title": "The Electrician AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "live PDP meta 'Instant $37 one-time PDF download' 2026-10-02",
+            "sku": "SF-ROOF-001",
+            "title": "The Roofer AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "live PDP meta 'Instant $37 one-time PDF download' 2026-10-02",
+            "sku": "SF-AUTO-001",
+            "title": "The Auto Repair AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "live PDP meta 'Instant $37 one-time PDF download' 2026-10-02",
+            "sku": "SF-PEST-001",
+            "title": "The Pest Control AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "live PDP meta 'Instant $37 one-time PDF download' 2026-10-02",
+            "sku": "SF-VET-001",
+            "title": "The Veterinary Practice AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "live PDP carries the $37 one-time tier text 2026-10-02",
+            "sku": "SF-HVAC-001",
+            "title": "The HVAC AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "live PDP 'One-time Starter $37' tier text 2026-10-02",
+            "sku": "SF-REST-001",
+            "title": "The Restaurant AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "live PDP 'One-time Starter $37' tier text 2026-10-02",
+            "sku": "SF-SALN-001",
+            "title": "The Salon AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "live PDP 'One-time Starter $37' tier text 2026-10-02",
+            "sku": "SF-EST-001",
+            "title": "The Real Estate AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "live PDP 'One-time Starter $37, Premium $199, Lifetime $299, Team $500' tier text 2026-10-02",
+            "sku": "SF-BOOK-001",
+            "title": "The Bookkeeping AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "live PDP meta 'Instant $37 one-time PDF download' 2026-10-02",
+            "sku": "SF-XERO-001",
+            "title": "The Xero AI Playbook"
+        },
+        {
+            "msrp": 19.0,
+            "price_source": "2026-09-19 brand-framing audit ($19); JS-rendered PDP did not expose a one-time price in raw HTML 2026-10-02 \u2014 re-confirm at cutover",
+            "sku": "SF-BLD-001",
+            "title": "The Polsia Builder Playbook"
+        },
+        {
+            "sku": "SF-SOC-001",
+            "msrp": 37.0,
+            "pricing_status": "confirmed \u2014 live Polsia PDP $37 verified 2026-10-02 (publish task wi_4209018, public checkout page checked)"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "$37 set 2026-10-02 under Bill's pricing delegation: single advertised $37 shelf price (PDP Starter tier); our delivery file is the fuller Wave-A Premium build, delivered at the shelf price \u2014 no price jump at checkout.",
+            "sku": "SF-CONT-001",
+            "title": "The Contracting AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "$37 set 2026-10-02 under Bill's pricing delegation: single advertised $37 shelf price (PDP Starter tier); our delivery file is the fuller Wave-A Premium build, delivered at the shelf price \u2014 no price jump at checkout.",
+            "sku": "SF-DENT-001",
+            "title": "The Dentistry AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "$37 set 2026-10-02 under Bill's pricing delegation: matches the uniform $37 trade shelf (PDP Starter tier); our delivery file is the fuller Wave-A Premium build, delivered at the shelf price.",
+            "sku": "SF-LAND-001",
+            "title": "The Landscaping AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "$37 set 2026-10-02 under Bill's pricing delegation: uniform $37 shelf; verified sibling precedent SF-XERO-001 $37 one-time on live PDP. Polsia's quarterly framing does not carry to the one-time Render download.",
+            "sku": "SF-QBO-001",
+            "title": "The QuickBooks Online AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "$37 set 2026-10-02 under Bill's pricing delegation: uniform $37 shelf; verified sibling precedent SF-XERO-001 $37 one-time on live PDP.",
+            "sku": "SF-JOB-001",
+            "title": "The Jobber AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "$37 set 2026-10-02 under Bill's pricing delegation: uniform $37 shelf; verified sibling precedent SF-XERO-001 $37 one-time on live PDP.",
+            "sku": "SF-STN-001",
+            "title": "The ServiceTitan AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "$37 set 2026-10-02 under Bill's pricing delegation: uniform $37 shelf; verified sibling precedent SF-XERO-001 $37 one-time on live PDP.",
+            "sku": "SF-DTX-001",
+            "title": "The Dentrix AI Playbook"
+        },
+        {
+            "msrp": 37.0,
+            "price_source": "$37 set 2026-10-02 under Bill's pricing delegation: uniform $37 shelf; verified sibling precedent SF-XERO-001 $37 one-time on live PDP.",
+            "sku": "SF-HCP-001",
+            "title": "The Housecall Pro AI Playbook"
+        }
+    ]
 }
