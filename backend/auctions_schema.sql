@@ -253,6 +253,13 @@ CREATE TABLE bids (
     -- proxy_rank is NULL for all but the top-2 bids at any moment.
 
     placed_at           timestamptz NOT NULL DEFAULT now(),
+
+    -- Bid-time client fingerprint (Slice 3, gap-check C3 / spec §8.2):
+    -- recorded on every accepted bid; rejected attempts land in
+    -- bid_attempts below with the same fields.
+    ip_address          text,
+    user_agent          text,
+
     voided_at           timestamptz,
     voided_by_id        uuid REFERENCES accounts(id),
     void_reason         text,
@@ -280,6 +287,27 @@ CREATE INDEX idx_bids_lot_placed ON bids (lot_id, placed_at);
 CREATE INDEX idx_bids_lot_active_max
     ON bids (lot_id, max_bid_cents DESC, placed_at ASC)
     WHERE status = 'ACTIVE';
+
+-- ------------------------------------------------------------ bid attempts
+-- Audit log for EVERY bid attempt, accepted or rejected (spec §8.2).
+-- No FKs on lot/account: a rejected attempt may reference a lot or
+-- account that failed validation, and the attempt must still be kept.
+-- IPs are stored as text (proxies may present non-inet forms).
+CREATE TABLE IF NOT EXISTS bid_attempts (
+    id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    lot_id              text,
+    bidder_account_id   text,
+    max_bid_cents       bigint,
+    bid_id              text,              -- set when the attempt produced a bid
+    ip_address          text,
+    user_agent          text,
+    outcome             text NOT NULL CHECK (outcome IN ('ACCEPTED','REJECTED')),
+    reason              text,
+    created_at          timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_bid_attempts_lot ON bid_attempts (lot_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_bid_attempts_bidder ON bid_attempts (bidder_account_id, created_at);
 
 -- ---------------------------------------------------------------- increment rules
 -- Per-brand increment table. Rows are mutually exclusive price ranges.
@@ -354,8 +382,9 @@ CREATE TABLE invoices (
     payment_deadline_at         timestamptz NOT NULL
         GENERATED ALWAYS AS (issued_at + INTERVAL '72 hours') STORED,
 
-    CONSTRAINT uq_invoice_lot UNIQUE (lot_id),
-    -- Exactly one invoice per lot; voided invoices remain for audit.
+    -- Slice 3: one OPEN invoice per lot (partial unique index below);
+    -- voided invoices remain for audit, so no UNIQUE(lot_id) — a
+    -- second-chance accept legitimately issues a second invoice.
 
     CONSTRAINT chk_paid_fields CHECK (
         (status = 'PAID') =
@@ -372,6 +401,8 @@ CREATE TABLE invoices (
 CREATE INDEX idx_invoices_lot ON invoices (lot_id);
 CREATE INDEX idx_invoices_status ON invoices (status);
 CREATE INDEX idx_invoices_deadline ON invoices (payment_deadline_at) WHERE status = 'OPEN';
+CREATE UNIQUE INDEX uq_invoices_open_per_lot ON invoices (lot_id)
+    WHERE status = 'OPEN';
 
 -- ---------------------------------------------------------------- pay page tokens
 CREATE TABLE pay_page_tokens (
@@ -388,12 +419,8 @@ CREATE TABLE pay_page_tokens (
     revoked_at      timestamptz,
     revoke_reason   text,
 
-    CONSTRAINT uq_pay_page_lot UNIQUE (lot_id),
-    -- Only one active token per lot at any time.
-    -- When a token is replaced, old one is revoked first.
-    -- KNOWN TENSION (Slice 4 to resolve): UNIQUE(lot_id) forbids keeping a
-    -- revoked predecessor row for audit; replacement must delete or the
-    -- constraint must become a partial unique index on revoked_at IS NULL.
+    -- Slice 3 (resolved): the partial unique index below enforces one
+    -- ACTIVE token per lot while revoked predecessors stay for audit.
 
     CONSTRAINT chk_revoke_fields CHECK (
         (revoked_at IS NULL) = (revoke_reason IS NULL)
@@ -402,6 +429,8 @@ CREATE TABLE pay_page_tokens (
 
 CREATE INDEX idx_pay_page_tokens_token_hash ON pay_page_tokens (token_hash);
 CREATE INDEX idx_pay_page_tokens_lot ON pay_page_tokens (lot_id);
+CREATE UNIQUE INDEX uq_pay_page_active_token_per_lot ON pay_page_tokens (lot_id)
+    WHERE revoked_at IS NULL;
 
 -- ---------------------------------------------------------------- settlements
 CREATE TABLE settlements (
@@ -452,8 +481,13 @@ CREATE INDEX idx_settlements_seller ON settlements (seller_account_id);
 CREATE TABLE second_chance_offers (
     id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     lot_id              uuid NOT NULL REFERENCES lots(id),
-    original_invoice_id uuid NOT NULL REFERENCES invoices(id),
-    -- The invoice that was voided/unpaid that triggered this
+    original_invoice_id uuid REFERENCES invoices(id),
+    -- The invoice that was voided/unpaid that triggered this.
+    -- NULL for RESERVE_NOT_MET offers (gap-check C4): a reserve-miss
+    -- close has no invoice, but the high bidder still gets an offer.
+
+    offer_kind          text NOT NULL DEFAULT 'UNPAID_WINNER'
+        CHECK (offer_kind IN ('UNPAID_WINNER','RESERVE_NOT_MET')),
 
     offeree_account_id  uuid NOT NULL REFERENCES accounts(id),
     offered_price_cents bigint NOT NULL CHECK (offered_price_cents > 0),

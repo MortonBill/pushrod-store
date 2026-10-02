@@ -32,10 +32,31 @@ endpoint for the Render Cron) computing winners idempotently through the
 CLOSED -> {NO_SALE | INVOICED} fork, creating the winner's invoice and
 the notifications outbox rows.
 
-NOT in Slices 1–2 (later slices): pay-page tokens + Stripe Checkout,
-second-chance ladder, settlement recording UI, notifications delivery,
-email verification flow (accounts start unverified; bids already require
-email_verified_at).
+Slice 3 (this module, spec §§4–5, §7): winner pay pages — pay-page
+tokens minted at invoice time (SHA-256 hash stored only; one ACTIVE
+token per lot via a partial unique index, revoked predecessors kept for
+audit), GET /pay/<token> minting a FRESH Stripe Checkout session on
+every click (manual settlement: nothing auto-charges; sessions are
+created on the brand service's own Stripe account — the auctions code
+never passes a Connect account), the checkout.session.completed handler
+marking invoice + lot PAID idempotently (invoice status re-read +
+UNIQUE Stripe ids are the processed-events wall), the +24h/+48h unpaid
+reminder pass, and the 72h second-chance ladder (runner-up offered at
+their own max; accept swaps the winner atomically and issues a new
+invoice + token; decline/expiry advances; exhaustion relists to DRAFT).
+A reserve-not-met close with bids also offers the lot to the high
+bidder at their max (best-practices gap-check C4); declining or letting
+that offer expire relists the lot. Bid placement records the client IP
++ user agent on the bid row and writes a bid_attempts audit row for
+every attempt, accepted or rejected (§8.2; gap-check C3).
+
+Build slice numbering supersedes spec §9: this Slice 3 already carries
+the pay pages AND the second-chance ladder that §9 splits across two
+slices; public lot pages/admin UI and hardening follow as Slices 4–5.
+
+NOT in Slices 1–3 (later slices): settlement recording UI, notifications
+delivery, public lot pages / admin UI, email verification flow
+(accounts start unverified; bids already require email_verified_at).
 
 Persistence: AUCTIONS_DB (defaults to /var/data/auctions.db when the Render
 disk is mounted, else <root>/data/auctions.db) — same disk rule as wholesale.
@@ -45,12 +66,13 @@ import hmac
 import json
 import logging
 import os
+import secrets
 import sqlite3
 import uuid
 from datetime import datetime, timedelta, timezone
 
 import requests
-from flask import Blueprint, jsonify, request, session
+from flask import Blueprint, jsonify, redirect, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 log = logging.getLogger("pushrod.auctions")
@@ -326,6 +348,8 @@ _SQLITE_DDL = [
             CHECK (status IN ('ACTIVE','OUTBID','VOIDED')),
         proxy_rank INTEGER,
         placed_at TEXT NOT NULL,
+        ip_address TEXT,
+        user_agent TEXT,
         voided_at TEXT,
         voided_by_id TEXT REFERENCES accounts(id),
         void_reason TEXT,
@@ -337,6 +361,19 @@ _SQLITE_DDL = [
         CONSTRAINT chk_effective_lte_max CHECK (
             effective_price_cents <= max_bid_cents
         )
+    )""",
+    """
+    CREATE TABLE IF NOT EXISTS bid_attempts (
+        id TEXT PRIMARY KEY,
+        lot_id TEXT,
+        bidder_account_id TEXT,
+        max_bid_cents INTEGER,
+        bid_id TEXT,
+        ip_address TEXT,
+        user_agent TEXT,
+        outcome TEXT NOT NULL CHECK (outcome IN ('ACCEPTED','REJECTED')),
+        reason TEXT,
+        created_at TEXT NOT NULL
     )""",
     """
     CREATE TABLE IF NOT EXISTS increment_rules (
@@ -371,7 +408,6 @@ _SQLITE_DDL = [
         reminder_24h_sent_at TEXT,
         reminder_48h_sent_at TEXT,
         payment_deadline_at TEXT NOT NULL,
-        CONSTRAINT uq_invoice_lot UNIQUE (lot_id),
         CONSTRAINT chk_paid_fields CHECK (
             (status = 'PAID') =
             (paid_at IS NOT NULL
@@ -392,7 +428,6 @@ _SQLITE_DDL = [
         issued_at TEXT NOT NULL,
         revoked_at TEXT,
         revoke_reason TEXT,
-        CONSTRAINT uq_pay_page_lot UNIQUE (lot_id),
         CONSTRAINT chk_revoke_fields CHECK (
             (revoked_at IS NULL) = (revoke_reason IS NULL)
         )
@@ -429,7 +464,9 @@ _SQLITE_DDL = [
     CREATE TABLE IF NOT EXISTS second_chance_offers (
         id TEXT PRIMARY KEY,
         lot_id TEXT NOT NULL REFERENCES lots(id),
-        original_invoice_id TEXT NOT NULL REFERENCES invoices(id),
+        original_invoice_id TEXT REFERENCES invoices(id),
+        offer_kind TEXT NOT NULL DEFAULT 'UNPAID_WINNER'
+            CHECK (offer_kind IN ('UNPAID_WINNER','RESERVE_NOT_MET')),
         offeree_account_id TEXT NOT NULL REFERENCES accounts(id),
         offered_price_cents INTEGER NOT NULL CHECK (offered_price_cents > 0),
         status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN (
@@ -468,8 +505,17 @@ _SQLITE_DDL = [
         read_at TEXT
     )""",
     "CREATE INDEX IF NOT EXISTS idx_lots_brand_status ON lots (brand, status)",
+    # Slice 3 (spec §4.2): one ACTIVE pay token per lot, revoked rows kept
+    # for audit; one OPEN invoice per lot, voided invoices kept for audit.
+    # (Postgres twins live in auctions_schema.sql.)
+    "CREATE UNIQUE INDEX IF NOT EXISTS uq_pay_page_active_token_per_lot"
+    " ON pay_page_tokens (lot_id) WHERE revoked_at IS NULL",
+    "CREATE UNIQUE INDEX IF NOT EXISTS uq_invoices_open_per_lot"
+    " ON invoices (lot_id) WHERE status = 'OPEN'",
     "CREATE INDEX IF NOT EXISTS idx_lots_seller ON lots (seller_account_id)",
     "CREATE INDEX IF NOT EXISTS idx_bids_lot_status ON bids (lot_id, status)",
+    "CREATE INDEX IF NOT EXISTS idx_bid_attempts_lot"
+    " ON bid_attempts (lot_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_mod_actions_lot ON moderation_actions (lot_id, created_at)",
 ]
 
@@ -501,6 +547,19 @@ def _init_schema():
     with _connect() as c:
         for stmt in _SQLITE_DDL:
             c.execute(stmt)
+        # Pre-Slice-3 SQLite files: CREATE TABLE IF NOT EXISTS does not
+        # add new columns, so backfill the bid-IP / offer-kind columns.
+        bid_cols = {r["name"] for r in
+                    c.execute("PRAGMA table_info(bids)").fetchall()}
+        for col in ("ip_address", "user_agent"):
+            if col not in bid_cols:
+                c.execute(f"ALTER TABLE bids ADD COLUMN {col} TEXT")
+        offer_cols = {r["name"] for r in c.execute(
+            "PRAGMA table_info(second_chance_offers)").fetchall()}
+        if "offer_kind" not in offer_cols:
+            c.execute(
+                "ALTER TABLE second_chance_offers ADD COLUMN offer_kind"
+                " TEXT NOT NULL DEFAULT 'UNPAID_WINNER'")
         today = _now().date().isoformat()
         for brand, low, high, inc in _INCREMENT_SEED:
             c.execute(
@@ -960,9 +1019,55 @@ def _floor_price(lot, max_bid_cents):
     return max(1, min(int(max_bid_cents), int(lot["starting_price_cents"])))
 
 
-def place_bid(bidder_account_id, lot_id, max_bid_cents, now=None):
+def _record_bid_attempt(lot_id, bidder_account_id, max_bid_cents,
+                        bid_id, ip_address, user_agent, outcome, reason):
+    """Write one bid_attempts audit row (§8.2). Runs on its own
+    connection so a rejected bid's rollback can never take the audit
+    row with it. Audit failure must never mask the bid outcome, so
+    errors are logged, not raised."""
+    try:
+        with _connect() as c:
+            c.execute(
+                "INSERT INTO bid_attempts (id, lot_id, bidder_account_id,"
+                " max_bid_cents, bid_id, ip_address, user_agent, outcome,"
+                " reason, created_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                (str(uuid.uuid4()), lot_id, bidder_account_id,
+                 max_bid_cents, bid_id, ip_address, user_agent, outcome,
+                 reason, _iso(_now())))
+    except Exception:  # noqa: BLE001 — audit must not mask the bid result
+        log.warning("bid attempt audit write failed (lot=%s)", lot_id,
+                    exc_info=True)
+
+
+def place_bid(bidder_account_id, lot_id, max_bid_cents, now=None,
+              ip_address=None, user_agent=None):
     """Place a proxy max-bid (spec §2). Returns a result dict describing
-    the bidder's standing; never exposes another bidder's max."""
+    the bidder's standing; never exposes another bidder's max. Every
+    attempt — accepted or rejected — leaves a bid_attempts audit row
+    carrying the client IP (§8.2)."""
+    try:
+        parsed_max = int(max_bid_cents)
+        if isinstance(max_bid_cents, bool):
+            parsed_max = None
+    except (TypeError, ValueError):
+        parsed_max = None
+    try:
+        result = _place_bid_validated(bidder_account_id, lot_id,
+                                      max_bid_cents, now=now,
+                                      ip_address=ip_address,
+                                      user_agent=user_agent)
+    except Exception as exc:
+        _record_bid_attempt(lot_id, bidder_account_id, parsed_max, None,
+                            ip_address, user_agent, "REJECTED", str(exc))
+        raise
+    _record_bid_attempt(lot_id, bidder_account_id, parsed_max,
+                        result["bid_id"], ip_address, user_agent,
+                        "ACCEPTED", result["outcome"])
+    return result
+
+
+def _place_bid_validated(bidder_account_id, lot_id, max_bid_cents,
+                         now=None, ip_address=None, user_agent=None):
     now = now or _now()
     try:
         max_bid = int(max_bid_cents)
@@ -1016,10 +1121,10 @@ def place_bid(bidder_account_id, lot_id, max_bid_cents, now=None):
             c.execute(
                 "INSERT INTO bids (id, lot_id, bidder_account_id,"
                 " max_bid_cents, effective_price_cents, status, proxy_rank,"
-                " placed_at, triggered_extension, created_at)"
-                " VALUES (?,?,?,?,?,'ACTIVE',1,?,0,?)",
+                " placed_at, ip_address, user_agent, triggered_extension, created_at)"
+                " VALUES (?,?,?,?,?,'ACTIVE',1,?,?,?,0,?)",
                 (bid_id, lot_id, bidder["id"], max_bid, new_price,
-                 now_iso, now_iso))
+                 now_iso, ip_address, user_agent, now_iso))
             outcome = "leading"
         elif leader["bidder_account_id"] == bidder["id"]:
             # Case C — leader raising their own max: price never moves.
@@ -1029,11 +1134,11 @@ def place_bid(bidder_account_id, lot_id, max_bid_cents, now=None):
             c.execute(
                 "INSERT INTO bids (id, lot_id, bidder_account_id,"
                 " max_bid_cents, effective_price_cents, status, proxy_rank,"
-                " placed_at, triggered_extension, created_at)"
-                " VALUES (?,?,?,?,?,'ACTIVE',?, ?,0,?)",
+                " placed_at, ip_address, user_agent, triggered_extension, created_at)"
+                " VALUES (?,?,?,?,?,'ACTIVE',?, ?,?,?,0,?)",
                 (bid_id, lot_id, bidder["id"], max_bid,
                  int(leader["effective_price_cents"]),
-                 (leader["proxy_rank"] or 1) + 1, now_iso, now_iso))
+                 (leader["proxy_rank"] or 1) + 1, now_iso, ip_address, user_agent, now_iso))
             outcome = "raised"
         elif max_bid > int(leader["max_bid_cents"]):
             # Case B-1 — challenger wins at second-highest max + increment.
@@ -1046,10 +1151,10 @@ def place_bid(bidder_account_id, lot_id, max_bid_cents, now=None):
             c.execute(
                 "INSERT INTO bids (id, lot_id, bidder_account_id,"
                 " max_bid_cents, effective_price_cents, status, proxy_rank,"
-                " placed_at, triggered_extension, created_at)"
-                " VALUES (?,?,?,?,?,'ACTIVE',?, ?,0,?)",
+                " placed_at, ip_address, user_agent, triggered_extension, created_at)"
+                " VALUES (?,?,?,?,?,'ACTIVE',?, ?,?,?,0,?)",
                 (bid_id, lot_id, bidder["id"], max_bid, new_price,
-                 (leader["proxy_rank"] or 1) + 1, now_iso, now_iso))
+                 (leader["proxy_rank"] or 1) + 1, now_iso, ip_address, user_agent, now_iso))
             outcome = "leading"
         elif max_bid == int(leader["max_bid_cents"]):
             # Tie (§2.5): earliest bid keeps the lead at its full max.
@@ -1060,10 +1165,10 @@ def place_bid(bidder_account_id, lot_id, max_bid_cents, now=None):
             c.execute(
                 "INSERT INTO bids (id, lot_id, bidder_account_id,"
                 " max_bid_cents, effective_price_cents, status, proxy_rank,"
-                " placed_at, triggered_extension, created_at)"
-                " VALUES (?,?,?,?,?,'OUTBID',?, ?,0,?)",
+                " placed_at, ip_address, user_agent, triggered_extension, created_at)"
+                " VALUES (?,?,?,?,?,'OUTBID',?, ?,?,?,0,?)",
                 (bid_id, lot_id, bidder["id"], max_bid, max_bid,
-                 leader["proxy_rank"], now_iso, now_iso))
+                 leader["proxy_rank"], now_iso, ip_address, user_agent, now_iso))
             outcome = "outbid"
         else:
             # Case B-2 — challenger loses; leader's price rises to the
@@ -1077,10 +1182,10 @@ def place_bid(bidder_account_id, lot_id, max_bid_cents, now=None):
             c.execute(
                 "INSERT INTO bids (id, lot_id, bidder_account_id,"
                 " max_bid_cents, effective_price_cents, status, proxy_rank,"
-                " placed_at, triggered_extension, created_at)"
-                " VALUES (?,?,?,?,?,'OUTBID',?, ?,0,?)",
+                " placed_at, ip_address, user_agent, triggered_extension, created_at)"
+                " VALUES (?,?,?,?,?,'OUTBID',?, ?,?,?,0,?)",
                 (bid_id, lot_id, bidder["id"], max_bid, max_bid,
-                 leader["proxy_rank"], now_iso, now_iso))
+                 leader["proxy_rank"], now_iso, ip_address, user_agent, now_iso))
             outcome = "outbid"
         # Soft close (spec §3.1): a bid inside the final window extends
         # the close by 5 minutes, capped at +120 total.
@@ -1207,6 +1312,7 @@ def close_lot(lot_id, now=None):
     if winner is None or (reserve is not None and price < int(reserve)):
         closed = transition(lot_id, "NO_SALE",
                             current_price_cents=price)
+        rnm_offer = None
         with _connect() as c:
             _notify(c, lot["seller_account_id"], lot_id, "RESERVE_NOT_MET", {
                 "lot_id": lot_id, "current_price_cents": price,
@@ -1215,21 +1321,37 @@ def close_lot(lot_id, now=None):
                 _notify(c, bid["bidder_account_id"], lot_id, "OUTBID", {
                     "lot_id": lot_id, "current_price_cents": price,
                     "final": True})
-        return {"lot_id": lot_id, "outcome": "no_sale",
-                "current_price_cents": price}
+            if winner is not None:
+                # Gap-check C4: reserve missed but bids exist — offer
+                # the lot to the high bidder at their max instead of
+                # stranding it at NO_SALE.
+                rnm_offer = _offer_reserve_not_met(
+                    c, _require_lot(c, lot_id), winner, now)
+        result = {"lot_id": lot_id, "outcome": "no_sale",
+                  "current_price_cents": price}
+        if rnm_offer:
+            result["second_chance_offer_id"] = rnm_offer["offer_id"]
+            result["second_chance_offeree_account_id"] = \
+                rnm_offer["offeree_account_id"]
+            result["second_chance_offered_price_cents"] = \
+                rnm_offer["offered_price_cents"]
+        return result
     closed = transition(lot_id, "INVOICED",
                         winner_account_id=winner["bidder_account_id"],
                         winning_price_cents=price,
                         current_price_cents=price)
     invoice = _ensure_invoice(closed, now)
+    token = issue_pay_token(lot_id, now=now)
     with _connect() as c:
         payload = {"lot_id": lot_id, "winning_price_cents": price,
                    "invoice_id": invoice["id"],
                    "payment_deadline_at": invoice["payment_deadline_at"]}
         _notify(c, winner["bidder_account_id"], lot_id, "AUCTION_WON",
                 payload)
+        issued = dict(payload)
+        issued["pay_page_url"] = token["pay_page_url"]
         _notify(c, winner["bidder_account_id"], lot_id, "INVOICE_ISSUED",
-                payload)
+                issued)
         ranked = _ranked_active_bids(c, lot_id)
         losers = [b for b in ranked
                   if b["bidder_account_id"] != winner["bidder_account_id"]]
@@ -1246,15 +1368,18 @@ def close_lot(lot_id, now=None):
 
 
 def _ensure_invoice(lot, now=None):
-    """Create the winner's invoice if missing (idempotent; the UNIQUE
-    (lot_id) constraint is the backstop)."""
+    """Create the winner's invoice if missing (idempotent). A lot may
+    accumulate VOID invoices across the second-chance ladder; the live
+    one is the OPEN (or PAID) row, backstopped by the partial unique
+    index uq_invoices_open_per_lot."""
     now = now or _now()
     with _connect() as c:
-        existing = c.execute(
-            "SELECT * FROM invoices WHERE lot_id = ?",
-            (lot["id"],)).fetchone()
-        if existing:
-            return existing
+        rows = c.execute(
+            "SELECT * FROM invoices WHERE lot_id = ?"
+            " ORDER BY issued_at DESC", (lot["id"],)).fetchall()
+        for row in rows:
+            if row["status"] in ("OPEN", "PAID"):
+                return row
         invoice_id = str(uuid.uuid4())
         c.execute(
             "INSERT INTO invoices (id, lot_id, winner_account_id,"
@@ -1307,6 +1432,535 @@ def _closer_authorized():
              or request.args.get("token", ""))
     expected = os.environ.get("AUCTIONS_CLOSER_TOKEN", "")
     return bool(expected) and hmac.compare_digest(token, expected)
+
+
+# ---------------------------------------------------------------------------
+# Pay pages, Stripe Checkout, reminders, second chance (Slice 3, §§4–5, §7)
+# ---------------------------------------------------------------------------
+SECOND_CHANCE_WINDOW = timedelta(hours=72)  # offer expiry, spec §5.4
+
+
+def _hash_token(raw_token):
+    return hashlib.sha256((raw_token or "").encode("utf-8")).hexdigest()
+
+
+def pay_page_path(raw_token):
+    return f"/pay/{raw_token}"
+
+
+def _pay_page_url(raw_token):
+    base = os.environ.get("AUCTIONS_PAY_BASE_URL", "").rstrip("/")
+    return base + pay_page_path(raw_token) if base else pay_page_path(raw_token)
+
+
+def _revoke_active_token(c, lot_id, reason, now=None):
+    c.execute(
+        "UPDATE pay_page_tokens SET revoked_at = ?, revoke_reason = ?"
+        " WHERE lot_id = ? AND revoked_at IS NULL",
+        (_iso(now or _now()), reason, lot_id))
+
+
+def _mint_token(c, lot, invoice, now=None):
+    """Mint a fresh pay token for (lot, invoice): any active predecessor
+    is revoked first (revoke-and-replace, §4.2). Only the SHA-256 hash
+    is stored; the raw value leaves with the caller and is never
+    logged."""
+    now = now or _now()
+    _revoke_active_token(c, lot["id"], "REPLACED", now)
+    raw = secrets.token_hex(32)
+    token_id = str(uuid.uuid4())
+    c.execute(
+        "INSERT INTO pay_page_tokens (id, lot_id, invoice_id,"
+        " winner_account_id, token_hash, issued_at)"
+        " VALUES (?,?,?,?,?,?)",
+        (token_id, lot["id"], invoice["id"], invoice["winner_account_id"],
+         _hash_token(raw), _iso(now)))
+    return {"token_id": token_id, "raw_token": raw,
+            "pay_page_url": _pay_page_url(raw)}
+
+
+def _open_invoice(c, lot_id):
+    return c.execute(
+        "SELECT * FROM invoices WHERE lot_id = ? AND status = 'OPEN'"
+        " ORDER BY issued_at DESC LIMIT 1", (lot_id,)).fetchone()
+
+
+def issue_pay_token(lot_id, now=None):
+    """(Re)issue the active pay token for a lot's OPEN invoice. Returns
+    the raw token + pay-page URL — the one place a raw token exists
+    outside the winner's own browser."""
+    now = now or _now()
+    with _connect() as c:
+        lot = _require_lot(c, lot_id)
+        invoice = _open_invoice(c, lot_id)
+        if not invoice:
+            raise AuctionError("lot has no open invoice to pay")
+        return _mint_token(c, lot, invoice, now)
+
+
+def get_token_by_raw(raw_token):
+    """Look up a pay token (any state) by its raw value. Hash-only
+    storage means this is also the only lookup path."""
+    if not raw_token:
+        return None
+    with _connect() as c:
+        return c.execute(
+            "SELECT * FROM pay_page_tokens WHERE token_hash = ?",
+            (_hash_token(raw_token),)).fetchone()
+
+
+def get_invoice(invoice_id):
+    with _connect() as c:
+        return c.execute("SELECT * FROM invoices WHERE id = ?",
+                         (invoice_id,)).fetchone()
+
+
+# --- Stripe session minting -------------------------------------------------
+# Tests inject a stub via set_stripe_session_factory; production uses the
+# stripe library with the api_key app.py configured for THIS brand
+# service. No stripe_account is ever passed: auction charges land on
+# the master account behind the brand service (manual settlement).
+_stripe_session_factory = None
+
+
+def set_stripe_session_factory(factory):
+    global _stripe_session_factory
+    _stripe_session_factory = factory
+
+
+def _session_get(obj, key, default=None):
+    if obj is None:
+        return default
+    try:
+        if isinstance(obj, dict):
+            return obj.get(key, default)
+        if key in obj:
+            return obj[key]
+    except Exception:  # noqa: BLE001 — StripeObject quirks
+        pass
+    return default
+
+
+def _mint_checkout_session(lot, invoice, success_url, cancel_url):
+    """Mint a FRESH Checkout session for the winning invoice (§4.4).
+    Nothing is charged here — the winner completes checkout actively."""
+    if _stripe_session_factory is not None:
+        return _stripe_session_factory(lot, invoice, success_url,
+                                       cancel_url)
+    import stripe as stripe_lib
+    if not stripe_lib.api_key:
+        raise AuctionError(
+            "Stripe is not configured on this service; cannot mint a "
+            "checkout session")
+    return stripe_lib.checkout.Session.create(
+        mode="payment",
+        line_items=[{
+            "price_data": {
+                "currency": "usd",
+                "unit_amount": int(invoice["amount_cents"]),
+                "product_data": {
+                    "name": f"Auction lot — {lot['title']}",
+                    "tax_code": "txcd_99999999",
+                },
+            },
+            "quantity": 1,
+        }],
+        metadata={
+            "kind": "auction_pay",
+            "lot_id": lot["id"],
+            "invoice_id": invoice["id"],
+            "winner_account_id": invoice["winner_account_id"],
+        },
+        success_url=success_url,
+        cancel_url=cancel_url,
+    )
+
+
+def handle_checkout_completed(session_obj, now=None):
+    """checkout.session.completed for an auction pay session (§4.5).
+
+    app.py verifies the Stripe signature before delegating; session
+    metadata (kind=auction_pay) routes here. Idempotent: the invoice is
+    re-read and its status checked before any write, and the UNIQUE
+    stripe_payment_intent_id / stripe_checkout_session_id columns are
+    the backstop wall — a replayed event lands on already_paid and
+    writes nothing."""
+    now = now or _now()
+    session_id = _session_get(session_obj, "id")
+    payment_intent = _session_get(session_obj, "payment_intent")
+    meta = _session_get(session_obj, "metadata", {}) or {}
+    invoice_id = _session_get(meta, "invoice_id")
+    lot_id = _session_get(meta, "lot_id")
+    if not session_id or not invoice_id:
+        raise AuctionError("auction checkout session is missing ids")
+    if not payment_intent:
+        raise AuctionError("checkout session has no payment_intent yet")
+    with _connect() as c:
+        invoice = c.execute("SELECT * FROM invoices WHERE id = ?",
+                            (invoice_id,)).fetchone()
+        if not invoice:
+            raise AuctionError("invoice not found for checkout session")
+        if lot_id and invoice["lot_id"] != lot_id:
+            raise AuctionError("session lot does not match the invoice")
+        lot = _require_lot(c, invoice["lot_id"])
+        if invoice["status"] == "PAID":
+            if invoice["stripe_checkout_session_id"] == session_id:
+                return {"outcome": "already_paid",
+                        "invoice_id": invoice["id"], "lot_id": lot["id"]}
+            raise AuctionError(
+                "invoice already paid via a different checkout session")
+        if invoice["status"] != "OPEN":
+            raise AuctionError(f"invoice is {invoice['status']}, not OPEN")
+        if lot["status"] != "INVOICED":
+            raise AuctionError(f"lot is {lot['status']}, not INVOICED")
+        if _session_get(meta, "winner_account_id") \
+                and _session_get(meta, "winner_account_id") \
+                != invoice["winner_account_id"]:
+            raise AuctionError("session winner does not match the invoice")
+        c.execute(
+            "UPDATE invoices SET status = 'PAID', paid_at = ?,"
+            " stripe_payment_intent_id = ?, stripe_checkout_session_id = ?"
+            " WHERE id = ?",
+            (_iso(now), payment_intent, session_id, invoice["id"]))
+        c.execute(
+            "UPDATE lots SET status = 'PAID', updated_at = ? WHERE id = ?",
+            (_iso(now), lot["id"]))
+        _revoke_active_token(c, lot["id"], "PAID", now)
+        _notify(c, invoice["winner_account_id"], lot["id"],
+                "PAYMENT_CONFIRMED", {
+                    "lot_id": lot["id"], "invoice_id": invoice["id"],
+                    "amount_cents": int(invoice["amount_cents"]),
+                    "paid_at": _iso(now)})
+    return {"outcome": "paid", "invoice_id": invoice_id,
+            "lot_id": lot["id"]}
+
+
+# --- Reminders (spec §7 PAYMENT_REMINDER) -----------------------------------
+def run_reminders(now=None):
+    """+24h / +48h unpaid reminders. The reminder flags on the invoice
+    are stamped in the same transaction as the outbox row — that is the
+    sole dedupe mechanism, so repeat runs never re-send (§4.6)."""
+    now = now or _now()
+    sent = []
+    with _connect() as c:
+        open_invoices = c.execute(
+            "SELECT i.* FROM invoices i JOIN lots l ON l.id = i.lot_id"
+            " WHERE i.status = 'OPEN' AND l.status = 'INVOICED'"
+            " ORDER BY i.issued_at ASC").fetchall()
+    for invoice in open_invoices:
+        issued = _parse_ts(invoice["issued_at"])
+        for hours, flag in ((24, "reminder_24h_sent_at"),
+                            (48, "reminder_48h_sent_at")):
+            if invoice[flag] or now < issued + timedelta(hours=hours):
+                continue
+            with _connect() as c:
+                fresh = c.execute(
+                    "SELECT * FROM invoices WHERE id = ?",
+                    (invoice["id"],)).fetchone()
+                if not fresh or fresh["status"] != "OPEN" or fresh[flag]:
+                    continue
+                c.execute(
+                    f"UPDATE invoices SET {flag} = ? WHERE id = ?",
+                    (_iso(now), invoice["id"]))
+                _notify(c, fresh["winner_account_id"], fresh["lot_id"],
+                        "PAYMENT_REMINDER", {
+                            "lot_id": fresh["lot_id"],
+                            "invoice_id": fresh["id"],
+                            "amount_cents": int(fresh["amount_cents"]),
+                            "payment_deadline_at":
+                                fresh["payment_deadline_at"],
+                            "reminder_number": 1 if hours == 24 else 2})
+            sent.append({"invoice_id": invoice["id"],
+                         "reminder_number": 1 if hours == 24 else 2})
+    return {"run_at": _iso(now), "reminders_sent": sent,
+            "count": len(sent)}
+
+
+# --- Second-chance ladder (spec §5) ------------------------------------------
+def _offered_account_ids(c, lot_id):
+    rows = c.execute(
+        "SELECT DISTINCT offeree_account_id FROM second_chance_offers"
+        " WHERE lot_id = ?", (lot_id,)).fetchall()
+    return {r["offeree_account_id"] for r in rows}
+
+
+def _ranked_eligible_bids(c, lot_id):
+    """All non-voided bids in second-chance order (spec §2.6): highest
+    max first, earliest placed wins ties. Losing bids sit OUTBID, so
+    the ladder must rank ACTIVE + OUTBID together — ACTIVE alone is
+    only ever the leader."""
+    return c.execute(
+        "SELECT * FROM bids WHERE lot_id = ?"
+        " AND status IN ('ACTIVE','OUTBID')"
+        " ORDER BY max_bid_cents DESC, placed_at ASC, id ASC",
+        (lot_id,)).fetchall()
+
+
+def _eligible_runner_up(c, lot, exclude_account_ids):
+    """Next-best bid (§5.2–5.3): ranked by max desc / earliest placed;
+    suspended or email-unverified bidders are skipped."""
+    ranked = _ranked_eligible_bids(c, lot["id"])
+    seen = set()
+    for bid in ranked:
+        bidder_id = bid["bidder_account_id"]
+        if bidder_id in seen or bidder_id in exclude_account_ids:
+            continue
+        seen.add(bidder_id)
+        account = c.execute("SELECT * FROM accounts WHERE id = ?",
+                            (bidder_id,)).fetchone()
+        if not account or account["is_suspended"] \
+                or not account["email_verified_at"]:
+            continue
+        return bid
+    return None
+
+
+def _relist_lot(c, lot, now):
+    """Ladder exhaustion (§5.6): INVOICED -> RELISTED -> DRAFT with the
+    winner fields cleared atomically; the lot re-enters moderation."""
+    c.execute(
+        "UPDATE second_chance_offers SET status = 'CANCELLED'"
+        " WHERE lot_id = ? AND status = 'PENDING'", (lot["id"],))
+    c.execute(
+        "UPDATE lots SET status = 'RELISTED', winner_account_id = NULL,"
+        " winning_price_cents = NULL, updated_at = ? WHERE id = ?",
+        (_iso(now), lot["id"]))
+    c.execute(
+        "UPDATE lots SET status = 'DRAFT', updated_at = ? WHERE id = ?",
+        (_iso(now), lot["id"]))
+    _audit(c, lot["id"], None, "EDITED",
+           "second-chance ladder exhausted; relisted to DRAFT")
+    _notify(c, lot["seller_account_id"], lot["id"], "LOT_RELISTED", {
+        "lot_id": lot["id"], "lot_title": lot["title"]})
+
+
+def _insert_offer(c, lot, bid, original_invoice_id, offer_kind, now):
+    """Write one PENDING second-chance offer + its outbox row. The
+    offered price is always the offeree's own max (§5.3)."""
+    offer_id = str(uuid.uuid4())
+    expires = now + SECOND_CHANCE_WINDOW
+    c.execute(
+        "INSERT INTO second_chance_offers (id, lot_id,"
+        " original_invoice_id, offer_kind, offeree_account_id,"
+        " offered_price_cents, status, offered_at, expires_at,"
+        " created_at) VALUES (?,?,?,?,?,?,'PENDING',?,?,?)",
+        (offer_id, lot["id"], original_invoice_id, offer_kind,
+         bid["bidder_account_id"], int(bid["max_bid_cents"]),
+         _iso(now), _iso(expires), _iso(now)))
+    _notify(c, bid["bidder_account_id"], lot["id"],
+            "SECOND_CHANCE_OFFER", {
+                "lot_id": lot["id"], "lot_title": lot["title"],
+                "offer_kind": offer_kind,
+                "offered_price_cents": int(bid["max_bid_cents"]),
+                "offer_expires_at": _iso(expires)})
+    return {"outcome": "offered", "lot_id": lot["id"],
+            "offer_id": offer_id, "offer_kind": offer_kind,
+            "offeree_account_id": bid["bidder_account_id"],
+            "offered_price_cents": int(bid["max_bid_cents"])}
+
+
+def _advance_ladder(c, lot, original_invoice_id, now):
+    """Offer the lot to the next eligible runner-up, or relist when the
+    ladder is exhausted. Runs inside the caller's transaction. Anyone
+    who already defaulted on this lot (a VOID invoice in their name)
+    is never re-offered it."""
+    exclude = _offered_account_ids(c, lot["id"])
+    exclude |= {r["winner_account_id"] for r in c.execute(
+        "SELECT DISTINCT winner_account_id FROM invoices"
+        " WHERE lot_id = ? AND status = 'VOID'",
+        (lot["id"],)).fetchall()}
+    if lot["winner_account_id"]:
+        exclude.add(lot["winner_account_id"])
+    bid = _eligible_runner_up(c, lot, exclude)
+    if bid is None:
+        _relist_lot(c, lot, now)
+        return {"outcome": "relisted", "lot_id": lot["id"]}
+    return _insert_offer(c, lot, bid, original_invoice_id,
+                         "UNPAID_WINNER", now)
+
+
+def _offer_reserve_not_met(c, lot, high_bid, now):
+    """Gap-check C4: a reserve-not-met close has no invoice to void,
+    but §7 still promises the high bidder a second-chance offer at
+    their own max. Returns the offer result, or None when the high
+    bidder is no longer eligible (suspended / unverified)."""
+    if high_bid is None:
+        return None
+    account = c.execute("SELECT * FROM accounts WHERE id = ?",
+                        (high_bid["bidder_account_id"],)).fetchone()
+    if not account or account["is_suspended"] \
+            or not account["email_verified_at"]:
+        return None
+    return _insert_offer(c, lot, high_bid, None, "RESERVE_NOT_MET", now)
+
+
+def run_second_chance_sweep(now=None):
+    """The 72h sweep (§§5.1, 5.6): void unpaid winner invoices, revoke
+    their tokens, and start the ladder; expire stale PENDING offers and
+    advance theirs. Idempotent — voided invoices and resolved offers
+    are never reprocessed."""
+    now = now or _now()
+    results = []
+    with _connect() as c:
+        due = c.execute(
+            "SELECT i.*, l.status AS lot_status FROM invoices i"
+            " JOIN lots l ON l.id = i.lot_id"
+            " WHERE i.status = 'OPEN' AND l.status = 'INVOICED'"
+            " AND i.payment_deadline_at <= ?"
+            " ORDER BY i.payment_deadline_at ASC",
+            (_iso(now),)).fetchall()
+    for row in due:
+        with _connect() as c:
+            invoice = c.execute("SELECT * FROM invoices WHERE id = ?",
+                                (row["id"],)).fetchone()
+            if not invoice or invoice["status"] != "OPEN":
+                continue
+            lot = _require_lot(c, invoice["lot_id"])
+            if lot["status"] != "INVOICED":
+                continue
+            c.execute(
+                "UPDATE invoices SET status = 'VOID', voided_at = ?,"
+                " void_reason = 'UNPAID_DEADLINE' WHERE id = ?",
+                (_iso(now), invoice["id"]))
+            _revoke_active_token(c, lot["id"], "UNPAID_DEADLINE", now)
+            results.append(_advance_ladder(c, lot, invoice["id"], now))
+    with _connect() as c:
+        expired = c.execute(
+            "SELECT * FROM second_chance_offers WHERE status = 'PENDING'"
+            " AND expires_at <= ? ORDER BY expires_at ASC",
+            (_iso(now),)).fetchall()
+    for offer in expired:
+        with _connect() as c:
+            fresh = c.execute(
+                "SELECT * FROM second_chance_offers WHERE id = ?",
+                (offer["id"],)).fetchone()
+            if not fresh or fresh["status"] != "PENDING":
+                continue
+            c.execute(
+                "UPDATE second_chance_offers SET status = 'EXPIRED'"
+                " WHERE id = ?", (offer["id"],))
+            _notify(c, fresh["offeree_account_id"], fresh["lot_id"],
+                    "SECOND_CHANCE_EXPIRED", {
+                        "lot_id": fresh["lot_id"],
+                        "offered_price_cents":
+                            int(fresh["offered_price_cents"])})
+            lot = _require_lot(c, fresh["lot_id"])
+            if lot["status"] == "INVOICED":
+                results.append(_advance_ladder(
+                    c, lot, fresh["original_invoice_id"], now))
+            elif lot["status"] == "NO_SALE" \
+                    and fresh["offer_kind"] == "RESERVE_NOT_MET":
+                # Gap-check C4: the high-bidder offer lapsed — relist.
+                _relist_lot(c, lot, now)
+                results.append({"outcome": "relisted",
+                                "lot_id": lot["id"]})
+    return {"run_at": _iso(now), "results": results,
+            "count": len(results)}
+
+
+def get_offer(offer_id):
+    with _connect() as c:
+        return c.execute(
+            "SELECT * FROM second_chance_offers WHERE id = ?",
+            (offer_id,)).fetchone()
+
+
+def _load_pending_offer(c, offer_id, account_id, now):
+    offer = c.execute("SELECT * FROM second_chance_offers WHERE id = ?",
+                      (offer_id,)).fetchone()
+    if not offer:
+        raise AuctionError("offer not found")
+    if offer["offeree_account_id"] != account_id:
+        raise PermissionDenied("this offer belongs to another account")
+    if offer["status"] != "PENDING":
+        raise AuctionError(f"offer is already {offer['status']}")
+    if _parse_ts(offer["expires_at"]) <= now:
+        raise AuctionError("offer has expired")
+    return offer
+
+
+def accept_second_chance(offer_id, account_id, now=None):
+    """Accept path (§5.5): atomic winner swap — offer ACCEPTED, lot
+    winner fields overwritten in place (status stays INVOICED), new
+    OPEN invoice at the offered price, fresh pay token minted. A
+    RESERVE_NOT_MET offer (gap-check C4) instead moves its NO_SALE lot
+    to INVOICED with the high bidder as winner at the offered price."""
+    now = now or _now()
+    with _connect() as c:
+        offer = _load_pending_offer(c, offer_id, account_id, now)
+        lot = _require_lot(c, offer["lot_id"])
+        is_rnm = offer["offer_kind"] == "RESERVE_NOT_MET"
+        if is_rnm:
+            if lot["status"] != "NO_SALE":
+                raise AuctionError(
+                    f"lot is {lot['status']}, not NO_SALE")
+        elif lot["status"] != "INVOICED":
+            raise AuctionError(f"lot is {lot['status']}, not INVOICED")
+        c.execute(
+            "UPDATE second_chance_offers SET status = 'ACCEPTED',"
+            " responded_at = ? WHERE id = ?", (_iso(now), offer_id))
+        c.execute(
+            "UPDATE lots SET status = 'INVOICED',"
+            " winner_account_id = ?,"
+            " winning_price_cents = ?, current_price_cents = ?,"
+            " leading_bidder_id = ?, updated_at = ? WHERE id = ?",
+            (account_id, int(offer["offered_price_cents"]),
+             int(offer["offered_price_cents"]), account_id,
+             _iso(now), lot["id"]))
+        invoice_id = str(uuid.uuid4())
+        c.execute(
+            "INSERT INTO invoices (id, lot_id, winner_account_id,"
+            " amount_cents, status, issued_at, payment_deadline_at)"
+            " VALUES (?,?,?,?,'OPEN',?,?)",
+            (invoice_id, lot["id"], account_id,
+             int(offer["offered_price_cents"]), _iso(now),
+             _iso(now + PAYMENT_WINDOW)))
+        invoice = c.execute("SELECT * FROM invoices WHERE id = ?",
+                            (invoice_id,)).fetchone()
+        lot = _require_lot(c, lot["id"])
+        token = _mint_token(c, lot, invoice, now)
+        _notify(c, account_id, lot["id"], "INVOICE_ISSUED", {
+            "lot_id": lot["id"], "invoice_id": invoice_id,
+            "amount_cents": int(offer["offered_price_cents"]),
+            "payment_deadline_at": invoice["payment_deadline_at"],
+            "pay_page_url": token["pay_page_url"]})
+    return {"outcome": "accepted", "offer_id": offer_id,
+            "lot_id": lot["id"], "invoice_id": invoice_id,
+            "amount_cents": int(offer["offered_price_cents"]),
+            "pay_page_url": token["pay_page_url"]}
+
+
+def decline_second_chance(offer_id, account_id, now=None):
+    """Decline path (§5.6): mark DECLINED and immediately advance the
+    ladder to the next eligible runner-up (or relist). A declined
+    RESERVE_NOT_MET offer relists directly — the high bidder was the
+    only offer on that path (gap-check C4)."""
+    now = now or _now()
+    with _connect() as c:
+        offer = _load_pending_offer(c, offer_id, account_id, now)
+        lot = _require_lot(c, offer["lot_id"])
+        c.execute(
+            "UPDATE second_chance_offers SET status = 'DECLINED',"
+            " responded_at = ? WHERE id = ?", (_iso(now), offer_id))
+        if offer["offer_kind"] == "RESERVE_NOT_MET":
+            if lot["status"] == "NO_SALE":
+                _relist_lot(c, lot, now)
+                return {"outcome": "declined", "offer_id": offer_id,
+                        "lot_id": lot["id"], "lot_outcome": "relisted"}
+            return {"outcome": "declined", "offer_id": offer_id}
+        if lot["status"] != "INVOICED":
+            return {"outcome": "declined", "offer_id": offer_id}
+        result = _advance_ladder(c, lot, offer["original_invoice_id"],
+                                 now)
+    return {**result, "outcome": "declined", "offer_id": offer_id}
+
+
+def run_payment_maintenance(now=None):
+    """One payment-maintenance pass (reminders + second-chance sweep),
+    run by the same Render Cron that runs the closer (§4.6)."""
+    now = now or _now()
+    return {"reminders": run_reminders(now),
+            "second_chance": run_second_chance_sweep(now)}
 
 
 # ---------------------------------------------------------------------------
@@ -1471,13 +2125,23 @@ def api_go_live(lot_id):
     return jsonify(body), (200 if ok else 422)
 
 
+def _request_ip():
+    """Client IP for the bid audit log: first X-Forwarded-For hop when
+    behind the Render proxy, else the direct peer."""
+    if request.access_route:
+        return request.access_route[0]
+    return request.remote_addr
+
+
 @bp.post("/api/auctions/lots/<lot_id>/bid")
 def api_place_bid(lot_id):
     try:
         account = _require_account()
         data = request.get_json(silent=True) or {}
         result = place_bid(
-            account["id"], lot_id, data.get("max_bid_cents"))
+            account["id"], lot_id, data.get("max_bid_cents"),
+            ip_address=_request_ip(),
+            user_agent=request.headers.get("User-Agent"))
     except AuctionError as exc:
         return _err(exc)
     return jsonify(result), 201
@@ -1492,7 +2156,88 @@ def api_closer_run():
         return jsonify({"error": "not found"}), 404
     if not _closer_authorized():
         return jsonify({"error": "forbidden"}), 403
-    return jsonify(run_closer())
+    summary = run_closer()
+    summary["payments"] = run_payment_maintenance()
+    return jsonify(summary)
+
+
+_PAY_PAGE_HTML = """<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>{title}</title></head>
+<body><h1>{title}</h1><p>{body}</p></body></html>"""
+
+
+@bp.get("/pay/<token>")
+def pay_page(token):
+    """Winner pay page (§4.4): every click mints a FRESH Stripe Checkout
+    session and redirects to it — a stale session URL in an old tab
+    always self-heals. Nothing is charged until the winner completes
+    checkout. A paid invoice renders a closed page instead."""
+    token_row = get_token_by_raw(token)
+    if token_row is None:
+        return _PAY_PAGE_HTML.format(
+            title="Link not found",
+            body="This payment link is not valid."), 404
+    if token_row["revoked_at"]:
+        return _PAY_PAGE_HTML.format(
+            title="Link replaced",
+            body="This payment link has been replaced or has expired. "
+                 "Use the newest link from your notifications."), 410
+    invoice = get_invoice(token_row["invoice_id"])
+    lot = get_lot(token_row["lot_id"])
+    if not invoice or not lot:
+        return _PAY_PAGE_HTML.format(
+            title="Link not found",
+            body="This payment link is not valid."), 404
+    if invoice["status"] == "PAID":
+        return _PAY_PAGE_HTML.format(
+            title="Already paid",
+            body=f"Payment for {lot['title']} is complete. Thank you.")
+    if invoice["status"] != "OPEN" or lot["status"] != "INVOICED":
+        return _PAY_PAGE_HTML.format(
+            title="No longer payable",
+            body="This invoice is no longer open for payment."), 410
+    if request.args.get("return"):
+        return _PAY_PAGE_HTML.format(
+            title="Payment processing",
+            body="If you completed checkout, your payment is being "
+                 "confirmed — this page will show as paid once Stripe "
+                 "confirms it.")
+    pay_url = request.url.split("?")[0]
+    try:
+        checkout = _mint_checkout_session(
+            lot, invoice,
+            success_url=pay_url + "?return=success",
+            cancel_url=pay_url)
+    except AuctionError as exc:
+        return _PAY_PAGE_HTML.format(
+            title="Checkout unavailable", body=str(exc)), 503
+    url = _session_get(checkout, "url")
+    if not url:
+        return _PAY_PAGE_HTML.format(
+            title="Checkout unavailable",
+            body="Stripe did not return a checkout URL."), 502
+    return redirect(url, code=302)
+
+
+@bp.post("/api/auctions/second-chance/<offer_id>/accept")
+def api_accept_second_chance(offer_id):
+    try:
+        account = _require_account()
+        result = accept_second_chance(offer_id, account["id"])
+    except AuctionError as exc:
+        return _err(exc)
+    return jsonify(result)
+
+
+@bp.post("/api/auctions/second-chance/<offer_id>/decline")
+def api_decline_second_chance(offer_id):
+    try:
+        account = _require_account()
+        result = decline_second_chance(offer_id, account["id"])
+    except AuctionError as exc:
+        return _err(exc)
+    return jsonify(result)
 
 
 @bp.get("/api/auctions/lots/<lot_id>")

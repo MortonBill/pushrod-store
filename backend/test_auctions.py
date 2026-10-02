@@ -712,6 +712,308 @@ r = anon.post("/api/auctions/closer/run",
 check("closer endpoint stays dark when no token is configured",
       r.status_code == 404, str(r.get_json()))
 
+# --- Slice 3: pay tokens, checkout, reminders, second-chance ladder --------
+# Domain + HTTP on DB_B (amod._DB_PATH already points there).
+s3_seller = amod.create_account("RE", "s3-seller@example.com", "S3 Seller",
+                                "password123", is_seller=True)
+s3_win = amod.create_account("RE", "s3-win@example.com", "S3 Winner",
+                             "password123")
+s3_run = amod.create_account("RE", "s3-run@example.com", "S3 Runner",
+                             "password123")
+s3_third = amod.create_account("RE", "s3-third@example.com", "S3 Third",
+                               "password123")
+for _acct in (s3_win, s3_run, s3_third):
+    amod.mark_email_verified(_acct["id"])
+
+_stub_calls = {"n": 0}
+
+
+def _stub_factory(lot, invoice, success_url, cancel_url):
+    _stub_calls["n"] += 1
+    return {"id": f"cs_test_s3_{_stub_calls['n']}",
+            "url": f"https://checkout.stripe.test/pay/{_stub_calls['n']}",
+            "payment_intent": "pi_test_s3"}
+
+
+amod.set_stripe_session_factory(_stub_factory)
+
+
+def s3_notes(lot_id):
+    raw = sqlite3.connect(amod._DB_PATH)
+    raw.row_factory = sqlite3.Row
+    rows = [dict(r) for r in raw.execute(
+        "SELECT * FROM notifications WHERE lot_id = ?", (lot_id,))]
+    raw.close()
+    return rows
+
+
+def s3_raw(sql, params=()):
+    raw = sqlite3.connect(amod._DB_PATH)
+    raw.row_factory = sqlite3.Row
+    rows = [dict(r) for r in raw.execute(sql, params)]
+    raw.close()
+    return rows
+
+
+def make_due(lot_id, when):
+    raw = sqlite3.connect(amod._DB_PATH)
+    raw.execute("UPDATE lots SET current_close_at = ? WHERE id = ?",
+                (iso(when), lot_id))
+    raw.commit()
+    raw.close()
+
+
+t0 = datetime.now(timezone.utc)
+
+# Pay flow: winner pays through a fresh-session-per-click pay page.
+pay_lot = make_live_lot(10000, the_seller=s3_seller)
+amod.place_bid(s3_win["id"], pay_lot["id"], 20000)
+amod.place_bid(s3_run["id"], pay_lot["id"], 15000)
+make_due(pay_lot["id"], t0 - timedelta(minutes=1))
+close_res = amod.close_lot(pay_lot["id"], now=t0)
+check("slice3 close invoices the winner", close_res["outcome"] == "invoiced")
+check("INVOICE_ISSUED carries the pay-page URL",
+      any(n["event"] == "INVOICE_ISSUED"
+          and "/pay/" in json.loads(n["payload"]).get("pay_page_url", "")
+          for n in s3_notes(pay_lot["id"])))
+tok1 = amod.issue_pay_token(pay_lot["id"], now=t0)
+tok2 = amod.issue_pay_token(pay_lot["id"], now=t0)
+check("reissue revokes the predecessor (audit rows kept)",
+      amod.get_token_by_raw(tok1["raw_token"])["revoked_at"] is not None
+      and amod.get_token_by_raw(tok2["raw_token"])["revoked_at"] is None
+      and len(s3_raw("SELECT * FROM pay_page_tokens WHERE lot_id = ?",
+                     (pay_lot["id"],))) >= 2)
+raw = sqlite3.connect(amod._DB_PATH)
+try:
+    raw.execute(
+        "INSERT INTO pay_page_tokens (id, lot_id, invoice_id,"
+        " winner_account_id, token_hash, issued_at) VALUES"
+        " ('11111111-1111-1111-1111-111111111111', ?, ?, ?, 'x', ?)",
+        (pay_lot["id"], close_res["invoice_id"], s3_win["id"], iso(t0)))
+    raw.commit()
+    check("partial unique index blocks a second ACTIVE token", False)
+except sqlite3.IntegrityError:
+    raw.rollback()
+    check("partial unique index blocks a second ACTIVE token", True)
+raw.close()
+r = anon.get("/pay/" + tok2["raw_token"])
+check("pay page redirects to a fresh Stripe session",
+      r.status_code == 302 and _stub_calls["n"] == 1, str(r.status_code))
+r = anon.get("/pay/" + tok2["raw_token"])
+check("every pay-page click mints a NEW session (no caching)",
+      r.status_code == 302 and _stub_calls["n"] == 2)
+r = anon.get("/pay/" + tok1["raw_token"])
+check("revoked token returns 410", r.status_code == 410)
+r = anon.get("/pay/" + "0" * 64)
+check("unknown token returns 404", r.status_code == 404)
+
+paid = amod.handle_checkout_completed({
+    "id": "cs_test_paid_1", "payment_intent": "pi_test_s3",
+    "metadata": {"kind": "auction_pay", "lot_id": pay_lot["id"],
+                 "invoice_id": close_res["invoice_id"],
+                 "winner_account_id": s3_win["id"]}}, now=t0)
+inv_paid = amod.get_invoice(close_res["invoice_id"])
+check("checkout.session.completed marks invoice + lot PAID",
+      paid["outcome"] == "paid" and inv_paid["status"] == "PAID"
+      and inv_paid["stripe_checkout_session_id"] == "cs_test_paid_1"
+      and amod.get_lot(pay_lot["id"])["status"] == "PAID")
+check("payment revokes the pay token + notifies PAYMENT_CONFIRMED once",
+      amod.get_token_by_raw(tok2["raw_token"])["revoked_at"] is not None
+      and sum(1 for n in s3_notes(pay_lot["id"])
+              if n["event"] == "PAYMENT_CONFIRMED") == 1)
+replay = amod.handle_checkout_completed({
+    "id": "cs_test_paid_1", "payment_intent": "pi_test_s3",
+    "metadata": {"kind": "auction_pay", "lot_id": pay_lot["id"],
+                 "invoice_id": close_res["invoice_id"],
+                 "winner_account_id": s3_win["id"]}}, now=t0)
+check("webhook replay is idempotent (already_paid, no double-write)",
+      replay["outcome"] == "already_paid"
+      and sum(1 for n in s3_notes(pay_lot["id"])
+              if n["event"] == "PAYMENT_CONFIRMED") == 1)
+expect_raises("a different session on a PAID invoice is a conflict",
+              lambda: amod.handle_checkout_completed({
+                  "id": "cs_test_other", "payment_intent": "pi_other",
+                  "metadata": {"kind": "auction_pay",
+                               "lot_id": pay_lot["id"],
+                               "invoice_id": close_res["invoice_id"],
+                               "winner_account_id": s3_win["id"]}}, now=t0),
+              (amod.AuctionError,))
+
+# Reminders: +24h/+48h exactly once each.
+rem_lot = make_live_lot(10000, the_seller=s3_seller)
+amod.place_bid(s3_win["id"], rem_lot["id"], 12000)
+make_due(rem_lot["id"], t0 - timedelta(minutes=1))
+amod.close_lot(rem_lot["id"], now=t0)
+r24 = amod.run_reminders(now=t0 + timedelta(hours=25))
+check("+24h reminder fires once",
+      r24["count"] == 1 and r24["reminders_sent"][0]["reminder_number"] == 1)
+check("+24h reminder never repeats on the next pass",
+      amod.run_reminders(now=t0 + timedelta(hours=26))["count"] == 0)
+r48 = amod.run_reminders(now=t0 + timedelta(hours=49))
+check("+48h reminder fires once",
+      r48["count"] == 1 and r48["reminders_sent"][0]["reminder_number"] == 2)
+check("reminder notifications carry both numbers",
+      {json.loads(n["payload"])["reminder_number"]
+       for n in s3_notes(rem_lot["id"])
+       if n["event"] == "PAYMENT_REMINDER"} == {1, 2})
+
+# Second-chance ladder: no-pay winner -> runner-up at their max -> accept.
+sc_lot = make_live_lot(10000, the_seller=s3_seller)
+amod.place_bid(s3_win["id"], sc_lot["id"], 30000)
+amod.place_bid(s3_run["id"], sc_lot["id"], 25000)
+amod.place_bid(s3_third["id"], sc_lot["id"], 28000)
+make_due(sc_lot["id"], t0 - timedelta(minutes=1))
+sc_close = amod.close_lot(sc_lot["id"], now=t0)
+sweep = amod.run_second_chance_sweep(now=t0 + timedelta(hours=73))
+offers = [x for x in sweep["results"] if x["outcome"] == "offered"
+          and x["lot_id"] == sc_lot["id"]]
+check("72h unpaid voids the invoice and offers the runner-up at their max",
+      len(offers) == 1 and offers[0]["offeree_account_id"] == s3_third["id"]
+      and offers[0]["offered_price_cents"] == 28000
+      and amod.get_invoice(sc_close["invoice_id"])["status"] == "VOID",
+      str(sweep))
+offer_id = offers[0]["offer_id"]
+expect_raises("only the offeree can accept their offer",
+              lambda: amod.accept_second_chance(offer_id, s3_run["id"],
+                                                now=t0 + timedelta(hours=74)),
+              (amod.PermissionDenied,))
+t1 = t0 + timedelta(hours=74)
+accepted = amod.accept_second_chance(offer_id, s3_third["id"], now=t1)
+sc_lot_now = amod.get_lot(sc_lot["id"])
+check("accept swaps the winner atomically and issues a new invoice + token",
+      accepted["amount_cents"] == 28000
+      and sc_lot_now["winner_account_id"] == s3_third["id"]
+      and sc_lot_now["winning_price_cents"] == 28000
+      and sc_lot_now["status"] == "INVOICED"
+      and amod.get_invoice(accepted["invoice_id"])["status"] == "OPEN"
+      and "/pay/" in accepted["pay_page_url"], str(accepted))
+# The new winner also never pays: ladder advances to the third bidder,
+# who declines -> ladder exhausted -> relisted back to DRAFT.
+sweep2 = amod.run_second_chance_sweep(now=t1 + timedelta(hours=73))
+offers2 = [x for x in sweep2["results"] if x["outcome"] == "offered"
+           and x["lot_id"] == sc_lot["id"]]
+check("second no-pay advances the ladder to the next bidder at their max",
+      len(offers2) == 1
+      and offers2[0]["offeree_account_id"] == s3_run["id"]
+      and offers2[0]["offered_price_cents"] == 25000, str(sweep2))
+declined = amod.decline_second_chance(offers2[0]["offer_id"], s3_run["id"],
+                                      now=t1 + timedelta(hours=74))
+sc_final = amod.get_lot(sc_lot["id"])
+check("final decline exhausts the ladder and relists the lot to DRAFT",
+      declined["outcome"] == "declined" and sc_final["status"] == "DRAFT"
+      and sc_final["winner_account_id"] is None
+      and any(n["event"] == "LOT_RELISTED"
+              and n["account_id"] == s3_seller["id"]
+              for n in s3_notes(sc_lot["id"])), str(declined))
+
+# Offer expiry path: PENDING offer lapses -> EXPIRED -> ladder exhausts.
+exp_lot = make_live_lot(5000, the_seller=s3_seller)
+amod.place_bid(s3_win["id"], exp_lot["id"], 9000)
+amod.place_bid(s3_run["id"], exp_lot["id"], 8000)
+make_due(exp_lot["id"], t0 - timedelta(minutes=1))
+amod.close_lot(exp_lot["id"], now=t0)
+amod.run_second_chance_sweep(now=t0 + timedelta(hours=73))
+sweep3 = amod.run_second_chance_sweep(
+    now=t0 + timedelta(hours=73 + 72, minutes=1))
+check("expired offer advances to exhaustion and relists",
+      amod.get_lot(exp_lot["id"])["status"] == "DRAFT"
+      and any(n["event"] == "SECOND_CHANCE_EXPIRED"
+              for n in s3_notes(exp_lot["id"])), str(sweep3))
+check("second-chance sweep is idempotent on a settled ladder",
+      amod.run_second_chance_sweep(
+          now=t0 + timedelta(hours=200))["count"] == 0)
+
+# --- Slice 3 gap-check C3: bid IP audit (§8.2) ----------------------------
+ip_lot = make_live_lot(10000, the_seller=s3_seller)
+ip_res = amod.place_bid(s3_win["id"], ip_lot["id"], 15000,
+                        ip_address="203.0.113.9",
+                        user_agent="auction-test/1.0")
+ip_bid = s3_raw("SELECT * FROM bids WHERE id = ?", (ip_res["bid_id"],))[0]
+check("accepted bid row stores ip_address + user_agent",
+      ip_bid["ip_address"] == "203.0.113.9"
+      and ip_bid["user_agent"] == "auction-test/1.0")
+attempts = s3_raw("SELECT * FROM bid_attempts WHERE lot_id = ?",
+                  (ip_lot["id"],))
+check("accepted bid attempt is audited with IP + bid link",
+      any(a["outcome"] == "ACCEPTED" and a["ip_address"] == "203.0.113.9"
+          and a["user_agent"] == "auction-test/1.0"
+          and a["bid_id"] == ip_res["bid_id"] for a in attempts),
+      str(attempts))
+expect_raises("below-minimum competing bid is rejected",
+              lambda: amod.place_bid(s3_run["id"], ip_lot["id"], 100,
+                                     ip_address="203.0.113.10",
+                                     user_agent="auction-test/1.0"),
+              (amod.AuctionError,))
+attempts = s3_raw("SELECT * FROM bid_attempts WHERE lot_id = ?",
+                  (ip_lot["id"],))
+check("rejected bid attempt is audited with its IP (no bid written)",
+      any(a["outcome"] == "REJECTED" and a["ip_address"] == "203.0.113.10"
+          and a["bid_id"] is None for a in attempts)
+      and len(s3_raw("SELECT * FROM bids WHERE lot_id = ?",
+                     (ip_lot["id"],))) == 1, str(attempts))
+expect_raises("self-bid is rejected",
+              lambda: amod.place_bid(s3_seller["id"], ip_lot["id"], 99000,
+                                     ip_address="203.0.113.11"),
+              (amod.PermissionDenied,))
+attempts = s3_raw("SELECT * FROM bid_attempts WHERE lot_id = ?",
+                  (ip_lot["id"],))
+check("rejected self-bid attempt is audited too",
+      any(a["outcome"] == "REJECTED" and a["ip_address"] == "203.0.113.11"
+          for a in attempts))
+
+# --- Slice 3 gap-check C4: reserve-not-met high-bidder offer --------------
+rnm_lot = make_live_lot(1000, reserve=50000, the_seller=s3_seller)
+amod.place_bid(s3_win["id"], rnm_lot["id"], 20000)
+amod.place_bid(s3_run["id"], rnm_lot["id"], 12000)
+make_due(rnm_lot["id"], t0 - timedelta(minutes=1))
+rnm_close = amod.close_lot(rnm_lot["id"], now=t0)
+check("reserve-not-met close offers the lot to the high bidder at their max",
+      rnm_close["outcome"] == "no_sale"
+      and rnm_close.get("second_chance_offeree_account_id") == s3_win["id"]
+      and rnm_close.get("second_chance_offered_price_cents") == 20000
+      and amod.get_lot(rnm_lot["id"])["status"] == "NO_SALE",
+      str(rnm_close))
+rnm_offer_id = rnm_close["second_chance_offer_id"]
+expect_raises("only the high bidder can accept the RNM offer",
+              lambda: amod.accept_second_chance(
+                  rnm_offer_id, s3_run["id"], now=t0 + timedelta(hours=1)),
+              (amod.PermissionDenied,))
+rnm_accepted = amod.accept_second_chance(rnm_offer_id, s3_win["id"],
+                                         now=t0 + timedelta(hours=1))
+rnm_now = amod.get_lot(rnm_lot["id"])
+check("RNM accept moves NO_SALE -> INVOICED at the offered price + token",
+      rnm_accepted["amount_cents"] == 20000
+      and rnm_now["status"] == "INVOICED"
+      and rnm_now["winner_account_id"] == s3_win["id"]
+      and rnm_now["winning_price_cents"] == 20000
+      and amod.get_invoice(rnm_accepted["invoice_id"])["status"] == "OPEN"
+      and "/pay/" in rnm_accepted["pay_page_url"], str(rnm_accepted))
+
+# RNM decline path: offer declined -> lot relists to DRAFT.
+rnm2_lot = make_live_lot(1000, reserve=50000, the_seller=s3_seller)
+amod.place_bid(s3_win["id"], rnm2_lot["id"], 20000)
+make_due(rnm2_lot["id"], t0 - timedelta(minutes=1))
+rnm2_close = amod.close_lot(rnm2_lot["id"], now=t0)
+rnm2_declined = amod.decline_second_chance(
+    rnm2_close["second_chance_offer_id"], s3_win["id"],
+    now=t0 + timedelta(hours=1))
+check("RNM decline relists the lot to DRAFT",
+      rnm2_declined["outcome"] == "declined"
+      and rnm2_declined.get("lot_outcome") == "relisted"
+      and amod.get_lot(rnm2_lot["id"])["status"] == "DRAFT",
+      str(rnm2_declined))
+
+# RNM expiry path: offer lapses in the sweep -> lot relists to DRAFT.
+rnm3_lot = make_live_lot(1000, reserve=50000, the_seller=s3_seller)
+amod.place_bid(s3_win["id"], rnm3_lot["id"], 20000)
+make_due(rnm3_lot["id"], t0 - timedelta(minutes=1))
+amod.close_lot(rnm3_lot["id"], now=t0)
+amod.run_second_chance_sweep(now=t0 + timedelta(hours=73))
+check("expired RNM offer relists the lot to DRAFT",
+      amod.get_lot(rnm3_lot["id"])["status"] == "DRAFT")
+
+amod.set_stripe_session_factory(None)
+
 print()
 if fails:
     print(f"{len(fails)} FAILURES: {fails}")

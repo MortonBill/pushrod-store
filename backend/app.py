@@ -573,6 +573,16 @@ def stripe_webhook():
         session = _sget(event, "data", {}) or {}
         session = _sget(session, "object", {}) or {}
         meta = _sget(session, "metadata", {}) or {}
+        if _sget(meta, "kind") == "auction_pay":
+            # Auction winner pay page (auctions.py Slice 3): the handler
+            # marks invoice + lot PAID idempotently. Signature already
+            # verified above; no cart fulfillment runs for these.
+            try:
+                result = auctions_mod.handle_checkout_completed(session)
+            except auctions_mod.AuctionError as e:
+                log.warning("auction payment handling failed: %s", e)
+                return jsonify({"error": str(e)}), 400
+            return jsonify({"received": True, "auction": result})
         try:
             cart = json.loads(_sget(meta, "cart", "[]") or "[]")
         except (ValueError, TypeError):
