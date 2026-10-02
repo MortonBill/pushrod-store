@@ -83,10 +83,15 @@ PRODUCT_MATCH = {  # blank_product -> distinctive substrings to find in catalog 
 
 
 def resolve_product(blank_name):
+    # Printful v2 list endpoints paginate with limit+offset and IGNORE
+    # `page` (verified 2026-10-02: page=1 and page=2 return identical
+    # data). The old page-based loop re-scanned page 1 forever and never
+    # saw products past the first 100 — the root cause of the failed
+    # 2026-10-01 fill runs ("no variant matched" / hangs).
     needles = [n.lower() for n in PRODUCT_MATCH[blank_name]]
-    seen, page = [], 1
+    seen, offset = [], 0
     while True:
-        resp = pf("GET", f"/v2/catalog-products?limit=100&page={page}")
+        resp = pf("GET", f"/v2/catalog-products?limit=100&offset={offset}")
         items = resp.get("data", [])
         if not items:
             break
@@ -97,23 +102,27 @@ def resolve_product(blank_name):
         seen.extend(items)
         if len(items) < 100:
             break
-        page += 1
+        offset += 100
         time.sleep(0.6)
     names = [p.get("name") for p in seen[:8]]
     raise RuntimeError(f"blank product not found: {blank_name} (sample catalog names: {names})")
 
 
 def get_variants(product_id):
-    variants, page = [], 1
+    # Offset pagination (see resolve_product note): `page` is ignored by
+    # the v2 API, so the old loop never terminated on >100-variant
+    # products and never saw variants past the first 100 (e.g. Maroon
+    # lives at offset>=100 on the Gildan 18000).
+    variants, offset = [], 0
     while True:
-        resp = pf("GET", f"/v2/catalog-products/{product_id}/catalog-variants?limit=100&page={page}")
+        resp = pf("GET", f"/v2/catalog-products/{product_id}/catalog-variants?limit=100&offset={offset}")
         items = resp.get("data", [])
         if not items:
             break
         variants.extend(items)
         if len(items) < 100:
             break
-        page += 1
+        offset += 100
         time.sleep(0.6)
     return variants
 

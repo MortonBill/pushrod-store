@@ -64,7 +64,13 @@ def mapping_complete(sku, ptype, mapping):
     is NOT fulfillable and must not be sold.
     """
     m = mapping or {}
-    return all(m.get(k) for k in mapping_keys_for(sku, ptype))
+
+    def _usable(entry):
+        return (bool(entry) and entry.get("catalog_variant_id") is not None
+                and entry.get("catalog_variant_id") != ""
+                and bool(entry.get("print_file_url")))
+
+    return all(_usable(m.get(k)) for k in mapping_keys_for(sku, ptype))
 
 
 def sku_prefix(sku):
