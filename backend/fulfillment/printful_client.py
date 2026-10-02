@@ -84,6 +84,15 @@ class PrintfulClient:
                 problem = {"detail": e.reason}
             raise PrintfulAPIError(e.code, problem)
 
+    # ---- helpers ----
+    @staticmethod
+    def _unwrap(resp):
+        """Printful v2 wraps payloads in {"data": ...}. Return the inner
+        object (or the response itself when already unwrapped)."""
+        if isinstance(resp, dict) and isinstance(resp.get("data"), dict):
+            return resp["data"]
+        return resp if isinstance(resp, dict) else {}
+
     # ---- catalog (for building the SKU -> variant mapping) ----
     def list_catalog_products(self, **params):
         qs = "&".join(f"{k}={v}" for k, v in params.items())
@@ -116,7 +125,7 @@ class PrintfulClient:
         }
         if external_id:
             payload["external_id"] = external_id
-        order = self._request("POST", "/orders", payload)
+        order = self._unwrap(self._request("POST", "/orders", payload))
         if confirm and not self.dry_run:
             order_id = order["id"]
             self._request("POST", f"/orders/{order_id}/confirmation")
@@ -127,7 +136,7 @@ class PrintfulClient:
         return self._request("POST", f"/orders/{order_id}/confirmation")
 
     def get_order(self, order_id):
-        return self._request("GET", f"/orders/{order_id}")
+        return self._unwrap(self._request("GET", f"/orders/{order_id}"))
 
     def get_order_by_external_id(self, external_id):
         return self._request("GET", f"/orders?external_id={external_id}")
