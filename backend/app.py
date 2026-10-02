@@ -149,6 +149,27 @@ def _stripe_acct():
     return {"stripe_account": STRIPE_CONNECT_ACCOUNT_ID} \
         if STRIPE_CONNECT_ACCOUNT_ID else {}
 
+
+def _sget(obj, key, default=None):
+    """Read `key` from a plain dict OR a stripe-python 15.x StripeObject.
+
+    On StripeObject, .get() raises AttributeError and attribute access on a
+    missing key raises AttributeError (KeyError chained inside) — both crash
+    Flask into an HTML 500. `in` + item access is the safe pattern.
+    Never raises: returns `default` when the key is absent or unreadable.
+    """
+    if obj is None:
+        return default
+    try:
+        if isinstance(obj, dict):
+            return obj.get(key, default)
+        if key in obj:
+            return obj[key]
+    except Exception:
+        pass
+    return default
+
+
 app = Flask(__name__, static_folder=os.path.join(FRONTEND, "static"))
 
 # ---------- wholesale partner program (Bill 2026-09-30: "build it out and wire it up") ----------
@@ -441,26 +462,39 @@ def api_fulfill():
         return jsonify({"error": f"cannot retrieve session: {e}"}), 400
     if session.payment_status != "paid":
         return jsonify({"error": f"session not paid (status={session.payment_status})"}), 402
-    # stripe-python 15.x: session.metadata is a StripeObject, not a dict —
-    # .get() raises AttributeError. Attribute/item access + `in` work.
-    meta = session.metadata or {}
-    cart = json.loads(meta["cart"] if "cart" in meta else "[]")
-    ship = session.shipping_details or {}
-    cust = session.customer_details or {}
-    addr = (ship.get("address") if isinstance(ship, dict) else ship.address) or {}
-    if not isinstance(addr, dict):
-        addr = {}
+    # stripe-python 15.x: session fields are StripeObjects, not dicts —
+    # .get() raises AttributeError and missing-key attribute access raises
+    # AttributeError (2026-10-01: crashed /api/fulfill into an HTML 500 on a
+    # live paid order). _sget() is the only safe read pattern here.
+    meta = _sget(session, "metadata", {}) or {}
+    cart_raw = _sget(meta, "cart", "[]") or "[]"
+    try:
+        cart = json.loads(cart_raw)
+    except (ValueError, TypeError):
+        return jsonify({"error": "unreadable cart metadata on session"}), 400
+    ship = _sget(session, "shipping_details", {}) or {}
+    cust = _sget(session, "customer_details", {}) or {}
+    addr = _sget(ship, "address", {}) or {}
+    shipping_address = {
+        "name": _sget(ship, "name", "") or "",
+        "line1": _sget(addr, "line1", "") or "",
+        "line2": _sget(addr, "line2", "") or "",
+        "city": _sget(addr, "city", "") or "",
+        "state": _sget(addr, "state", "") or "",
+        "country": _sget(addr, "country", "US") or "US",
+        "postal_code": _sget(addr, "postal_code", "") or "",
+    }
+    if not shipping_address["line1"] or not shipping_address["city"]:
+        log.warning("fulfill: session %s paid but has no shipping address",
+                    session.id)
+        return jsonify({"error": "no shipping address on this checkout "
+                                 "session — contact support with your order "
+                                 "email"}), 422
     try:
         order = fulfill_paid_order(
             stripe_session_id=session.id,
-            customer_email=(cust.get("email") if isinstance(cust, dict) else cust.email) or "",
-            shipping_address={
-                "name": (ship.get("name") if isinstance(ship, dict) else ship.name) or "",
-                "line1": addr.get("line1", ""), "line2": addr.get("line2", ""),
-                "city": addr.get("city", ""), "state": addr.get("state", ""),
-                "country": addr.get("country", "US"),
-                "postal_code": addr.get("postal_code", ""),
-            },
+            customer_email=_sget(cust, "email", "") or "",
+            shipping_address=shipping_address,
             cart_lines=cart, products_by_sku=BY_SKU, mapping_path=MAPPING_PATH,
             order_prefix=ORDER_PREFIX,
         )
@@ -485,26 +519,31 @@ def stripe_webhook():
         event = stripe.Webhook.construct_event(payload, sig, secret)
     except Exception as e:
         return jsonify({"error": f"bad signature: {e}"}), 400
-    if event.get("type") == "checkout.session.completed":
-        session = event["data"]["object"]
-        cart = json.loads(session.get("metadata", {}).get("cart", "[]"))
-        addr = (session.get("shipping_details") or {}).get("address") or {}
+    if _sget(event, "type") == "checkout.session.completed":
+        session = _sget(event, "data", {}) or {}
+        session = _sget(session, "object", {}) or {}
+        meta = _sget(session, "metadata", {}) or {}
+        try:
+            cart = json.loads(_sget(meta, "cart", "[]") or "[]")
+        except (ValueError, TypeError):
+            return jsonify({"error": "unreadable cart metadata"}), 400
+        addr = _sget(_sget(session, "shipping_details", {}) or {}, "address", {}) or {}
         try:
             fulfill_paid_order(
-                stripe_session_id=session["id"],
-                customer_email=(session.get("customer_details") or {}).get("email", ""),
+                stripe_session_id=_sget(session, "id", ""),
+                customer_email=_sget(_sget(session, "customer_details", {}) or {}, "email", "") or "",
                 shipping_address={
-                    "name": (session.get("shipping_details") or {}).get("name", ""),
-                    "line1": addr.get("line1", ""), "line2": addr.get("line2", ""),
-                    "city": addr.get("city", ""), "state": addr.get("state", ""),
-                    "country": addr.get("country", "US"),
-                    "postal_code": addr.get("postal_code", ""),
+                    "name": _sget(_sget(session, "shipping_details", {}) or {}, "name", "") or "",
+                    "line1": _sget(addr, "line1", "") or "", "line2": _sget(addr, "line2", "") or "",
+                    "city": _sget(addr, "city", "") or "", "state": _sget(addr, "state", "") or "",
+                    "country": _sget(addr, "country", "US") or "US",
+                    "postal_code": _sget(addr, "postal_code", "") or "",
                 },
                 cart_lines=cart, products_by_sku=BY_SKU, mapping_path=MAPPING_PATH,
                 order_prefix=ORDER_PREFIX,
             )
         except Exception as e:  # noqa: BLE001 — webhook must not crash; alert instead
-            log.exception("fulfillment failed for %s", session["id"])
+            log.exception("fulfillment failed for %s", _sget(session, "id", "?"))
             return jsonify({"error": str(e)}), 500
     return jsonify({"received": True})
 
