@@ -37,6 +37,7 @@ from fulfillment.fulfill import (
 from fulfillment import digital as digital_mod
 from fulfillment.printful_client import PrintfulConfigError, PrintfulAPIError
 import wholesale as wholesale_mod
+import auctions as auctions_mod
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("pushrod")
@@ -196,6 +197,9 @@ wholesale_mod.init(
     publishable_key=PUBLISHABLE_KEY,
     root_dir=ROOT,
 )
+
+# ---------- auction engine (RE/IH; opt-in per brand yaml / AUCTIONS_ENABLED) ----------
+auctions_mod.init(app, brand_cfg=brand, root_dir=ROOT)
 
 
 # ---------- storefront pages (static frontend) ----------
