@@ -155,6 +155,16 @@ def _stripe_acct():
         if STRIPE_CONNECT_ACCOUNT_ID else {}
 
 
+# Stripe Tax product tax codes (docs.stripe.com/tax/tax-codes). Digital lines
+# are downloadable PDFs sold with permanent rights -> Digital Books code.
+# Physical lines stay tangible goods; the wholesale freight line is Shipping.
+# The account's preset (Electronically Supplied Services, txcd_10000000) only
+# applies as a fallback for products with no code set directly.
+DIGITAL_TAX_CODE = "txcd_10302000"    # Digital Books - downloaded - permanent rights
+PHYSICAL_TAX_CODE = "txcd_99999999"   # General - Tangible Goods
+SHIPPING_TAX_CODE = "txcd_92010001"   # Shipping
+
+
 def _sget(obj, key, default=None):
     """Read `key` from a plain dict OR a stripe-python 15.x StripeObject.
 
@@ -413,7 +423,9 @@ def api_checkout():
             "currency": store_cfg["currency"],
             "unit_amount": l["unit_cents"],
             "product_data": {"name": f"{brand['brand']['name']} — {l['title']}"
-                                     + (f" ({l['size']})" if l["size"] else "")},
+                                     + (f" ({l['size']})" if l["size"] else ""),
+                             "tax_code": DIGITAL_TAX_CODE if _is_digital(l["sku"])
+                             else PHYSICAL_TAX_CODE},
         },
         "quantity": l["qty"],
     } for l in lines]
@@ -424,7 +436,8 @@ def api_checkout():
             "price_data": {
                 "currency": store_cfg["currency"],
                 "unit_amount": ship_cents,
-                "product_data": {"name": "Bulk shipping (estimate) — partner rate"},
+                "product_data": {"name": "Bulk shipping (estimate) — partner rate",
+                                 "tax_code": SHIPPING_TAX_CODE},
             },
             "quantity": 1,
         })
@@ -449,6 +462,13 @@ def api_checkout():
             {"allowed_countries": ["US"]}
     if discounts:
         create_kwargs["discounts"] = discounts
+    # Stripe Tax: calculate/collect automatically (live mode only — in test
+    # mode the flag stays off so test checkout can never fail on Tax
+    # activation state; the per-line tax_code above is harmless either way).
+    # tax_behavior is left unset: prices resolve through the account default
+    # (USD resolves exclusive — tax added on top of the sticker price).
+    if STRIPE_MODE == "live":
+        create_kwargs["automatic_tax"] = {"enabled": True}
     try:
         session = stripe.checkout.Session.create(**create_kwargs)
     except stripe.error.StripeError as e:
