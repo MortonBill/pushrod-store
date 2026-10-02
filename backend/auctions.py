@@ -24,10 +24,18 @@ Slice 1 scope (this module):
     exact Polsia failure this engine replaces).
   * Minimal JSON API + session auth for the flow above.
 
-NOT in Slice 1 (later slices): bid placement / proxy engine / soft close,
-the closer cron, pay-page tokens + Stripe Checkout, second-chance ladder,
-settlement recording UI, notifications delivery, email verification flow
-(accounts start unverified; bids will require email_verified_at).
+Slice 2 (this module, spec §§2–3): proxy max-bid placement — price =
+second-highest max + one increment from the seeded increment_rules,
+earliest-bid tiebreak, leader self-raise; soft close (+5 min per bid in
+the final 5 minutes, +120-minute cap); the guarded closer (token-gated
+endpoint for the Render Cron) computing winners idempotently through the
+CLOSED -> {NO_SALE | INVOICED} fork, creating the winner's invoice and
+the notifications outbox rows.
+
+NOT in Slices 1–2 (later slices): pay-page tokens + Stripe Checkout,
+second-chance ladder, settlement recording UI, notifications delivery,
+email verification flow (accounts start unverified; bids already require
+email_verified_at).
 
 Persistence: AUCTIONS_DB (defaults to /var/data/auctions.db when the Render
 disk is mounted, else <root>/data/auctions.db) — same disk rule as wholesale.
@@ -780,9 +788,10 @@ def reschedule_lot(lot_id, admin_account_id, scheduled_start_at,
 # ---------------------------------------------------------------------------
 # Public representation + render smoke check
 # ---------------------------------------------------------------------------
-def public_lot_dict(lot):
+def public_lot_dict(lot, account_id=None):
     """What bidders may see. The reserve AMOUNT is never exposed — only its
-    presence, and after close whether it was met (derived, never stored)."""
+    presence, and after close whether it was met (derived, never stored).
+    With account_id, adds that viewer's own bid state (§2.7)."""
     if not lot:
         return None
     image_keys = lot["image_keys"]
@@ -795,7 +804,7 @@ def public_lot_dict(lot):
     reserve_met = None
     if status in ("NO_SALE", "INVOICED", "PAID", "SETTLED"):
         reserve_met = status != "NO_SALE"
-    return {
+    view = {
         "id": lot["id"],
         "brand": lot["brand"],
         "title": lot["title"],
@@ -813,6 +822,19 @@ def public_lot_dict(lot):
         "scheduled_close_at": lot["scheduled_close_at"],
         "current_close_at": lot["current_close_at"],
     }
+    if status in ("LIVE", "CLOSED", "NO_SALE", "INVOICED", "PAID",
+                  "SETTLED"):
+        state = public_bid_state(lot, account_id)
+        view["bid_count"] = state["bid_count"]
+        if status == "LIVE":
+            with _connect() as c:
+                view["minimum_next_bid_cents"] = (
+                    int(lot["current_price_cents"]) + _increment_for(
+                        c, lot["brand"], int(lot["current_price_cents"])))
+        if account_id:
+            view["your_max_bid_cents"] = state["your_max_bid_cents"]
+            view["you_are_leading"] = state["you_are_leading"]
+    return view
 
 
 def _default_render_check(lot, public):
@@ -886,6 +908,405 @@ def list_public_lots(brand=None, statuses=("LIVE", "SCHEDULED")):
     sql += " ORDER BY scheduled_start_at ASC, created_at ASC"
     with _connect() as c:
         return c.execute(sql, tuple(params)).fetchall()
+
+
+# ---------------------------------------------------------------------------
+# Bidding — proxy engine, soft close, closer (Slice 2, spec §§2–3)
+# ---------------------------------------------------------------------------
+SOFT_CLOSE_WINDOW = timedelta(minutes=5)   # bid inside final 5 min extends
+SOFT_CLOSE_EXTENSION = timedelta(minutes=5)
+PAYMENT_WINDOW = timedelta(hours=72)       # spec §1.10 payment_deadline_at
+
+
+def _increment_for(c, brand, price_cents):
+    """Spec §2.4: the increment whose range [low, high) contains the price.
+    The price passed in is always the LOWER of the two competing maxes."""
+    row = c.execute(
+        "SELECT increment_cents FROM increment_rules WHERE brand = ?"
+        " AND range_low_cents <= ?"
+        " AND (range_high_cents IS NULL OR range_high_cents > ?)"
+        " AND (effective_to IS NULL OR effective_to >= ?)"
+        " ORDER BY range_low_cents DESC LIMIT 1",
+        (brand, price_cents, price_cents, _now().date().isoformat())
+    ).fetchone()
+    if not row:
+        raise AuctionError("no increment rule seeded for this price range")
+    return int(row["increment_cents"])
+
+
+def _notify(c, account_id, lot_id, event, payload=None):
+    """Write one notifications outbox row (spec §7.1 — same transaction as
+    the state change; delivery is a later slice)."""
+    c.execute(
+        "INSERT INTO notifications (id, account_id, lot_id, event, payload,"
+        " created_at) VALUES (?,?,?,?,?,?)",
+        (str(uuid.uuid4()), account_id, lot_id, event,
+         dict(payload or {}), _iso(_now())))
+
+
+def _ranked_active_bids(c, lot_id):
+    """ACTIVE bids in proxy order: highest max first, earliest placed wins
+    ties (spec §§2.5, 3.3)."""
+    return c.execute(
+        "SELECT * FROM bids WHERE lot_id = ? AND status = 'ACTIVE'"
+        " ORDER BY max_bid_cents DESC, placed_at ASC, id ASC",
+        (lot_id,)).fetchall()
+
+
+def _floor_price(lot, max_bid_cents):
+    """Effective price of a lone leading bid: the starting price (spec
+    §3.3 single-bid rule), never above the bidder's own max, never 0
+    (bids.effective_price_cents CHECK requires > 0)."""
+    return max(1, min(int(max_bid_cents), int(lot["starting_price_cents"])))
+
+
+def place_bid(bidder_account_id, lot_id, max_bid_cents, now=None):
+    """Place a proxy max-bid (spec §2). Returns a result dict describing
+    the bidder's standing; never exposes another bidder's max."""
+    now = now or _now()
+    try:
+        max_bid = int(max_bid_cents)
+    except (TypeError, ValueError):
+        raise AuctionError("bid amount must be a whole number of cents")
+    if isinstance(max_bid_cents, bool) or max_bid <= 0:
+        raise AuctionError("bid amount must be a positive number of cents")
+    bidder = get_account(bidder_account_id)
+    if not bidder:
+        raise AuctionError("bidder account not found")
+    with _connect() as c:
+        lot = _require_lot(c, lot_id)
+        if lot["status"] != "LIVE":
+            raise AuctionError("lot is not live for bidding")
+        if bidder["brand"] != lot["brand"]:
+            raise AuctionError("bidder account belongs to a different brand")
+        if lot["seller_account_id"] == bidder["id"]:
+            raise PermissionDenied("sellers cannot bid on their own lots")
+        if bidder["is_suspended"]:
+            raise PermissionDenied("suspended accounts cannot bid")
+        if not bidder["email_verified_at"]:
+            raise PermissionDenied(
+                "email must be verified before bidding")
+        ranked = _ranked_active_bids(c, lot_id)
+        leader = ranked[0] if ranked else None
+        current_price = int(lot["current_price_cents"])
+        if leader is None:
+            minimum = int(lot["starting_price_cents"])
+            if max_bid < minimum:
+                raise AuctionError(
+                    f"bid is below the minimum of {minimum} cents")
+        elif leader["bidder_account_id"] == bidder["id"]:
+            if max_bid <= int(leader["max_bid_cents"]):
+                raise AuctionError(
+                    "new max must exceed your current max bid")
+            minimum = int(leader["max_bid_cents"]) + 1
+        else:
+            minimum = current_price + _increment_for(
+                c, lot["brand"], current_price)
+            if max_bid < minimum:
+                raise AuctionError(
+                    f"bid is below the minimum of {minimum} cents")
+        brand = lot["brand"]
+        now_iso = _iso(now)
+        bid_id = str(uuid.uuid4())
+        outcome = None            # "leading" | "outbid" | "raised"
+        new_price = current_price
+        previous_leader_id = leader["bidder_account_id"] if leader else None
+        if leader is None:
+            new_price = _floor_price(lot, max_bid)
+            c.execute(
+                "INSERT INTO bids (id, lot_id, bidder_account_id,"
+                " max_bid_cents, effective_price_cents, status, proxy_rank,"
+                " placed_at, triggered_extension, created_at)"
+                " VALUES (?,?,?,?,?,'ACTIVE',1,?,0,?)",
+                (bid_id, lot_id, bidder["id"], max_bid, new_price,
+                 now_iso, now_iso))
+            outcome = "leading"
+        elif leader["bidder_account_id"] == bidder["id"]:
+            # Case C — leader raising their own max: price never moves.
+            c.execute(
+                "UPDATE bids SET status = 'OUTBID' WHERE id = ?",
+                (leader["id"],))
+            c.execute(
+                "INSERT INTO bids (id, lot_id, bidder_account_id,"
+                " max_bid_cents, effective_price_cents, status, proxy_rank,"
+                " placed_at, triggered_extension, created_at)"
+                " VALUES (?,?,?,?,?,'ACTIVE',?, ?,0,?)",
+                (bid_id, lot_id, bidder["id"], max_bid,
+                 int(leader["effective_price_cents"]),
+                 (leader["proxy_rank"] or 1) + 1, now_iso, now_iso))
+            outcome = "raised"
+        elif max_bid > int(leader["max_bid_cents"]):
+            # Case B-1 — challenger wins at second-highest max + increment.
+            inc = _increment_for(c, brand, int(leader["max_bid_cents"]))
+            new_price = min(max_bid,
+                            int(leader["max_bid_cents"]) + inc)
+            c.execute(
+                "UPDATE bids SET status = 'OUTBID' WHERE id = ?",
+                (leader["id"],))
+            c.execute(
+                "INSERT INTO bids (id, lot_id, bidder_account_id,"
+                " max_bid_cents, effective_price_cents, status, proxy_rank,"
+                " placed_at, triggered_extension, created_at)"
+                " VALUES (?,?,?,?,?,'ACTIVE',?, ?,0,?)",
+                (bid_id, lot_id, bidder["id"], max_bid, new_price,
+                 (leader["proxy_rank"] or 1) + 1, now_iso, now_iso))
+            outcome = "leading"
+        elif max_bid == int(leader["max_bid_cents"]):
+            # Tie (§2.5): earliest bid keeps the lead at its full max.
+            new_price = int(leader["max_bid_cents"])
+            c.execute(
+                "UPDATE bids SET effective_price_cents = ? WHERE id = ?",
+                (new_price, leader["id"]))
+            c.execute(
+                "INSERT INTO bids (id, lot_id, bidder_account_id,"
+                " max_bid_cents, effective_price_cents, status, proxy_rank,"
+                " placed_at, triggered_extension, created_at)"
+                " VALUES (?,?,?,?,?,'OUTBID',?, ?,0,?)",
+                (bid_id, lot_id, bidder["id"], max_bid, max_bid,
+                 leader["proxy_rank"], now_iso, now_iso))
+            outcome = "outbid"
+        else:
+            # Case B-2 — challenger loses; leader's price rises to the
+            # challenger's max + increment (capped at the leader's max).
+            inc = _increment_for(c, brand, max_bid)
+            new_price = min(int(leader["max_bid_cents"]), max_bid + inc)
+            if new_price > int(leader["effective_price_cents"]):
+                c.execute(
+                    "UPDATE bids SET effective_price_cents = ? WHERE id = ?",
+                    (new_price, leader["id"]))
+            c.execute(
+                "INSERT INTO bids (id, lot_id, bidder_account_id,"
+                " max_bid_cents, effective_price_cents, status, proxy_rank,"
+                " placed_at, triggered_extension, created_at)"
+                " VALUES (?,?,?,?,?,'OUTBID',?, ?,0,?)",
+                (bid_id, lot_id, bidder["id"], max_bid, max_bid,
+                 leader["proxy_rank"], now_iso, now_iso))
+            outcome = "outbid"
+        # Soft close (spec §3.1): a bid inside the final window extends
+        # the close by 5 minutes, capped at +120 total.
+        extended = False
+        close_at = _parse_ts(lot["current_close_at"])
+        used = int(lot["extension_minutes_used"] or 0)
+        if close_at is not None and close_at - now < SOFT_CLOSE_WINDOW \
+                and used < EXTENSION_CAP_MINUTES:
+            step = min(5, EXTENSION_CAP_MINUTES - used)
+            close_at = close_at + timedelta(minutes=step)
+            used += step
+            c.execute(
+                "UPDATE bids SET triggered_extension = 1 WHERE id = ?",
+                (bid_id,))
+            c.execute(
+                "UPDATE lots SET current_close_at = ?,"
+                " extension_minutes_used = ? WHERE id = ?",
+                (_iso(close_at), used, lot_id))
+            extended = True
+        if outcome in ("leading", "raised"):
+            c.execute(
+                "UPDATE lots SET current_price_cents = ?,"
+                " leading_bidder_id = ?, updated_at = ? WHERE id = ?",
+                (new_price, bidder["id"], now_iso, lot_id))
+            if outcome == "leading" and previous_leader_id \
+                    and previous_leader_id != bidder["id"]:
+                _notify(c, previous_leader_id, lot_id, "OUTBID", {
+                    "lot_id": lot_id, "current_price_cents": new_price,
+                    "minimum_next_bid_cents": new_price + _increment_for(
+                        c, brand, new_price)})
+                _notify(c, bidder["id"], lot_id, "WINNING", {
+                    "lot_id": lot_id, "current_price_cents": new_price})
+        else:
+            c.execute(
+                "UPDATE lots SET current_price_cents = ?, updated_at = ?"
+                " WHERE id = ?", (new_price, now_iso, lot_id))
+        result_lot = _require_lot(c, lot_id)
+        result = {
+            "bid_id": bid_id,
+            "lot_id": lot_id,
+            "outcome": outcome,                    # leading | outbid | raised
+            "is_leading": outcome in ("leading", "raised"),
+            "your_max_bid_cents": max_bid,
+            "current_price_cents": int(result_lot["current_price_cents"]),
+            "minimum_next_bid_cents":
+                int(result_lot["current_price_cents"]) + _increment_for(
+                    c, brand, int(result_lot["current_price_cents"])),
+            "current_close_at": result_lot["current_close_at"],
+            "extension_triggered": extended,
+            "bid_count": c.execute(
+                "SELECT COUNT(*) AS n FROM bids WHERE lot_id = ?"
+                " AND status != 'VOIDED'", (lot_id,)).fetchone()["n"],
+        }
+    return result
+
+
+def public_bid_state(lot, account_id=None):
+    """Per-viewer bid state for a lot page (spec §2.7): the viewer's own
+    max/standing is visible to them alone; nobody else's max ever leaks."""
+    view = {
+        "bid_count": 0,
+        "your_max_bid_cents": None,
+        "you_are_leading": False,
+    }
+    with _connect() as c:
+        view["bid_count"] = c.execute(
+            "SELECT COUNT(*) AS n FROM bids WHERE lot_id = ?"
+            " AND status != 'VOIDED'", (lot["id"],)).fetchone()["n"]
+        if account_id:
+            mine = c.execute(
+                "SELECT * FROM bids WHERE lot_id = ?"
+                " AND bidder_account_id = ? AND status != 'VOIDED'"
+                " ORDER BY placed_at DESC LIMIT 1",
+                (lot["id"], account_id)).fetchone()
+            if mine:
+                view["your_max_bid_cents"] = mine["max_bid_cents"]
+                view["you_are_leading"] = (
+                    lot["leading_bidder_id"] == account_id)
+    return view
+
+
+def compute_winner(c, lot):
+    """Spec §3.3: returns (winner_bid, winning_price_cents) or
+    (None, current_price) when there are no ACTIVE bids."""
+    ranked = _ranked_active_bids(c, lot["id"])
+    if not ranked:
+        return None, int(lot["current_price_cents"])
+    winner = ranked[0]
+    if len(ranked) == 1:
+        return winner, int(winner["effective_price_cents"])
+    second_max = int(ranked[1]["max_bid_cents"])
+    inc = _increment_for(c, lot["brand"], second_max)
+    price = min(int(winner["max_bid_cents"]), second_max + inc)
+    return winner, price
+
+
+def close_lot(lot_id, now=None):
+    """Compute the winner for one due lot through the guarded CLOSED fork
+    (spec §§3.3–3.4). Idempotent: a lot not LIVE (or CLOSED with its fork
+    already resolved) is reported as skipped, and re-running after a
+    crash self-heals the invoice. Returns a result dict."""
+    now = now or _now()
+    lot = get_lot(lot_id)
+    if not lot:
+        raise AuctionError("lot not found")
+    if lot["status"] == "INVOICED":
+        invoice = _ensure_invoice(lot, now)
+        return {"lot_id": lot_id, "outcome": "already_invoiced",
+                "invoice_id": invoice["id"] if invoice else None}
+    if lot["status"] not in ("LIVE", "CLOSED"):
+        return {"lot_id": lot_id, "outcome": "skipped",
+                "reason": f"lot is {lot['status']}"}
+    if lot["status"] == "LIVE":
+        close_at = _parse_ts(lot["current_close_at"])
+        if close_at is not None and close_at > now:
+            return {"lot_id": lot_id, "outcome": "not_due"}
+        transition(lot_id, "CLOSED")
+        lot = get_lot(lot_id)
+    # CLOSED with no winner yet -> resolve the fork now (crash recovery
+    # lands here too). The fork write itself is atomic via transition().
+    with _connect() as c:
+        winner, price = compute_winner(c, lot)
+    reserve = lot["reserve_price_cents"]
+    if winner is None or (reserve is not None and price < int(reserve)):
+        closed = transition(lot_id, "NO_SALE",
+                            current_price_cents=price)
+        with _connect() as c:
+            _notify(c, lot["seller_account_id"], lot_id, "RESERVE_NOT_MET", {
+                "lot_id": lot_id, "current_price_cents": price,
+                "had_bids": winner is not None})
+            for bid in _ranked_active_bids(c, lot_id):
+                _notify(c, bid["bidder_account_id"], lot_id, "OUTBID", {
+                    "lot_id": lot_id, "current_price_cents": price,
+                    "final": True})
+        return {"lot_id": lot_id, "outcome": "no_sale",
+                "current_price_cents": price}
+    closed = transition(lot_id, "INVOICED",
+                        winner_account_id=winner["bidder_account_id"],
+                        winning_price_cents=price,
+                        current_price_cents=price)
+    invoice = _ensure_invoice(closed, now)
+    with _connect() as c:
+        payload = {"lot_id": lot_id, "winning_price_cents": price,
+                   "invoice_id": invoice["id"],
+                   "payment_deadline_at": invoice["payment_deadline_at"]}
+        _notify(c, winner["bidder_account_id"], lot_id, "AUCTION_WON",
+                payload)
+        _notify(c, winner["bidder_account_id"], lot_id, "INVOICE_ISSUED",
+                payload)
+        ranked = _ranked_active_bids(c, lot_id)
+        losers = [b for b in ranked
+                  if b["bidder_account_id"] != winner["bidder_account_id"]]
+        # Spec §3.5: the runner-up's final OUTBID is deferred — they are
+        # the second-chance candidate if the winner never pays.
+        for bid in losers[1:]:
+            _notify(c, bid["bidder_account_id"], lot_id, "OUTBID", {
+                "lot_id": lot_id, "current_price_cents": price,
+                "final": True})
+    return {"lot_id": lot_id, "outcome": "invoiced",
+            "winner_account_id": winner["bidder_account_id"],
+            "winning_price_cents": price,
+            "invoice_id": invoice["id"]}
+
+
+def _ensure_invoice(lot, now=None):
+    """Create the winner's invoice if missing (idempotent; the UNIQUE
+    (lot_id) constraint is the backstop)."""
+    now = now or _now()
+    with _connect() as c:
+        existing = c.execute(
+            "SELECT * FROM invoices WHERE lot_id = ?",
+            (lot["id"],)).fetchone()
+        if existing:
+            return existing
+        invoice_id = str(uuid.uuid4())
+        c.execute(
+            "INSERT INTO invoices (id, lot_id, winner_account_id,"
+            " amount_cents, status, issued_at, payment_deadline_at)"
+            " VALUES (?,?,?,?,'OPEN',?,?)",
+            (invoice_id, lot["id"], lot["winner_account_id"],
+             int(lot["winning_price_cents"]), _iso(now),
+             _iso(now + PAYMENT_WINDOW)))
+        return c.execute("SELECT * FROM invoices WHERE id = ?",
+                         (invoice_id,)).fetchone()
+
+
+def due_lots(now=None):
+    """Lots the closer should process: LIVE past their close, plus any
+    CLOSED lot whose fork never resolved (crash recovery, spec §3.4)."""
+    now = now or _now()
+    with _connect() as c:
+        live = c.execute(
+            "SELECT * FROM lots WHERE status = 'LIVE'"
+            " AND current_close_at IS NOT NULL AND current_close_at <= ?"
+            " ORDER BY current_close_at ASC", (_iso(now),)).fetchall()
+        stuck = c.execute(
+            "SELECT * FROM lots WHERE status = 'CLOSED'"
+            " AND winner_account_id IS NULL").fetchall()
+    return live + stuck
+
+
+def run_closer(now=None):
+    """One closer run (spec §3.2): every due lot processed in its own
+    guarded close; one lot's failure never blocks the others."""
+    now = now or _now()
+    results = []
+    for lot in due_lots(now):
+        try:
+            results.append(close_lot(lot["id"], now=now))
+        except Exception as exc:  # noqa: BLE001 — per-lot isolation
+            log.exception("closer failed on lot %s", lot["id"])
+            results.append({"lot_id": lot["id"], "outcome": "error",
+                            "error": str(exc)})
+    summary = {"run_at": _iso(now), "lots_due": len(results),
+               "results": results}
+    for key in ("invoiced", "no_sale", "not_due", "skipped",
+                "already_invoiced", "error"):
+        summary[key] = sum(1 for r in results if r["outcome"] == key)
+    return summary
+
+
+def _closer_authorized():
+    token = (request.headers.get("X-Auctions-Closer-Token", "")
+             or request.args.get("token", ""))
+    expected = os.environ.get("AUCTIONS_CLOSER_TOKEN", "")
+    return bool(expected) and hmac.compare_digest(token, expected)
 
 
 # ---------------------------------------------------------------------------
@@ -1050,6 +1471,30 @@ def api_go_live(lot_id):
     return jsonify(body), (200 if ok else 422)
 
 
+@bp.post("/api/auctions/lots/<lot_id>/bid")
+def api_place_bid(lot_id):
+    try:
+        account = _require_account()
+        data = request.get_json(silent=True) or {}
+        result = place_bid(
+            account["id"], lot_id, data.get("max_bid_cents"))
+    except AuctionError as exc:
+        return _err(exc)
+    return jsonify(result), 201
+
+
+@bp.post("/api/auctions/closer/run")
+def api_closer_run():
+    """Token-gated closer endpoint for the Render Cron (spec §3.2). Not
+    reachable without AUCTIONS_CLOSER_TOKEN; returns 404 when the token is
+    not configured at all so the endpoint stays dark with the engine."""
+    if not os.environ.get("AUCTIONS_CLOSER_TOKEN", ""):
+        return jsonify({"error": "not found"}), 404
+    if not _closer_authorized():
+        return jsonify({"error": "forbidden"}), 403
+    return jsonify(run_closer())
+
+
 @bp.get("/api/auctions/lots/<lot_id>")
 def api_get_lot(lot_id):
     lot = get_lot(lot_id)
@@ -1060,7 +1505,8 @@ def api_get_lot(lot_id):
     if lot["status"] in ("DRAFT", "IN_MODERATION", "REJECTED") \
             and not is_owner and not _is_admin_request():
         return jsonify({"error": "lot not found"}), 404
-    return jsonify(public_lot_dict(lot))
+    return jsonify(public_lot_dict(
+        lot, account_id=account["id"] if account else None))
 
 
 @bp.get("/api/auctions/lots")

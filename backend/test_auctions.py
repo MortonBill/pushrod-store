@@ -411,6 +411,307 @@ r = client.get("/api/auctions/lots?brand=RE")
 check("public list carries the LIVE lot",
       any(l["id"] == api_lot["id"] for l in r.get_json()))
 
+# ---------------------------------------------------------------------------
+# 8. Slice 2 — proxy bidding, soft close, closer (spec §§2–3)
+# Domain level on DB_A. Helper drives a lot to LIVE with a chosen close.
+# ---------------------------------------------------------------------------
+from datetime import timezone as _tz  # noqa: E402
+
+# Section 7's app import re-pointed the module at DB_B; the domain tests
+# below run against DB_A again.
+os.environ["AUCTIONS_DB"] = DB_A
+amod._DIALECT = "sqlite"
+amod._DB_PATH = DB_A
+
+bidder2 = amod.create_account("RE", "bidder2@example.com", "Bidder Two",
+                              "password123")
+bidder3 = amod.create_account("RE", "bidder3@example.com", "Bidder Three",
+                              "password123")
+unverified = amod.create_account("RE", "unverified@example.com", "Un Verified",
+                                 "password123")
+for _acct in (bidder2, bidder3, seller):
+    amod.mark_email_verified(_acct["id"])
+
+
+def iso(dt):
+    return dt.isoformat()
+
+
+def make_live_lot(starting, reserve=None, close_in_minutes=60, brand="RE",
+                  the_seller=None):
+    the_seller = the_seller or seller
+    new_lot = amod.create_lot(
+        the_seller["id"], brand, "Slice2 Lot " + os.urandom(3).hex(),
+        "desc", "cars" if brand == "RE" else "bikes", starting,
+        reserve_price_cents=reserve)
+    amod.submit_lot(new_lot["id"], the_seller["id"])
+    now = datetime.now(timezone.utc)
+    amod.approve_lot(new_lot["id"], admin["id"], iso(now - timedelta(hours=1)),
+                     iso(now + timedelta(minutes=close_in_minutes)))
+    live, ok_live, _d = amod.attempt_go_live(
+        new_lot["id"], render_check=lambda l, p: (True, "ok"))
+    assert ok_live, "test lot failed to go live"
+    return amod.get_lot(new_lot["id"])
+
+
+def lot_bids(lot_id):
+    raw = sqlite3.connect(DB_A)
+    raw.row_factory = sqlite3.Row
+    rows = [dict(r) for r in raw.execute(
+        "SELECT * FROM bids WHERE lot_id = ? ORDER BY placed_at ASC",
+        (lot_id,))]
+    raw.close()
+    return rows
+
+
+def lot_notifications(lot_id):
+    raw = sqlite3.connect(DB_A)
+    raw.row_factory = sqlite3.Row
+    rows = [dict(r) for r in raw.execute(
+        "SELECT * FROM notifications WHERE lot_id = ?", (lot_id,))]
+    raw.close()
+    return rows
+
+
+# --- §2.2 integrity gates --------------------------------------------------
+gate_lot = make_live_lot(10000)
+expect_raises("seller cannot bid on their own lot",
+              lambda: amod.place_bid(seller["id"], gate_lot["id"], 20000),
+              (amod.PermissionDenied,))
+expect_raises("unverified email cannot bid",
+              lambda: amod.place_bid(unverified["id"], gate_lot["id"], 20000),
+              (amod.PermissionDenied,))
+raw = sqlite3.connect(DB_A)
+raw.execute("UPDATE accounts SET is_suspended = 1 WHERE id = ?",
+            (bidder3["id"],))
+raw.commit()
+raw.close()
+expect_raises("suspended account cannot bid",
+              lambda: amod.place_bid(bidder3["id"], gate_lot["id"], 20000),
+              (amod.PermissionDenied,))
+raw = sqlite3.connect(DB_A)
+raw.execute("UPDATE accounts SET is_suspended = 0 WHERE id = ?",
+            (bidder3["id"],))
+raw.commit()
+raw.close()
+expect_raises("bid below the starting price rejected",
+              lambda: amod.place_bid(bidder["id"], gate_lot["id"], 9999),
+              (amod.AuctionError,))
+expect_raises("bid on a non-live lot rejected",
+              lambda: amod.place_bid(bidder["id"], early["id"], 800000),
+              (amod.AuctionError,))
+expect_raises("cross-brand bid rejected",
+              lambda: amod.place_bid(bidder["id"], ih_lot["id"], 300000),
+              (amod.AuctionError,))
+
+# --- §2.3 proxy math (RE increments: $5.00 in the $50–$249.99 band) --------
+r1 = amod.place_bid(bidder["id"], gate_lot["id"], 10000)
+check("first bid leads at the starting price",
+      r1["outcome"] == "leading" and r1["current_price_cents"] == 10000)
+r2 = amod.place_bid(bidder2["id"], gate_lot["id"], 20000)
+check("higher max wins at second max + increment",
+      r2["outcome"] == "leading" and r2["current_price_cents"] == 10500)
+rows = lot_bids(gate_lot["id"])
+check("losing incumbent flips to OUTBID",
+      rows[0]["status"] == "OUTBID" and rows[1]["status"] == "ACTIVE")
+check("winner price never exceeds the winner max",
+      lot_bids(gate_lot["id"])[1]["effective_price_cents"] == 10500)
+expect_raises("bid below current price + increment rejected",
+              lambda: amod.place_bid(bidder3["id"], gate_lot["id"], 10750),
+              (amod.AuctionError,))
+r3 = amod.place_bid(bidder3["id"], gate_lot["id"], 15000)
+check("lower competing max loses and pushes the price to its max + increment",
+      r3["outcome"] == "outbid" and r3["current_price_cents"] == 15500)
+expect_raises("leader max must strictly increase on a self-raise",
+              lambda: amod.place_bid(bidder2["id"], gate_lot["id"], 15000),
+              (amod.AuctionError,))
+r4 = amod.place_bid(bidder2["id"], gate_lot["id"], 30000)
+check("leader self-raise keeps the price and the lead",
+      r4["outcome"] == "raised" and r4["current_price_cents"] == 15500
+      and r4["is_leading"] is True)
+notes = {(n["account_id"], n["event"]) for n in lot_notifications(gate_lot["id"])}
+check("OUTBID + WINNING notifications written on displacement",
+      (bidder["id"], "OUTBID") in notes
+      and (bidder2["id"], "WINNING") in notes, str(notes))
+pub = amod.public_lot_dict(amod.get_lot(gate_lot["id"]),
+                           account_id=bidder["id"])
+check("public view shows bid count and minimum next bid, never others' max",
+      pub["bid_count"] == 4 and pub["minimum_next_bid_cents"] == 16000
+      and "30000" not in json.dumps(pub)
+      and "20000" not in json.dumps(pub), str(pub))
+check("viewer sees their own max and standing only",
+      pub["your_max_bid_cents"] == 10000 and pub["you_are_leading"] is False)
+
+# --- §2.5 tie: earliest max wins, price rises to the tied max --------------
+tie_lot = make_live_lot(5000)
+amod.place_bid(bidder["id"], tie_lot["id"], 12000)
+rt = amod.place_bid(bidder2["id"], tie_lot["id"], 12000)
+check("tied max loses to the earlier bid at the tied price",
+      rt["outcome"] == "outbid" and rt["current_price_cents"] == 12000)
+check("tie keeps the earliest bidder in the lead",
+      amod.get_lot(tie_lot["id"])["leading_bidder_id"] == bidder["id"])
+
+# --- §3.1 soft close (+120-minute cap) -------------------------------------
+soft_lot = make_live_lot(1000, close_in_minutes=4)
+before = amod.get_lot(soft_lot["id"])
+rs = amod.place_bid(bidder["id"], soft_lot["id"], 5000)
+after = amod.get_lot(soft_lot["id"])
+check("bid inside the final 5 minutes extends the close by 5 minutes",
+      rs["extension_triggered"] is True
+      and after["extension_minutes_used"] == 5
+      and after["current_close_at"] > before["current_close_at"])
+raw = sqlite3.connect(DB_A)
+raw.execute("UPDATE lots SET extension_minutes_used = 118,"
+            " current_close_at = ? WHERE id = ?",
+            (iso(datetime.now(timezone.utc) + timedelta(minutes=3)),
+             soft_lot["id"]))
+raw.commit()
+raw.close()
+rs2 = amod.place_bid(bidder2["id"], soft_lot["id"], 6000)
+after2 = amod.get_lot(soft_lot["id"])
+check("extension stops at the 120-minute cap",
+      rs2["extension_triggered"] is True
+      and after2["extension_minutes_used"] == 120)
+raw = sqlite3.connect(DB_A)
+raw.execute("UPDATE lots SET current_close_at = ? WHERE id = ?",
+            (iso(datetime.now(timezone.utc) + timedelta(minutes=2)),
+             soft_lot["id"]))
+raw.commit()
+raw.close()
+rs3 = amod.place_bid(bidder["id"], soft_lot["id"], 7000)
+check("no extension once the cap is exhausted",
+      rs3["extension_triggered"] is False
+      and amod.get_lot(soft_lot["id"])["extension_minutes_used"] == 120)
+
+# --- §3.3/§3.4 closer: fork, invoice, idempotency --------------------------
+now = datetime.now(timezone.utc)
+done = amod.close_lot(gate_lot["id"], now=now)  # close is +60m: not due
+check("closer leaves a lot whose close has not arrived alone",
+      done["outcome"] == "not_due"
+      and amod.get_lot(gate_lot["id"])["status"] == "LIVE")
+# Make it due by moving the close into the past, then close it.
+raw = sqlite3.connect(DB_A)
+raw.execute("UPDATE lots SET current_close_at = ? WHERE id = ?",
+            (iso(now - timedelta(minutes=1)), gate_lot["id"]))
+raw.commit()
+raw.close()
+res = amod.close_lot(gate_lot["id"], now=now)
+closed_lot = amod.get_lot(gate_lot["id"])
+check("due lot closes INVOICED to the proxy winner at the computed price",
+      res["outcome"] == "invoiced"
+      and closed_lot["status"] == "INVOICED"
+      and closed_lot["winner_account_id"] == bidder2["id"]
+      and closed_lot["winning_price_cents"] == 15500, str(res))
+raw = sqlite3.connect(DB_A)
+raw.row_factory = sqlite3.Row
+inv = raw.execute("SELECT * FROM invoices WHERE lot_id = ?",
+                  (gate_lot["id"],)).fetchone()
+raw.close()
+check("winner invoice created OPEN at the winning price with a 72h deadline",
+      inv is not None and inv["status"] == "OPEN"
+      and inv["amount_cents"] == 15500
+      and inv["payment_deadline_at"] is not None)
+again = amod.close_lot(gate_lot["id"], now=now)
+check("closer re-run is idempotent (already_invoiced, no duplicate invoice)",
+      again["outcome"] == "already_invoiced"
+      and again["invoice_id"] == inv["id"])
+check("close notified the winner (AUCTION_WON + INVOICE_ISSUED)",
+      {(n["account_id"], n["event"]) for n in lot_notifications(gate_lot["id"])}
+      >= {(bidder2["id"], "AUCTION_WON"), (bidder2["id"], "INVOICE_ISSUED")})
+
+# Reserve not met -> NO_SALE, winner fields stay NULL.
+res_lot = make_live_lot(1000, reserve=50000)
+amod.place_bid(bidder["id"], res_lot["id"], 10000)
+amod.place_bid(bidder2["id"], res_lot["id"], 20000)
+raw = sqlite3.connect(DB_A)
+raw.execute("UPDATE lots SET current_close_at = ? WHERE id = ?",
+            (iso(now - timedelta(minutes=1)), res_lot["id"]))
+raw.commit()
+raw.close()
+res2 = amod.close_lot(res_lot["id"], now=now)
+no_sale = amod.get_lot(res_lot["id"])
+check("reserve not met closes NO_SALE with no winner written",
+      res2["outcome"] == "no_sale" and no_sale["status"] == "NO_SALE"
+      and no_sale["winner_account_id"] is None
+      and no_sale["winning_price_cents"] is None, str(res2))
+check("seller gets RESERVE_NOT_MET; reserve amount leaks nowhere public",
+      any(n["event"] == "RESERVE_NOT_MET"
+          and n["account_id"] == seller["id"]
+          for n in lot_notifications(res_lot["id"]))
+      and "50000" not in json.dumps(amod.public_lot_dict(no_sale)))
+
+# Zero bids -> NO_SALE; crash CLOSED lot self-heals through run_closer.
+empty_lot = make_live_lot(1000)
+stuck_lot = make_live_lot(1000)
+amod.place_bid(bidder["id"], stuck_lot["id"], 5000)
+raw = sqlite3.connect(DB_A)
+raw.execute("UPDATE lots SET current_close_at = ? WHERE id IN (?, ?)",
+            (iso(now - timedelta(minutes=1)), empty_lot["id"],
+             stuck_lot["id"]))
+raw.execute("UPDATE lots SET status = 'CLOSED' WHERE id = ?",
+            (stuck_lot["id"],))
+raw.commit()
+raw.close()
+summary = amod.run_closer(now=now + timedelta(minutes=1))
+by_lot = {r["lot_id"]: r["outcome"] for r in summary["results"]}
+check("run_closer closes a zero-bid lot as no_sale",
+      by_lot.get(empty_lot["id"]) == "no_sale", str(by_lot))
+check("run_closer self-heals a crash-stuck CLOSED lot",
+      by_lot.get(stuck_lot["id"]) == "invoiced", str(by_lot))
+summary2 = amod.run_closer(now=now + timedelta(minutes=2))
+tracked = {r["lot_id"] for r in summary2["results"]}
+check("run_closer second pass never reprocesses a closed lot (idempotent)",
+      not ({gate_lot["id"], res_lot["id"], empty_lot["id"], stuck_lot["id"]}
+           & tracked), str(summary2))
+
+# --- HTTP: bid endpoint + token-gated closer -------------------------------
+# The store app (and the blueprint's requests) run against DB_B.
+os.environ["AUCTIONS_DB"] = DB_B
+amod._DB_PATH = DB_B
+os.environ["AUCTIONS_CLOSER_TOKEN"] = "test-closer-token"
+bidder_client = store_app.app.test_client()
+r = bidder_client.post("/api/auctions/accounts", json={
+    "brand": "RE", "email": "api-bidder@example.com",
+    "display_name": "API Bidder", "password": "password123"})
+check("API registers a bidder", r.status_code == 201, str(r.get_json()))
+api_bidder_id = r.get_json()["id"]
+r = bidder_client.post("/api/auctions/lots/" + api_lot["id"] + "/bid",
+                       json={"max_bid_cents": 500000})
+check("API bid refuses an unverified email (403)",
+      r.status_code == 403, str(r.get_json()))
+amod.mark_email_verified(api_bidder_id)
+r = bidder_client.post("/api/auctions/login", json={
+    "brand": "RE", "email": "api-bidder@example.com",
+    "password": "password123"})
+check("API bidder login works", r.status_code == 200, str(r.get_json()))
+r = bidder_client.post("/api/auctions/lots/" + api_lot["id"] + "/bid",
+                       json={"max_bid_cents": 500000})
+check("API bid places a proxy max on the LIVE lot",
+      r.status_code == 201 and r.get_json()["outcome"] == "leading"
+      and r.get_json()["current_price_cents"] == 400000, str(r.get_json()))
+r = bidder_client.post("/api/auctions/lots/" + api_lot["id"] + "/bid",
+                       json={"max_bid_cents": 500000})
+check("API self-raise at the same max is refused",
+      r.status_code == 400, str(r.get_json()))
+r = bidder_client.get("/api/auctions/lots/" + api_lot["id"])
+check("API lot view shows the bid state without others' max",
+      r.status_code == 200 and r.get_json()["bid_count"] == 1
+      and r.get_json()["your_max_bid_cents"] == 500000)
+r = anon.post("/api/auctions/closer/run")
+check("closer endpoint refuses requests without the cron token",
+      r.status_code == 403, str(r.get_json()))
+r = anon.post("/api/auctions/closer/run?token=wrong-token")
+check("closer endpoint refuses a wrong token", r.status_code == 403)
+r = anon.post("/api/auctions/closer/run",
+              headers={"X-Auctions-Closer-Token": "test-closer-token"})
+check("closer endpoint runs with the cron token",
+      r.status_code == 200 and "results" in r.get_json(), str(r.get_json()))
+del os.environ["AUCTIONS_CLOSER_TOKEN"]
+r = anon.post("/api/auctions/closer/run",
+              headers={"X-Auctions-Closer-Token": "test-closer-token"})
+check("closer endpoint stays dark when no token is configured",
+      r.status_code == 404, str(r.get_json()))
+
 print()
 if fails:
     print(f"{len(fails)} FAILURES: {fails}")
