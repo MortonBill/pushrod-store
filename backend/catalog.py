@@ -23,6 +23,7 @@ OWNERSHIP = {
     "RE-MC-": "restorationessentials",
     "RE-CT-": "restorationessentials",
     "RE-MP-": "restorationessentials",
+    "SF-": "skillforge",
 }
 
 # SKU prefix -> merch-library key, for resolving design artwork per line.
@@ -32,6 +33,7 @@ IMAGE_LIBS = {
     "RE-MC-": "muscle",
     "RE-CT-": "truck",
     "RE-MP-": "modern",
+    "SF-": "skillforge",
 }
 
 # Product types that need a size choice at purchase time.
@@ -117,11 +119,41 @@ def load_catalog(csv_path, prices_json_path=None, sku_prefixes=None, mapping=Non
             price = prices.get(sku)
             design_file = row["design_file"].strip()
             ptype = row["type"].strip()
+            # Fulfillment seam (2026-10-02, SkillForge digital pilot): a
+            # catalog row MAY carry fulfillment_type (print|digital) and
+            # digital_file (the deliverable's filename, served from the
+            # digital-files dir — see fulfillment/digital.py). Both columns
+            # are optional: rows without them are print goods fulfilled via
+            # Printful, exactly as before. Aliases tolerated while the
+            # digital catalog CSVs are still being written.
+            ftype = (row.get("fulfillment_type") or row.get("fulfillment")
+                     or "print").strip().lower()
+            if ftype not in ("print", "digital"):
+                ftype = "print"
+            digital_file = (row.get("digital_file") or row.get("digital_path")
+                            or row.get("download_file") or "").strip()
+            if not digital_file and (row.get("delivery_file") or "").strip():
+                # Catalog CSVs written by the content lane name the
+                # deliverable column delivery_file and may carry a local
+                # absolute path; the store serves bare filenames from the
+                # digital-files dir, so normalize to the basename.
+                digital_file = os.path.basename(row["delivery_file"].strip())
+            if ftype == "digital":
+                # Digital purchasability mirrors the print rule — the
+                # honest-purchasability gate (Bill 2026-09-30) applied to a
+                # file instead of a Printful mapping: price + a deliverable
+                # file, or it can never be sold.
+                purchasable = price is not None and bool(digital_file)
+            else:
+                purchasable = price is not None and mapping_complete(
+                    sku, ptype, mapping)
             products.append({
                 "sku": sku,
                 "prefix": prefix,
                 "owner": OWNERSHIP[prefix],
                 "type": ptype,
+                "fulfillment_type": ftype,
+                "digital_file": digital_file,
                 "title": row["title"].strip(),
                 "description": row["description"].strip(),
                 "base_color": row["base_color"].strip(),
@@ -132,9 +164,9 @@ def load_catalog(csv_path, prices_json_path=None, sku_prefixes=None, mapping=Non
                 "image_url": f"/img/{IMAGE_LIBS[prefix]}/{design_file}",
                 "price": price,  # None -> "Price TBD", not purchasable
                 # Honest purchasability (Bill 2026-09-30): price alone is not
-                # enough — every required Printful mapping key must exist or
-                # the item can never be fulfilled.
-                "purchasable": price is not None and mapping_complete(sku, ptype, mapping),
+                # enough — print needs every required Printful mapping key,
+                # digital needs its deliverable file (see above).
+                "purchasable": purchasable,
                 "needs_size": ptype in SIZED_TYPES,
             })
     # Bill 2026-09-30: the 7B- seven-brand line sorts LAST in the catalog so

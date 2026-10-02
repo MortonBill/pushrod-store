@@ -1,0 +1,74 @@
+# Brand #4 — SKILLFORGE AI storefront (brand id: skillforge)
+# AI playbooks for trades and service businesses. DIGITAL-ONLY brand:
+# every product is a PDF delivered after payment — no Printful, no shipping.
+# Same codebase as pushrod/restorationessentials; select with BRAND=skillforge.
+brand:
+  id: skillforge
+  name: SkillForge AI
+  tagline: "AI playbooks for people who work with their hands"
+  # SKU prefixes this brand store serves.
+  sku_prefixes:
+    - "SF-"
+  # Unified-catalog ownership: which brand owns each prefix (gateway routing).
+  ownership:
+    "PR-": pushrod
+    "RE-MC-": restorationessentials
+    "RE-CT-": restorationessentials
+    "RE-MP-": restorationessentials
+    "SF-": skillforge
+
+theme:
+  bg: "#0e1319"          # graphite
+  bg2: "#131a21"
+  card: "#1b242e"
+  accent: "#2dd4bf"      # teal — distinct from pushrod amber and RE shop gold/red
+  accent2: "#56ccf2"     # sky
+  text: "#edf2f4"
+  muted: "#93a1ad"
+  font_display: "'Arial Black','Helvetica Neue',sans-serif"
+  font_body: "'Helvetica Neue',Arial,sans-serif"
+
+# Catalog sources of truth (never edited by the store — read-only).
+# Relative paths resolve against the project root (see backend/app.py).
+# Products/csv rows carry delivery_file = the local PDF delivered on payment;
+# design_file carries the same PDF basename (cover art is a frontend concern;
+# the delivery_file column is the fulfillment source of truth).
+catalog:
+  catalogs:
+    - csv: "data/skillforge-catalog.csv"
+      prices_json: "data/skillforge-prices.json"
+  image_base: "/img"
+
+# Pricing policy: ONLY verified prices are sellable. Live PDP price verified
+# 2026-10-02 for the $37 trade shelf (see data/skillforge-prices.json
+# pricing_status for per-product provenance). SKUs with no verified price are
+# listed as "Price TBD" and cannot be added to cart. Never invent prices.
+pricing:
+  allow_draft_prices: true
+  draft_label: "Intro price"
+
+# Fulfillment: DIGITAL ONLY. On checkout.session.completed the delivery seam
+# (backend/fulfillment/digital.py — backend lane) emails/serves the PDF named
+# by the catalog row's delivery_file. Printful is NOT used by this brand; the
+# printful fields below exist only for schema parity with the merch brands and
+# must never be wired to a live order for SkillForge.
+fulfillment:
+  mode: digital
+  delivery: "signed download link + email on payment (backend lane)"
+
+store:
+  currency: usd
+  # Order idempotency prefix (per-brand).
+  order_prefix: "sf"
+  # Stripe: TEST MODE ONLY for the pilot. Key must start with sk_test_; live
+  # keys are refused at runtime (see backend/app.py). The live flip is a
+  # later, separately gated step — do not rename these envs early.
+  # No stripe_connect_account_id_env: SkillForge charges the master Stripe
+  # account directly (no Connect header).
+  stripe_secret_key_env: "SKILLFORGE_STRIPE_TEST_SECRET_KEY"
+  stripe_publishable_key_env: "SKILLFORGE_STRIPE_TEST_PUBLISHABLE_KEY"
+  stripe_webhook_secret_env: "SKILLFORGE_STRIPE_WEBHOOK_SECRET"
+  # UNUSED for this digital brand — schema parity only. Never fulfill a
+  # SkillForge order through Printful.
+  printful_api_key_env: "SKILLFORGE_PRINTFUL_API_TOKEN"
+  printful_dry_run: false

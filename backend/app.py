@@ -11,6 +11,9 @@ the frontend talks to:
   GET  /api/fulfill?session_id= verify paid session -> create Printful order
   POST /api/stripe/webhook      production: checkout.session.completed -> fulfill
   GET  /api/printful/mapping-status  SKU coverage of printful_mapping.json
+  GET  /download/<token>        signed, expiring download for a digital SKU
+                                 (token minted at fulfillment — see
+                                 fulfillment/digital.py)
 
 Order flow: customer buys on our site -> Stripe (test or live per STRIPE_MODE) ->
 backend creates the Printful order via API -> Printful prints and ships.
@@ -29,7 +32,9 @@ from flask import Flask, jsonify, request, send_from_directory
 from catalog import load_unified_catalog, catalog_stats, APPAREL_SIZES, mapping_keys_for, mapping_complete
 from fulfillment.fulfill import (
     fulfill_paid_order, load_mapping, mapping_key, build_order_items,
+    split_cart_lines,
 )
+from fulfillment import digital as digital_mod
 from fulfillment.printful_client import PrintfulConfigError, PrintfulAPIError
 import wholesale as wholesale_mod
 
@@ -359,15 +364,19 @@ def api_checkout():
         if min_errors:
             return jsonify({"error": "; ".join(min_errors)}), 400
         ship_cents = wholesale_mod.bulk_shipping_cents(wl_lines)
-    # Fulfillment pre-check: every line must have COMPLETE Printful mapping
-    # (non-null values, not just keys) — the same rule as the purchasability
-    # gate (catalog.mapping_complete). A customer must never pay for something
-    # we cannot ship. build_order_items() keeps its strict completeness check
-    # for actual fulfillment in fulfill_paid_order(), so a paid order with
-    # unfilled entries fails loudly there instead of shipping nothing silently.
+    # Fulfillment pre-check: every PRINT line must have COMPLETE Printful
+    # mapping (non-null values, not just keys) — the same rule as the
+    # purchasability gate (catalog.mapping_complete). A customer must never
+    # pay for something we cannot ship. build_order_items() keeps its strict
+    # completeness check for actual fulfillment in fulfill_paid_order(), so
+    # a paid order with unfilled entries fails loudly there instead of
+    # shipping nothing silently. Digital lines skip this gate: their
+    # purchasability already required a deliverable file at catalog load.
     mapping = load_mapping(MAPPING_PATH)
     unmapped = []
     for l in lines:
+        if _is_digital(l["sku"]):
+            continue
         if not mapping_complete(l["sku"], BY_SKU[l["sku"]]["type"], mapping):
             unmapped.append(l["sku"])
     if unmapped:
@@ -428,11 +437,16 @@ def api_checkout():
         mode="payment",
         line_items=line_items,
         metadata=metadata,
-        shipping_address_collection={"allowed_countries": ["US"]},
         success_url=base + "/checkout/success?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=base + "/checkout/cancel",
         **_stripe_acct(),
     )
+    # Shipping is collected only when the cart has print goods — a
+    # digital-only buyer has nothing to ship and must not be forced
+    # through an address form (fulfillment is the emailed download link).
+    if any(not _is_digital(l["sku"]) for l in lines):
+        create_kwargs["shipping_address_collection"] = \
+            {"allowed_countries": ["US"]}
     if discounts:
         create_kwargs["discounts"] = discounts
     try:
@@ -485,25 +499,37 @@ def api_fulfill():
         "postal_code": _sget(addr, "postal_code", "") or "",
     }
     if not shipping_address["line1"] or not shipping_address["city"]:
-        log.warning("fulfill: session %s paid but has no shipping address",
-                    session.id)
-        return jsonify({"error": "no shipping address on this checkout "
-                                 "session — contact support with your order "
-                                 "email"}), 422
+        print_lines, _digital_lines = split_cart_lines(cart, BY_SKU)
+        if print_lines:
+            log.warning("fulfill: session %s paid but has no shipping address",
+                        session.id)
+            return jsonify({"error": "no shipping address on this checkout "
+                                     "session — contact support with your order "
+                                     "email"}), 422
+        # Digital-only order: nothing ships, so no address is required —
+        # delivery is the emailed download link.
     try:
-        order = fulfill_paid_order(
+        result = fulfill_paid_order(
             stripe_session_id=session.id,
             customer_email=_sget(cust, "email", "") or "",
             shipping_address=shipping_address,
             cart_lines=cart, products_by_sku=BY_SKU, mapping_path=MAPPING_PATH,
             order_prefix=ORDER_PREFIX,
+            download_base_url=_public_base_url(),
+            store_name=brand["brand"]["name"],
         )
-    except PrintfulConfigError as e:
+    except (PrintfulConfigError, digital_mod.DigitalConfigError) as e:
         return jsonify({"error": str(e)}), 503
-    except (PrintfulAPIError, ValueError) as e:
+    except (PrintfulAPIError, ValueError, digital_mod.DigitalSendError) as e:
         return jsonify({"error": str(e)}), 502
-    return jsonify({"printful_order_id": order.get("id"), "status": order.get("status"),
-                    "dry_run": order.get("dry_run", False)})
+    if isinstance(result, dict) and "digital" in result:
+        po = result.get("printful") or {}
+        return jsonify({"printful_order_id": po.get("id"),
+                        "status": po.get("status"),
+                        "dry_run": po.get("dry_run", False),
+                        "digital": result.get("digital")})
+    return jsonify({"printful_order_id": result.get("id"), "status": result.get("status"),
+                    "dry_run": result.get("dry_run", False)})
 
 
 @app.post("/api/stripe/webhook")
@@ -541,11 +567,89 @@ def stripe_webhook():
                 },
                 cart_lines=cart, products_by_sku=BY_SKU, mapping_path=MAPPING_PATH,
                 order_prefix=ORDER_PREFIX,
+                download_base_url=_public_base_url(),
+                store_name=brand["brand"]["name"],
             )
         except Exception as e:  # noqa: BLE001 — webhook must not crash; alert instead
             log.exception("fulfillment failed for %s", _sget(session, "id", "?"))
             return jsonify({"error": str(e)}), 500
+    if _sget(event, "type") == "charge.refunded":
+        # Refund runbook (fulfillment/README.md): refunds are issued by a
+        # human in the Stripe dashboard. Here we only LOG and flag the
+        # digital ledger — a delivered download cannot be recalled, and no
+        # code path pretends otherwise. The checkout session id rides on
+        # charge metadata when present; without it we log the charge id so
+        # the refund can be matched by hand.
+        charge = _sget(_sget(event, "data", {}) or {}, "object", {}) or {}
+        meta = _sget(charge, "metadata", {}) or {}
+        sid = _sget(meta, "checkout_session_id", "") or ""
+        flagged = False
+        if sid:
+            try:
+                flagged = digital_mod.DigitalLedger().mark_refunded(sid)
+            except Exception:  # noqa: BLE001 — logging must not crash
+                log.exception("refund ledger flag failed for %s", sid)
+        log.warning(
+            "charge.refunded: charge=%s amount_refunded=%s session=%s "
+            "ledger_flagged=%s — any download links already delivered stay "
+            "valid until expiry (cannot be recalled)",
+            _sget(charge, "id", "?"), _sget(charge, "amount_refunded", "?"),
+            sid or "(not on charge metadata)", flagged)
     return jsonify({"received": True})
+
+
+# ---------- digital delivery (SkillForge pilot, 2026-10-02) ----------
+# Digital SKUs (catalog fulfillment_type=digital) are delivered by emailed
+# signed links (fulfillment/digital.py) and served by /download below from
+# DIGITAL_FILES_DIR (default data/digital under the project root). Link
+# targets must be built on the PUBLIC host: PUBLIC_BASE_URL overrides the
+# request host when the service sits behind a proxy/custom domain.
+
+def _digital_files_dir():
+    return os.environ.get("DIGITAL_FILES_DIR", os.path.join(ROOT, "data", "digital"))
+
+
+def _public_base_url():
+    return (os.environ.get("PUBLIC_BASE_URL") or request.host_url).rstrip("/")
+
+
+def _is_digital(sku):
+    return ((BY_SKU.get(sku) or {}).get("fulfillment_type")
+            or "print").strip().lower() == "digital"
+
+
+@app.get("/download/<token>")
+def download_file(token):
+    """Serve a digital product file to whoever holds a valid signed token.
+
+    The token (minted at fulfillment, emailed to the buyer) binds sku +
+    buyer email + expiry. Never log the token itself."""
+    try:
+        signer = digital_mod.DownloadTokenSigner()
+    except digital_mod.DigitalConfigError as e:
+        return jsonify({"error": str(e)}), 503
+    try:
+        payload = signer.verify(token)
+    except ValueError as e:
+        reason = str(e)
+        status = 410 if reason == "expired" else 403
+        return jsonify({"error": f"download link {reason}"}), status
+    sku = payload.get("sku", "")
+    product = BY_SKU.get(sku)
+    if (not product or not _is_digital(sku)
+            or not product.get("digital_file")):
+        return jsonify({"error": "not found"}), 404
+    files_dir = os.path.realpath(_digital_files_dir())
+    # Basename only, and the resolved path must sit directly in the files
+    # dir — a catalog value can never traverse out of it.
+    filename = os.path.basename(product["digital_file"])
+    if os.path.dirname(os.path.realpath(
+            os.path.join(files_dir, filename))) != files_dir \
+            or not os.path.isfile(os.path.join(files_dir, filename)):
+        log.warning("download: digital file missing for sku %s", sku)
+        return jsonify({"error": "file not available — contact support"}), 404
+    log.info("download: sku %s served", sku)
+    return send_from_directory(files_dir, filename, as_attachment=True)
 
 
 @app.get("/api/printful/mapping-status")
@@ -555,6 +659,8 @@ def mapping_status():
     for p in PRODUCTS:
         if not p["purchasable"]:
             continue
+        if (p.get("fulfillment_type") or "print") == "digital":
+            continue  # digital SKUs need no Printful mapping
         if not mapping_complete(p["sku"], p["type"], mapping):
             missing.append(p["sku"])
     return jsonify({"mapped": len(mapping), "unmapped_keys": missing})
