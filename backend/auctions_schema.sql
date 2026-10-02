@@ -100,7 +100,9 @@ CREATE TYPE notification_event AS ENUM (
     'SECOND_CHANCE_EXPIRED',
     'LOT_RELISTED',
     'LOT_CANCELLED',
-    'RESERVE_NOT_MET'   -- internal/seller only
+    'RESERVE_NOT_MET',  -- internal/seller only
+    'COMMENT_QUESTION',
+    'SELLER_REPLIED'
 );
 
 -- ---------------------------------------------------------------- accounts
@@ -141,7 +143,11 @@ CREATE TABLE lots (
     description             text NOT NULL,
     category                text NOT NULL,
     condition_notes         text,
+    flaws                   text,
     image_keys              text[] NOT NULL DEFAULT '{}',  -- S3/R2 object keys
+    video_keys              text[] NOT NULL DEFAULT '{}',
+    id_photo_keys           text[] NOT NULL DEFAULT '{}',  -- VIN/title (admin-only)
+    no_ai_photos_attested   boolean NOT NULL DEFAULT false,
 
     -- Pricing
     starting_price_cents    bigint NOT NULL CHECK (starting_price_cents >= 0),
@@ -360,6 +366,13 @@ CREATE TABLE invoices (
     winner_account_id           uuid NOT NULL REFERENCES accounts(id),
 
     amount_cents                bigint NOT NULL CHECK (amount_cents > 0),
+    -- Slice 4 fee model (Bill 2026-10-02): 4% buyer premium on top of
+    -- the hammer, frozen at invoice creation. amount = hammer + premium.
+    hammer_cents                bigint,
+    buyer_premium_cents         bigint NOT NULL DEFAULT 0,
+    CONSTRAINT chk_invoice_amount_composition
+        CHECK (hammer_cents IS NULL
+               OR amount_cents = hammer_cents + buyer_premium_cents),
     status                      invoice_status NOT NULL DEFAULT 'OPEN',
 
     -- Stripe data
@@ -439,6 +452,10 @@ CREATE TABLE settlements (
     invoice_id              uuid NOT NULL REFERENCES invoices(id),
     seller_account_id       uuid NOT NULL REFERENCES accounts(id),
 
+    -- Fee model (Bill 2026-10-02): the 4% premium is buyer-side,
+    -- frozen on the invoice. Settlements record gross = the hammer
+    -- and platform_fee_cents = 0, so the generated payout is the
+    -- hammer in full; the fee column stays for the arithmetic.
     gross_amount_cents      bigint NOT NULL CHECK (gross_amount_cents > 0),
     platform_fee_cents      bigint NOT NULL CHECK (platform_fee_cents >= 0),
     seller_payout_cents     bigint NOT NULL
@@ -541,3 +558,57 @@ CREATE TABLE notifications (
 
 CREATE INDEX idx_notifications_account ON notifications (account_id, created_at);
 CREATE INDEX idx_notifications_lot ON notifications (lot_id);
+
+-- ---------------------------------------------------------------- comments [Slice 4]
+-- Public lot Q&A (best-practices #1): verified accounts post, seller
+-- replies are flagged, admin hides are stamped on the row itself.
+CREATE TABLE comments (
+    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    lot_id          uuid NOT NULL REFERENCES lots(id),
+    account_id      uuid NOT NULL REFERENCES accounts(id),
+    parent_id       uuid REFERENCES comments(id),
+    body            text NOT NULL,
+    is_seller       boolean NOT NULL DEFAULT false,
+    status          text NOT NULL DEFAULT 'VISIBLE'
+                    CHECK (status IN ('VISIBLE','HIDDEN')),
+    hidden_at       timestamptz,
+    hidden_by_id    uuid REFERENCES accounts(id),
+    hide_note       text,
+    created_at      timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_comments_lot ON comments (lot_id, created_at);
+
+-- ---------------------------------------------------------------- watchlist [Slice 4]
+CREATE TABLE watchlist (
+    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    account_id      uuid NOT NULL REFERENCES accounts(id),
+    lot_id          uuid NOT NULL REFERENCES lots(id),
+    created_at      timestamptz NOT NULL DEFAULT now(),
+    CONSTRAINT uq_watchlist_account_lot UNIQUE (account_id, lot_id)
+);
+
+CREATE INDEX idx_watchlist_account ON watchlist (account_id, created_at);
+
+-- ---------------------------------------------------------------------------
+-- Slice 4 backfill — idempotent; covers databases created before Slice 4.
+-- Fresh databases already have these from the CREATE TABLEs above; the
+-- guards make this file safe to re-run either way.
+-- ---------------------------------------------------------------------------
+ALTER TABLE lots ADD COLUMN IF NOT EXISTS flaws text;
+ALTER TABLE lots ADD COLUMN IF NOT EXISTS video_keys text[] NOT NULL DEFAULT '{}';
+ALTER TABLE lots ADD COLUMN IF NOT EXISTS id_photo_keys text[] NOT NULL DEFAULT '{}';
+ALTER TABLE lots ADD COLUMN IF NOT EXISTS no_ai_photos_attested boolean NOT NULL DEFAULT false;
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS hammer_cents bigint;
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS buyer_premium_cents bigint NOT NULL DEFAULT 0;
+UPDATE invoices SET hammer_cents = amount_cents WHERE hammer_cents IS NULL;
+ALTER TABLE invoices DROP CONSTRAINT IF EXISTS chk_invoice_amount_composition;
+ALTER TABLE invoices ADD CONSTRAINT chk_invoice_amount_composition
+    CHECK (hammer_cents IS NULL
+           OR amount_cents = hammer_cents + buyer_premium_cents);
+DO $$ BEGIN
+    ALTER TYPE notification_event ADD VALUE 'COMMENT_QUESTION';
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN
+    ALTER TYPE notification_event ADD VALUE 'SELLER_REPLIED';
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;

@@ -92,7 +92,8 @@ tables = {r[0] for r in raw.execute(
     "SELECT name FROM sqlite_master WHERE type='table'")}
 expected_tables = {"accounts", "lots", "bids", "increment_rules", "invoices",
                    "pay_page_tokens", "settlements", "second_chance_offers",
-                   "moderation_actions", "notifications"}
+                   "moderation_actions", "notifications", "comments",
+                   "watchlist"}
 check("schema creates every spec §1 table", expected_tables <= tables,
       f"missing: {expected_tables - tables}")
 seed_counts = dict(raw.execute(
@@ -131,6 +132,23 @@ amod.mark_email_verified(bidder["id"])
 check("mark_email_verified sets the timestamp",
       amod.get_account(bidder["id"])["email_verified_at"] is not None)
 
+def lot_media(brand="RE"):
+    """A listing that satisfies the Slice-4 moderation standard for
+    the brand (photo minimum, walk-around + cold-start video, flaws
+    section, VIN/title or frame-number photos, no-AI attestation)."""
+    photos = 20 if brand == "RE" else 15
+    id_photos = 2 if brand == "RE" else 1
+    return {
+        "flaws": "Two stone chips on the hood; small tear in the "
+                 "driver's seat bolster.",
+        "image_keys": [f"lot-img/{i:02d}.jpg" for i in range(photos)],
+        "video_keys": ["lot-video/walkaround.mp4",
+                       "lot-video/cold-start.mp4"],
+        "id_photo_keys": [f"lot-id/{i}.jpg" for i in range(id_photos)],
+        "no_ai_photos_attested": True,
+    }
+
+
 # ---------------------------------------------------------------------------
 # 3. Lot creation rules
 # ---------------------------------------------------------------------------
@@ -150,7 +168,9 @@ expect_raises("lot brand must match seller brand",
 
 lot = amod.create_lot(seller["id"], "RE", "1969 Chevelle SS 396",
                       "Numbers-matching big block.", "muscle-cars", 500000,
-                      reserve_price_cents=900000)
+                      reserve_price_cents=900000,
+                      condition_notes="Older restoration, presents well.",
+                      **lot_media("RE"))
 check("lot created as DRAFT", lot["status"] == "DRAFT")
 pub = amod.public_lot_dict(lot)
 check("public dict hides the reserve amount",
@@ -223,7 +243,8 @@ raw.close()
 # Drive a second lot to CLOSED by hand (close logic is Slice 2) to prove the
 # CLOSED -> INVOICED fork can only fire with an atomic winner write.
 lot2 = amod.create_lot(seller["id"], "RE", "1970 Plymouth Satellite",
-                       "Project car.", "muscle-cars", 100000)
+                       "Project car.", "muscle-cars", 100000,
+                       condition_notes="Rolling project.", **lot_media())
 amod.submit_lot(lot2["id"], seller["id"])
 amod.approve_lot(lot2["id"], admin["id"], past(2), future(1))
 raw = sqlite3.connect(DB_A)
@@ -302,7 +323,8 @@ check("audit trail records submit/claim/approve in order",
 # 6. The go-live gate
 # ---------------------------------------------------------------------------
 early = amod.create_lot(seller["id"], "RE", "1968 Mustang GT Fastback",
-                        "S-code.", "muscle-cars", 750000)
+                        "S-code.", "muscle-cars", 750000,
+                        condition_notes="Strong driver.", **lot_media())
 amod.submit_lot(early["id"], seller["id"])
 amod.approve_lot(early["id"], admin["id"], future(1), future(3))
 expect_raises("go-live before the scheduled start raises (scheduled != live)",
@@ -343,7 +365,8 @@ check("audit trail records render fail, reschedule, then pass",
 
 # Default (structural) render check: no URL template configured.
 lot3 = amod.create_lot(seller["id"], "RE", "1972 Chevrolet C10",
-                       "Short bed.", "classic-trucks", 300000)
+                       "Short bed.", "classic-trucks", 300000,
+                       condition_notes="Original paint.", **lot_media())
 amod.submit_lot(lot3["id"], seller["id"])
 amod.approve_lot(lot3["id"], admin["id"], past(1), future(2))
 lot3_live, ok3, detail3 = amod.attempt_go_live(lot3["id"])
@@ -374,7 +397,10 @@ r = client.post("/api/auctions/login", json={
 check("API login works", r.status_code == 200, str(r.get_json()))
 r = client.post("/api/auctions/lots", json={
     "title": "1966 Ford Bronco", "description": "Early Bronco.",
-    "category": "classic-trucks", "starting_price_cents": 400000})
+    "category": "classic-trucks", "starting_price_cents": 400000,
+    "reserve_price_cents": 900000,
+    "condition_notes": "Solid, honest truck.",
+    **lot_media("RE")})
 check("API creates a lot", r.status_code == 201, str(r.get_json()))
 api_lot = r.get_json()
 check("API lot response hides the reserve amount",
@@ -443,7 +469,8 @@ def make_live_lot(starting, reserve=None, close_in_minutes=60, brand="RE",
     new_lot = amod.create_lot(
         the_seller["id"], brand, "Slice2 Lot " + os.urandom(3).hex(),
         "desc", "cars" if brand == "RE" else "bikes", starting,
-        reserve_price_cents=reserve)
+        reserve_price_cents=reserve,
+        condition_notes="Test lot, honest driver.", **lot_media(brand))
     amod.submit_lot(new_lot["id"], the_seller["id"])
     now = datetime.now(timezone.utc)
     amod.approve_lot(new_lot["id"], admin["id"], iso(now - timedelta(hours=1)),
@@ -607,9 +634,11 @@ raw.row_factory = sqlite3.Row
 inv = raw.execute("SELECT * FROM invoices WHERE lot_id = ?",
                   (gate_lot["id"],)).fetchone()
 raw.close()
-check("winner invoice created OPEN at the winning price with a 72h deadline",
+check("winner invoice freezes hammer + 4% buyer premium = amount due",
       inv is not None and inv["status"] == "OPEN"
-      and inv["amount_cents"] == 15500
+      and inv["hammer_cents"] == 15500
+      and inv["buyer_premium_cents"] == 620
+      and inv["amount_cents"] == 16120
       and inv["payment_deadline_at"] is not None)
 again = amod.close_lot(gate_lot["id"], now=now)
 check("closer re-run is idempotent (already_invoiced, no duplicate invoice)",
@@ -881,7 +910,9 @@ t1 = t0 + timedelta(hours=74)
 accepted = amod.accept_second_chance(offer_id, s3_third["id"], now=t1)
 sc_lot_now = amod.get_lot(sc_lot["id"])
 check("accept swaps the winner atomically and issues a new invoice + token",
-      accepted["amount_cents"] == 28000
+      accepted["hammer_cents"] == 28000
+      and accepted["buyer_premium_cents"] == 1120
+      and accepted["amount_cents"] == 29120
       and sc_lot_now["winner_account_id"] == s3_third["id"]
       and sc_lot_now["winning_price_cents"] == 28000
       and sc_lot_now["status"] == "INVOICED"
@@ -982,7 +1013,9 @@ rnm_accepted = amod.accept_second_chance(rnm_offer_id, s3_win["id"],
                                          now=t0 + timedelta(hours=1))
 rnm_now = amod.get_lot(rnm_lot["id"])
 check("RNM accept moves NO_SALE -> INVOICED at the offered price + token",
-      rnm_accepted["amount_cents"] == 20000
+      rnm_accepted["hammer_cents"] == 20000
+      and rnm_accepted["buyer_premium_cents"] == 800
+      and rnm_accepted["amount_cents"] == 20800
       and rnm_now["status"] == "INVOICED"
       and rnm_now["winner_account_id"] == s3_win["id"]
       and rnm_now["winning_price_cents"] == 20000
@@ -1013,6 +1046,278 @@ check("expired RNM offer relists the lot to DRAFT",
       amod.get_lot(rnm3_lot["id"])["status"] == "DRAFT")
 
 amod.set_stripe_session_factory(None)
+
+# --- Slice 4: fee freeze, settlement, listing standard, public face --------
+# Domain + HTTP on DB_B (amod._DB_PATH already points there).
+s4_admin = amod.create_account("RE", "s4-admin@example.com", "S4 Admin",
+                               "password123", is_admin=True)
+
+# Premium math (4% of hammer, rounded half-up to the cent).
+check("buyer premium: 4% of hammer, frozen per invoice",
+      amod.buyer_premium_cents(0) == 0
+      and amod.buyer_premium_cents(100) == 4
+      and amod.buyer_premium_cents(15500) == 620
+      and amod.buyer_premium_cents(28000) == 1120
+      and amod.buyer_premium_cents(112) == 4
+      and amod.buyer_premium_cents(113) == 5
+      and amod.buyer_premium_cents(125) == 5)
+
+# Close-time composition carried in the winner notifications.
+pay_inv = amod.get_invoice(close_res["invoice_id"])
+check("close notifications carry the frozen hammer/premium/total",
+      all(json.loads(n["payload"]).get("hammer_cents") == 15500
+          and json.loads(n["payload"]).get("buyer_premium_cents") == 620
+          and json.loads(n["payload"]).get("amount_cents") == 16120
+          for n in s3_notes(pay_lot["id"])
+          if n["event"] in ("AUCTION_WON", "INVOICE_ISSUED")))
+check("invoice breakdown line reads hammer + 4% premium = total",
+      amod._invoice_breakdown(pay_inv)
+      == " Hammer $155.00 + buyer premium (4%) $6.20 = $161.20 total.")
+
+# Settlement: seller paid the hammer in full; platform fee is buyer-side.
+expect_raises("non-admin cannot record a settlement",
+              lambda: amod.record_settlement(
+                  pay_lot["id"], s3_seller["id"], "check"),
+              (amod.PermissionDenied,))
+stl = amod.record_settlement(pay_lot["id"], s4_admin["id"], "check",
+                             payout_reference="chk-1001",
+                             delivery_confirmed_at=iso(
+                                 t0 + timedelta(days=2)),
+                             notes="Slice-4 test settlement")
+check("settlement pays the seller the hammer in full (fee = 0)",
+      stl["gross_amount_cents"] == 15500
+      and stl["platform_fee_cents"] == 0
+      and stl["seller_payout_cents"] == 15500
+      and amod.get_lot(pay_lot["id"])["status"] == "SETTLED")
+expect_raises("a settled lot cannot be settled twice",
+              lambda: amod.record_settlement(
+                  pay_lot["id"], s4_admin["id"], "check"),
+              (amod.AuctionError,))
+
+# Listing standard: approval is blocked until the checklist passes.
+s4_seller = amod.create_account("RE", "s4-seller@example.com", "S4 Seller",
+                                "password123", is_seller=True)
+s4_bidder = amod.create_account("RE", "s4-bidder@example.com", "S4 Bidder",
+                                "password123")
+for _acct in (s4_seller, s4_bidder):
+    amod.mark_email_verified(_acct["id"])
+thin = amod.create_lot(s4_seller["id"], "RE", "1967 Camaro RS",
+                       "Needs the full listing treatment.", "muscle-cars",
+                       200000)
+amod.submit_lot(thin["id"], s4_seller["id"])
+exc = expect_raises("approval blocked while the listing standard is unmet",
+                    lambda: amod.approve_lot(thin["id"], s4_admin["id"],
+                                             past(1), future(2)),
+                    (amod.AuctionError,))
+check("block message names the missing items",
+      exc is not None and "at least 20 photos" in str(exc)
+      and "no-AI-photos attestation" in str(exc), str(exc))
+check("checklist reports every gap on the thin lot",
+      amod.moderation_checklist(amod.get_lot(thin["id"]))["passed"] is False
+      and len(amod.moderation_checklist(
+          amod.get_lot(thin["id"]))["missing"]) == 6)
+expect_raises("only the seller can edit the listing",
+              lambda: amod.update_lot_listing(thin["id"], s4_bidder["id"],
+                                              flaws="x"),
+              (amod.PermissionDenied,))
+amod.send_back_lot(thin["id"], s4_admin["id"], note="finish the listing")
+fixed = amod.update_lot_listing(
+    thin["id"], s4_seller["id"],
+    condition_notes="Fresh rotisserie restoration.", **lot_media("RE"))
+check("seller listing update lands the checklist fields",
+      fixed["flaws"] is not None
+      and fixed["no_ai_photos_attested"] in (1, True)
+      and amod.moderation_checklist(fixed)["passed"] is True)
+amod.submit_lot(thin["id"], s4_seller["id"])
+approved_thin = amod.approve_lot(thin["id"], s4_admin["id"], past(1),
+                                 future(2))
+check("approval succeeds once the checklist passes",
+      approved_thin["status"] == "SCHEDULED")
+admin_view = amod.admin_lot_dict(amod.get_lot(thin["id"]))
+check("admin view carries reserve, ID photos, attestation, checklist",
+      admin_view["reserve_price_cents"] is None
+      and len(admin_view["id_photo_keys"]) == 2
+      and admin_view["no_ai_photos_attested"] is True
+      and admin_view["moderation_checklist"]["passed"] is True)
+
+# Comments & Q&A: verified gate, seller flag, notifications, moderation.
+amod.mark_email_verified(s3_seller["id"])
+c_lot = make_live_lot(10000, the_seller=s3_seller)
+s4_unverified = amod.create_account("RE", "s4-unverified@example.com",
+                                    "S4 Unverified", "password123")
+expect_raises("unverified email cannot comment",
+              lambda: amod.post_comment(s4_unverified["id"], c_lot["id"],
+                                        "Nice car!"),
+              (amod.PermissionDenied,))
+q = amod.post_comment(s4_bidder["id"], c_lot["id"],
+                      "Does it have the original build sheet?")
+check("bidder question posts; seller is notified (COMMENT_QUESTION)",
+      q["is_seller"] is False
+      and any(n["event"] == "COMMENT_QUESTION"
+              and n["account_id"] == s3_seller["id"]
+              for n in s3_notes(c_lot["id"])))
+amod.set_watch(s4_bidder["id"], c_lot["id"], True)
+a = amod.post_comment(s3_seller["id"], c_lot["id"],
+                      "Yes — build sheet and Protect-o-Plate included.")
+check("seller reply is flagged; watchers notified (SELLER_REPLIED)",
+      a["is_seller"] is True
+      and any(n["event"] == "SELLER_REPLIED"
+              and n["account_id"] == s4_bidder["id"]
+              for n in s3_notes(c_lot["id"])))
+check("public comment list hides nothing yet",
+      [c["body"] for c in amod.list_comments(c_lot["id"])]
+      == ["Does it have the original build sheet?",
+          "Yes — build sheet and Protect-o-Plate included."])
+hidden = amod.set_comment_hidden(q["id"], s4_admin["id"],
+                                 note="asks for contact info")
+check("admin hide stamps the comment; public list excludes it",
+      hidden["status"] == "HIDDEN"
+      and [c["body"] for c in amod.list_comments(c_lot["id"])]
+      == ["Yes — build sheet and Protect-o-Plate included."]
+      and any(c["id"] == q["id"]
+              for c in amod.list_comments(c_lot["id"],
+                                         include_hidden=True)))
+expect_raises("empty comment is rejected",
+              lambda: amod.post_comment(s4_bidder["id"], c_lot["id"], "  "),
+              (amod.AuctionError,))
+
+# Watchlist: idempotent set/unset.
+check("watch is idempotent; watched lots list once",
+      amod.set_watch(s4_bidder["id"], c_lot["id"], True) is True
+      and amod.set_watch(s4_bidder["id"], c_lot["id"], True) is True
+      and [l["id"] for l in amod.watched_lots(s4_bidder["id"])]
+      == [c_lot["id"]])
+check("unwatch clears the lot",
+      amod.set_watch(s4_bidder["id"], c_lot["id"], False) is False
+      and amod.watched_lots(s4_bidder["id"]) == [])
+
+# Bidder profile: counts right; another bidder's max never appears.
+prof = amod.bidder_profile(s3_win["id"])
+check("bidder profile counts wins and bids without leaking any max",
+      prof["display_name"] == "S3 Winner"
+      and prof["auctions_won"] >= 1 and prof["bids_placed"] >= 1
+      and "20000" not in json.dumps(prof), json.dumps(prof))
+check("seller profile counts the settled lot as sold",
+      amod.bidder_profile(s3_seller["id"])["lots_sold"] >= 1)
+
+# --- Slice 4 HTTP: public pages, comments, watchlist, pay headers ---------
+# Re-arm the stub Checkout factory so pay pages redirect instead of 503.
+amod.set_stripe_session_factory(_stub_factory)
+pp_lot = make_live_lot(10000, the_seller=s3_seller)
+amod.place_bid(s3_win["id"], pp_lot["id"], 20000)
+amod.place_bid(s3_run["id"], pp_lot["id"], 15000)
+make_due(pp_lot["id"], t0 - timedelta(minutes=1))
+pp_close = amod.close_lot(pp_lot["id"], now=t0)
+pp_tok = amod.issue_pay_token(pp_lot["id"], now=t0)
+check("slice4 pay fixture closes INVOICED at 15500 + 620 premium",
+      pp_close["outcome"] == "invoiced"
+      and amod.get_invoice(pp_close["invoice_id"])["amount_cents"] == 16120)
+sc_token = pp_tok["raw_token"]
+r = anon.get("/pay/" + sc_token + "?return=success")
+check("pay return page shows the hammer + premium breakdown",
+      r.status_code == 200
+      and "$155.00 + buyer premium (4%) $6.20 = $161.20 total."
+      in r.get_data(as_text=True), r.get_data(as_text=True)[:200])
+check("pay return page carries no-referrer + no-store",
+      r.headers.get("Referrer-Policy") == "no-referrer"
+      and r.headers.get("Cache-Control") == "no-store")
+r = anon.get("/pay/" + sc_token)
+check("pay redirect carries no-referrer + no-store",
+      r.status_code == 302
+      and r.headers.get("Referrer-Policy") == "no-referrer"
+      and r.headers.get("Cache-Control") == "no-store",
+      str(r.status_code))
+r = anon.get("/pay/" + "0" * 64)
+check("unknown pay token 404s with the same headers",
+      r.status_code == 404
+      and r.headers.get("Referrer-Policy") == "no-referrer"
+      and r.headers.get("Cache-Control") == "no-store")
+amod.set_stripe_session_factory(None)
+
+# Public lot page on the API lot (LIVE since section 7, on DB_B).
+amod.mark_email_verified(api_lot["seller_account_id"])
+r = anon.get("/auctions")
+check("auctions index lists the live lot",
+      r.status_code == 200 and "1966 Ford Bronco"
+      in r.get_data(as_text=True), str(r.status_code))
+r = anon.get("/auctions/lot/" + api_lot["id"])
+page_html = r.get_data(as_text=True)
+check("lot page shows price, premium notice, reserve state, bid form",
+      r.status_code == 200 and "+ 4% buyer premium" in page_html
+      and "Reserve" in page_html and "Place bid" not in page_html
+      and "1966 Ford Bronco" in page_html, page_html[:300])
+check("lot page never leaks the reserve amount or a bidder max",
+      "900000" not in page_html and "500000" not in page_html
+      and "$5,000.00" not in page_html, page_html[:300])
+r = bidder_client.post("/auctions/lot/" + api_lot["id"] + "/bid",
+                       data={"amount": "6000"})
+check("HTML bid form places a self-raise and redirects back",
+      r.status_code == 302, str(r.status_code))
+r = bidder_client.post("/api/auctions/lots/" + api_lot["id"] + "/comments",
+                       json={"body": "Rust in the bed corners?"})
+check("comment posts through the API",
+      r.status_code == 201 and r.get_json()["is_seller"] is False,
+      str(r.get_json()))
+api_comment_id = r.get_json()["id"]
+r = anon.get("/api/auctions/lots/" + api_lot["id"] + "/comments")
+check("comment appears on the public thread",
+      r.status_code == 200 and any(
+          c["body"] == "Rust in the bed corners?"
+          for c in r.get_json()), str(r.get_json()))
+r = client.post("/api/auctions/lots/" + api_lot["id"] + "/comments",
+                json={"body": "Surface only — photos 12-14 show it."})
+check("seller comment through the API carries the seller flag",
+      r.status_code == 201 and r.get_json()["is_seller"] is True,
+      str(r.get_json()))
+r = anon.get("/api/auctions/comments/" + api_comment_id + "/moderate",
+             json={"action": "hide"})
+check("comment moderation refuses non-admins", r.status_code == 405
+      or r.status_code == 404, str(r.status_code))
+r = client.post("/api/auctions/comments/" + api_comment_id + "/moderate",
+                headers=ADMIN, json={"action": "hide"})
+check("admin hides a comment", r.status_code == 200
+      and r.get_json()["status"] == "HIDDEN", str(r.get_json()))
+r = anon.get("/api/auctions/lots/" + api_lot["id"] + "/comments")
+check("hidden comment leaves the public thread but stays for admins",
+      all(c["body"] != "Rust in the bed corners?" for c in r.get_json()))
+r = client.get("/api/auctions/lots/" + api_lot["id"] + "/comments",
+               headers=ADMIN)
+check("admin thread view still shows the hidden comment",
+      any(c["body"] == "Rust in the bed corners?" for c in r.get_json()))
+r = anon.get("/auctions/lot/" + api_lot["id"])
+check("lot page comment thread shows the seller badge",
+      "Seller" in r.get_data(as_text=True)
+      and "Surface only" in r.get_data(as_text=True))
+r = bidder_client.post("/api/auctions/lots/" + api_lot["id"] + "/watch",
+                       json={"watching": True})
+check("watch API turns watching on",
+      r.status_code == 200 and r.get_json()["watching"] is True,
+      str(r.get_json()))
+r = bidder_client.get("/api/auctions/watchlist")
+check("watchlist API carries the watched lot",
+      r.status_code == 200 and any(
+          l["id"] == api_lot["id"] for l in r.get_json()),
+      str(r.get_json()))
+r = bidder_client.get("/api/auctions/bidders/" + api_bidder_id)
+prof_api = r.get_json()
+check("bidder profile API exposes counts, never a max",
+      r.status_code == 200 and prof_api["display_name"] == "API Bidder"
+      and prof_api["bids_placed"] >= 1
+      and "500000" not in json.dumps(prof_api), str(prof_api))
+r = anon.get("/auctions/bidder/" + api_bidder_id)
+check("public bidder page renders",
+      r.status_code == 200 and "API Bidder" in r.get_data(as_text=True))
+r = client.get("/api/auctions/lots/" + api_lot["id"] + "/checklist")
+check("checklist endpoint refuses non-admins", r.status_code == 403)
+r = client.get("/api/auctions/lots/" + api_lot["id"] + "/checklist",
+               headers=ADMIN)
+check("checklist endpoint returns the passing standard",
+      r.status_code == 200 and r.get_json()["passed"] is True,
+      str(r.get_json()))
+r = anon.get("/auctions/login")
+check("login page renders", r.status_code == 200)
+r = anon.get("/auctions/register")
+check("register page renders", r.status_code == 200)
 
 print()
 if fails:

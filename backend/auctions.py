@@ -54,15 +54,46 @@ Build slice numbering supersedes spec §9: this Slice 3 already carries
 the pay pages AND the second-chance ladder that §9 splits across two
 slices; public lot pages/admin UI and hardening follow as Slices 4–5.
 
-NOT in Slices 1–3 (later slices): settlement recording UI, notifications
-delivery, public lot pages / admin UI, email verification flow
-(accounts start unverified; bids already require email_verified_at).
+Slice 4 (this module, spec §§6–7 as amended by auction-best-
+practices-2026-10-02 §3.B): the public face.
+
+  * Fee model (Bill, 2026-10-02): 4% BUYER premium added on top of the
+    hammer; sellers list free and are paid the hammer in full. The
+    premium is computed once, at invoice creation, and frozen on the
+    invoice row (hammer_cents / buyer_premium_cents / amount_cents =
+    hammer + premium). Settlements therefore record platform_fee_cents
+    = 0 and seller_payout_cents = the hammer, in full.
+  * Listing standard enforced at moderation (best-practices #2/#3):
+    approve_lot() refuses until moderation_checklist() passes — photo
+    minimums per brand, at least one video, a completed flaws section,
+    VIN/title photos (RE) or frame-number photos (IH), condition
+    notes, and the seller's no-AI-photos attestation.
+  * Public lot pages (server-rendered, brand-aware): lot detail with
+    photos/video, flaws, live close countdown (extended closes shown),
+    reserve presence/met-only, "+ 4% buyer premium" displayed on lot
+    and pay pages. The reserve AMOUNT and every bidder's max stay
+    server-side, always.
+  * Comments & Q&A on every lot (best-practices #1): email-verified
+    accounts post; seller replies are flagged; admins hide junk (the
+    hide is stamped on the comment row). COMMENT_QUESTION /
+    SELLER_REPLIED outbox events reuse the §7 notifications table.
+  * Public bidder profiles (read-only: member since, bid/win/sold
+    counts, closed-lot bid history — effective prices only, never a
+    max) and a per-account watchlist.
+  * Pay-page polish: Referrer-Policy: no-referrer +
+    Cache-Control: no-store on every pay-page response, and the
+    hammer/premium/total breakdown shown to the winner.
+
+NOT in Slices 1–4 (Slice 5): notifications delivery worker, Postgres
+live-fire, launch gate, email verification flow (accounts start
+unverified; bids and comments already require email_verified_at).
 
 Persistence: AUCTIONS_DB (defaults to /var/data/auctions.db when the Render
 disk is mounted, else <root>/data/auctions.db) — same disk rule as wholesale.
 """
 import hashlib
 import hmac
+import html as _html
 import json
 import logging
 import os
@@ -70,9 +101,10 @@ import secrets
 import sqlite3
 import uuid
 from datetime import datetime, timedelta, timezone
+from decimal import Decimal, InvalidOperation
 
 import requests
-from flask import Blueprint, jsonify, redirect, request, session
+from flask import Blueprint, jsonify, make_response, redirect, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 log = logging.getLogger("pushrod.auctions")
@@ -80,8 +112,32 @@ log = logging.getLogger("pushrod.auctions")
 bp = Blueprint("auctions", __name__)
 
 BRANDS = ("RE", "IH")
+BRAND_NAMES = {"RE": "RestorationEssentials", "IH": "IronHead"}
+BRAND_ACCENTS = {"RE": "#e8a020", "IH": "#c8402a"}
 SESSION_KEY = "auctions_account_id"
 EXTENSION_CAP_MINUTES = 120  # spec §1.6 chk_extension_cap
+
+# Fee model (Bill, 2026-10-02): 4% buyer premium on top of the hammer,
+# sellers list free. Frozen onto the invoice row at creation time.
+BUYER_PREMIUM_BPS = 400
+
+
+def buyer_premium_cents(hammer_cents):
+    """4% of the hammer, rounded half-up to the cent."""
+    hammer = int(hammer_cents or 0)
+    if hammer <= 0:
+        return 0
+    return (hammer * BUYER_PREMIUM_BPS + 5000) // 10000
+
+
+# Listing standard (best-practices #2/#3), enforced by approve_lot().
+MIN_LOT_PHOTOS = {"RE": 20, "IH": 15}
+MIN_ID_PHOTOS = {"RE": 2, "IH": 1}  # RE: VIN plate + title; IH: frame no.
+COMMENT_MAX_CHARS = 2000
+COMMENT_RULES = (
+    "Be helpful and stay on the vehicle. No personal contact info, no "
+    "asking about the reserve, no price predictions, no personal "
+    "attacks, no self-promotion.")
 
 # ---------------------------------------------------------------------------
 # Lifecycle state machine (spec §1.3 — ALLOWED TRANSITIONS)
@@ -149,6 +205,27 @@ def _now():
 
 def _iso(dt):
     return dt.isoformat() if isinstance(dt, datetime) else dt
+
+
+def _esc(value):
+    return _html.escape("" if value is None else str(value), quote=True)
+
+
+def _money(cents):
+    cents = int(cents or 0)
+    return f"${cents // 100:,d}.{cents % 100:02d}"
+
+
+def _invoice_breakdown(invoice):
+    """The frozen composition as one readable line: hammer + 4% buyer
+    premium = amount due. Empty for legacy rows without a hammer."""
+    hammer = invoice.get("hammer_cents")
+    if hammer is None:
+        return ""
+    premium = int(invoice.get("buyer_premium_cents") or 0)
+    return (f" Hammer {_money(hammer)} + buyer premium (4%) "
+            f"{_money(premium)} = {_money(invoice['amount_cents'])}"
+            " total.")
 
 
 def _parse_ts(value):
@@ -292,7 +369,11 @@ _SQLITE_DDL = [
         description TEXT NOT NULL,
         category TEXT NOT NULL,
         condition_notes TEXT,
+        flaws TEXT,
         image_keys TEXT NOT NULL DEFAULT '[]',
+        video_keys TEXT NOT NULL DEFAULT '[]',
+        id_photo_keys TEXT NOT NULL DEFAULT '[]',
+        no_ai_photos_attested INTEGER NOT NULL DEFAULT 0,
         starting_price_cents INTEGER NOT NULL CHECK (starting_price_cents >= 0),
         reserve_price_cents INTEGER,
         current_price_cents INTEGER NOT NULL DEFAULT 0,
@@ -396,6 +477,8 @@ _SQLITE_DDL = [
         lot_id TEXT NOT NULL REFERENCES lots(id),
         winner_account_id TEXT NOT NULL REFERENCES accounts(id),
         amount_cents INTEGER NOT NULL CHECK (amount_cents > 0),
+        hammer_cents INTEGER,
+        buyer_premium_cents INTEGER NOT NULL DEFAULT 0,
         status TEXT NOT NULL DEFAULT 'OPEN'
             CHECK (status IN ('OPEN','PAID','VOID')),
         stripe_payment_intent_id TEXT UNIQUE,
@@ -438,6 +521,10 @@ _SQLITE_DDL = [
         lot_id TEXT NOT NULL REFERENCES lots(id),
         invoice_id TEXT NOT NULL REFERENCES invoices(id),
         seller_account_id TEXT NOT NULL REFERENCES accounts(id),
+        -- Fee model (Bill 2026-10-02): the 4% premium is buyer-side,
+        -- frozen on the invoice. Settlements record gross = the hammer
+        -- and platform_fee_cents = 0, so the generated payout is the
+        -- hammer in full. The fee column stays for the arithmetic.
         gross_amount_cents INTEGER NOT NULL CHECK (gross_amount_cents > 0),
         platform_fee_cents INTEGER NOT NULL CHECK (platform_fee_cents >= 0),
         seller_payout_cents INTEGER NOT NULL
@@ -499,10 +586,33 @@ _SQLITE_DDL = [
             'OUTBID','WINNING','AUCTION_WON','INVOICE_ISSUED',
             'PAYMENT_REMINDER','PAYMENT_CONFIRMED','SECOND_CHANCE_OFFER',
             'SECOND_CHANCE_EXPIRED','LOT_RELISTED','LOT_CANCELLED',
-            'RESERVE_NOT_MET')),
+            'RESERVE_NOT_MET','COMMENT_QUESTION','SELLER_REPLIED')),
         payload TEXT NOT NULL DEFAULT '{}',
         created_at TEXT NOT NULL,
         read_at TEXT
+    )""",
+    """
+    CREATE TABLE IF NOT EXISTS comments (
+        id TEXT PRIMARY KEY,
+        lot_id TEXT NOT NULL REFERENCES lots(id),
+        account_id TEXT NOT NULL REFERENCES accounts(id),
+        parent_id TEXT REFERENCES comments(id),
+        body TEXT NOT NULL,
+        is_seller INTEGER NOT NULL DEFAULT 0,
+        status TEXT NOT NULL DEFAULT 'VISIBLE'
+            CHECK (status IN ('VISIBLE','HIDDEN')),
+        hidden_at TEXT,
+        hidden_by_id TEXT REFERENCES accounts(id),
+        hide_note TEXT,
+        created_at TEXT NOT NULL
+    )""",
+    """
+    CREATE TABLE IF NOT EXISTS watchlist (
+        id TEXT PRIMARY KEY,
+        account_id TEXT NOT NULL REFERENCES accounts(id),
+        lot_id TEXT NOT NULL REFERENCES lots(id),
+        created_at TEXT NOT NULL,
+        CONSTRAINT uq_watchlist_account_lot UNIQUE (account_id, lot_id)
     )""",
     "CREATE INDEX IF NOT EXISTS idx_lots_brand_status ON lots (brand, status)",
     # Slice 3 (spec §4.2): one ACTIVE pay token per lot, revoked rows kept
@@ -517,6 +627,8 @@ _SQLITE_DDL = [
     "CREATE INDEX IF NOT EXISTS idx_bid_attempts_lot"
     " ON bid_attempts (lot_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_mod_actions_lot ON moderation_actions (lot_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_comments_lot ON comments (lot_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_watchlist_account ON watchlist (account_id, created_at)",
 ]
 
 # Spec §1.8 seed data.
@@ -560,6 +672,27 @@ def _init_schema():
             c.execute(
                 "ALTER TABLE second_chance_offers ADD COLUMN offer_kind"
                 " TEXT NOT NULL DEFAULT 'UNPAID_WINNER'")
+        # Pre-Slice-4 SQLite files: add the listing-standard columns,
+        # the frozen invoice composition, and backfill the hammer.
+        lot_cols = {r["name"] for r in
+                    c.execute("PRAGMA table_info(lots)").fetchall()}
+        for col, ddl in (
+                ("flaws", "TEXT"),
+                ("video_keys", "TEXT NOT NULL DEFAULT '[]'"),
+                ("id_photo_keys", "TEXT NOT NULL DEFAULT '[]'"),
+                ("no_ai_photos_attested", "INTEGER NOT NULL DEFAULT 0")):
+            if col not in lot_cols:
+                c.execute(f"ALTER TABLE lots ADD COLUMN {col} {ddl}")
+        inv_cols = {r["name"] for r in
+                    c.execute("PRAGMA table_info(invoices)").fetchall()}
+        if "hammer_cents" not in inv_cols:
+            c.execute("ALTER TABLE invoices ADD COLUMN hammer_cents"
+                      " INTEGER")
+        if "buyer_premium_cents" not in inv_cols:
+            c.execute("ALTER TABLE invoices ADD COLUMN"
+                      " buyer_premium_cents INTEGER NOT NULL DEFAULT 0")
+        c.execute("UPDATE invoices SET hammer_cents = amount_cents"
+                  " WHERE hammer_cents IS NULL")
         today = _now().date().isoformat()
         for brand, low, high, inc in _INCREMENT_SEED:
             c.execute(
@@ -718,9 +851,14 @@ def transition(lot_id, to_status, actor_account_id=None, note=None, **fields):
 
 def create_lot(seller_id, brand, title, description, category,
                starting_price_cents, reserve_price_cents=None,
-               condition_notes=None, image_keys=None):
+               condition_notes=None, image_keys=None, flaws=None,
+               video_keys=None, id_photo_keys=None,
+               no_ai_photos_attested=False):
     """Seller creates a DRAFT lot. DRAFT = submitted by seller, not yet in
-    the moderation queue (spec §1.3); submit_lot() puts it in the queue."""
+    the moderation queue (spec §1.3); submit_lot() puts it in the queue.
+    The Slice-4 listing fields (flaws, videos, VIN/title photos, the
+    no-AI-photos attestation) are collected here and enforced later, at
+    approval time, by moderation_checklist()."""
     brand = (brand or "").strip().upper()
     if brand not in BRANDS:
         raise AuctionError(f"brand must be one of {BRANDS}")
@@ -754,13 +892,111 @@ def create_lot(seller_id, brand, title, description, category,
     with _connect() as c:
         c.execute(
             "INSERT INTO lots (id, brand, seller_account_id, title,"
-            " description, category, condition_notes, image_keys,"
+            " description, category, condition_notes, flaws, image_keys,"
+            " video_keys, id_photo_keys, no_ai_photos_attested,"
             " starting_price_cents, reserve_price_cents, created_at,"
-            " updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            " updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (lot_id, brand, seller_id, title, description.strip(),
-             category.strip(), condition_notes, list(image_keys or []),
+             category.strip(), condition_notes,
+             (flaws or "").strip() or None, list(image_keys or []),
+             list(video_keys or []), list(id_photo_keys or []),
+             bool(no_ai_photos_attested),
              starting, reserve, now, now))
     return get_lot(lot_id)
+
+
+_LISTING_FIELDS = ("description", "condition_notes", "flaws",
+                   "image_keys", "video_keys", "id_photo_keys",
+                   "no_ai_photos_attested")
+
+
+def update_lot_listing(lot_id, actor_account_id, **fields):
+    """Seller edits the listing fields of their own DRAFT lot — the
+    send-back loop: moderation names what's missing, the seller fixes
+    it here, then resubmits. Nothing outside _LISTING_FIELDS moves."""
+    lot = get_lot(lot_id)
+    if not lot:
+        raise AuctionError("lot not found")
+    if lot["seller_account_id"] != actor_account_id:
+        raise PermissionDenied("only the seller can edit this lot")
+    if lot["status"] != "DRAFT":
+        raise AuctionError("only DRAFT lots can be edited")
+    updates = {}
+    for key in _LISTING_FIELDS:
+        if key not in fields:
+            continue
+        value = fields[key]
+        if key in ("image_keys", "video_keys", "id_photo_keys"):
+            if not isinstance(value, (list, tuple)):
+                raise AuctionError(f"{key} must be a list")
+            updates[key] = list(value)
+        elif key == "no_ai_photos_attested":
+            updates[key] = bool(value)
+        elif key == "flaws":
+            updates[key] = (value or "").strip() or None
+        else:
+            updates[key] = value
+    if not updates:
+        raise AuctionError("no listing fields supplied")
+    updates["updated_at"] = _iso(_now())
+    cols = ", ".join(f"{k} = ?" for k in updates)
+    with _connect() as c:
+        c.execute(f"UPDATE lots SET {cols} WHERE id = ?",
+                  (*updates.values(), lot_id))
+    return get_lot(lot_id)
+
+
+def _json_list(value):
+    if isinstance(value, list):
+        return value
+    if isinstance(value, str):
+        try:
+            parsed = json.loads(value)
+        except (TypeError, ValueError):
+            return []
+        return parsed if isinstance(parsed, list) else []
+    return []
+
+
+def moderation_checklist(lot):
+    """The listing standard (best-practices #2/#3), evaluated against a
+    lot row. approve_lot() hard-blocks until every item passes; the
+    moderation queue shows the same list so the fix is obvious."""
+    brand = lot["brand"]
+    photos = _json_list(lot.get("image_keys"))
+    videos = _json_list(lot.get("video_keys"))
+    id_photos = _json_list(lot.get("id_photo_keys"))
+    min_photos = MIN_LOT_PHOTOS[brand]
+    min_id = MIN_ID_PHOTOS[brand]
+    id_label = ("VIN plate + title photos" if brand == "RE"
+                else "frame-number photos")
+    items = [
+        {"key": "photos", "label": f"at least {min_photos} photos",
+         "ok": len(photos) >= min_photos,
+         "detail": f"{len(photos)}/{min_photos}"},
+        {"key": "videos",
+         "label": "video present (walk-around + cold start)",
+         "ok": len(videos) >= 1, "detail": f"{len(videos)} video(s)"},
+        {"key": "flaws", "label": "flaws section completed",
+         "ok": bool((lot.get("flaws") or "").strip()),
+         "detail": "present" if (lot.get("flaws") or "").strip()
+         else "missing"},
+        {"key": "id_photos", "label": id_label,
+         "ok": len(id_photos) >= min_id,
+         "detail": f"{len(id_photos)}/{min_id}"},
+        {"key": "no_ai_photos",
+         "label": "no-AI-photos attestation confirmed",
+         "ok": bool(lot.get("no_ai_photos_attested")),
+         "detail": "attested" if lot.get("no_ai_photos_attested")
+         else "not attested"},
+        {"key": "condition_notes", "label": "condition notes present",
+         "ok": bool((lot.get("condition_notes") or "").strip()),
+         "detail": "present" if (lot.get("condition_notes") or "").strip()
+         else "missing"},
+    ]
+    missing = [i["label"] for i in items if not i["ok"]]
+    return {"brand": brand, "passed": not missing, "items": items,
+            "missing": missing}
 
 
 def submit_lot(lot_id, actor_account_id):
@@ -808,6 +1044,14 @@ def approve_lot(lot_id, admin_account_id, scheduled_start_at,
             "approval requires scheduled_start_at and scheduled_close_at")
     if close <= start:
         raise AuctionError("scheduled close must be after scheduled start")
+    lot = get_lot(lot_id)
+    if not lot:
+        raise AuctionError("lot not found")
+    checklist = moderation_checklist(lot)
+    if not checklist["passed"]:
+        raise AuctionError(
+            "listing standard not met — missing: "
+            + "; ".join(checklist["missing"]))
     return transition(
         lot_id, "SCHEDULED", actor_account_id=admin_account_id, note=note,
         moderated_by_id=admin_account_id, moderation_note=note,
@@ -893,6 +1137,48 @@ def public_lot_dict(lot, account_id=None):
         if account_id:
             view["your_max_bid_cents"] = state["your_max_bid_cents"]
             view["you_are_leading"] = state["you_are_leading"]
+    # Slice 4 public-face fields. VIN/title photo keys stay OUT (title
+    # photos carry owner PII — admin-only, see admin_lot_dict).
+    view["flaws"] = lot.get("flaws")
+    view["video_keys"] = _json_list(lot.get("video_keys"))
+    view["buyer_premium_bps"] = BUYER_PREMIUM_BPS
+    view["seller_account_id"] = lot["seller_account_id"]
+    with _connect() as c:
+        seller = c.execute(
+            "SELECT display_name FROM accounts WHERE id = ?",
+            (lot["seller_account_id"],)).fetchone()
+    view["seller_display_name"] = seller["display_name"] if seller else None
+    if status in POST_WIN_STATUSES:
+        with _connect() as c:
+            inv = c.execute(
+                "SELECT * FROM invoices WHERE lot_id = ?"
+                " ORDER BY issued_at DESC LIMIT 1", (lot["id"],)).fetchone()
+        if inv:
+            hammer = inv.get("hammer_cents")
+            if hammer is None:
+                hammer = int(inv["amount_cents"])
+            view["hammer_cents"] = int(hammer)
+            view["buyer_premium_cents"] = int(
+                inv.get("buyer_premium_cents") or 0)
+            view["amount_due_cents"] = int(inv["amount_cents"])
+    if account_id:
+        view["watching"] = is_watching(account_id, lot["id"])
+    return view
+
+
+def admin_lot_dict(lot):
+    """The admin/moderation view: everything public PLUS the reserve
+    amount, the VIN/title photo keys, the attestation flag, and the
+    listing-standard checklist. Admin endpoints only — never serialize
+    this for a bidder."""
+    if not lot:
+        return None
+    view = public_lot_dict(lot)
+    view["reserve_price_cents"] = lot["reserve_price_cents"]
+    view["id_photo_keys"] = _json_list(lot.get("id_photo_keys"))
+    view["no_ai_photos_attested"] = bool(lot.get("no_ai_photos_attested"))
+    view["moderation_checklist"] = moderation_checklist(lot)
+    view["moderated_by_id"] = lot.get("moderated_by_id")
     return view
 
 
@@ -1344,6 +1630,10 @@ def close_lot(lot_id, now=None):
     token = issue_pay_token(lot_id, now=now)
     with _connect() as c:
         payload = {"lot_id": lot_id, "winning_price_cents": price,
+                   "hammer_cents": int(invoice["hammer_cents"]),
+                   "buyer_premium_cents": int(
+                       invoice["buyer_premium_cents"]),
+                   "amount_cents": int(invoice["amount_cents"]),
                    "invoice_id": invoice["id"],
                    "payment_deadline_at": invoice["payment_deadline_at"]}
         _notify(c, winner["bidder_account_id"], lot_id, "AUCTION_WON",
@@ -1367,6 +1657,23 @@ def close_lot(lot_id, now=None):
             "invoice_id": invoice["id"]}
 
 
+def _insert_invoice(c, lot_id, winner_account_id, hammer_cents, now):
+    """Create the OPEN invoice with the fee composition frozen on the
+    row (Bill 2026-10-02): amount = hammer + 4% buyer premium. The
+    hammer never moves after this write; settlement pays it in full."""
+    hammer = int(hammer_cents)
+    premium = buyer_premium_cents(hammer)
+    invoice_id = str(uuid.uuid4())
+    c.execute(
+        "INSERT INTO invoices (id, lot_id, winner_account_id,"
+        " amount_cents, hammer_cents, buyer_premium_cents, status,"
+        " issued_at, payment_deadline_at) VALUES (?,?,?,?,?,?,'OPEN',?,?)",
+        (invoice_id, lot_id, winner_account_id, hammer + premium,
+         hammer, premium, _iso(now), _iso(now + PAYMENT_WINDOW)))
+    return c.execute("SELECT * FROM invoices WHERE id = ?",
+                     (invoice_id,)).fetchone()
+
+
 def _ensure_invoice(lot, now=None):
     """Create the winner's invoice if missing (idempotent). A lot may
     accumulate VOID invoices across the second-chance ladder; the live
@@ -1380,16 +1687,8 @@ def _ensure_invoice(lot, now=None):
         for row in rows:
             if row["status"] in ("OPEN", "PAID"):
                 return row
-        invoice_id = str(uuid.uuid4())
-        c.execute(
-            "INSERT INTO invoices (id, lot_id, winner_account_id,"
-            " amount_cents, status, issued_at, payment_deadline_at)"
-            " VALUES (?,?,?,?,'OPEN',?,?)",
-            (invoice_id, lot["id"], lot["winner_account_id"],
-             int(lot["winning_price_cents"]), _iso(now),
-             _iso(now + PAYMENT_WINDOW)))
-        return c.execute("SELECT * FROM invoices WHERE id = ?",
-                         (invoice_id,)).fetchone()
+        return _insert_invoice(c, lot["id"], lot["winner_account_id"],
+                               int(lot["winning_price_cents"]), now)
 
 
 def due_lots(now=None):
@@ -1552,19 +1851,38 @@ def _mint_checkout_session(lot, invoice, success_url, cancel_url):
         raise AuctionError(
             "Stripe is not configured on this service; cannot mint a "
             "checkout session")
-    return stripe_lib.checkout.Session.create(
-        mode="payment",
-        line_items=[{
+    # Two line items (Slice 4): the hammer, then the 4% buyer premium
+    # as its own line — the composition is transparent at the register.
+    hammer = invoice.get("hammer_cents")
+    if hammer is None:
+        hammer = int(invoice["amount_cents"])
+    premium = int(invoice.get("buyer_premium_cents") or 0)
+    line_items = [{
+        "price_data": {
+            "currency": "usd",
+            "unit_amount": int(hammer),
+            "product_data": {
+                "name": f"Auction lot — {lot['title']}",
+                "tax_code": "txcd_99999999",
+            },
+        },
+        "quantity": 1,
+    }]
+    if premium > 0:
+        line_items.append({
             "price_data": {
                 "currency": "usd",
-                "unit_amount": int(invoice["amount_cents"]),
+                "unit_amount": premium,
                 "product_data": {
-                    "name": f"Auction lot — {lot['title']}",
+                    "name": "Buyer premium (4% of hammer)",
                     "tax_code": "txcd_99999999",
                 },
             },
             "quantity": 1,
-        }],
+        })
+    return stripe_lib.checkout.Session.create(
+        mode="payment",
+        line_items=line_items,
         metadata={
             "kind": "auction_pay",
             "lot_id": lot["id"],
@@ -1907,26 +2225,23 @@ def accept_second_chance(offer_id, account_id, now=None):
             (account_id, int(offer["offered_price_cents"]),
              int(offer["offered_price_cents"]), account_id,
              _iso(now), lot["id"]))
-        invoice_id = str(uuid.uuid4())
-        c.execute(
-            "INSERT INTO invoices (id, lot_id, winner_account_id,"
-            " amount_cents, status, issued_at, payment_deadline_at)"
-            " VALUES (?,?,?,?,'OPEN',?,?)",
-            (invoice_id, lot["id"], account_id,
-             int(offer["offered_price_cents"]), _iso(now),
-             _iso(now + PAYMENT_WINDOW)))
-        invoice = c.execute("SELECT * FROM invoices WHERE id = ?",
-                            (invoice_id,)).fetchone()
+        invoice = _insert_invoice(c, lot["id"], account_id,
+                                  int(offer["offered_price_cents"]), now)
+        invoice_id = invoice["id"]
         lot = _require_lot(c, lot["id"])
         token = _mint_token(c, lot, invoice, now)
         _notify(c, account_id, lot["id"], "INVOICE_ISSUED", {
             "lot_id": lot["id"], "invoice_id": invoice_id,
-            "amount_cents": int(offer["offered_price_cents"]),
+            "hammer_cents": int(invoice["hammer_cents"]),
+            "buyer_premium_cents": int(invoice["buyer_premium_cents"]),
+            "amount_cents": int(invoice["amount_cents"]),
             "payment_deadline_at": invoice["payment_deadline_at"],
             "pay_page_url": token["pay_page_url"]})
     return {"outcome": "accepted", "offer_id": offer_id,
             "lot_id": lot["id"], "invoice_id": invoice_id,
-            "amount_cents": int(offer["offered_price_cents"]),
+            "hammer_cents": int(invoice["hammer_cents"]),
+            "buyer_premium_cents": int(invoice["buyer_premium_cents"]),
+            "amount_cents": int(invoice["amount_cents"]),
             "pay_page_url": token["pay_page_url"]}
 
 
@@ -1961,6 +2276,301 @@ def run_payment_maintenance(now=None):
     now = now or _now()
     return {"reminders": run_reminders(now),
             "second_chance": run_second_chance_sweep(now)}
+
+
+# --- Settlements -------------------------------------------------------------
+
+def get_settlement(lot_id):
+    with _connect() as c:
+        return c.execute("SELECT * FROM settlements WHERE lot_id = ?",
+                         (lot_id,)).fetchone()
+
+
+def record_settlement(lot_id, recorded_by_id, payout_method,
+                      payout_reference=None, delivery_confirmed_at=None,
+                      notes=None, now=None):
+    """Record the seller payout for a PAID lot (manual settlement,
+    Phase 1 — payout moves off-Stripe).
+
+    Fee model (Bill 2026-10-02): the platform fee is buyer-side (the
+    4% premium frozen on the invoice), so the seller is paid the
+    hammer in full — gross = hammer, platform_fee_cents = 0, and the
+    generated seller_payout_cents comes out equal to the hammer.
+    Phase 1 has no time buffer: the admin's delivery confirmation is
+    the release step, so buffer_release_at = payment cleared time.
+    With delivery confirmed, the payout is released and the lot
+    moves PAID -> SETTLED."""
+    now = now or _now()
+    recorder = get_account(recorded_by_id)
+    if not recorder or not recorder["is_admin"]:
+        raise PermissionDenied("only an admin can record a settlement")
+    if not (payout_method or "").strip():
+        raise AuctionError("payout_method is required")
+    delivery = _parse_ts(delivery_confirmed_at) \
+        if delivery_confirmed_at else None
+    with _connect() as c:
+        lot = _require_lot(c, lot_id)
+        if lot["status"] != "PAID":
+            raise AuctionError(f"lot is {lot['status']}, not PAID")
+        invoice = c.execute(
+            "SELECT * FROM invoices WHERE lot_id = ? AND status = 'PAID'"
+            " ORDER BY issued_at DESC LIMIT 1", (lot_id,)).fetchone()
+        if not invoice:
+            raise AuctionError("lot has no PAID invoice to settle")
+        if c.execute("SELECT id FROM settlements WHERE lot_id = ?",
+                     (lot_id,)).fetchone():
+            raise AuctionError("a settlement is already recorded for "
+                               "this lot")
+        hammer = invoice.get("hammer_cents")
+        if hammer is None:
+            hammer = int(invoice["amount_cents"])
+        settlement_id = str(uuid.uuid4())
+        c.execute(
+            "INSERT INTO settlements (id, lot_id, invoice_id,"
+            " seller_account_id, gross_amount_cents, platform_fee_cents,"
+            " payout_method, payout_reference, payment_cleared_at,"
+            " delivery_confirmed_at, buffer_release_at, released_at,"
+            " notes, recorded_by_id, created_at, updated_at)"
+            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (settlement_id, lot_id, invoice["id"],
+             lot["seller_account_id"], int(hammer), 0,
+             payout_method.strip(), payout_reference,
+             invoice["paid_at"],
+             _iso(delivery) if delivery else None,
+             invoice["paid_at"],
+             _iso(now) if delivery else None,
+             notes, recorded_by_id, _iso(now), _iso(now)))
+        row = c.execute("SELECT * FROM settlements WHERE id = ?",
+                        (settlement_id,)).fetchone()
+    if delivery:
+        transition(lot_id, "SETTLED", actor_account_id=recorded_by_id)
+    return row
+
+
+# ---------------------------------------------------------------------------
+# Comments & Q&A, watchlist, bidder profiles (Slice 4, best-practices #1/#5)
+# ---------------------------------------------------------------------------
+_PUBLIC_COMMENT_STATUSES = ("VISIBLE",)
+
+
+def public_comment_dict(comment, author=None):
+    """What the lot page shows. Hidden comments keep their body here
+    only for the admin view (caller filters); email never appears."""
+    if not comment:
+        return None
+    return {
+        "id": comment["id"],
+        "lot_id": comment["lot_id"],
+        "parent_id": comment["parent_id"],
+        "body": comment["body"],
+        "is_seller": bool(comment["is_seller"]),
+        "status": comment["status"],
+        "created_at": comment["created_at"],
+        "author": {
+            "id": comment["account_id"],
+            "display_name": author["display_name"] if author else None,
+        },
+    }
+
+
+def list_comments(lot_id, include_hidden=False):
+    sql = "SELECT * FROM comments WHERE lot_id = ?"
+    if not include_hidden:
+        sql += " AND status = 'VISIBLE'"
+    sql += " ORDER BY created_at ASC, id ASC"
+    with _connect() as c:
+        rows = c.execute(sql, (lot_id,)).fetchall()
+        out = []
+        for row in rows:
+            author = c.execute(
+                "SELECT display_name FROM accounts WHERE id = ?",
+                (row["account_id"],)).fetchone()
+            out.append(public_comment_dict(row, author))
+    return out
+
+
+def post_comment(account_id, lot_id, body, parent_id=None):
+    """Post a lot comment (best-practices #1). Same integrity gate as
+    bidding: a real, email-verified, unsuspended account on the lot's
+    brand. The seller's comments are flagged; other comments notify
+    the seller (COMMENT_QUESTION), seller comments notify watchers
+    and bidders (SELLER_REPLIED) via the §7 outbox."""
+    account = get_account(account_id)
+    if not account:
+        raise AuctionError("account not found")
+    if account["is_suspended"]:
+        raise PermissionDenied("suspended accounts cannot comment")
+    if not account["email_verified_at"]:
+        raise PermissionDenied("email must be verified before commenting")
+    body = (body or "").strip()
+    if not body:
+        raise AuctionError("comment body is required")
+    if len(body) > COMMENT_MAX_CHARS:
+        raise AuctionError(
+            f"comment is limited to {COMMENT_MAX_CHARS} characters")
+    with _connect() as c:
+        lot = _require_lot(c, lot_id)
+        if account["brand"] != lot["brand"]:
+            raise AuctionError("account belongs to a different brand")
+        if parent_id:
+            parent = c.execute(
+                "SELECT * FROM comments WHERE id = ?",
+                (parent_id,)).fetchone()
+            if not parent or parent["lot_id"] != lot_id:
+                raise AuctionError("parent comment not found on this lot")
+            if parent["status"] != "VISIBLE":
+                raise AuctionError("cannot reply to a hidden comment")
+        is_seller = account_id == lot["seller_account_id"]
+        comment_id = str(uuid.uuid4())
+        c.execute(
+            "INSERT INTO comments (id, lot_id, account_id, parent_id,"
+            " body, is_seller, status, created_at) VALUES"
+            " (?,?,?,?,?,?,'VISIBLE',?)",
+            (comment_id, lot_id, account_id, parent_id, body,
+             is_seller, _iso(_now())))
+        row = c.execute("SELECT * FROM comments WHERE id = ?",
+                        (comment_id,)).fetchone()
+        if is_seller:
+            recipients = {r["account_id"] for r in c.execute(
+                "SELECT account_id FROM watchlist WHERE lot_id = ?",
+                (lot_id,)).fetchall()}
+            recipients |= {r["bidder_account_id"] for r in c.execute(
+                "SELECT DISTINCT bidder_account_id FROM bids"
+                " WHERE lot_id = ? AND status != 'VOIDED'",
+                (lot_id,)).fetchall()}
+            recipients.discard(account_id)
+            for rid in recipients:
+                _notify(c, rid, lot_id, "SELLER_REPLIED", {
+                    "lot_id": lot_id, "lot_title": lot["title"],
+                    "comment_id": comment_id})
+        else:
+            _notify(c, lot["seller_account_id"], lot_id,
+                    "COMMENT_QUESTION", {
+                        "lot_id": lot_id, "lot_title": lot["title"],
+                        "comment_id": comment_id})
+    return public_comment_dict(row, account)
+
+
+def set_comment_hidden(comment_id, admin_account_id, hidden=True,
+                       note=None):
+    """Admin moderation: hide (or restore) a comment. The hide is
+    stamped on the row itself — who, when, why — so the moderation
+    trail survives without a second table."""
+    with _connect() as c:
+        row = c.execute("SELECT * FROM comments WHERE id = ?",
+                        (comment_id,)).fetchone()
+        if not row:
+            raise AuctionError("comment not found")
+        if hidden:
+            c.execute(
+                "UPDATE comments SET status = 'HIDDEN', hidden_at = ?,"
+                " hidden_by_id = ?, hide_note = ? WHERE id = ?",
+                (_iso(_now()), admin_account_id, note, comment_id))
+        else:
+            c.execute(
+                "UPDATE comments SET status = 'VISIBLE',"
+                " hidden_at = NULL, hidden_by_id = NULL,"
+                " hide_note = NULL WHERE id = ?", (comment_id,))
+        row = c.execute("SELECT * FROM comments WHERE id = ?",
+                        (comment_id,)).fetchone()
+        author = c.execute(
+            "SELECT display_name FROM accounts WHERE id = ?",
+            (row["account_id"],)).fetchone()
+    return public_comment_dict(row, author)
+
+
+def is_watching(account_id, lot_id):
+    if not account_id:
+        return False
+    with _connect() as c:
+        return c.execute(
+            "SELECT id FROM watchlist WHERE account_id = ? AND lot_id = ?",
+            (account_id, lot_id)).fetchone() is not None
+
+
+def set_watch(account_id, lot_id, watching):
+    """Idempotent watch/unwatch. Returns the resulting state."""
+    account = get_account(account_id)
+    if not account:
+        raise AuctionError("account not found")
+    if account["is_suspended"]:
+        raise PermissionDenied("suspended accounts cannot watch lots")
+    lot = get_lot(lot_id)
+    if not lot:
+        raise AuctionError("lot not found")
+    with _connect() as c:
+        if watching:
+            if _DIALECT == "postgres":
+                stmt = ("INSERT INTO watchlist (id, account_id, lot_id,"
+                        " created_at) VALUES (?,?,?,?)"
+                        " ON CONFLICT (account_id, lot_id) DO NOTHING")
+            else:
+                stmt = ("INSERT OR IGNORE INTO watchlist (id, account_id,"
+                        " lot_id, created_at) VALUES (?,?,?,?)")
+            c.execute(stmt, (str(uuid.uuid4()), account_id, lot_id,
+                             _iso(_now())))
+        else:
+            c.execute(
+                "DELETE FROM watchlist WHERE account_id = ? AND lot_id = ?",
+                (account_id, lot_id))
+    return is_watching(account_id, lot_id)
+
+
+def watched_lots(account_id):
+    with _connect() as c:
+        rows = c.execute(
+            "SELECT l.* FROM watchlist w JOIN lots l ON l.id = w.lot_id"
+            " WHERE w.account_id = ?"
+            " ORDER BY w.created_at DESC", (account_id,)).fetchall()
+    return rows
+
+
+def bidder_profile(account_id):
+    """Public, read-only bidder profile (best-practices #5): member
+    since, activity counts, and closed-lot bid history. Amounts shown
+    are effective (public-at-close) prices — another bidder's max is
+    never exposed, and live-lot bids are not listed at all."""
+    account = get_account(account_id)
+    if not account:
+        raise AuctionError("account not found")
+    with _connect() as c:
+        def count(sql, params):
+            return c.execute(sql, params).fetchone()["n"]
+        bids_placed = count(
+            "SELECT COUNT(*) AS n FROM bids WHERE bidder_account_id = ?"
+            " AND status != 'VOIDED'", (account_id,))
+        won = count(
+            "SELECT COUNT(*) AS n FROM lots WHERE winner_account_id = ?",
+            (account_id,))
+        sold = count(
+            "SELECT COUNT(*) AS n FROM lots WHERE seller_account_id = ?"
+            " AND status IN ('PAID','SETTLED')", (account_id,))
+        history = c.execute(
+            "SELECT b.effective_price_cents, b.placed_at, l.id AS lot_id,"
+            " l.title AS lot_title, l.status AS lot_status,"
+            " l.winner_account_id FROM bids b JOIN lots l"
+            " ON l.id = b.lot_id WHERE b.bidder_account_id = ?"
+            " AND b.status != 'VOIDED'"
+            " AND l.status IN ('CLOSED','NO_SALE','INVOICED','PAID',"
+            " 'SETTLED') ORDER BY b.placed_at DESC LIMIT 10",
+            (account_id,)).fetchall()
+    return {
+        "id": account["id"],
+        "brand": account["brand"],
+        "display_name": account["display_name"],
+        "member_since": account["created_at"],
+        "bids_placed": bids_placed,
+        "auctions_won": won,
+        "lots_sold": sold,
+        "recent_bids": [{
+            "lot_id": r["lot_id"],
+            "lot_title": r["lot_title"],
+            "amount_cents": int(r["effective_price_cents"]),
+            "placed_at": r["placed_at"],
+            "lot_status": r["lot_status"],
+            "won": r["winner_account_id"] == account_id,
+        } for r in history],
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -2054,7 +2664,12 @@ def api_create_lot():
             data.get("category"), data.get("starting_price_cents"),
             reserve_price_cents=data.get("reserve_price_cents"),
             condition_notes=data.get("condition_notes"),
-            image_keys=data.get("image_keys"))
+            image_keys=data.get("image_keys"),
+            flaws=data.get("flaws"),
+            video_keys=data.get("video_keys"),
+            id_photo_keys=data.get("id_photo_keys"),
+            no_ai_photos_attested=bool(
+                data.get("no_ai_photos_attested")))
     except AuctionError as exc:
         return _err(exc)
     return jsonify(public_lot_dict(lot)), 201
@@ -2078,7 +2693,112 @@ def api_moderation_queue():
         return _err(exc)
     brand = request.args.get("brand") or _BRAND_CODE or None
     lots = moderation_queue(brand)
-    return jsonify([public_lot_dict(lot) for lot in lots])
+    return jsonify([admin_lot_dict(lot) for lot in lots])
+
+
+@bp.get("/api/auctions/lots/<lot_id>/checklist")
+def api_lot_checklist(lot_id):
+    """The moderation listing-standard checklist for one lot (admin
+    only — the detail carries reserve/attestation context)."""
+    try:
+        _require_admin()
+    except AuctionError as exc:
+        return _err(exc)
+    lot = get_lot(lot_id)
+    if not lot:
+        return jsonify({"error": "lot not found"}), 404
+    return jsonify(moderation_checklist(lot))
+
+
+@bp.post("/api/auctions/lots/<lot_id>/listing")
+def api_update_lot_listing(lot_id):
+    """Seller fixes listing fields on their own DRAFT lot (the
+    send-back loop after a moderation checklist failure)."""
+    try:
+        account = _require_account()
+        data = request.get_json(silent=True) or {}
+        fields = {k: data[k] for k in
+                  ("description", "condition_notes", "flaws",
+                   "image_keys", "video_keys", "id_photo_keys",
+                   "no_ai_photos_attested") if k in data}
+        lot = update_lot_listing(lot_id, account["id"], **fields)
+    except AuctionError as exc:
+        return _err(exc)
+    view = public_lot_dict(lot, account["id"])
+    view["moderation_checklist"] = moderation_checklist(lot)
+    return jsonify(view)
+
+
+@bp.get("/api/auctions/lots/<lot_id>/comments")
+def api_list_comments(lot_id):
+    lot = get_lot(lot_id)
+    if not lot:
+        return jsonify({"error": "lot not found"}), 404
+    account = _current_account()
+    is_owner = account and account["id"] == lot["seller_account_id"]
+    if lot["status"] in ("DRAFT", "IN_MODERATION", "REJECTED") \
+            and not is_owner and not _is_admin_request():
+        return jsonify({"error": "lot not found"}), 404
+    return jsonify(list_comments(
+        lot_id, include_hidden=_is_admin_request()))
+
+
+@bp.post("/api/auctions/lots/<lot_id>/comments")
+def api_post_comment(lot_id):
+    try:
+        account = _require_account()
+        data = request.get_json(silent=True) or {}
+        comment = post_comment(
+            account["id"], lot_id, data.get("body"),
+            parent_id=data.get("parent_id"))
+    except AuctionError as exc:
+        return _err(exc)
+    return jsonify(comment), 201
+
+
+@bp.post("/api/auctions/comments/<comment_id>/moderate")
+def api_moderate_comment(comment_id):
+    try:
+        _require_admin()
+        data = request.get_json(silent=True) or {}
+        hidden = (data.get("action") or "hide").strip().lower() != "restore"
+        comment = set_comment_hidden(
+            comment_id, _admin_actor_id(), hidden=hidden,
+            note=data.get("note"))
+    except AuctionError as exc:
+        return _err(exc)
+    return jsonify(comment)
+
+
+@bp.post("/api/auctions/lots/<lot_id>/watch")
+def api_set_watch(lot_id):
+    try:
+        account = _require_account()
+        data = request.get_json(silent=True) or {}
+        watching = data.get("watching", True)
+        if isinstance(watching, str):
+            watching = watching.strip().lower() in ("1", "true", "yes",
+                                                    "on")
+        state = set_watch(account["id"], lot_id, bool(watching))
+    except AuctionError as exc:
+        return _err(exc)
+    return jsonify({"lot_id": lot_id, "watching": state})
+
+
+@bp.get("/api/auctions/watchlist")
+def api_watchlist():
+    account = _require_account()
+    rows = watched_lots(account["id"])
+    return jsonify([public_lot_dict(r, account["id"]) for r in rows])
+
+
+@bp.get("/api/auctions/bidders/<account_id>")
+def api_bidder_profile(account_id):
+    try:
+        profile = bidder_profile(account_id)
+    except AuctionError as exc:
+        return _err(exc)
+    return jsonify(profile)
 
 
 @bp.post("/api/auctions/lots/<lot_id>/moderate")
@@ -2169,6 +2889,16 @@ _PAY_PAGE_HTML = """<!doctype html>
 
 @bp.get("/pay/<token>")
 def pay_page(token):
+    """Token pay page (winner-only, no-referrer/no-store): see
+    _pay_page_impl. Every response from this route — page or redirect
+    into Stripe — carries the two polish headers (Slice 4, §3.A)."""
+    resp = make_response(_pay_page_impl(token))
+    resp.headers["Referrer-Policy"] = "no-referrer"
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+def _pay_page_impl(token):
     """Winner pay page (§4.4): every click mints a FRESH Stripe Checkout
     session and redirects to it — a stale session URL in an old tab
     always self-heals. Nothing is charged until the winner completes
@@ -2192,7 +2922,8 @@ def pay_page(token):
     if invoice["status"] == "PAID":
         return _PAY_PAGE_HTML.format(
             title="Already paid",
-            body=f"Payment for {lot['title']} is complete. Thank you.")
+            body=f"Payment for {_esc(lot['title'])} is complete."
+            f"{_esc(_invoice_breakdown(invoice))} Thank you.")
     if invoice["status"] != "OPEN" or lot["status"] != "INVOICED":
         return _PAY_PAGE_HTML.format(
             title="No longer payable",
@@ -2200,9 +2931,9 @@ def pay_page(token):
     if request.args.get("return"):
         return _PAY_PAGE_HTML.format(
             title="Payment processing",
-            body="If you completed checkout, your payment is being "
-                 "confirmed — this page will show as paid once Stripe "
-                 "confirms it.")
+            body=f"If you completed checkout, your payment is being"
+            f" confirmed — this page will show as paid once Stripe"
+            f" confirms it.{_esc(_invoice_breakdown(invoice))}")
     pay_url = request.url.split("?")[0]
     try:
         checkout = _mint_checkout_session(
@@ -2261,7 +2992,326 @@ def api_list_lots():
     statuses = (tuple(s.strip().upper() for s in status_param.split(","))
                 if status_param else ("LIVE", "SCHEDULED"))
     lots = list_public_lots(brand, statuses)
-    return jsonify([public_lot_dict(lot) for lot in lots])
+    account = _current_account()
+    return jsonify([public_lot_dict(
+        lot, account["id"] if account else None) for lot in lots])
+
+
+# ---------------------------------------------------------------------------
+# Public HTML pages (Slice 4, spec §6 as scoped by best-practices §3.B)
+# ---------------------------------------------------------------------------
+_PAGE_CSS = """
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+background:#f6f1e7;color:#1b2a41;margin:0}
+main{max-width:920px;margin:0 auto;padding:24px 16px 64px}
+a{color:#1b2a41}
+.card{background:#fff;border:1px solid #e2d9c3;border-radius:12px;
+padding:20px;margin:16px 0}
+.price{font-size:2rem;font-weight:700}
+.accent{color:var(--accent)}
+.flash{background:#fdf3d7;border:1px solid #e8a020;border-radius:8px;
+padding:10px 14px;margin:12px 0}
+button{background:var(--accent);border:0;border-radius:8px;color:#fff;
+padding:10px 18px;font-weight:600;cursor:pointer}
+input,textarea{width:100%;box-sizing:border-box;padding:10px;
+border:1px solid #cbbd97;border-radius:8px;margin:6px 0}
+.comment{border-top:1px solid #eee4cd;padding:10px 0}
+.seller-badge{background:#1b2a41;color:#fff;border-radius:6px;
+padding:1px 7px;font-size:.75rem;margin-left:6px}
+img.lot-photo{max-width:100%;border-radius:8px;margin:8px 0}
+"""
+
+
+def _page(title, body, brand=None):
+    accent = BRAND_ACCENTS.get(brand, "#1b2a41")
+    name = BRAND_NAMES.get(brand, "Auctions")
+    return (
+        "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
+        "<meta name=\"viewport\" content=\"width=device-width,"
+        "initial-scale=1\">"
+        f"<title>{_esc(title)} · {_esc(name)} Auctions</title>"
+        f"<style>:root{{--accent:{accent}}}{_PAGE_CSS}</style></head>"
+        f"<body><main><p><a href=\"/auctions\">&larr; {_esc(name)}"
+        " auctions</a></p>"
+        f"<h1>{_esc(title)}</h1>{body}</main></body></html>")
+
+
+def _flash():
+    msg = request.args.get("msg", "").strip()
+    if not msg:
+        return ""
+    return f"<div class=\"flash\">{_esc(msg)}</div>"
+
+
+def _session_bar(account):
+    if account:
+        return (f"<p>Signed in as {_esc(account['display_name'])} · "
+                "<a href=\"/auctions/watchlist\">Watchlist</a> · "
+                "<a href=\"/auctions/logout\">Sign out</a></p>")
+    return ("<p><a href=\"/auctions/login\">Sign in</a> · "
+            "<a href=\"/auctions/register\">Create account</a></p>")
+
+
+def _money_form(form, key):
+    text = (form.get(key) or "").strip().lstrip("$").replace(",", "")
+    if not text:
+        raise AuctionError(f"{key} is required")
+    try:
+        return int((Decimal(text) * 100).to_integral_value())
+    except (InvalidOperation, ValueError):
+        raise AuctionError(f"{key} must be a dollar amount")
+
+
+def _comment_html(c):
+    badge = ("<span class=\"seller-badge\">Seller</span>"
+             if c["is_seller"] else "")
+    return (
+        f"<div class=\"comment\"><strong>"
+        f"{_esc(c['author']['display_name'])}</strong>{badge} "
+        f"<small>{_esc(c['created_at'])}</small>"
+        f"<p>{_esc(c['body'])}</p></div>")
+
+
+def _lot_card(lot):
+    d = public_lot_dict(lot)
+    price = (d["winning_price_cents"] if d.get("winning_price_cents")
+             else d["current_price_cents"])
+    return (
+        f"<div class=\"card\"><h3><a href=\"/auctions/lot/"
+        f"{_esc(lot['id'])}\">{_esc(lot['title'])}</a></h3>"
+        f"<p class=\"price\">{_money(price)}</p>"
+        f"<p>Status: {_esc(lot['status'])} · "
+        f"{d.get('bid_count', 0)} bid(s)</p></div>")
+
+
+@bp.get("/auctions")
+def auctions_index():
+    brand = (request.args.get("brand") or _BRAND_CODE or "").strip() \
+        .upper() or None
+    lots = list_public_lots(brand, ("LIVE", "SCHEDULED"))
+    cards = "".join(_lot_card(lot) for lot in lots) or (
+        "<p>No auctions are live right now.</p>")
+    return _page("Live & upcoming auctions",
+                 _flash() + _session_bar(_current_account()) + cards,
+                 brand)
+
+
+@bp.get("/auctions/lot/<lot_id>")
+def auctions_lot_page(lot_id):
+    lot = get_lot(lot_id)
+    account = _current_account()
+    is_owner = account and account["id"] == lot["seller_account_id"] \
+        if lot else False
+    if not lot or (lot["status"] in ("DRAFT", "IN_MODERATION", "REJECTED")
+                   and not is_owner and not _is_admin_request()):
+        return _page("Not found", "<p>This lot is not available.</p>",
+                     _BRAND_CODE), 404
+    d = public_lot_dict(lot, account["id"] if account else None)
+    brand = lot["brand"]
+    parts = [_flash(), _session_bar(account)]
+    if account and account["is_admin"]:
+        admin_view = admin_lot_dict(lot)
+        items = "".join(
+            f"<li>{'✅' if i['ok'] else '❌'} {_esc(i['label'])} "
+            f"({_esc(i['detail'])})</li>"
+            for i in admin_view["moderation_checklist"]["items"])
+        parts.append(
+            f"<div class=\"card\"><h3>Moderation</h3><ul>{items}</ul>"
+            f"<p>Reserve: {_money(admin_view['reserve_price_cents'])}"
+            " (admin-only) · Attestation: "
+            f"{'yes' if admin_view['no_ai_photos_attested'] else 'no'}"
+            f"</p><p>ID photos: {len(admin_view['id_photo_keys'])}"
+            "</p></div>")
+    photos = "".join(
+        f"<img class=\"lot-photo\" src=\"{_esc(k)}\""
+        f" alt=\"{_esc(lot['title'])}\">" for k in d["image_keys"])
+    videos = "".join(
+        f"<p><video controls src=\"{_esc(k)}\"></video></p>"
+        for k in d["video_keys"])
+    price = (d["winning_price_cents"] if d.get("winning_price_cents")
+             else d["current_price_cents"])
+    reserve_line = ""
+    if d["reserve_present"]:
+        reserve_line = ("Reserve met" if d["reserve_met"]
+                        else "Reserve not yet met")
+    extended = (lot["extension_minutes_used"] or 0) > 0
+    parts.append(f"""
+<div class="card">
+<p class="price">{_money(price)} <small>+ 4% buyer premium if you
+win</small></p>
+<p>{d['bid_count']} bid(s) · {reserve_line}</p>
+<p>Closes <strong id="close-at">{_esc(lot['current_close_at'])}</strong>
+{'— extended by soft-close bidding' if extended else ''}</p>
+<p>Closes in <strong id="countdown">—</strong></p>
+{photos}{videos}
+<h3>About this lot</h3><p>{_esc(lot['description'])}</p>
+<h3>Condition</h3><p>{_esc(lot['condition_notes']) or '—'}</p>
+<h3>Known flaws</h3><p>{_esc(lot['flaws']) or '—'}</p>
+<p>Seller <a href="/auctions/bidder/{_esc(lot['seller_account_id'])}">
+{_esc(d['seller_display_name'])}</a></p>
+</div>
+<script>
+const closeEl = document.getElementById('close-at');
+const cd = document.getElementById('countdown');
+function tick() {{
+  const t = new Date(closeEl.textContent.trim()).getTime();
+  let s = Math.max(0, Math.floor((t - Date.now()) / 1000));
+  const dd = Math.floor(s / 86400); s -= dd * 86400;
+  const hh = Math.floor(s / 3600); s -= hh * 3600;
+  const mm = Math.floor(s / 60); const ss = s - mm * 60;
+  cd.textContent = (dd ? dd + 'd ' : '') + hh + 'h ' + mm + 'm ' + ss + 's';
+}}
+tick(); setInterval(tick, 1000);
+</script>""")
+    if account:
+        watching = d.get("watching")
+        parts.append(f"""
+<div class="card">
+<form method="post" action="/auctions/lot/{_esc(lot_id)}/watch">
+<button type="submit" name="watching" value="{'0' if watching else '1'}">
+{'Unwatch this lot' if watching else 'Watch this lot'}</button></form>
+</div>""")
+        if lot["status"] == "LIVE":
+            parts.append(f"""
+<div class="card"><h3>Place a bid</h3>
+<form method="post" action="/auctions/lot/{_esc(lot_id)}/bid">
+<label>Your maximum bid (USD)
+<input name="amount" inputmode="decimal" placeholder="e.g. 12500">
+</label><button type="submit">Place bid</button></form>
+<p>Proxy bidding: you pay the lowest price that still beats the
+next bidder, never more than your max. Winning price + 4% buyer
+premium is the amount due.</p></div>""")
+    comments = "".join(_comment_html(c) for c in list_comments(lot_id))
+    parts.append(f"""
+<div class="card"><h3>Comments &amp; Q&amp;A</h3>
+<p><small>{_esc(COMMENT_RULES)}</small></p>
+{comments or '<p>No comments yet.</p>'}
+{"<form method='post' action='/auctions/lot/" + _esc(lot_id) +
+"/comment'><textarea name='body' rows='3' placeholder='Ask about "
+"this lot…'></textarea><button type='submit'>Post comment</button>"
+"</form>" if account else
+'<p><a href="/auctions/login">Sign in</a> to comment.</p>'}
+</div>""")
+    return _page(lot["title"], "".join(parts), brand)
+
+
+@bp.post("/auctions/lot/<lot_id>/bid")
+def auctions_place_bid(lot_id):
+    account = _require_account()
+    amount = _money_form(request.form, "amount")
+    place_bid(account["id"], lot_id, amount)
+    return redirect(f"/auctions/lot/{lot_id}?msg=Bid+placed")
+
+
+@bp.post("/auctions/lot/<lot_id>/comment")
+def auctions_post_comment(lot_id):
+    account = _require_account()
+    parent = request.form.get("parent_id") or None
+    post_comment(account["id"], lot_id, request.form.get("body"),
+                 parent_id=parent)
+    return redirect(f"/auctions/lot/{lot_id}?msg=Comment+posted")
+
+
+@bp.post("/auctions/lot/<lot_id>/watch")
+def auctions_set_watch(lot_id):
+    account = _require_account()
+    watching = (request.form.get("watching") or "1") not in ("0", "false")
+    set_watch(account["id"], lot_id, watching)
+    return redirect(
+        f"/auctions/lot/{lot_id}?msg="
+        + ("Watching+this+lot" if watching else "Removed+from+watchlist"))
+
+
+@bp.get("/auctions/watchlist")
+def auctions_watchlist_page():
+    account = _current_account()
+    if not account:
+        return redirect("/auctions/login")
+    cards = "".join(_lot_card(lot) for lot in
+                    watched_lots(account["id"])) or (
+        "<p>You're not watching any lots yet.</p>")
+    return _page("Your watchlist", _flash() + cards, _BRAND_CODE)
+
+
+@bp.get("/auctions/bidder/<account_id>")
+def auctions_bidder_page(account_id):
+    try:
+        profile = bidder_profile(account_id)
+    except AuctionError:
+        return _page("Not found", "<p>Bidder not found.</p>",
+                     _BRAND_CODE), 404
+    history = "".join(
+        f"<li>{_esc(b['lot_title'])} — {_money(b['amount_cents'])}"
+        f" · {_esc(b['lot_status'])}"
+        f"{' · won' if b['won'] else ''}</li>"
+        for b in profile["recent_bids"]) or "<li>No bids yet.</li>"
+    body = f"""
+<div class="card">
+<p>Member since {_esc(profile['member_since'])}</p>
+<p>{profile['bids_placed']} bid(s) placed ·
+{profile['auctions_won']} auction(s) won ·
+{profile['lots_sold']} lot(s) sold</p>
+<h3>Recent bids (closed lots)</h3><ul>{history}</ul></div>"""
+    return _page(profile["display_name"], body, profile["brand"])
+
+
+@bp.get("/auctions/login")
+def auctions_login_page():
+    if _current_account():
+        return redirect("/auctions")
+    return _page("Sign in", f"""{_flash()}
+<form method="post" action="/auctions/login">
+<label>Email <input name="email" type="email" required></label>
+<label>Password <input name="password" type="password" required>
+</label><button type="submit">Sign in</button></form>
+<p>No account? <a href="/auctions/register">Create one</a></p>""",
+                 _BRAND_CODE)
+
+
+@bp.post("/auctions/login")
+def auctions_login():
+    account = authenticate(_BRAND_CODE, request.form.get("email"),
+                           request.form.get("password"))
+    if not account:
+        return redirect("/auctions/login?msg=Invalid+credentials")
+    if account["is_suspended"]:
+        return redirect("/auctions/login?msg=Account+suspended")
+    session[SESSION_KEY] = account["id"]
+    return redirect("/auctions")
+
+
+@bp.get("/auctions/logout")
+def auctions_logout():
+    session.pop(SESSION_KEY, None)
+    return redirect("/auctions")
+
+
+@bp.get("/auctions/register")
+def auctions_register_page():
+    if _current_account():
+        return redirect("/auctions")
+    brand = _BRAND_CODE or "RE"
+    return _page("Create account", f"""{_flash()}
+<form method="post" action="/auctions/register">
+<input type="hidden" name="brand" value="{_esc(brand)}">
+<label>Display name <input name="display_name" required></label>
+<label>Email <input name="email" type="email" required></label>
+<label>Password (10+ characters, letters and numbers)
+<input name="password" type="password" required></label>
+<label><input type="checkbox" name="is_seller" value="1"
+style="width:auto"> I plan to sell</label>
+<button type="submit">Create account</button></form>""", brand)
+
+
+@bp.post("/auctions/register")
+def auctions_register():
+    account = create_account(
+        request.form.get("brand") or _BRAND_CODE,
+        request.form.get("email"), request.form.get("display_name"),
+        request.form.get("password"),
+        is_seller=bool(request.form.get("is_seller")))
+    session[SESSION_KEY] = account["id"]
+    return redirect("/auctions")
 
 
 # ---------------------------------------------------------------------------
