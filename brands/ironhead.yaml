@@ -1,10 +1,7 @@
 # Brand #3 — IRONHEAD storefront (brand id: ironhead)
-# Serves the IronHead motorcycle lines (guides + parts); catalogs are
-# built during Slice-5 provisioning — this file deliberately points at
-# repo-relative catalog files that do not exist yet, so the service is
-# NOT deployable until the IH catalog is stocked (see AUCTIONS env
-# checklist in the Slice-4 report). Same codebase as pushrod; select
-# with BRAND=ironhead.
+# Serves the IronHead motorcycle lines (guides + parts). The catalog is
+# SEEDED (7 rows from the canonical lineup doc); guide deliverables land
+# in Slice 5. Same codebase as pushrod; select with BRAND=ironhead.
 brand:
   id: ironhead
   name: IronHead
@@ -30,9 +27,12 @@ theme:
   font_body: "'Helvetica Neue',Arial,sans-serif"
 
 # Catalog sources of truth (never edited by the store — read-only).
-# PLACEHOLDER: the IH catalog (guides + parts) is stocked in Slice 5;
-# until data/ironhead-catalog.csv and data/ironhead-prices.json exist,
-# booting this brand fails fast at catalog load by design.
+# Slice 5 prep: data/ironhead-catalog.csv + data/ironhead-prices.json
+# EXIST (7 products seeded from the canonical lineup, priced from the
+# price list). Guide PDFs are NOT yet staged in data/digital, so rows
+# load priced but NOT purchasable until each guide PDF is copied in at
+# the Slice 5 cutover — the honest-purchasability gate keeps them
+# unsellable until then.
 catalog:
   catalogs:
     - csv: "data/ironhead-catalog.csv"

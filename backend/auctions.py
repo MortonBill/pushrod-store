@@ -88,6 +88,13 @@ NOT in Slices 1–4 (Slice 5): notifications delivery worker, Postgres
 live-fire, launch gate, email verification flow (accounts start
 unverified; bids and comments already require email_verified_at).
 
+Slice 5 prep (this module): cross-brand category routing (Bill,
+2026-10-02 — standing rule): motorcycle-related lots/categories on the
+RestorationEssentials side link to IronHead, and muscle-car / truck /
+modern-performance lots on the IronHead side link to
+RestorationEssentials. The map is data-driven (CROSS_BRAND_ROUTES) and
+surfaced on the auction index and every public lot page.
+
 Persistence: AUCTIONS_DB (defaults to /var/data/auctions.db when the Render
 disk is mounted, else <root>/data/auctions.db) — same disk rule as wholesale.
 """
@@ -138,6 +145,48 @@ COMMENT_RULES = (
     "Be helpful and stay on the vehicle. No personal contact info, no "
     "asking about the reserve, no price predictions, no personal "
     "attacks, no self-promotion.")
+
+# Cross-brand routing (Bill, 2026-10-02 — standing rule): RE directs
+# motorcycles to IronHead; IH directs muscle cars, trucks, and modern
+# performance to RestorationEssentials. Data-driven: category tokens
+# matched against each lot's category string (case-insensitive substring
+# match, first matching rule wins), and the auction index always offers
+# the sibling brand's auctions. Categories outside the map carry no
+# cross-brand implication and stay on their own brand's site.
+CROSS_BRAND_ROUTES = [
+    ("IH", ("muscle", "truck", "performance", "muscle-cars",
+            "classic-trucks", "trucks"), "RE",
+     ("muscle cars", "trucks", "modern performance")),
+    ("RE", ("motorcycle", "motorcycles", "bike", "bikes"), "IH",
+     ("motorcycles",)),
+]
+
+
+def cross_brand_target(brand, category):
+    """The sibling-brand route for a (brand, category) pair, or None.
+
+    Returns {"brand", "brand_name", "label"} when the category belongs
+    on the other brand's auctions site under Bill's standing rule;
+    None when the category stays with its own brand."""
+    brand = (brand or "").strip().upper()
+    cat = (category or "").strip().lower()
+    for src, tokens, dst, labels in CROSS_BRAND_ROUTES:
+        if src == brand and any(tok in cat for tok in tokens):
+            return {"brand": dst, "brand_name": BRAND_NAMES[dst],
+                    "label": ", ".join(labels)}
+    return None
+
+
+def sibling_brand(brand):
+    """The cross-brand sibling ({RE -> IH, IH -> RE}) as a route dict."""
+    brand = (brand or "").strip().upper()
+    if brand == "RE":
+        return {"brand": "IH", "brand_name": BRAND_NAMES["IH"],
+                "label": "motorcycles"}
+    if brand == "IH":
+        return {"brand": "RE", "brand_name": BRAND_NAMES["RE"],
+                "label": "muscle cars, trucks, modern performance"}
+    return None
 
 # ---------------------------------------------------------------------------
 # Lifecycle state machine (spec §1.3 — ALLOWED TRANSITIONS)
@@ -3084,6 +3133,30 @@ def _lot_card(lot):
         f"{d.get('bid_count', 0)} bid(s)</p></div>")
 
 
+def _cross_brand_card(target):
+    """A cross-brand pointer card: on-brand lots stay put, but the
+    sibling brand's auctions carry the categories named on the label
+    (Bill's standing routing rule, 2026-10-02)."""
+    if not target:
+        return ""
+    return (
+        f"<div class=\"card\"><h3>Looking for {_esc(target['label'])}?</h3>"
+        f"<p>{_esc(target['brand_name'])} auctions carry the "
+        f"{_esc(target['label'])} side of the shop.</p>"
+        f"<p><a href=\"/auctions?brand={_esc(target['brand'])}\">"
+        f"See {_esc(target['brand_name'])} auctions &rarr;</a></p></div>")
+
+
+def _lot_cross_brand_card(lot):
+    """Lot-level routing: a lot whose category belongs on the sibling
+    brand points the reader there; on-brand lots show the standing
+    sibling link for their brand."""
+    target = cross_brand_target(lot["brand"], lot["category"])
+    if target:
+        return _cross_brand_card(target)
+    return _cross_brand_card(sibling_brand(lot["brand"]))
+
+
 @bp.get("/auctions")
 def auctions_index():
     brand = (request.args.get("brand") or _BRAND_CODE or "").strip() \
@@ -3091,8 +3164,13 @@ def auctions_index():
     lots = list_public_lots(brand, ("LIVE", "SCHEDULED"))
     cards = "".join(_lot_card(lot) for lot in lots) or (
         "<p>No auctions are live right now.</p>")
+    # Standing cross-brand rule: the index always points at the sibling
+    # brand's auctions (RE visitors get the motorcycle link, IH visitors
+    # get the muscle-car/truck/modern-performance link).
+    sibling = sibling_brand(brand) if brand else None
     return _page("Live & upcoming auctions",
-                 _flash() + _session_bar(_current_account()) + cards,
+                 _flash() + _session_bar(_current_account()) + cards
+                 + _cross_brand_card(sibling),
                  brand)
 
 
@@ -3192,7 +3270,8 @@ premium is the amount due.</p></div>""")
 "</form>" if account else
 '<p><a href="/auctions/login">Sign in</a> to comment.</p>'}
 </div>""")
-    return _page(lot["title"], "".join(parts), brand)
+    return _page(lot["title"],
+                 "".join(parts) + _lot_cross_brand_card(lot), brand)
 
 
 @bp.post("/auctions/lot/<lot_id>/bid")

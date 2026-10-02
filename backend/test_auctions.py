@@ -1319,6 +1319,70 @@ check("login page renders", r.status_code == 200)
 r = anon.get("/auctions/register")
 check("register page renders", r.status_code == 200)
 
+# --- Slice 5 prep: cross-brand routing (Bill's standing rule) ------------
+# RE directs motorcycles to IronHead; IH directs muscle cars / trucks /
+# modern performance to RestorationEssentials. Data-driven map in
+# auctions.py (CROSS_BRAND_ROUTES) + index/lot-page links.
+check("RE motorcycle lots route to IronHead",
+      amod.cross_brand_target("RE", "motorcycles")["brand"] == "IH")
+check("IH muscle-car lots route to RestorationEssentials",
+      amod.cross_brand_target("IH", "muscle-cars")["brand"] == "RE")
+check("IH truck lots route to RestorationEssentials",
+      amod.cross_brand_target("IH", "classic-trucks")["brand"] == "RE")
+check("on-brand categories do not route",
+      amod.cross_brand_target("RE", "muscle-cars") is None
+      and amod.cross_brand_target("IH", "motorcycles") is None)
+check("unknown brands/categories do not route",
+      amod.cross_brand_target("XX", "motorcycles") is None
+      and amod.cross_brand_target("RE", "watches") is None)
+r = anon.get("/auctions?brand=RE")
+check("RE auction index links to IronHead auctions",
+      r.status_code == 200 and "/auctions?brand=IH" in r.get_data(as_text=True)
+      and "IronHead auctions" in r.get_data(as_text=True))
+r = anon.get("/auctions?brand=IH")
+check("IH auction index links to the RE auctions",
+      r.status_code == 200 and "/auctions?brand=RE" in r.get_data(as_text=True)
+      and "RestorationEssentials auctions" in r.get_data(as_text=True))
+r = anon.get("/auctions/lot/" + api_lot["id"])
+check("RE lot page carries the motorcycle cross-link to IronHead",
+      r.status_code == 200 and "/auctions?brand=IH" in r.get_data(as_text=True))
+
+# --- Slice 5 prep: IronHead catalog seed (real guide products only) -------
+import csv as _csv  # noqa: E402
+from catalog import load_catalog as _load_catalog  # noqa: E402
+
+_REPO_ROOT = os.path.dirname(os.path.dirname(
+    os.path.abspath(__file__)))
+_ih_csv = os.path.join(_REPO_ROOT, "data", "ironhead-catalog.csv")
+_ih_json = os.path.join(_REPO_ROOT, "data", "ironhead-prices.json")
+with open(_ih_csv, newline="", encoding="utf-8") as f:
+    _ih_rows = list(_csv.DictReader(f))
+with open(_ih_json, encoding="utf-8") as f:
+    _ih_price_doc = json.load(f)
+_ih_prices = {p["sku"]: p["msrp"] for p in _ih_price_doc["products"]}
+check("IronHead catalog rows all carry an IH- SKU",
+      len(_ih_rows) >= 7 and all(
+          (r.get("sku") or "").strip().startswith("IH-")
+          for r in _ih_rows))
+check("IronHead price map covers every catalog row",
+      all((r.get("sku") or "").strip() in _ih_prices for r in _ih_rows))
+check("IronHead prices are the canonical confirmed prices",
+      _ih_prices.get("IH-SHOVELHEAD-RESTORATION") == 29.95
+      and _ih_prices.get("IH-CB750-SOHC") == 29.95
+      and _ih_prices.get("IH-KZ1000") == 29.95
+      and _ih_prices.get("IH-DUCATI-BEVEL") == 29.95
+      and _ih_prices.get("IH-SHOVELHEAD-BUYERS-GUIDE") == 19.95
+      and _ih_prices.get("IH-HONDA-SOHC-6PACK") == 129.0
+      and _ih_prices.get("IH-FULL-CATALOG-PASS") == 449.0)
+check("no duplicate IronHead SKUs",
+      len({(r.get("sku") or "").strip() for r in _ih_rows}) == len(_ih_rows))
+_ih_products = {p["sku"]: p for p in _load_catalog(_ih_csv, _ih_json)}
+check("catalog loader keeps every IronHead row (IH- prefix registered)",
+      len(_ih_products) == len(_ih_rows), str(sorted(_ih_products)))
+check("guides are priced, digital, and flagged awaiting delivery files",
+      all(p["price"] is not None and p["fulfillment_type"] == "digital"
+          and p["purchasable"] is False for p in _ih_products.values()))
+
 print()
 if fails:
     print(f"{len(fails)} FAILURES: {fails}")

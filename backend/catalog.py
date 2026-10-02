@@ -24,6 +24,7 @@ OWNERSHIP = {
     "RE-CT-": "restorationessentials",
     "RE-MP-": "restorationessentials",
     "SF-": "skillforge",
+    "IH-": "ironhead",
 }
 
 # SKU prefix -> merch-library key, for resolving design artwork per line.
@@ -34,6 +35,7 @@ IMAGE_LIBS = {
     "RE-CT-": "truck",
     "RE-MP-": "modern",
     "SF-": "skillforge",
+    "IH-": "ironhead",
 }
 
 # Product types that need a size choice at purchase time.
