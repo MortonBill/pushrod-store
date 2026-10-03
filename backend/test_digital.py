@@ -519,10 +519,15 @@ re_prods = _load_catalog(os.path.join(REPO_ROOT, "data", "re-catalog.csv"),
                          os.path.join(REPO_ROOT, "data", "re-prices.json"),
                          sku_prefixes=["RE-GD-"])
 check("RE guide catalog loads 383 rows", len(re_prods) == 383, len(re_prods))
-check("every RE guide row is unlisted (dark)",
-      all(p["listed"] is False for p in re_prods))
-check("every RE guide row is NOT purchasable",
-      all(p["purchasable"] is False for p in re_prods))
+_GATE_SKU = "RE-GD-CHEVROLET-BEL-AIR-1955"  # Lane 1 test-purchase gate (opened 2026-10-02)
+check("every RE guide row except the gate SKU is unlisted (dark)",
+      all(p["listed"] is False for p in re_prods if p["sku"] != _GATE_SKU))
+check("every RE guide row except the gate SKU is NOT purchasable",
+      all(p["purchasable"] is False for p in re_prods if p["sku"] != _GATE_SKU))
+_gate = next(p for p in re_prods if p["sku"] == _GATE_SKU)
+check("RE gate SKU is listed and purchasable at $29.95",
+      _gate["listed"] is True and _gate["purchasable"] is True
+      and _gate["price"]["amount"] == 29.95)
 check("RE guide prices are draft (never confirmed) placeholders",
       all(p["price"] and p["price"]["status"] == "draft" for p in re_prods))
 _amounts = {}
