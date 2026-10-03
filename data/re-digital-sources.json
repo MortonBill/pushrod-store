@@ -4,8 +4,8 @@
   "storage": {
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
-    "total_files": 358,
-    "total_bytes": 587159744
+    "total_files": 376,
+    "total_bytes": 633520211
   },
   "files": [
     {
@@ -653,6 +653,13 @@
       "size_verified_against_manifest": true
     },
     {
+      "sku": "RE-GD-1970-PLYMOUTH-DUSTER",
+      "source": "/home/hatch/workspace/guide-manuscripts/re/1970-plymouth-duster-buyer.pdf",
+      "bytes": 43219,
+      "key": "RE_1970-plymouth-duster.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
       "sku": "RE-GD-1970-PLYMOUTH-GTX",
       "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-plymouth-gtx.pdf",
       "bytes": 1731744,
@@ -979,6 +986,20 @@
       "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1957-chevrolet-bel-air.pdf",
       "bytes": 1872138,
       "key": "RE_1957-chevrolet-bel-air.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-C-K-TRUCK-RESTORATION-GUIDE-1960-1966",
+      "source": "/home/hatch/workspace/guide-manuscripts/re/trucks-wave1/finished/re-truck-chevrolet-ck-1960-1966.pdf",
+      "bytes": 4605847,
+      "key": "RE_chevrolet-c-k-truck-restoration-guide-1960-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-C-K-TRUCK-RESTORATION-GUIDE-1967-1972-ACTION-LINE",
+      "source": "/home/hatch/workspace/guide-manuscripts/re/trucks-wave1/finished/re-truck-chevrolet-ck-1967-1972.pdf",
+      "bytes": 4606761,
+      "key": "RE_chevrolet-c-k-truck-restoration-guide-1967-1972-action-line.pdf",
       "size_verified_against_manifest": true
     },
     {
@@ -1696,6 +1717,34 @@
       "size_verified_against_manifest": true
     },
     {
+      "sku": "RE-GD-FORD-BRONCO-DRIVETRAIN-4X4-SYSTEMS-1966-1977",
+      "source": "/home/hatch/workspace/guide-manuscripts/re/trucks-wave1/finished/re-truck-ford-bronco-1966-1977-drivetrain.pdf",
+      "bytes": 4602597,
+      "key": "RE_ford-bronco-drivetrain-4x4-systems-1966-1977.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-BRONCO-RESTORATION-GUIDE-1966-1977",
+      "source": "/home/hatch/workspace/guide-manuscripts/re/trucks-wave1/finished/re-truck-ford-bronco-1966-1977.pdf",
+      "bytes": 4605243,
+      "key": "RE_ford-bronco-restoration-guide-1966-1977.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-F-SERIES-RESTORATION-GUIDE-1967-1972-BUMPSIDE",
+      "source": "/home/hatch/workspace/guide-manuscripts/re/trucks-wave1/finished/re-truck-ford-fseries-1967-1972.pdf",
+      "bytes": 4608959,
+      "key": "RE_ford-f-series-restoration-guide-1967-1972-bumpside.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-F-SERIES-RESTORATION-GUIDE-1973-1979-DENTSIDE",
+      "source": "/home/hatch/workspace/guide-manuscripts/re/trucks-wave1/finished/re-truck-ford-fseries-1973-1979.pdf",
+      "bytes": 4607209,
+      "key": "RE_ford-f-series-restoration-guide-1973-1979-dentside.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
       "sku": "RE-GD-FORD-FAIRLANE-1962",
       "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1962-ford-fairlane.pdf",
       "bytes": 1802650,
@@ -1756,6 +1805,27 @@
       "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-ford-fairlane.pdf",
       "bytes": 1737798,
       "key": "RE_1970-ford-fairlane.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-FALCON-SPRINT-1963-HALF",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-2/2A2b/RE_ford-falcon-sprint-1963-half.pdf",
+      "bytes": 53858,
+      "key": "RE_ford-falcon-sprint-1963-half.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-FALCON-SPRINT-1964",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-2/2A2b/RE_ford-falcon-sprint-1964.pdf",
+      "bytes": 54345,
+      "key": "RE_ford-falcon-sprint-1964.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-FALCON-SPRINT-1965",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-2/2A2b/RE_ford-falcon-sprint-1965.pdf",
+      "bytes": 53773,
+      "key": "RE_ford-falcon-sprint-1965.pdf",
       "size_verified_against_manifest": true
     },
     {
@@ -2015,6 +2085,48 @@
       "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-ford-torino.pdf",
       "bytes": 1728951,
       "key": "RE_1973-ford-torino.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FOX-BODY-MUSTANG-1979-1993-5-0L-V8",
+      "source": "/home/hatch/workspace/guide-manuscripts/re-modern/staged/re-modern-fox-50-guide.pdf",
+      "bytes": 32481,
+      "key": "RE_fox-body-mustang-1979-1993-5-0l-v8.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FOX-BODY-MUSTANG-2-3T-SVO-SPECIAL-PERFORMANCE",
+      "source": "/home/hatch/workspace/guide-manuscripts/re-modern/staged/re-modern-fox-svo-specials-guide.pdf",
+      "bytes": 16461,
+      "key": "RE_fox-body-mustang-2-3t-svo-special-performance.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-GM-SQUAREBODY-TRUCK-RESTORATION-GUIDE-1973-1980",
+      "source": "/home/hatch/workspace/guide-manuscripts/re/trucks-wave1/finished/re-truck-gm-squarebody-1973-1980.pdf",
+      "bytes": 4605699,
+      "key": "RE_gm-squarebody-truck-restoration-guide-1973-1980.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-GM-SQUAREBODY-TRUCK-RESTORATION-GUIDE-1981-1987",
+      "source": "/home/hatch/workspace/guide-manuscripts/re/trucks-wave1/finished/re-truck-gm-squarebody-1981-1987.pdf",
+      "bytes": 4606061,
+      "key": "RE_gm-squarebody-truck-restoration-guide-1981-1987.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-K5-BLAZER-JIMMY-RESTORATION-GUIDE-1969-1972",
+      "source": "/home/hatch/workspace/guide-manuscripts/re/trucks-wave1/finished/re-truck-k5-blazer-1969-1972.pdf",
+      "bytes": 4604763,
+      "key": "RE_k5-blazer-jimmy-restoration-guide-1969-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-K5-BLAZER-JIMMY-RESTORATION-GUIDE-1973-1991",
+      "source": "/home/hatch/workspace/guide-manuscripts/re/trucks-wave1/finished/re-truck-k5-blazer-1973-1991.pdf",
+      "bytes": 4605725,
+      "key": "RE_k5-blazer-jimmy-restoration-guide-1973-1991.pdf",
       "size_verified_against_manifest": true
     },
     {
@@ -2513,33 +2625,29 @@
       "bytes": 4614102,
       "key": "RE_studebaker-challenger-1964.pdf",
       "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-THIRD-GEN-CAMARO-1982-1992-Z28-IROC-Z",
+      "source": "/home/hatch/workspace/guide-manuscripts/re-modern/staged/re-modern-camaro-z28-irocz-guide.pdf",
+      "bytes": 23784,
+      "key": "RE_third-gen-camaro-1982-1992-z28-iroc-z.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-THIRD-GEN-FIREBIRD-1982-1992-TRANS-AM-GTA-FORMULA",
+      "source": "/home/hatch/workspace/guide-manuscripts/re-modern/staged/re-modern-firebird-transam-guide.pdf",
+      "bytes": 23682,
+      "key": "RE_third-gen-firebird-1982-1992-trans-am-gta-formula.pdf",
+      "size_verified_against_manifest": true
     }
   ],
   "missing_source_skus": [
     "RE-GD-1970-BUICK-GRAN-SPORT-40TH-ANNIVERSARY",
     "RE-GD-1970-MERCURY-CYCLONE-SPOILER-429-SCJ",
-    "RE-GD-1970-PLYMOUTH-DUSTER",
     "RE-GD-1972-MERCURY-COUGAR",
     "RE-GD-1973-MERCURY-COUGAR",
-    "RE-GD-CHEVROLET-C-K-TRUCK-RESTORATION-GUIDE-1960-1966",
-    "RE-GD-CHEVROLET-C-K-TRUCK-RESTORATION-GUIDE-1967-1972-ACTION-LINE",
     "RE-GD-CHEVROLET-CHEVELLE-SS-454",
-    "RE-GD-FORD-BRONCO-DRIVETRAIN-4X4-SYSTEMS-1966-1977",
-    "RE-GD-FORD-BRONCO-RESTORATION-GUIDE-1966-1977",
-    "RE-GD-FORD-F-SERIES-RESTORATION-GUIDE-1967-1972-BUMPSIDE",
-    "RE-GD-FORD-F-SERIES-RESTORATION-GUIDE-1973-1979-DENTSIDE",
-    "RE-GD-FORD-FALCON-SPRINT-1963-HALF",
-    "RE-GD-FORD-FALCON-SPRINT-1964",
-    "RE-GD-FORD-FALCON-SPRINT-1965",
-    "RE-GD-FOX-BODY-MUSTANG-1979-1993-5-0L-V8",
-    "RE-GD-FOX-BODY-MUSTANG-2-3T-SVO-SPECIAL-PERFORMANCE",
-    "RE-GD-GM-SQUAREBODY-TRUCK-RESTORATION-GUIDE-1973-1980",
-    "RE-GD-GM-SQUAREBODY-TRUCK-RESTORATION-GUIDE-1981-1987",
-    "RE-GD-K5-BLAZER-JIMMY-RESTORATION-GUIDE-1969-1972",
-    "RE-GD-K5-BLAZER-JIMMY-RESTORATION-GUIDE-1973-1991",
     "RE-GD-MERCURY-429-SCJ",
-    "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1970",
-    "RE-GD-THIRD-GEN-CAMARO-1982-1992-Z28-IROC-Z",
-    "RE-GD-THIRD-GEN-FIREBIRD-1982-1992-TRANS-AM-GTA-FORMULA"
+    "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1970"
   ]
 }
