@@ -14,6 +14,10 @@ the frontend talks to:
   GET  /download/<token>        signed, expiring download for a digital SKU
                                  (token minted at fulfillment — see
                                  fulfillment/digital.py)
+  POST /api/sr/checkout         SportRoots subscription checkout (DARK:
+                                 SR_BILLING_ENABLED=1; see subscriptions.py)
+  POST /api/sr/portal           SportRoots Customer Portal session (DARK)
+  GET  /api/sr/entitlement      signed subscriber check for Polsia (DARK)
 
 Order flow: customer buys on our site -> Stripe (test or live per STRIPE_MODE) ->
 backend creates the Printful order via API -> Printful prints and ships.
@@ -39,6 +43,7 @@ from fulfillment import storage as storage_mod
 from fulfillment.printful_client import PrintfulConfigError, PrintfulAPIError
 import wholesale as wholesale_mod
 import auctions as auctions_mod
+import subscriptions as sr_mod
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("pushrod")
@@ -589,6 +594,17 @@ def stripe_webhook():
         session = _sget(event, "data", {}) or {}
         session = _sget(session, "object", {}) or {}
         meta = _sget(session, "metadata", {}) or {}
+        if _sget(meta, "kind") == "sr_sub":
+            # SportRoots subscription checkout (subscriptions.py Lane 4):
+            # record the entitlement; there is no cart to fulfill. No-op
+            # unless SR_BILLING_ENABLED is on (handle_event checks).
+            try:
+                sr = sr_mod.handle_event(event, _sget)
+            except Exception:  # noqa: BLE001 — webhook must not crash; alert instead
+                log.exception("sportroots entitlement record failed for %s",
+                              _sget(session, "id", "?"))
+                return jsonify({"error": "sportroots entitlement failed"}), 500
+            return jsonify({"received": True, "sportroots": sr})
         if _sget(meta, "kind") == "auction_pay":
             # Auction winner pay page (auctions.py Slice 3): the handler
             # marks invoice + lot PAID idempotently. Signature already
@@ -627,6 +643,20 @@ def stripe_webhook():
         except Exception as e:  # noqa: BLE001 — webhook must not crash; alert instead
             log.exception("fulfillment failed for %s", _sget(session, "id", "?"))
             return jsonify({"error": str(e)}), 500
+    if _sget(event, "type") in ("invoice.paid",
+                                "customer.subscription.updated",
+                                "customer.subscription.deleted"):
+        # SportRoots billing lifecycle: keep the entitlement store
+        # (subscriptions.py) current. handle_event returns None when
+        # SR_BILLING_ENABLED is off — the webhook then just acks.
+        try:
+            sr = sr_mod.handle_event(event, _sget)
+        except Exception:  # noqa: BLE001 — webhook must not crash; alert instead
+            log.exception("sportroots billing event failed: %s",
+                          _sget(event, "type", "?"))
+            return jsonify({"error": "sportroots billing failed"}), 500
+        if sr is not None:
+            return jsonify({"received": True, "sportroots": sr})
     if _sget(event, "type") == "charge.refunded":
         # Refund runbook (fulfillment/README.md): refunds are issued by a
         # human in the Stripe dashboard. Here we only LOG and flag the
@@ -649,6 +679,13 @@ def stripe_webhook():
             "valid until expiry (cannot be recalled)",
             _sget(charge, "id", "?"), _sget(charge, "amount_refunded", "?"),
             sid or "(not on charge metadata)", flagged)
+        # SportRoots: a refunded subscription charge revokes entitlement
+        # (subscriptions.py). No-op when SR_BILLING_ENABLED is off.
+        if sr_mod.is_enabled():
+            try:
+                sr_mod.handle_charge_refunded(charge, _sget)
+            except Exception:  # noqa: BLE001 — logging must not crash
+                log.exception("sportroots refund handling failed")
     return jsonify({"received": True})
 
 
@@ -665,6 +702,17 @@ def _digital_files_dir():
 
 def _public_base_url():
     return (os.environ.get("PUBLIC_BASE_URL") or request.host_url).rstrip("/")
+
+
+# ---------- SportRoots subscription billing (Lane 4, 2026-10-03) ----------
+# Recurring Billing + Customer Portal + webhook-kept entitlement store
+# (backend/subscriptions.py). DARK unless SR_BILLING_ENABLED=1: with the
+# flag off no /api/sr/* routes exist and the webhook below passes
+# subscription events through untouched. sr_mod.init registers the
+# routes; the webhook branches call sr_mod.handle_event / handle_charge_
+# refunded, which no-op when disabled.
+sr_mod.init(app, stripe_ready=STRIPE_READY, stripe_mode=STRIPE_MODE,
+            stripe_acct=_stripe_acct, public_base_url=_public_base_url)
 
 
 def _is_digital(sku):
