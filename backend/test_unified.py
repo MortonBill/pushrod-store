@@ -167,16 +167,17 @@ re = load_unified_catalog(
     [(c["csv"], c.get("prices_json")) for c in re_conf["catalog"]["catalogs"]],
     sku_prefixes=re_conf["brand"]["sku_prefixes"])
 check("pushrod slice 156", len(push) == 156, str(len(push)))
-# RE slice: 480 merch + 383 guide rows staged dark by checkout-migration
-# Lane 1 (2026-10-02, data/re-catalog.csv). The guide rows must stay
-# loaded-but-invisible until the lane gate — never listed, never sellable.
-check("RE slice 863 (480 merch + 383 dark guides)", len(re) == 863, str(len(re)))
+# RE slice: 480 merch + 383 guide rows. Checkout-migration Lane 1 staged the
+# guides dark (2026-10-02); after the $29.95 test-purchase gate passed, the
+# 358 file-backed guides flipped live — the 25 without a source PDF stay dark.
+check("RE slice 863 (480 merch + 383 guides)", len(re) == 863, str(len(re)))
 _guides = [p for p in re if p["prefix"] == "RE-GD-"]
-check("RE guide rows all dark in the slice",
+check("RE guides: 358 file-backed live, 25 source gaps dark",
       len(_guides) == 383
-      and all(p["listed"] is False and p["purchasable"] is False
-              for p in _guides),
-      f"guides={len(_guides)}")
+      and sum(1 for p in _guides if p["listed"]) == 358
+      and all(p["purchasable"] is False
+              for p in _guides if not p["listed"]),
+      f"guides={len(_guides)} listed={sum(1 for p in _guides if p['listed'])}")
 check("RE slice has no PR-", all(p["prefix"] != "PR-" for p in re))
 
 print()

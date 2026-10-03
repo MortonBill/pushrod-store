@@ -14,9 +14,11 @@ Covers the digital seam end to end without network or real keys:
      S3-compatible backend against an in-process fake bucket: signed
      token -> storage fetch -> %PDF bytes, garbage token -> 403, missing
      object -> 404, misconfiguration -> loud error, never a silent miss;
-  6. dark catalog staging (Lane 1) — the listed=0 flag: loaded but never
+  6. catalog staging + flip (Lane 1) — the listed=0 flag: loaded but never
      listed and never purchasable; the real RE guide catalog (383 rows,
-     358 staged deliverables) loads fully dark with live-index prices.
+     358 staged deliverables) staged dark, then flipped live 2026-10-02
+     after the $29.95 test-purchase gate passed — file-backed rows listed
+     and purchasable, the 25 source gaps still dark at live-index prices.
 
 Run: ./../.venv/bin/python backend/test_digital.py   (from pushrod-store/)
 """
@@ -519,11 +521,13 @@ re_prods = _load_catalog(os.path.join(REPO_ROOT, "data", "re-catalog.csv"),
                          os.path.join(REPO_ROOT, "data", "re-prices.json"),
                          sku_prefixes=["RE-GD-"])
 check("RE guide catalog loads 383 rows", len(re_prods) == 383, len(re_prods))
-_GATE_SKU = "RE-GD-CHEVROLET-BEL-AIR-1955"  # Lane 1 test-purchase gate (opened 2026-10-02)
-check("every RE guide row except the gate SKU is unlisted (dark)",
-      all(p["listed"] is False for p in re_prods if p["sku"] != _GATE_SKU))
-check("every RE guide row except the gate SKU is NOT purchasable",
-      all(p["purchasable"] is False for p in re_prods if p["sku"] != _GATE_SKU))
+_GATE_SKU = "RE-GD-CHEVROLET-BEL-AIR-1955"  # Lane 1 test-purchase gate (opened 2026-10-02, passed $32.05)
+check("every RE guide row WITH a deliverable is listed and purchasable",
+      all(p["listed"] is True and p["purchasable"] is True
+          for p in re_prods if p["digital_file"]))
+check("every RE guide row WITHOUT a deliverable stays dark, never sellable",
+      all(p["listed"] is False and p["purchasable"] is False
+          for p in re_prods if not p["digital_file"]))
 _gate = next(p for p in re_prods if p["sku"] == _GATE_SKU)
 check("RE gate SKU is listed and purchasable at $29.95",
       _gate["listed"] is True and _gate["purchasable"] is True
