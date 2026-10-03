@@ -1,6 +1,6 @@
 {
     "brand": "SKILLFORGE AI",
-    "pricing_status": "VERIFIED 2026-10-02 against the live SkillForge store (skillforge-ai-im76wv.polsia.io raw HTML) unless noted per product. The $37 one-time price appears verbatim on the live product pages (meta 'Instant $37 one-time PDF download' on Roofer / Auto Repair / Pest Control / Veterinary Practice / Xero PDPs; 'One-time Starter $37' tier text on HVAC / Restaurant / Salon / Real Estate / Bookkeeping PDPs). Two provenance flags: (1) the Electrician PDP's raw HTML did not expose its price string on 2026-10-02 \u2014 $37 carried from the 2026-09-19 brand-framing audit plus the uniform $37 verified live on all 13 sibling trade PDPs; re-confirm on the Electrician PDP at cutover. (2) Polsia Builder Playbook $19 per the 2026-09-19 brand-framing audit \u2014 its JS-rendered PDP did not expose a one-time price in raw HTML on 2026-10-02; re-confirm at cutover. Products whose price cannot be verified FOR THE FILE WE WOULD DELIVER are intentionally absent from this file (they render 'Price TBD' and are not purchasable): SF-PLUM-001 (live $37 PDP exists but no delivery PDF located in the workspace), SF-CONT-001 / SF-DENT-001 / SF-LAND-001 (only local file is the Premium Edition; live Starter $37 vs Premium $199 tier-to-file mapping unresolved), SF-QBO-001 / SF-JOB-001 / SF-STN-001 / SF-DTX-001 / SF-HCP-001 (delivery PDFs verified; live store prices this line on a quarterly model, one-time price unverified), SF-SOC-001 (book built, not yet published on the live store). UPDATE 2026-10-02 (~11:55 CDT): SF-CONT-001/SF-DENT-001/SF-LAND-001/SF-QBO-001/SF-JOB-001/SF-STN-001/SF-DTX-001/SF-HCP-001 priced at $37 under Bill's standing pricing delegation ('i'll take your recommendations on pricing up or down', volume-over-margin; customer sees one $37 price, no hop jump). SF-PLUM-001 remains unpriced: no delivery PDF exists anywhere in the workspace \u2014 not sellable until the book is in hand. UPDATE 2026-10-02 (evening): SF-PLUM-001 now priced $37 \u2014 delivery PDF built locally to the flagship template standard (24 pp) from the genuine Plumber playbook source and staged at data/digital/plumbers-playbook-final.pdf; SkillForge catalog complete at 22/22 priced.",
+    "pricing_status": "VERIFIED 2026-10-02 against the live SkillForge store (skillforge-ai-im76wv.polsia.io raw HTML) unless noted per product. The $37 one-time price appears verbatim on the live product pages (meta 'Instant $37 one-time PDF download' on Roofer / Auto Repair / Pest Control / Veterinary Practice / Xero PDPs; 'One-time Starter $37' tier text on HVAC / Restaurant / Salon / Real Estate / Bookkeeping PDPs). Two provenance flags: (1) the Electrician PDP's raw HTML did not expose its price string on 2026-10-02 \u2014 $37 carried from the 2026-09-19 brand-framing audit plus the uniform $37 verified live on all 13 sibling trade PDPs; re-confirm on the Electrician PDP at cutover. (2) Polsia Builder Playbook $19 per the 2026-09-19 brand-framing audit \u2014 its JS-rendered PDP did not expose a one-time price in raw HTML on 2026-10-02; re-confirm at cutover. Products whose price cannot be verified FOR THE FILE WE WOULD DELIVER are intentionally absent from this file (they render 'Price TBD' and are not purchasable): SF-PLUM-001 (live $37 PDP exists but no delivery PDF located in the workspace), SF-CONT-001 / SF-DENT-001 / SF-LAND-001 (only local file is the Premium Edition; live Starter $37 vs Premium $199 tier-to-file mapping unresolved), SF-QBO-001 / SF-JOB-001 / SF-STN-001 / SF-DTX-001 / SF-HCP-001 (delivery PDFs verified; live store prices this line on a quarterly model, one-time price unverified), SF-SOC-001 (book built, not yet published on the live store). UPDATE 2026-10-02 (~11:55 CDT): SF-CONT-001/SF-DENT-001/SF-LAND-001/SF-QBO-001/SF-JOB-001/SF-STN-001/SF-DTX-001/SF-HCP-001 priced at $37 under Bill's standing pricing delegation ('i'll take your recommendations on pricing up or down', volume-over-margin; customer sees one $37 price, no hop jump). SF-PLUM-001 remains unpriced: no delivery PDF exists anywhere in the workspace \u2014 not sellable until the book is in hand. UPDATE 2026-10-02 (evening): SF-PLUM-001 now priced $37 \u2014 delivery PDF built locally to the flagship template standard (24 pp) from the genuine Plumber playbook source and staged at data/digital/plumbers-playbook-final.pdf; SkillForge catalog complete at 22/22 priced. UPDATE 2026-10-03: 11 of the 12 legacy no-SKU products priced from live site copy (5 trade forms packs $19, Contractor Forms Pack $19 per live /pricing, 5 playbook+forms bundles $49) and staged DARK (listed=0) with genuine deliverable files on the store disk \u2014 dark until the parent's gate flips them. The 12th, starter-pack (QuickBooks + Jobber, $299/qtr quarterly SUBSCRIPTION), is deliberately ABSENT: no honest one-time price exists for what the store would deliver, so it stays unpriced and unsellable here until Bill rules on the model.",
     "products": [
         {
             "msrp": 37.0,
@@ -132,6 +132,72 @@
             "price_source": "delivery PDF built 2026-10-02 (plumbers-playbook-final.pdf, 24 pp, authored from the genuine seven-workflow Plumber playbook + workspace plumbing prompt material, flagship template standard); $37 uniform with all sibling trade playbooks under Bill's standing pricing delegation \u2014 completes the SkillForge catalog at 22/22 priced",
             "sku": "SF-PLUM-001",
             "title": "The Plumber AI Playbook"
+        },
+        {
+            "msrp": 19.0,
+            "sku": "SF-FRM-AUTO-001",
+            "title": "Auto Repair Forms Pack",
+            "price_source": "live SkillForge checkout page meta 'Eight ready-to-use forms\u2026 Instant $19 PDF download' (trade forms packs) / live /pricing page 'Forms \u00b7 one-time $19 one-time \u2014 20 forms and 30 pages' (Contractor Forms Pack), raw HTML 2026-10-03"
+        },
+        {
+            "msrp": 19.0,
+            "sku": "SF-FRM-ELEC-001",
+            "title": "Electrician Forms Pack",
+            "price_source": "live SkillForge checkout page meta 'Eight ready-to-use forms\u2026 Instant $19 PDF download' (trade forms packs) / live /pricing page 'Forms \u00b7 one-time $19 one-time \u2014 20 forms and 30 pages' (Contractor Forms Pack), raw HTML 2026-10-03"
+        },
+        {
+            "msrp": 19.0,
+            "sku": "SF-FRM-PEST-001",
+            "title": "Pest Control Forms Pack",
+            "price_source": "live SkillForge checkout page meta 'Eight ready-to-use forms\u2026 Instant $19 PDF download' (trade forms packs) / live /pricing page 'Forms \u00b7 one-time $19 one-time \u2014 20 forms and 30 pages' (Contractor Forms Pack), raw HTML 2026-10-03"
+        },
+        {
+            "msrp": 19.0,
+            "sku": "SF-FRM-ROOF-001",
+            "title": "Roofing Forms Pack",
+            "price_source": "live SkillForge checkout page meta 'Eight ready-to-use forms\u2026 Instant $19 PDF download' (trade forms packs) / live /pricing page 'Forms \u00b7 one-time $19 one-time \u2014 20 forms and 30 pages' (Contractor Forms Pack), raw HTML 2026-10-03"
+        },
+        {
+            "msrp": 19.0,
+            "sku": "SF-FRM-VET-001",
+            "title": "Veterinary Practice Forms Pack",
+            "price_source": "live SkillForge checkout page meta 'Eight ready-to-use forms\u2026 Instant $19 PDF download' (trade forms packs) / live /pricing page 'Forms \u00b7 one-time $19 one-time \u2014 20 forms and 30 pages' (Contractor Forms Pack), raw HTML 2026-10-03"
+        },
+        {
+            "msrp": 19.0,
+            "sku": "SF-FRM-CONT-001",
+            "title": "Contractor Forms Pack",
+            "price_source": "live SkillForge checkout page meta 'Eight ready-to-use forms\u2026 Instant $19 PDF download' (trade forms packs) / live /pricing page 'Forms \u00b7 one-time $19 one-time \u2014 20 forms and 30 pages' (Contractor Forms Pack), raw HTML 2026-10-03"
+        },
+        {
+            "msrp": 49.0,
+            "sku": "SF-BND-AUTO-001",
+            "title": "Auto Repair Playbook + Forms Bundle",
+            "price_source": "live SkillForge checkout page meta 'The Auto Repair AI Playbook ($37) and Forms Pack ($19) together for $49. Save $7.', raw HTML 2026-10-03"
+        },
+        {
+            "msrp": 49.0,
+            "sku": "SF-BND-ELEC-001",
+            "title": "Electrician Playbook + Forms Bundle",
+            "price_source": "live SkillForge checkout page meta 'The Electrician AI Playbook ($37) and Forms Pack ($19) together for $49. Save $7.', raw HTML 2026-10-03"
+        },
+        {
+            "msrp": 49.0,
+            "sku": "SF-BND-PEST-001",
+            "title": "Pest Control Playbook + Forms Bundle",
+            "price_source": "live SkillForge checkout page meta 'The Pest Control AI Playbook ($37) and Forms Pack ($19) together for $49. Save $7.', raw HTML 2026-10-03"
+        },
+        {
+            "msrp": 49.0,
+            "sku": "SF-BND-ROOF-001",
+            "title": "Roofer Playbook + Forms Bundle",
+            "price_source": "live SkillForge checkout page meta 'The Roofer AI Playbook ($37) and Forms Pack ($19) together for $49. Save $7.', raw HTML 2026-10-03"
+        },
+        {
+            "msrp": 49.0,
+            "sku": "SF-BND-VET-001",
+            "title": "Veterinary Playbook + Forms Bundle",
+            "price_source": "live SkillForge checkout page meta 'The Veterinary Practice AI Playbook ($37) and Forms Pack ($19) together for $49. Save $7.', raw HTML 2026-10-03"
         }
     ]
 }

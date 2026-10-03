@@ -557,6 +557,52 @@ check("upload work order: 382 files / 661,219,761 bytes / 1 gap",
       and len(_sources["missing_source_skus"]) == 1
       and all(e["size_verified_against_manifest"] for e in _sources["files"]))
 
+# ---------- 6b. SkillForge forms packs + bundles (checkout migration 2026-10-03) ----------
+# 11 of the 12 legacy no-SKU site products, priced from live site copy
+# (forms packs $19; playbook+forms bundles $49) and staged DARK
+# (listed=0): loaded, priced, file-backed, never listed and never
+# purchasable until the parent's gate flips them. The 12th product,
+# starter-pack, is a $299/qtr quarterly SUBSCRIPTION on the live site --
+# no honest one-time price exists for the store's download model, so it
+# has NO row here and stays unsellable until Bill rules on the model.
+sf_prods = _load_catalog(os.path.join(REPO_ROOT, "data", "skillforge-catalog.csv"),
+                         os.path.join(REPO_ROOT, "data", "skillforge-prices.json"),
+                         sku_prefixes=["SF-"])
+sf_by_sku = {p["sku"]: p for p in sf_prods}
+SF_FORMS = {"SF-FRM-AUTO-001": ("Auto Repair Forms Pack", 19.0),
+            "SF-FRM-ELEC-001": ("Electrician Forms Pack", 19.0),
+            "SF-FRM-PEST-001": ("Pest Control Forms Pack", 19.0),
+            "SF-FRM-ROOF-001": ("Roofing Forms Pack", 19.0),
+            "SF-FRM-VET-001": ("Veterinary Practice Forms Pack", 19.0),
+            "SF-FRM-CONT-001": ("Contractor Forms Pack", 19.0)}
+SF_BUNDLES = {"SF-BND-AUTO-001": ("SF-AUTO-001", "SF-FRM-AUTO-001"),
+              "SF-BND-ELEC-001": ("SF-ELEC-001", "SF-FRM-ELEC-001"),
+              "SF-BND-PEST-001": ("SF-PEST-001", "SF-FRM-PEST-001"),
+              "SF-BND-ROOF-001": ("SF-ROOF-001", "SF-FRM-ROOF-001"),
+              "SF-BND-VET-001": ("SF-VET-001", "SF-FRM-VET-001")}
+check("SkillForge catalog loads 33 rows (22 playbooks + 6 forms + 5 bundles)",
+      len(sf_prods) == 33, len(sf_prods))
+check("the 22 playbooks stay listed and purchasable at live prices ($37 x21, BLD $19)",
+      sum(1 for p in sf_prods if p["type"] == "playbook") == 22
+      and all(p["listed"] is True and p["purchasable"] is True
+              and p["price"]["amount"] == (19.0 if p["sku"] == "SF-BLD-001" else 37.0)
+              for p in sf_prods if p["type"] == "playbook"))
+check("all 6 forms packs are priced from live site copy and staged dark",
+      all(s in sf_by_sku and sf_by_sku[s]["title"] == t
+          and sf_by_sku[s]["price"]["amount"] == amt
+          and sf_by_sku[s]["listed"] is False
+          and sf_by_sku[s]["purchasable"] is False
+          and sf_by_sku[s]["digital_file"].endswith(".pdf")
+          for s, (t, amt) in SF_FORMS.items()))
+check("all 5 bundles are priced $49, staged dark, components resolve to files",
+      all(s in sf_by_sku and sf_by_sku[s]["price"]["amount"] == 49.0
+          and sf_by_sku[s]["listed"] is False
+          and sf_by_sku[s]["purchasable"] is False
+          and sf_by_sku[s]["bundle_skus"] == [a, b]
+          and sf_by_sku[a]["digital_file"] and sf_by_sku[b]["digital_file"]
+          for s, (a, b) in SF_BUNDLES.items()))
+
+
 with open(os.path.join(REPO_ROOT, "brands", "restorationessentials.yaml")) as f:
     _re_brand = _yaml.safe_load(f)
 check("RE brand yaml claims RE-GD- and stages the guide catalog",
