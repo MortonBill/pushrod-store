@@ -1414,9 +1414,13 @@ check("no duplicate IronHead SKUs",
 _ih_products = {p["sku"]: p for p in _load_catalog(_ih_csv, _ih_json)}
 check("catalog loader keeps every IronHead row (IH- prefix registered)",
       len(_ih_products) == len(_ih_rows), str(sorted(_ih_products)))
-check("guides are priced, digital, and flagged awaiting delivery files",
+check("guides are priced, digital; only the gate-flipped guide purchasable",
       all(p["price"] is not None and p["fulfillment_type"] == "digital"
-          and p["purchasable"] is False for p in _ih_products.values()))
+          for p in _ih_products.values())
+      and all(p["purchasable"] is False
+              for sku, p in _ih_products.items()
+              if sku != "IH-SHOVELHEAD-BUYERS-GUIDE")
+      and _ih_products["IH-SHOVELHEAD-BUYERS-GUIDE"]["purchasable"] is True)
 
 # ---------------------------------------------------------------------------
 # 7. Slice 5 fix: the Postgres DDL script never goes through psycopg's

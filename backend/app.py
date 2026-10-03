@@ -108,13 +108,26 @@ log.info("printful mapping: %d keys, %d/%d products purchasable",
 
 # Merch-library roots for /img/<lib>/... (keys match catalog.IMAGE_LIBS).
 # Bundled under data/img/ for portable deploys; DATA_DIR env overrides.
+# If the bundled copy is absent (the build-time Catbox fetch in
+# render-build.sh failed while that host was unreachable), fall back to
+# the persistent-disk cache (/var/data/img-cache) so a deploy can never
+# take the merch artwork down with it.
 _DATA_DIR = os.environ.get("DATA_DIR", os.path.join(ROOT, "data"))
-IMAGE_LIB_DIRS = {
-    "pushrod": os.path.join(_DATA_DIR, "img", "pushrod"),
-    "muscle": os.path.join(_DATA_DIR, "img", "muscle"),
-    "modern": os.path.join(_DATA_DIR, "img", "modern"),
-    "truck": os.path.join(_DATA_DIR, "img", "truck"),
-}
+
+
+def _img_lib_dir(lib):
+    bundled = os.path.join(_DATA_DIR, "img", lib)
+    if os.path.isdir(bundled):
+        return bundled
+    if os.path.isdir("/var/data"):
+        cached = os.path.join("/var/data", "img-cache", lib)
+        if os.path.isdir(cached):
+            return cached
+    return bundled
+
+
+IMAGE_LIB_DIRS = {lib: _img_lib_dir(lib)
+                  for lib in ("pushrod", "muscle", "modern", "truck")}
 
 ORDER_PREFIX = store_cfg.get("order_prefix", "pushrod")
 STRIPE_WEBHOOK_SECRET = os.environ.get(

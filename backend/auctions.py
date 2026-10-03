@@ -120,6 +120,10 @@ bp = Blueprint("auctions", __name__)
 
 BRANDS = ("RE", "IH")
 BRAND_NAMES = {"RE": "RestorationEssentials", "IH": "IronHead"}
+# Each brand's home site — the auctions page header links back here (a
+# visitor who arrived from the brand site gets a working way back).
+BRAND_HOME_URLS = {"RE": "https://restorationessentials.polsia.app/",
+                   "IH": "https://ironhead.polsia.app/"}
 BRAND_ACCENTS = {"RE": "#e8a020", "IH": "#c8402a"}
 SESSION_KEY = "auctions_account_id"
 EXTENSION_CAP_MINUTES = 120  # spec §1.6 chk_extension_cap
@@ -3108,16 +3112,16 @@ img.lot-photo{max-width:100%;border-radius:8px;margin:8px 0}
 def _page(title, body, brand=None):
     accent = BRAND_ACCENTS.get(brand, "#1b2a41")
     name = BRAND_NAMES.get(brand, "Auctions")
-    home = (f"/auctions?brand={brand}" if brand in BRAND_NAMES
-            else "/auctions")
+    home = BRAND_HOME_URLS.get(brand, BRAND_HOME_URLS["RE"])
+    home_name = BRAND_NAMES.get(brand, BRAND_NAMES["RE"])
     return (
         "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
         "<meta name=\"viewport\" content=\"width=device-width,"
         "initial-scale=1\">"
         f"<title>{_esc(title)} · {_esc(name)} Auctions</title>"
         f"<style>:root{{--accent:{accent}}}{_PAGE_CSS}</style></head>"
-        f"<body><main><p><a href=\"{home}\">&larr; {_esc(name)}"
-        " auctions</a></p>"
+        f"<body><main><p><a href=\"{home}\">&larr; Back to "
+        f"{_esc(home_name)}</a></p>"
         f"<h1>{_esc(title)}</h1>{body}</main></body></html>")
 
 

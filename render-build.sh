@@ -16,9 +16,18 @@ for lib in pushrod muscle modern truck; do
       modern)  URL="https://files.catbox.moe/1rjgv2.zip" ;;
       truck)   URL="https://files.catbox.moe/byluli.zip" ;;
     esac
-    curl -sL -o "$lib.zip" "$URL"
-    unzip -q "$lib.zip"
-    rm "$lib.zip"
+    # Best-effort: if the image host is unreachable the build must still
+    # succeed — the app falls back to the /var/data/img-cache disk cache
+    # for artwork at runtime (backend/app.py _img_lib_dir). (2026-10-03:
+    # files.catbox.moe unreachable from Render killed every deploy with
+    # curl exit status 7 under `set -e`.)
+    if curl -sL --retry 3 --retry-delay 5 --connect-timeout 20 \
+         -o "$lib.zip" "$URL" && unzip -q "$lib.zip"; then
+      rm "$lib.zip"
+    else
+      echo "WARN: $lib images unavailable this build; runtime disk-cache fallback applies"
+      rm -f "$lib.zip"
+    fi
   fi
 done
 cd ../..
