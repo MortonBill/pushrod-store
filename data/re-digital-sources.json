@@ -4,8 +4,8 @@
   "storage": {
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
-    "total_files": 376,
-    "total_bytes": 633520211
+    "total_files": 382,
+    "total_bytes": 661219761
   },
   "files": [
     {
@@ -646,6 +646,13 @@
       "size_verified_against_manifest": true
     },
     {
+      "sku": "RE-GD-1970-MERCURY-CYCLONE-SPOILER-429-SCJ",
+      "source": "/home/hatch/workspace/your_files/business/re-gap-fix-staging/RE_1970-mercury-cyclone-spoiler-429-scj.pdf",
+      "bytes": 4616582,
+      "key": "RE_1970-mercury-cyclone-spoiler-429-scj.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
       "sku": "RE-GD-1970-PLYMOUTH-BARRACUDA",
       "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-plymouth-barracuda.pdf",
       "bytes": 1796678,
@@ -835,6 +842,13 @@
       "size_verified_against_manifest": true
     },
     {
+      "sku": "RE-GD-1972-MERCURY-COUGAR",
+      "source": "/home/hatch/workspace/your_files/business/re-gap-fix-staging/RE_1972-mercury-cougar.pdf",
+      "bytes": 4619327,
+      "key": "RE_1972-mercury-cougar.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
       "sku": "RE-GD-1972-PONTIAC-FIREBIRD",
       "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-pontiac-firebird.pdf",
       "bytes": 1793363,
@@ -888,6 +902,13 @@
       "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-dodge-dart.pdf",
       "bytes": 1717826,
       "key": "RE_1973-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1973-MERCURY-COUGAR",
+      "source": "/home/hatch/workspace/your_files/business/re-gap-fix-staging/RE_1973-mercury-cougar.pdf",
+      "bytes": 4615827,
+      "key": "RE_1973-mercury-cougar.pdf",
       "size_verified_against_manifest": true
     },
     {
@@ -1119,6 +1140,13 @@
       "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-1973.pdf",
       "bytes": 43822,
       "key": "RE_chevrolet-chevelle-1973.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-SS-454",
+      "source": "/home/hatch/workspace/your_files/business/re-gap-fix-staging/RE_chevrolet-chevelle-ss-454.pdf",
+      "bytes": 4616633,
+      "key": "RE_chevrolet-chevelle-ss-454.pdf",
       "size_verified_against_manifest": true
     },
     {
@@ -2130,6 +2158,13 @@
       "size_verified_against_manifest": true
     },
     {
+      "sku": "RE-GD-MERCURY-429-SCJ",
+      "source": "/home/hatch/workspace/your_files/business/re-gap-fix-staging/RE_mercury-429-scj.pdf",
+      "bytes": 4612858,
+      "key": "RE_mercury-429-scj.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
       "sku": "RE-GD-MERCURY-COUGAR-1967",
       "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_mercury-cougar-1967.pdf",
       "bytes": 1837537,
@@ -2522,6 +2557,13 @@
       "size_verified_against_manifest": true
     },
     {
+      "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1970",
+      "source": "/home/hatch/workspace/your_files/business/re-gap-fix-staging/RE_plymouth-road-runner-satellite-1970.pdf",
+      "bytes": 4618323,
+      "key": "RE_plymouth-road-runner-satellite-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
       "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1971",
       "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-plymouth-road-runner.pdf",
       "bytes": 1733114,
@@ -2642,12 +2684,6 @@
     }
   ],
   "missing_source_skus": [
-    "RE-GD-1970-BUICK-GRAN-SPORT-40TH-ANNIVERSARY",
-    "RE-GD-1970-MERCURY-CYCLONE-SPOILER-429-SCJ",
-    "RE-GD-1972-MERCURY-COUGAR",
-    "RE-GD-1973-MERCURY-COUGAR",
-    "RE-GD-CHEVROLET-CHEVELLE-SS-454",
-    "RE-GD-MERCURY-429-SCJ",
-    "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1970"
+    "RE-GD-1970-BUICK-GRAN-SPORT-40TH-ANNIVERSARY"
   ]
 }

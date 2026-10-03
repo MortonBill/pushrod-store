@@ -169,13 +169,13 @@ re = load_unified_catalog(
 check("pushrod slice 156", len(push) == 156, str(len(push)))
 # RE slice: 480 merch + 383 guide rows. Checkout-migration Lane 1 staged the
 # guides dark (2026-10-02); after the $29.95 test-purchase gate passed, the
-# 358 file-backed guides flipped live, then 18 recovered sources joined them
-# — the 7 still without a source PDF stay dark.
+# 358 file-backed guides flipped live, then 18 recovered sources joined them,
+# then 6 clean gap rebuilds — the 1 still without a source PDF stays dark.
 check("RE slice 863 (480 merch + 383 guides)", len(re) == 863, str(len(re)))
 _guides = [p for p in re if p["prefix"] == "RE-GD-"]
-check("RE guides: 376 file-backed live, 7 source gaps dark",
+check("RE guides: 382 file-backed live, 1 source gap dark",
       len(_guides) == 383
-      and sum(1 for p in _guides if p["listed"]) == 376
+      and sum(1 for p in _guides if p["listed"]) == 382
       and all(p["purchasable"] is False
               for p in _guides if not p["listed"]),
       f"guides={len(_guides)} listed={sum(1 for p in _guides if p['listed'])}")

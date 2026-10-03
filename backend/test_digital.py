@@ -16,9 +16,9 @@ Covers the digital seam end to end without network or real keys:
      object -> 404, misconfiguration -> loud error, never a silent miss;
   6. catalog staging + flip (Lane 1) — the listed=0 flag: loaded but never
      listed and never purchasable; the real RE guide catalog (383 rows,
-     376 deliverables) staged dark, then flipped live 2026-10-02
+     382 deliverables) staged dark, then flipped live 2026-10-02
      after the $29.95 test-purchase gate passed — file-backed rows listed
-     and purchasable, the 7 source gaps still dark at live-index prices.
+     and purchasable, the 1 remaining source gap still dark at live-index prices.
 
 Run: ./../.venv/bin/python backend/test_digital.py   (from pushrod-store/)
 """
@@ -540,21 +540,21 @@ for p in re_prods:
 check("RE guide prices match the live index ($29.95 x382, $19.95 x1)",
       _amounts == {29.95: 382, 19.95: 1}, str(_amounts))
 _with_file = [p for p in re_prods if p["digital_file"]]
-check("376 RE guides carry a deliverable; 7 await a source PDF",
-      len(_with_file) == 376
+check("382 RE guides carry a deliverable; 1 awaits a source PDF",
+      len(_with_file) == 382
       and all(p["digital_file"].endswith(".pdf") for p in _with_file)
-      and len(re_prods) - len(_with_file) == 7)
+      and len(re_prods) - len(_with_file) == 1)
 _duster = next(p for p in re_prods if p["sku"] == "RE-GD-1970-PLYMOUTH-DUSTER")
 check("the manifest's $19.95 guide keeps its index price (Duster)",
       _duster["price"]["amount"] == 19.95)
 
 with open(os.path.join(REPO_ROOT, "data", "re-digital-sources.json")) as f:
     _sources = json.load(f)
-check("upload work order: 376 files / 633,520,211 bytes / 7 gaps",
-      _sources["storage"]["total_files"] == 376
-      and _sources["storage"]["total_bytes"] == 633520211
-      and sum(e["bytes"] for e in _sources["files"]) == 633520211
-      and len(_sources["missing_source_skus"]) == 7
+check("upload work order: 382 files / 661,219,761 bytes / 1 gap",
+      _sources["storage"]["total_files"] == 382
+      and _sources["storage"]["total_bytes"] == 661219761
+      and sum(e["bytes"] for e in _sources["files"]) == 661219761
+      and len(_sources["missing_source_skus"]) == 1
       and all(e["size_verified_against_manifest"] for e in _sources["files"]))
 
 with open(os.path.join(REPO_ROOT, "brands", "restorationessentials.yaml")) as f:
