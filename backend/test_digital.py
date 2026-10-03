@@ -566,13 +566,18 @@ check("RE brand yaml claims RE-GD- and stages the guide catalog",
       and "download" in (_re_brand.get("fulfillment") or {}).get("delivery", ""))
 
 
+
 # ---------- 7. EverReady lane (checkout migration, Bill 2026-10-02) ----------
-# Canonical lineup staged dark; fulfillment is per-buyer Drive sharing
-# (fulfillment/drive.py), NEVER download links, NEVER public shares.
+# Canonical lineup staged dark. Delivery is the STANDARD store token path
+# (fulfillment/digital.py): signed, expiring download links emailed on
+# payment, files served from the store disk — same as SkillForge/RE.
+# (Bill 2026-10-02 superseded the 2026-09-19 per-buyer Drive-sharing
+# decision; fulfillment/drive.py stays in the tree dormant, env-gated,
+# and routes nothing.)
 from fulfillment import drive as drive_mod                     # noqa: E402
+import fulfillment.fulfill as _fulfill_mod                     # noqa: E402
 from fulfillment.fulfill import fulfill_paid_order             # noqa: E402
 
-os.environ["EVERREADY_FULFILLMENTS_PATH"] = os.path.join(TMP, "er-ledger.json")
 os.environ.pop("EVERREADY_DRIVE_ENABLED", None)
 os.environ.pop("EVERREADY_DRIVE_CREDENTIALS_JSON", None)
 
@@ -595,9 +600,25 @@ check("EverReady prices are the canonical lineup, confirmed",
 check("every EverReady row is unlisted (dark) and NOT purchasable",
       all(p["listed"] is False and p["purchasable"] is False
           for p in er_prods))
-check("every EverReady row is owned by everready, digital, file-less",
+check("every EverReady row is owned by everready and digital",
       all(p["owner"] == "everready" and p["fulfillment_type"] == "digital"
-          and p["digital_file"] == "" for p in er_prods))
+          for p in er_prods))
+FILE_WIRED = {"ER-FCC-001": "family-command-center.pdf",
+              "ER-EK-001": "executors-kit.pdf",
+              "ER-DAI-001": "digital-asset-inventory-workbook.pdf",
+              "ER-LSIK-001": "life-story-interview-kit.pdf"}
+check("four EverReady rows carry their disk deliverable",
+      all(er_by_sku[s]["digital_file"] == f for s, f in FILE_WIRED.items()),
+      str({s: er_by_sku[s]["digital_file"] for s in FILE_WIRED}))
+check("the bundle carries no file of its own but names both components",
+      er_by_sku["ER-FRB-001"]["digital_file"] == ""
+      and er_by_sku["ER-FRB-001"]["bundle_skus"]
+      == ["ER-FCC-001", "ER-EK-001"])
+FILELESS = {"ER-AUTO-001", "ER-EAP-001", "ER-FPA-001", "ER-CSO-001"}
+check("manual/file-less rows can never be sold (no file, no bundle)",
+      all(er_by_sku[s]["digital_file"] == ""
+          and er_by_sku[s]["bundle_skus"] == [] for s in FILELESS),
+      str(sorted(FILELESS)))
 check("the free Five Conversations magnet is NOT a checkout product",
       not any("five" in p["title"].lower() for p in er_prods))
 
@@ -607,9 +628,16 @@ check("EverReady brand yaml claims ER- and stages the everready catalog",
       "ER-" in _er_brand["brand"]["sku_prefixes"]
       and any("everready-catalog.csv" in (c.get("csv") or "")
               for c in _er_brand["catalog"]["catalogs"])
-      and "Drive" in (_er_brand.get("fulfillment") or {}).get("delivery", ""))
+      and "download" in (_er_brand.get("fulfillment") or {}).get("delivery", ""))
 check("EverReady brand yaml has NO Connect account routing",
       "stripe_connect" not in json.dumps(_er_brand.get("store", {})))
+
+with open(os.path.join(REPO_ROOT, "brands", "skillforge.yaml")) as f:
+    _sf_brand = _yaml.safe_load(f)
+check("the shared skillforge service loads ER rows dark (same store)",
+      "ER-" in _sf_brand["brand"]["sku_prefixes"]
+      and any("everready-catalog.csv" in (c.get("csv") or "")
+              for c in _sf_brand["catalog"]["catalogs"]))
 
 # a dark ER row cannot be sold even when loaded into the live catalog
 store_app.BY_SKU["ER-FCC-001"] = er_by_sku["ER-FCC-001"]
@@ -622,106 +650,65 @@ check("unlisted EverReady SKU 404s on the public API",
       client.get("/api/products/ER-FCC-001").status_code == 404)
 del store_app.BY_SKU["ER-FCC-001"]
 
-# Drive client discipline: dry-run without credentials, loud with gate on
+# drive.py is dormant: unconfigured it can only dry-run, gate-on without
+# credentials is still a loud error, and the fulfillment router no
+# longer imports it — ER orders can never depend on it again.
 dry_client = drive_mod.DriveShareClient(credentials_json="", enabled=False)
-check("no credentials => Drive dry-run (never silently shares)",
+check("dormant Drive module: no credentials => dry-run only",
       dry_client.dry_run is True
       and dry_client.share("fileX", "buyer@example.com") == {"dry_run": True})
 try:
     drive_mod.DriveShareClient(credentials_json="", enabled=True)
-    check("gate ON without credentials is a loud config error", False)
+    check("dormant Drive module: gate ON without credentials stays loud", False)
 except drive_mod.DriveConfigError as e:
-    check("gate ON without credentials is a loud config error",
+    check("dormant Drive module: gate ON without credentials stays loud",
           "EVERREADY_DRIVE_CREDENTIALS_JSON" in str(e), str(e))
-sa_client = drive_mod.DriveShareClient(
-    credentials_json='{"type": "service_account", "private_key": "x"}',
-    enabled=True)
-try:
-    sa_client.share_file("fileX", "buyer@example.com")
-    check("service-account JSON is rejected (stdlib cannot sign)", False)
-except drive_mod.DriveConfigError:
-    check("service-account JSON is rejected (stdlib cannot sign)", True)
+check("fulfill.py no longer routes anything through Drive",
+      not hasattr(_fulfill_mod, "drive_mod"))
 
 
-class _FakeDrive:
-    """Records share_file calls; dry_run attribute mirrors the real client."""
-
-    dry_run = False
-
-    def __init__(self):
-        self.calls = []
-
-    def share_file(self, file_id, email):
-        self.calls.append((file_id, email))
-        return {"id": "perm", "notified": False}
+# fulfillment: ER lines take the standard token path — one signed link
+# per deliverable file, the bundle's two links in its ONE fulfillment.
+def _er_order(session, lines):
+    return fulfill_paid_order(
+        stripe_session_id=session, customer_email="buyer@example.com",
+        shipping_address={}, cart_lines=lines,
+        products_by_sku=er_by_sku, mapping_path="unused.json",
+        order_prefix="er", download_base_url="https://example.invalid",
+        store_name="EverReady Family")
 
 
-class _FallbackDrive(drive_mod.DriveShareClient):
-    """Silent share rejected (no Google account) -> notified retry wins."""
-
-    def __init__(self):
-        super().__init__(
-            credentials_json='{"client_id": "c", "client_secret": "s",'
-                             ' "refresh_token": "r"}', enabled=True)
-        self.attempts = []
-
-    def _api(self, method, url, body):
-        self.attempts.append(url)
-        if "sendNotificationEmail=false" in url:
-            raise drive_mod.DriveShareError("400: user has no Google account")
-        return {"id": "perm-notified"}
+_er_signer = dmod.DownloadTokenSigner()
 
 
-fb = _FallbackDrive()
-fb_result = fb.share_file("fileX", "buyer@example.com")
-check("silent share rejected -> retried WITH notification (decision doc)",
-      fb_result.get("notified") is True and len(fb.attempts) == 2,
-      str(fb.attempts))
+def _link_skus(result):
+    return [ _er_signer.verify(link.rsplit("/download/", 1)[1])["sku"]
+             for link in result["digital"]["links"] ]
 
-er_sender = dmod.BrevoSender()  # no BREVO_API_KEY in test env -> dry-run
-fake_drive = _FakeDrive()
-er_ledger = drive_mod.EverReadyLedger(
-    os.path.join(TMP, "er-fulfill-ledger.json"))
-er_result = drive_mod.fulfill_drive_lines(
-    "cs_test_er_1", "buyer@example.com",
-    [{"sku": "ER-FCC-001", "qty": 1}, {"sku": "ER-FRB-001", "qty": 1},
-     {"sku": "ER-AUTO-001", "qty": 1}],
-    er_by_sku, drive_client=fake_drive, sender=er_sender, ledger=er_ledger)
-FCC_FILE = "1-vnWoHjDFEBQ4ZNu_R2XeTPRNTwYCcQj"
-EK_FILE = "1qyO__m4RJSjKSN1dA2rF-0W1AXhGu5KY"
-check("FCC shares 1 file; bundle shares BOTH files; auction goes manual",
-      er_result["shared"] == {"ER-FCC-001": [FCC_FILE],
-                              "ER-FRB-001": [FCC_FILE, EK_FILE]}
-      and er_result["manual"] == ["ER-AUTO-001"]
-      and len(fake_drive.calls) == 3
-      and all(c[1] == "buyer@example.com" for c in fake_drive.calls),
-      str(er_result))
-check("delivery email dry-runs without BREVO_API_KEY (never sent)",
-      er_result["email_dry_run"] is True)
-er_replay = drive_mod.fulfill_drive_lines(
-    "cs_test_er_1", "buyer@example.com",
-    [{"sku": "ER-FCC-001", "qty": 1}], er_by_sku,
-    drive_client=fake_drive, sender=er_sender, ledger=er_ledger)
-check("replayed session shares/emails nothing twice (ledger wall)",
-      er_replay.get("already_fulfilled") is True
-      and len(fake_drive.calls) == 3)
 
-# end-to-end through fulfill_paid_order: ER lines take the Drive path,
-# never the download-token path (no token minted, no DIGITAL secret use)
-er_order = fulfill_paid_order(
-    stripe_session_id="cs_test_er_2", customer_email="buyer@example.com",
-    shipping_address={}, cart_lines=[{"sku": "ER-EK-001", "qty": 1}],
-    products_by_sku=er_by_sku, mapping_path="unused.json",
-    order_prefix="er", download_base_url="https://example.invalid",
-    store_name="EverReady Family")
-check("fulfill_paid_order routes EverReady to Drive sharing",
-      isinstance(er_order, dict)
-      and er_order.get("everready_drive", {}).get("shared")
-      == {"ER-EK-001": [EK_FILE]}
-      and "digital" not in er_order, str(er_order))
-check("EverReady order needs no shipping address and no Printful order",
-      er_order.get("printful") is None)
+fcc_order = _er_order("cs_test_er_tok_1", [{"sku": "ER-FCC-001", "qty": 1}])
+check("fulfill_paid_order routes EverReady to the token path",
+      isinstance(fcc_order, dict) and "digital" in fcc_order
+      and "everready_drive" not in fcc_order
+      and fcc_order.get("printful") is None
+      and len(fcc_order["digital"]["links"]) == 1
+      and _link_skus(fcc_order) == ["ER-FCC-001"]
+      and fcc_order["digital"]["email_dry_run"] is True,
+      str(fcc_order))
 
+bundle_order = _er_order("cs_test_er_tok_2", [{"sku": "ER-FRB-001", "qty": 1}])
+check("the bundle delivers BOTH component files in one fulfillment",
+      isinstance(bundle_order, dict)
+      and len(bundle_order["digital"]["links"]) == 2
+      and _link_skus(bundle_order) == ["ER-FCC-001", "ER-EK-001"]
+      and bundle_order["digital"]["items"]
+      == ["Family Command Center", "Executor's Kit"],
+      str(bundle_order))
+
+replay = _er_order("cs_test_er_tok_2", [{"sku": "ER-FRB-001", "qty": 1}])
+check("replayed ER session emails nothing twice (ledger wall)",
+      replay["digital"].get("already_fulfilled") is True,
+      str(replay))
 
 print()
 if fails:

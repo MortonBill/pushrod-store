@@ -15,6 +15,12 @@ brand:
     # token-gated /download + checkout machinery can resolve the SKUs, but
     # never listed, never purchasable, until the lane gate flips rows.
     - "RE-GD-"
+    # EverReady Family (checkout migration, 2026-10-02 — Bill: EverReady
+    # files move onto the Render store too, same as the guides, superseding
+    # the 2026-09-19 per-buyer Drive-share decision). Every ER- row ships
+    # listed=0 (dark) and fulfills through the same token-gated /download
+    # path — see data/everready-catalog.csv.
+    - "ER-"
   # Unified-catalog ownership: which brand owns each prefix (gateway routing).
   ownership:
     "PR-": pushrod
@@ -22,6 +28,7 @@ brand:
     "RE-CT-": restorationessentials
     "RE-MP-": restorationessentials
     "RE-GD-": restorationessentials
+    "ER-": everready
     "SF-": skillforge
 
 theme:
@@ -52,6 +59,14 @@ catalog:
     # deliverable stay unpurchasable even after any flip).
     - csv: "data/re-catalog.csv"
       prices_json: "data/re-prices.json"
+    # EverReady catalog: 9 canonical rows, ALL listed=0 (dark) — see the
+    # sku_prefixes note above. Deliverables live on the same disk under
+    # their PDF basenames (~/workspace/your_files/business/
+    # everready-digital-files-sha256-2026-10-02.txt is the manifest);
+    # rows with no finished file (or the manual per-family service) stay
+    # unpurchasable even after any flip.
+    - csv: "data/everready-catalog.csv"
+      prices_json: "data/everready-prices.json"
   image_base: "/img"
 
 # Pricing policy: ONLY verified prices are sellable. Live PDP price verified

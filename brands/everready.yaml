@@ -1,8 +1,9 @@
 # Brand #5 — EVERREADY FAMILY storefront (brand id: everready)
 # Family readiness: command center, executor tools, legacy capture.
-# DIGITAL brand with PER-BUYER DRIVE fulfillment (never download links,
-# never "anyone with the link") — see backend/fulfillment/drive.py and
-# ~/workspace/your_files/everready-family/per-buyer-delivery-decision-2026-09-19.md.
+# DIGITAL brand delivered like every other line: signed, expiring
+# download links emailed on payment, files served from the store disk
+# (Bill 2026-10-02 — supersedes the 2026-09-19 per-buyer Drive-sharing
+# decision; fulfillment/drive.py is dormant and routes nothing).
 # Same codebase as pushrod/skillforge; select with BRAND=everready.
 # NO new service is provisioned for this lane: the EverReady rows stage
 # dark in the shared catalog (checkout migration, Bill 2026-10-02) and the
@@ -51,16 +52,16 @@ pricing:
   allow_draft_prices: true
   draft_label: "Intro price"
 
-# Fulfillment: DIGITAL via per-buyer Google Drive sharing. On
-# checkout.session.completed, backend/fulfillment/drive.py grants the
-# buyer Viewer access to exactly the file(s) they purchased (bundle =
-# both component files) and emails the Drive links via Brevo. Files are
-# NEVER public and NEVER served through /download tokens. Printful is
-# NOT used by this brand; the printful fields below exist only for schema
-# parity and must never be wired to a live order for EverReady.
+# Fulfillment: DIGITAL via the standard store token path. On
+# checkout.session.completed, backend/fulfillment/digital.py emails the
+# buyer signed, expiring download links (bundle = one link per component
+# file) and /download serves the bytes from the store disk. Files are
+# NEVER public. Printful is NOT used by this brand; the printful fields
+# below exist only for schema parity and must never be wired to a live
+# order for EverReady.
 fulfillment:
   mode: digital
-  delivery: "per-buyer Drive share (Viewer) + email on payment (backend/fulfillment/drive.py)"
+  delivery: "signed download link + email on payment (backend/fulfillment/digital.py)"
 
 store:
   currency: usd

@@ -301,10 +301,17 @@ def fulfill_digital_lines(stripe_session_id, customer_email, digital_lines,
     items = []  # (title, url)
     for line in digital_lines:
         product = products_by_sku.get(line["sku"]) or {}
-        title = product.get("title") or line["sku"]
-        token = signer.mint(line["sku"], customer_email,
-                            ttl_seconds=ttl_seconds)
-        items.append((title, f"{base}/download/{token}"))
+        # A bundle SKU carries no file of its own: it delivers ONE signed
+        # link per component SKU (catalog `bundle_skus`), each resolving
+        # to that component's deliverable through /download exactly like
+        # a direct purchase of the component.
+        component_skus = product.get("bundle_skus") or [line["sku"]]
+        for comp_sku in component_skus:
+            comp = products_by_sku.get(comp_sku) or {}
+            title = comp.get("title") or product.get("title") or comp_sku
+            token = signer.mint(comp_sku, customer_email,
+                                ttl_seconds=ttl_seconds)
+            items.append((title, f"{base}/download/{token}"))
 
     ttl_days = int(os.environ.get("DIGITAL_LINK_TTL_DAYS", DEFAULT_TTL_DAYS))
     subject = (f"Your download from {store_name}" if store_name

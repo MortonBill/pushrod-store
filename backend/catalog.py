@@ -164,12 +164,22 @@ def load_catalog(csv_path, prices_json_path=None, sku_prefixes=None, mapping=Non
                 # absolute path; the store serves bare filenames from the
                 # digital-files dir, so normalize to the basename.
                 digital_file = os.path.basename(row["delivery_file"].strip())
+            # Bundle seam (2026-10-02, EverReady disk move): a digital
+            # row MAY name bundle_skus ("SKU;SKU") instead of a file of
+            # its own — the bundle delivers one signed download link per
+            # component SKU (see fulfillment/digital.py). Optional column;
+            # rows without it are not bundles, exactly as before.
+            bundle_skus = [s.strip() for s in
+                           (row.get("bundle_skus") or "").split(";")
+                           if s.strip()]
             if ftype == "digital":
                 # Digital purchasability mirrors the print rule — the
                 # honest-purchasability gate (Bill 2026-09-30) applied to a
                 # file instead of a Printful mapping: price + a deliverable
-                # file, or it can never be sold.
-                purchasable = price is not None and bool(digital_file)
+                # file, or it can never be sold. A bundle's deliverable is
+                # its components' files (verified in the post-pass below).
+                purchasable = price is not None and (
+                    bool(digital_file) or bool(bundle_skus))
             else:
                 purchasable = price is not None and mapping_complete(
                     sku, ptype, mapping)
@@ -186,6 +196,9 @@ def load_catalog(csv_path, prices_json_path=None, sku_prefixes=None, mapping=Non
                 "description": row["description"].strip(),
                 "base_color": row["base_color"].strip(),
                 "design_file": design_file,
+                # Component SKUs for a bundle row ([] for everything
+                # else): fulfillment mints one download link per entry.
+                "bundle_skus": bundle_skus,
                 # Unambiguous artwork URL: /img/<library>/<design_file>.
                 # Libraries live in different dirs (pushrod-merch vs the three
                 # re-merch lines), so the library key is part of the URL.
@@ -200,6 +213,17 @@ def load_catalog(csv_path, prices_json_path=None, sku_prefixes=None, mapping=Non
                 "listed": listed,
                 "needs_size": ptype in SIZED_TYPES,
             })
+    # Bundle post-pass: a bundle row is sellable only when every named
+    # component is present in THIS load with a deliverable file — the
+    # honest-purchasability gate (Bill 2026-09-30) applied to bundles.
+    # A dangling component (missing SKU, still file-less) takes the
+    # bundle dark on purchasability even after a listed flip.
+    _loaded = {p["sku"]: p for p in products}
+    for p in products:
+        if p.get("bundle_skus") and p["purchasable"]:
+            p["purchasable"] = all(
+                (_loaded.get(c) or {}).get("digital_file")
+                for c in p["bundle_skus"])
     # Bill 2026-09-30: the 7B- seven-brand line sorts LAST in the catalog so
     # daily shoppers see the brand lines first; 7B- stays purchasable.
     products.sort(key=lambda p: (p["prefix"] == "7B-", p["sku"]))
