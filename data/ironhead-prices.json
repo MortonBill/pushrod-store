@@ -1,43 +1,247 @@
 {
- "brand": "ironhead",
- "delivery_status": "STAGED DARK 2026-10-03 (checkout migration Lane 2, first wave): the 4 hero restoration guides + Shovelhead buyer's guide carry deliverables (QA-passed publish-lane bundles; work order data/ih-digital-sources.json) and load listed=0 \u2014 never listed, never purchasable \u2014 until the lane's live test-purchase gate flips them. Files land on the skillforge service disk (DIGITAL_FILES_DIR=/var/data/digital) under their delivery basenames at gate time. Six-pack + full-catalog pass have no deliverable yet (components stage in later waves) and stay dark.",
- "price_source": "~/workspace/your_files/ironhead/lineup-canonical-2026-10-01.md (verified 2026-10-01 on ironhead.polsia.app live product pages); $29.95/guide per Bill 2026-09-13",
- "pricing_status": "confirmed",
- "products": [
-  {
-   "msrp": 29.95,
-   "sku": "IH-SHOVELHEAD-RESTORATION",
-   "title": "Harley-Davidson Shovelhead Restoration Guide"
-  },
-  {
-   "msrp": 29.95,
-   "sku": "IH-CB750-SOHC",
-   "title": "Honda CB750 SOHC Restoration Guide"
-  },
-  {
-   "msrp": 29.95,
-   "sku": "IH-KZ1000",
-   "title": "Kawasaki KZ1000 Restoration Guide"
-  },
-  {
-   "msrp": 29.95,
-   "sku": "IH-DUCATI-BEVEL",
-   "title": "Ducati Bevel-Drive Restoration Guide"
-  },
-  {
-   "msrp": 19.95,
-   "sku": "IH-SHOVELHEAD-BUYERS-GUIDE",
-   "title": "Harley-Davidson Shovelhead Buyer's Guide"
-  },
-  {
-   "msrp": 129.0,
-   "sku": "IH-HONDA-SOHC-6PACK",
-   "title": "Honda SOHC Six-Pack"
-  },
-  {
-   "msrp": 449.0,
-   "sku": "IH-FULL-CATALOG-PASS",
-   "title": "IronHead Full-Catalog Pass"
-  }
- ]
+  "brand": "ironhead",
+  "delivery_status": "STAGED DARK 2026-10-03 (checkout migration Lane 2, first wave): the 4 hero restoration guides + Shovelhead buyer's guide carry deliverables (QA-passed publish-lane bundles; work order data/ih-digital-sources.json) and load listed=0 \u2014 never listed, never purchasable \u2014 until the lane's live test-purchase gate flips them. Files land on the skillforge service disk (DIGITAL_FILES_DIR=/var/data/digital) under their delivery basenames at gate time. Six-pack + full-catalog pass have no deliverable yet (components stage in later waves) and stay dark.",
+  "price_source": "~/workspace/your_files/ironhead/lineup-canonical-2026-10-01.md (verified 2026-10-01 on ironhead.polsia.app live product pages); $29.95/guide per Bill 2026-09-13",
+  "pricing_status": "confirmed",
+  "products": [
+    {
+      "msrp": 29.95,
+      "sku": "IH-SHOVELHEAD-RESTORATION",
+      "title": "Harley-Davidson Shovelhead Restoration Guide"
+    },
+    {
+      "msrp": 29.95,
+      "sku": "IH-CB750-SOHC",
+      "title": "Honda CB750 SOHC Restoration Guide"
+    },
+    {
+      "msrp": 29.95,
+      "sku": "IH-KZ1000",
+      "title": "Kawasaki KZ1000 Restoration Guide"
+    },
+    {
+      "msrp": 29.95,
+      "sku": "IH-DUCATI-BEVEL",
+      "title": "Ducati Bevel-Drive Restoration Guide"
+    },
+    {
+      "msrp": 19.95,
+      "sku": "IH-SHOVELHEAD-BUYERS-GUIDE",
+      "title": "Harley-Davidson Shovelhead Buyer's Guide"
+    },
+    {
+      "msrp": 129.0,
+      "sku": "IH-HONDA-SOHC-6PACK",
+      "title": "Honda SOHC Six-Pack"
+    },
+    {
+      "msrp": 449.0,
+      "sku": "IH-FULL-CATALOG-PASS",
+      "title": "IronHead Full-Catalog Pass"
+    },
+    {
+      "sku": "IH-BMW-AIRHEAD",
+      "title": "BMW /5-/6-/7 Airhead Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-BONNEVILLE",
+      "title": "Bonneville Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-BSA-A50-A65",
+      "title": "BSA A50 / A65 Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-BSA-B-SERIES",
+      "title": "BSA B-series Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-BSA-GOLD-STAR",
+      "title": "BSA Gold Star Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-CB350",
+      "title": "Honda CB350 Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-CB450",
+      "title": "Honda CB450 Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-CB550",
+      "title": "Honda CB550 Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-CB650",
+      "title": "Honda CB650 Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-CB900F",
+      "title": "Honda CB900F Bol d'Or Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-GS1000",
+      "title": "1978-1981 Suzuki GS1000",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-GS750",
+      "title": "1977-1979 Suzuki GS750",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-H2-MACH",
+      "title": "1972-1975 Kawasaki H2 Mach IV",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-INDIAN-BLACKHAWK",
+      "title": "Indian Blackhawk (Powerplus 100) Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-INDIAN-CH1998",
+      "title": "Indian Chief (1998-2013) Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-INDIAN-CHIEF",
+      "title": "Indian Chief Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-INDIAN-SC2015",
+      "title": "Indian Scout (2015+)",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-INDIAN-SCOUT",
+      "title": "Indian Scout Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-INDIAN-SPORT-SCOUT",
+      "title": "Indian Sport Scout Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-IRONHEAD-SPORTSTER",
+      "title": "Harley-Davidson Ironhead Sportster Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-KAWASAKI-Z1",
+      "title": "Kawasaki Z1 Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-KAWASAKI-Z1-KZ",
+      "title": "Kawasaki Z1/KZ Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-KZ750",
+      "title": "Kawasaki KZ750 Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-MOTO-GUZZI-SMALLBLOCK",
+      "title": "Moto Guzzi Smallblock V-Twin Restoration Guide - 1978-1984",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-MOTO-GUZZI-V7",
+      "title": "Moto Guzzi V7 700 Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-MOTO-GUZZI-V7-SPORT",
+      "title": "Moto Guzzi V7 Sport Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-MOTO-GUZZI-VTWIN",
+      "title": "Moto Guzzi V-Twin (1967-1985) Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-PANHEAD",
+      "title": "Harley-Davidson Panhead Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-SUZUKI-T500-GT",
+      "title": "1968-1977 Suzuki T500/GT",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-TRIUMPH-PREUNIT",
+      "title": "1946-1962 Triumph Pre-Unit Twins",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-XS1100",
+      "title": "Yamaha XS1100 Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-XS650",
+      "title": "Yamaha XS650 Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-XS750",
+      "title": "Yamaha XS750 Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    },
+    {
+      "sku": "IH-XS850",
+      "title": "Yamaha XS850 Restoration Guide",
+      "msrp": 29.95,
+      "price_source": "Live IronHead catalog https://ironhead.polsia.app/api/guides (priceCents 2995), fetched 2026-10-03; staging manifest ironhead-render-catalog-manifest-2026-10-03.md"
+    }
+  ]
 }
