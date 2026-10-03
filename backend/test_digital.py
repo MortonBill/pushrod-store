@@ -597,9 +597,13 @@ check("EverReady prices are the canonical lineup, confirmed",
       all(er_by_sku[s]["price"]["amount"] == amt
           and er_by_sku[s]["price"]["status"] == "confirmed"
           for s, amt in CANONICAL_PRICES.items()))
-check("every EverReady row is unlisted (dark) and NOT purchasable",
+check("EverReady gate SKU ER-FCC-001 is listed and purchasable at $37",
+      er_by_sku["ER-FCC-001"]["listed"] is True
+      and er_by_sku["ER-FCC-001"]["purchasable"] is True
+      and er_by_sku["ER-FCC-001"]["price"]["amount"] == 37.0)
+check("every other EverReady row stays unlisted (dark) and NOT purchasable",
       all(p["listed"] is False and p["purchasable"] is False
-          for p in er_prods))
+          for p in er_prods if p["sku"] != "ER-FCC-001"))
 check("every EverReady row is owned by everready and digital",
       all(p["owner"] == "everready" and p["fulfillment_type"] == "digital"
           for p in er_prods))
@@ -640,15 +644,15 @@ check("the shared skillforge service loads ER rows dark (same store)",
               for c in _sf_brand["catalog"]["catalogs"]))
 
 # a dark ER row cannot be sold even when loaded into the live catalog
-store_app.BY_SKU["ER-FCC-001"] = er_by_sku["ER-FCC-001"]
-r = client.post("/api/checkout", json={"items": [{"sku": "ER-FCC-001",
+store_app.BY_SKU["ER-EK-001"] = er_by_sku["ER-EK-001"]
+r = client.post("/api/checkout", json={"items": [{"sku": "ER-EK-001",
                                                    "qty": 1}]})
 check("dark EverReady SKU is rejected at checkout (400)",
       r.status_code == 400 and "cannot be sold" in
       (r.get_json() or {}).get("error", ""), r.status_code)
 check("unlisted EverReady SKU 404s on the public API",
-      client.get("/api/products/ER-FCC-001").status_code == 404)
-del store_app.BY_SKU["ER-FCC-001"]
+      client.get("/api/products/ER-EK-001").status_code == 404)
+del store_app.BY_SKU["ER-EK-001"]
 
 # drive.py is dormant: unconfigured it can only dry-run, gate-on without
 # credentials is still a loud error, and the fulfillment router no
