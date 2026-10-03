@@ -4,8 +4,8 @@
   "storage": {
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
-    "total_files": 382,
-    "total_bytes": 661219761
+    "total_files": 383,
+    "total_bytes": 665835738
   },
   "files": [
     {
@@ -2681,9 +2681,14 @@
       "bytes": 23682,
       "key": "RE_third-gen-firebird-1982-1992-trans-am-gta-formula.pdf",
       "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-BUICK-GRAN-SPORT-40TH-ANNIVERSARY",
+      "source": "/home/hatch/workspace/your_files/business/re-gap-fix-staging/RE_1970-buick-gran-sport-40th-anniversary.pdf",
+      "bytes": 4615977,
+      "key": "RE_1970-buick-gran-sport-40th-anniversary.pdf",
+      "size_verified_against_manifest": true
     }
   ],
-  "missing_source_skus": [
-    "RE-GD-1970-BUICK-GRAN-SPORT-40TH-ANNIVERSARY"
-  ]
+  "missing_source_skus": []
 }
