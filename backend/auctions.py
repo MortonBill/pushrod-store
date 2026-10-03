@@ -806,6 +806,10 @@ def create_account(brand, email, display_name, password,
 def get_account(account_id):
     if not account_id:
         return None
+    if _DIALECT == "postgres" and not _looks_uuid(account_id):
+        # accounts.id is a uuid column on Postgres: a non-UUID id can
+        # only be "not found" — asking the driver raises instead.
+        return None
     with _connect() as c:
         return c.execute("SELECT * FROM accounts WHERE id = ?",
                          (account_id,)).fetchone()
@@ -850,6 +854,10 @@ def public_account_dict(account):
 # Lots + lifecycle
 # ---------------------------------------------------------------------------
 def get_lot(lot_id):
+    if _DIALECT == "postgres" and not _looks_uuid(lot_id):
+        # lots.id is a uuid column on Postgres: a non-UUID id can only
+        # be "not found" — asking the driver raises instead of 404ing.
+        return None
     with _connect() as c:
         return c.execute("SELECT * FROM lots WHERE id = ?",
                          (lot_id,)).fetchone()

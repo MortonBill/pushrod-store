@@ -1374,6 +1374,13 @@ r = anon.get("/auctions/lot/nope?brand=IH")
 check("unknown-lot 404 keeps the requested brand",
       r.status_code == 404
       and "IronHead Auctions" in r.get_data(as_text=True))
+# Postgres ids are uuid columns: non-UUID lookups must read as
+# "not found" (branded 404), never a driver error (bare 500).
+_saved_dialect = amod._DIALECT
+amod._DIALECT = "postgres"
+check("non-UUID lot/account ids are not-found under Postgres",
+      amod.get_lot("nope") is None and amod.get_account("nope") is None)
+amod._DIALECT = _saved_dialect
 
 # --- Slice 5 prep: IronHead catalog seed (real guide products only) -------
 import csv as _csv  # noqa: E402
