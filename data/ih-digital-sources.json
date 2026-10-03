@@ -1,0 +1,18 @@
+{
+  "catalog": "data/ironhead-catalog.csv",
+  "generated_from": "IronHead publish-lane bundles (QA 25/25 PASS 2026-09-19) + the 21pp Shovelhead buyer's guide; delivery-named copies staged at ~/workspace/your_files/business/ironhead-digital-staging/",
+  "storage": {
+    "backend": "local disk (DIGITAL_FILES_DIR=/var/data/digital on the skillforge service — same disk as the SF/RE/ER deliverables)",
+    "key_rule": "storage key = basename of the catalog delivery_file; upload copies each source to the disk under its key",
+    "total_files": 5,
+    "total_bytes": 1245851
+  },
+  "files": [
+    {"sku": "IH-SHOVELHEAD-RESTORATION", "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/ironhead-publish-lane/bundles/BUNDLE-harley-shovelhead-buyer.pdf", "bytes": 308561, "key": "ih-shovelhead-restoration-guide.pdf", "sha256": "9ec8275ab87d730e5b6919ff507e6e8f7abf5ed8a496c4c949078161d679b2cc", "size_verified_against_manifest": true},
+    {"sku": "IH-CB750-SOHC", "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/ironhead-publish-lane/bundles/BUNDLE-cb750-buyer.pdf", "bytes": 416965, "key": "ih-cb750-sohc-restoration-guide.pdf", "sha256": "cf6e249b39638f6b735f033adc421a4c9f842b1594816bccf50c4b43409fc0a1", "size_verified_against_manifest": true},
+    {"sku": "IH-KZ1000", "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/ironhead-publish-lane/bundles/BUNDLE-kz1000-buyer.pdf", "bytes": 60546, "key": "ih-kz1000-restoration-guide.pdf", "sha256": "c8b19623cf390f62e0a56210544f9ace0e61710f19ac6c0c84f9fcd0ee07cd6c", "size_verified_against_manifest": true},
+    {"sku": "IH-DUCATI-BEVEL", "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/ironhead-publish-lane/bundles/BUNDLE-ducati-bevel-buyer.pdf", "bytes": 387266, "key": "ih-ducati-bevel-restoration-guide.pdf", "sha256": "cef71b60223e0fa85dcec7d6b71228afe01023aa5124066c971eabf1a6eca714", "size_verified_against_manifest": true},
+    {"sku": "IH-SHOVELHEAD-BUYERS-GUIDE", "source": "/home/hatch/workspace/guide-manuscripts/ironhead/shovelhead-buyers-guide.pdf", "bytes": 72513, "key": "ih-shovelhead-buyers-guide.pdf", "sha256": "cc027393f4242036a4e4d087d9e32e5165745a45bed204a6337395108d3e3313", "size_verified_against_manifest": true}
+  ],
+  "missing_source_skus": []
+}

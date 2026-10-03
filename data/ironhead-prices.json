@@ -1,1 +1,43 @@
-{"brand":"ironhead","delivery_status":"PENDING — guide PDFs not yet staged in repo data/digital; rows load priced but NOT purchasable until each guide PDF is copied into the repo digital-files dir at cutover (Slice 5 execution)","price_source":"~/workspace/your_files/ironhead/lineup-canonical-2026-10-01.md (verified 2026-10-01 on ironhead.polsia.app live product pages); $29.95/guide per Bill 2026-09-13","pricing_status":"confirmed","products":[{"msrp":29.95,"sku":"IH-SHOVELHEAD-RESTORATION","title":"Harley-Davidson Shovelhead Restoration Guide"},{"msrp":29.95,"sku":"IH-CB750-SOHC","title":"Honda CB750 SOHC Restoration Guide"},{"msrp":29.95,"sku":"IH-KZ1000","title":"Kawasaki KZ1000 Restoration Guide"},{"msrp":29.95,"sku":"IH-DUCATI-BEVEL","title":"Ducati Bevel-Drive Restoration Guide"},{"msrp":19.95,"sku":"IH-SHOVELHEAD-BUYERS-GUIDE","title":"Harley-Davidson Shovelhead Buyer's Guide"},{"msrp":129.0,"sku":"IH-HONDA-SOHC-6PACK","title":"Honda SOHC Six-Pack"},{"msrp":449.0,"sku":"IH-FULL-CATALOG-PASS","title":"IronHead Full-Catalog Pass"}]}
+{
+ "brand": "ironhead",
+ "delivery_status": "STAGED DARK 2026-10-03 (checkout migration Lane 2, first wave): the 4 hero restoration guides + Shovelhead buyer's guide carry deliverables (QA-passed publish-lane bundles; work order data/ih-digital-sources.json) and load listed=0 \u2014 never listed, never purchasable \u2014 until the lane's live test-purchase gate flips them. Files land on the skillforge service disk (DIGITAL_FILES_DIR=/var/data/digital) under their delivery basenames at gate time. Six-pack + full-catalog pass have no deliverable yet (components stage in later waves) and stay dark.",
+ "price_source": "~/workspace/your_files/ironhead/lineup-canonical-2026-10-01.md (verified 2026-10-01 on ironhead.polsia.app live product pages); $29.95/guide per Bill 2026-09-13",
+ "pricing_status": "confirmed",
+ "products": [
+  {
+   "msrp": 29.95,
+   "sku": "IH-SHOVELHEAD-RESTORATION",
+   "title": "Harley-Davidson Shovelhead Restoration Guide"
+  },
+  {
+   "msrp": 29.95,
+   "sku": "IH-CB750-SOHC",
+   "title": "Honda CB750 SOHC Restoration Guide"
+  },
+  {
+   "msrp": 29.95,
+   "sku": "IH-KZ1000",
+   "title": "Kawasaki KZ1000 Restoration Guide"
+  },
+  {
+   "msrp": 29.95,
+   "sku": "IH-DUCATI-BEVEL",
+   "title": "Ducati Bevel-Drive Restoration Guide"
+  },
+  {
+   "msrp": 19.95,
+   "sku": "IH-SHOVELHEAD-BUYERS-GUIDE",
+   "title": "Harley-Davidson Shovelhead Buyer's Guide"
+  },
+  {
+   "msrp": 129.0,
+   "sku": "IH-HONDA-SOHC-6PACK",
+   "title": "Honda SOHC Six-Pack"
+  },
+  {
+   "msrp": 449.0,
+   "sku": "IH-FULL-CATALOG-PASS",
+   "title": "IronHead Full-Catalog Pass"
+  }
+ ]
+}

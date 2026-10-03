@@ -21,6 +21,13 @@ brand:
     # listed=0 (dark) and fulfills through the same token-gated /download
     # path — see data/everready-catalog.csv.
     - "ER-"
+    # IronHead guides (checkout migration Lane 2, 2026-10-03 — Bill: "Already
+    # on render stay there": NO separate IH service; the guide library rides
+    # THIS service like RE/ER). Every IH- row ships listed=0 (dark): loaded
+    # so the token-gated /download + checkout machinery can resolve the
+    # SKUs, but never listed, never purchasable, until the lane gate flips
+    # rows — see data/ironhead-catalog.csv + data/ih-digital-sources.json.
+    - "IH-"
   # Unified-catalog ownership: which brand owns each prefix (gateway routing).
   ownership:
     "PR-": pushrod
@@ -29,6 +36,7 @@ brand:
     "RE-MP-": restorationessentials
     "RE-GD-": restorationessentials
     "ER-": everready
+    "IH-": ironhead
     "SF-": skillforge
 
 theme:
@@ -67,6 +75,14 @@ catalog:
     # unpurchasable even after any flip.
     - csv: "data/everready-catalog.csv"
       prices_json: "data/everready-prices.json"
+    # IronHead guide catalog (Lane 2): 7 seeded rows from the canonical
+    # lineup, ALL listed=0 (dark). First-wave deliverables (4 hero guides
+    # + Shovelhead buyer's guide) live on this service's disk under their
+    # delivery basenames — data/ih-digital-sources.json is the staging
+    # work order. The six-pack and full-catalog pass carry no deliverable
+    # until their component guides stage in later waves.
+    - csv: "data/ironhead-catalog.csv"
+      prices_json: "data/ironhead-prices.json"
   image_base: "/img"
 
 # Pricing policy: ONLY verified prices are sellable. Live PDP price verified

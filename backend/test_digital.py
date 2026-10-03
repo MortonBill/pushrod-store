@@ -613,6 +613,49 @@ check("RE brand yaml claims RE-GD- and stages the guide catalog",
 
 
 
+# ---------- 6c. IronHead guides first wave (checkout migration Lane 2, 2026-10-03) ----------
+# First wave of the canonical IH lineup staged DARK (listed=0): the 4 hero
+# restoration guides + the Shovelhead buyer's guide carry real deliverables
+# (QA-passed publish-lane bundles; work order data/ih-digital-sources.json)
+# but stay unlisted and unpurchasable until the lane's own live
+# test-purchase gate flips them. The six-pack and full-catalog pass name
+# no deliverable yet (component guides stage in later waves) and stay dark.
+ih_prods = _load_catalog(os.path.join(REPO_ROOT, "data", "ironhead-catalog.csv"),
+                         os.path.join(REPO_ROOT, "data", "ironhead-prices.json"),
+                         sku_prefixes=["IH-"])
+ih_by_sku = {p["sku"]: p for p in ih_prods}
+IH_WAVE1 = {"IH-SHOVELHEAD-RESTORATION": 29.95, "IH-CB750-SOHC": 29.95,
+            "IH-KZ1000": 29.95, "IH-DUCATI-BEVEL": 29.95,
+            "IH-SHOVELHEAD-BUYERS-GUIDE": 19.95}
+check("IronHead catalog loads 7 seeded rows", len(ih_prods) == 7, len(ih_prods))
+check("IronHead first wave is priced from the canonical lineup, file-backed, staged dark",
+      all(s in ih_by_sku and ih_by_sku[s]["price"]["amount"] == amt
+          and ih_by_sku[s]["listed"] is False
+          and ih_by_sku[s]["purchasable"] is False
+          and ih_by_sku[s]["digital_file"].endswith(".pdf")
+          for s, amt in IH_WAVE1.items()))
+check("IronHead bundles carry no deliverable yet and stay dark",
+      all(s in ih_by_sku and ih_by_sku[s]["listed"] is False
+          and ih_by_sku[s]["purchasable"] is False
+          and not ih_by_sku[s]["digital_file"]
+          for s in ("IH-HONDA-SOHC-6PACK", "IH-FULL-CATALOG-PASS")))
+
+with open(os.path.join(REPO_ROOT, "data", "ih-digital-sources.json")) as f:
+    _ih_sources = json.load(f)
+check("IronHead staging work order: 5 files / 1,245,851 bytes / 0 gaps",
+      _ih_sources["storage"]["total_files"] == 5
+      and _ih_sources["storage"]["total_bytes"] == 1245851
+      and sum(e["bytes"] for e in _ih_sources["files"]) == 1245851
+      and _ih_sources["missing_source_skus"] == []
+      and all(e["size_verified_against_manifest"] for e in _ih_sources["files"]))
+
+with open(os.path.join(REPO_ROOT, "brands", "skillforge.yaml")) as f:
+    _sf_brand_ih = _yaml.safe_load(f)
+check("SkillForge service claims IH- and stages the IronHead catalog",
+      "IH-" in _sf_brand_ih["brand"]["sku_prefixes"]
+      and any("ironhead-catalog.csv" in (c.get("csv") or "")
+              for c in _sf_brand_ih["catalog"]["catalogs"]))
+
 # ---------- 7. EverReady lane (checkout migration, Bill 2026-10-02) ----------
 # Canonical lineup. Delivery is the STANDARD store token path
 # (fulfillment/digital.py): signed, expiring download links emailed on
