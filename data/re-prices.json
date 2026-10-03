@@ -1,0 +1,1538 @@
+{
+  "brand": "RESTORATIONESSENTIALS",
+  "pricing_status": "Live-index prices, parent-verified 2026-10-02: every guide PDP and its main Buy button reads $29.95 one-time (the $19.95 seen on legacy button copy is the SEPARATE Automotive Restoration Master Checklist product, cross-linked with a misleading label \u2014 not a guide price). Per-row amounts below are the prices the live /guides index itself records for each guide. Rows load UNLISTED and NOT purchasable (data/re-catalog.csv listed=0) until the Lane 1 gate: object-storage upload complete + RE service bring-up + $29.95 test purchase verified. Status 'draft' until that gate closes.",
+  "products": [
+    {
+      "sku": "RE-GD-1956-STUDEBAKER-HAWK",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1957-STUDEBAKER-HAWK",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1958-STUDEBAKER-HAWK",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1960-DODGE-DART",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1961-DODGE-DART",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1962-DODGE-DART",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1962-PONTIAC-GRAND-PRIX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1962-STUDEBAKER-HAWK",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1963-BUICK-RIVIERA",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1963-DODGE-DART",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1963-PONTIAC-GRAND-PRIX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1963-STUDEBAKER-HAWK",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1964-BUICK-RIVIERA",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1964-DODGE-DART",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1964-PONTIAC-GRAND-PRIX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1964-PONTIAC-GTO",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1964-STUDEBAKER-HAWK",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1965-BUICK-GRAN-SPORT-401-425",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1965-BUICK-GS",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1965-BUICK-RIVIERA",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1965-BUICK-RIVIERA-GS-401",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1965-BUICK-SKYLARK-GS",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1965-DODGE-DART",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1965-FORD-MUSTANG",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1965-PONTIAC-GRAND-PRIX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1965-PONTIAC-GTO",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1965-SHELBY-GT350",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1966-BUICK-GRAN-SPORT-401-425",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1966-BUICK-GS",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1966-BUICK-RIVIERA",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1966-BUICK-SKYLARK-GS",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1966-DODGE-CHARGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1966-FORD-SHELBY-GT350",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1966-PONTIAC-GRAND-PRIX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1966-PONTIAC-GTO",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-AMC-REBEL",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-BUICK-GRAN-SPORT-401-425",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-BUICK-GS",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-BUICK-RIVIERA",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-BUICK-SKYLARK-GS",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-CHEVROLET-CAMARO",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-DODGE-CHARGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-FORD-MUSTANG-ELEANOR-RESTORATION",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-MUSTANG",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-PLYMOUTH-GTX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-PONTIAC-FIREBIRD",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-PONTIAC-GRAND-PRIX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-PONTIAC-GTO",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1967-SHELBY-GT500",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-AMC-AMX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-AMC-JAVELIN",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-BUICK-GRAN-SPORT-401-425",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-BUICK-RIVIERA",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-BUICK-RIVIERA-GS-430",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-DODGE-CHARGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-DODGE-DART",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-PLYMOUTH-GTX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-PLYMOUTH-ROAD-RUNNER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-PONTIAC-FIREBIRD",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-PONTIAC-GRAND-PRIX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-PONTIAC-GTO",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-PONTIAC-GTO-ENDURA",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1968-SHELBY-GT500KR",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-AMC-AMX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-AMC-JAVELIN",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-BUICK-GRAN-SPORT-401-425",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-BUICK-GS",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-BUICK-RIVIERA",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-BUICK-RIVIERA-GS-430",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-DODGE-CHARGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-DODGE-DART",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-FORD-MUSTANG-BOSS-302-RESTORATION",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-PLYMOUTH-GTX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-PLYMOUTH-ROAD-RUNNER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-PONTIAC-FIREBIRD",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-PONTIAC-GRAND-PRIX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-PONTIAC-GTO",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1969-PONTIAC-GTO-JUDGE",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-AMC-AMX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-AMC-JAVELIN",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-BUICK-GRAN-SPORT-40TH-ANNIVERSARY",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-BUICK-GS",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-BUICK-GS-455",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-BUICK-GSX-455",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-BUICK-RIVIERA",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-BUICK-SKYLARK-GSX-STAGE-1",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-CHEVELLE-SS-RESTORATION",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-CHEVY-CHEVELLE",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-DODGE-CHALLENGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-DODGE-CHARGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-DODGE-DART",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-FORD-MUSTANG-BOSS-302-RESTORATION",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-MERCURY-CYCLONE-SPOILER-429-SCJ",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-PLYMOUTH-BARRACUDA",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-PLYMOUTH-DUSTER",
+      "draft_msrp": 19.95
+    },
+    {
+      "sku": "RE-GD-1970-PLYMOUTH-GTX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-PLYMOUTH-HEMI-CUDA-RESTORATION",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-PLYMOUTH-ROAD-RUNNER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-PLYMOUTH-ROAD-RUNNER-SUPERBIRD",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-PONTIAC-FIREBIRD",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-PONTIAC-GRAND-PRIX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-PONTIAC-GTO",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1970-PONTIAC-TRANS-AM",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1971-AMC-JAVELIN",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1971-BUICK-GS",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1971-BUICK-GS-455",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1971-DODGE-CHALLENGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1971-DODGE-CHARGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1971-DODGE-DART",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1971-PLYMOUTH-GTX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1971-PONTIAC-FIREBIRD",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1971-PONTIAC-GRAND-PRIX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1971-PONTIAC-GTO",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1972-AMC-JAVELIN",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1972-BUICK-GS",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1972-BUICK-GS-455",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1972-BUICK-RIVIERA",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1972-DODGE-CHALLENGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1972-DODGE-CHARGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1972-DODGE-DART",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1972-MERCURY-COUGAR",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1972-PONTIAC-FIREBIRD",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1972-PONTIAC-GRAND-PRIX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1972-PONTIAC-GTO",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1973-AMC-JAVELIN",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1973-BUICK-RIVIERA",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1973-DODGE-CHALLENGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1973-DODGE-CHARGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1973-DODGE-DART",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1973-MERCURY-COUGAR",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1973-PONTIAC-FIREBIRD",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1973-PONTIAC-GRAND-PRIX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-1973-PONTIAC-GTO",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-AMC-REBEL-1967-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-AMC-SC-RAMBLER-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-BUICK-GS-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-BUICK-GS-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-BUICK-GSX",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-BUICK-RIVIERA-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-BUICK-SKYLARK-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CADILLAC-ELDORADO",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-BEL-AIR-1955",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-BEL-AIR-1956",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-BEL-AIR-1957",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-C-K-TRUCK-RESTORATION-GUIDE-1960-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-C-K-TRUCK-RESTORATION-GUIDE-1967-1972-ACTION-LINE",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-SS-454",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-SS-454-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-SS-454-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-SS-454-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1953",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1954",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1955",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1956",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1957",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1958",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1959",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1960",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1961",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1962",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1963",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1958",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1959",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1960",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1961",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1962",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1963",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1961",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1962",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1963",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-MONTE-CARLO-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-MONTE-CARLO-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-MONTE-CARLO-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-MONTE-CARLO-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1962",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1963",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHRYSLER-300",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-DODGE-CORONET-RT-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-DODGE-CORONET-RT-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-DODGE-CORONET-RT-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-DODGE-CORONET-RT-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-DODGE-DEMON-340-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-DODGE-DEMON-340-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-DODGE-SUPER-BEE-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-DODGE-SUPER-BEE-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-DODGE-SUPER-BEE-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-DODGE-SUPER-BEE-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-BRONCO-DRIVETRAIN-4X4-SYSTEMS-1966-1977",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-BRONCO-RESTORATION-GUIDE-1966-1977",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-F-SERIES-RESTORATION-GUIDE-1967-1972-BUMPSIDE",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-F-SERIES-RESTORATION-GUIDE-1973-1979-DENTSIDE",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1962",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1963",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-FALCON-SPRINT-1963-HALF",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-FALCON-SPRINT-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-FALCON-SPRINT-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1959",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1960",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1961",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1962",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1963",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1963-HALF",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-BOSS-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-BOSS-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-BOSS-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-BOSS-429-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-BOSS-429-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-TALLADEGA-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-TORINO-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-TORINO-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-TORINO-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-TORINO-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-TORINO-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-TORINO-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FOX-BODY-MUSTANG-1979-1993-5-0L-V8",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FOX-BODY-MUSTANG-2-3T-SVO-SPECIAL-PERFORMANCE",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-GM-SQUAREBODY-TRUCK-RESTORATION-GUIDE-1973-1980",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-GM-SQUAREBODY-TRUCK-RESTORATION-GUIDE-1981-1987",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-K5-BLAZER-JIMMY-RESTORATION-GUIDE-1969-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-K5-BLAZER-JIMMY-RESTORATION-GUIDE-1973-1991",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-429-SCJ",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-COUGAR-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-COUGAR-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-COUGAR-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-COUGAR-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-COUGAR-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1968-W45",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1969-W45",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1970-W30",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1970-W45",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1964",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-CUDA-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-CUDA-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-CUDA-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-CUDA-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-DUSTER-340-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-DUSTER-340-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-DUSTER-340-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-DUSTER-340-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1971",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1972",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1973",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-SATELLITE-1965",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-SATELLITE-1966",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-SATELLITE-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT350-1967",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT350-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT350-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT350-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT500-1968",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT500-1969",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT500-1970",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-STUDEBAKER-AVANTI-R2",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-STUDEBAKER-CHALLENGER",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-THIRD-GEN-CAMARO-1982-1992-Z28-IROC-Z",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-THIRD-GEN-FIREBIRD-1982-1992-TRANS-AM-GTA-FORMULA",
+      "draft_msrp": 29.95
+    }
+  ]
+}

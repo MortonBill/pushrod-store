@@ -11,12 +11,19 @@ brand:
     - "RE-MC-"
     - "RE-CT-"
     - "RE-MP-"
+    # RE guide PDFs (checkout migration Lane 1, 2026-10-02). The prefix is
+    # claimed so the staged guide catalog (data/re-catalog.csv) loads under
+    # this brand — but every guide row ships listed=0 (dark): not listed,
+    # not purchasable, until the lane gate (object-storage upload + service
+    # bring-up + $29.95 test purchase) flips rows visible.
+    - "RE-GD-"
   # Unified-catalog ownership: which brand owns each prefix (for the 4-door gateway)
   ownership:
     "PR-": pushrod
     "RE-MC-": restorationessentials
     "RE-CT-": restorationessentials
     "RE-MP-": restorationessentials
+    "RE-GD-": restorationessentials
 
 theme:
   bg: "#101418"
@@ -40,6 +47,12 @@ catalog:
       prices_json: "/home/hatch/workspace/your_files/re-merch/modern-performance/wholesale-catalog.json"
     - csv: "/home/hatch/workspace/your_files/re-merch/classic-trucks/catalog-index.csv"
       prices_json: "/home/hatch/workspace/your_files/re-merch/classic-trucks/wholesale-catalog.json"
+    # Lane 1 guide catalog (2026-10-02): 383 staged guide rows, all
+    # listed=0 (dark). Deliverables live in private object storage, NOT in
+    # git — see data/re-digital-sources.json (upload work order) and
+    # backend/fulfillment/storage.py.
+    - csv: "data/re-catalog.csv"
+      prices_json: "data/re-prices.json"
   image_base: "/img"     # served from static/img -> re-merch symlinks
 
 # Pricing policy: ONLY prices confirmed in the library's price list are sellable.
@@ -67,6 +80,16 @@ store:
   # PRINTFUL_DRY_RUN=1 is an offline-dev escape hatch only, never the default.
   printful_api_key_env: "PRINTFUL_API_TOKEN"
   printful_dry_run: false
+
+# Fulfillment (per-row fulfillment_type rules; this block documents the mix).
+# RE-MC-/RE-CT-/RE-MP- merch is Printful print-on-demand — unchanged.
+# RE-GD- guides are DIGITAL: on payment the buyer gets a signed, expiring
+# email link to /download/<token>, and the bytes stream from private object
+# storage (backend/fulfillment/storage.py; DIGITAL_STORAGE_BACKEND=s3 on the
+# service). Guide rows stay listed=0 (dark) until the Lane 1 gate closes.
+fulfillment:
+  mode: mixed
+  delivery: "print via Printful (merch); signed download link + email (guides)"
 
 # Auction engine (auction-engine-spec §1; backend/auctions.py). The RE Render
 # service opts in here; auctions stay dark until the test gate passes and the

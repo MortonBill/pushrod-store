@@ -9,7 +9,14 @@ Covers the digital seam end to end without network or real keys:
      discipline for unconfigured Brevo/Kit;
   4. the Flask surface — /download streams only on a valid token,
      digital-only checkout skips Printful mapping + shipping collection,
-     /api/fulfill delivers digital-only orders with no shipping address.
+     /api/fulfill delivers digital-only orders with no shipping address;
+  5. delivery storage (fulfillment/storage.py) — local backend unchanged,
+     S3-compatible backend against an in-process fake bucket: signed
+     token -> storage fetch -> %PDF bytes, garbage token -> 403, missing
+     object -> 404, misconfiguration -> loud error, never a silent miss;
+  6. dark catalog staging (Lane 1) — the listed=0 flag: loaded but never
+     listed and never purchasable; the real RE guide catalog (383 rows,
+     358 staged deliverables) loads fully dark with live-index prices.
 
 Run: ./../.venv/bin/python backend/test_digital.py   (from pushrod-store/)
 """
@@ -306,6 +313,249 @@ check("/api/fulfill delivers digital-only order with no shipping address",
       f"{r.status_code} {body}")
 check("/api/fulfill used the dry-run email path (no BREVO_API_KEY)",
       body.get("digital", {}).get("email_dry_run") is True, str(body))
+
+# ---------- 5. delivery storage backends ----------
+import threading  # noqa: E402
+import urllib.parse  # noqa: E402
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer  # noqa: E402
+
+import yaml as _yaml  # noqa: E402
+
+from catalog import load_catalog as _load_catalog  # noqa: E402
+from fulfillment import storage as storage_mod  # noqa: E402
+
+# local backend (the default) — same bytes the Flask surface served above.
+local_store = storage_mod.get_storage(FILES_DIR)
+check("default storage backend is local", local_store.is_local is True)
+check("local storage finds an existing deliverable",
+      local_store.exists("playbook-a.pdf") is True)
+check("local storage reports a missing deliverable",
+      local_store.exists("nope.pdf") is False)
+try:
+    local_store.open("../outside.pdf")
+    check("local storage refuses path traversal", False)
+except storage_mod.StorageNotFound:
+    check("local storage refuses path traversal", True)
+
+# fake private bucket: path-style S3 over local HTTP, SigV4 header checked.
+FAKE_OBJECTS = {"storage-guide.pdf": b"%PDF-1.7 storage bytes\n"}
+
+
+class _FakeS3(BaseHTTPRequestHandler):
+    def log_message(self, *args):  # keep test output readable
+        pass
+
+    def _key(self):
+        path = urllib.parse.unquote(self.path).lstrip("/")
+        return path.split("/", 1)[1]  # strip bucket segment
+
+    def _authed(self):
+        return (self.headers.get("Authorization") or "").startswith(
+            "AWS4-HMAC-SHA256 Credential=fake-access-key/")
+
+    def do_GET(self):
+        if not self._authed():
+            self.send_response(401); self.end_headers(); return
+        data = FAKE_OBJECTS.get(self._key())
+        if data is None:
+            self.send_response(404); self.end_headers(); return
+        self.send_response(200)
+        self.send_header("Content-Type", "application/pdf")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_HEAD(self):
+        if not self._authed():
+            self.send_response(401); self.end_headers(); return
+        self.send_response(200 if self._key() in FAKE_OBJECTS else 404)
+        self.end_headers()
+
+    def do_PUT(self):
+        if not self._authed():
+            self.send_response(401); self.end_headers(); return
+        FAKE_OBJECTS[self._key()] = self.rfile.read(
+            int(self.headers.get("Content-Length") or 0))
+        self.send_response(200)
+        self.send_header("ETag", '"fake-etag"')
+        self.end_headers()
+
+
+_server = ThreadingHTTPServer(("127.0.0.1", 0), _FakeS3)
+threading.Thread(target=_server.serve_forever, daemon=True).start()
+_s3_env = {
+    "DIGITAL_STORAGE_BACKEND": "s3",
+    "DIGITAL_S3_BUCKET": "fake-bucket",
+    "DIGITAL_S3_REGION": "auto",
+    "DIGITAL_S3_ENDPOINT": f"http://127.0.0.1:{_server.server_address[1]}",
+    "DIGITAL_S3_ACCESS_KEY_ID": "fake-access-key",
+    "DIGITAL_S3_SECRET_ACCESS_KEY": "fake-secret-key",
+}
+_saved_env = {k: os.environ.get(k) for k in _s3_env}
+os.environ.update(_s3_env)
+try:
+    s3_store = storage_mod.get_storage()
+    check("s3 backend selected by env", s3_store.is_local is False)
+    _chunks, _size, _ctype = s3_store.open("storage-guide.pdf")
+    check("storage fetch returns the %PDF bytes",
+          b"".join(_chunks) == b"%PDF-1.7 storage bytes\n"
+          and _size == len(b"%PDF-1.7 storage bytes\n")
+          and _ctype == "application/pdf")
+    check("storage exists() true/false",
+          s3_store.exists("storage-guide.pdf") is True
+          and s3_store.exists("absent.pdf") is False)
+    try:
+        s3_store.open("absent.pdf")
+        check("missing object raises StorageNotFound", False)
+    except storage_mod.StorageNotFound:
+        check("missing object raises StorageNotFound", True)
+    s3_store.put("put-guide.pdf", b"%PDF-1.5 put bytes\n")
+    check("storage put -> fetch round-trip",
+          b"".join(s3_store.open("put-guide.pdf")[0])
+          == b"%PDF-1.5 put bytes\n")
+    try:
+        storage_mod.S3Storage.from_env({"DIGITAL_STORAGE_BACKEND": "s3"})
+        check("missing bucket/keys is a loud config error", False)
+    except storage_mod.StorageConfigError as e:
+        check("missing bucket/keys is a loud config error",
+              "DIGITAL_S3_BUCKET" in str(e), str(e))
+    try:
+        storage_mod.get_storage(env={"DIGITAL_STORAGE_BACKEND": "carrier-pigeon"})
+        check("unknown backend is a loud config error", False)
+    except storage_mod.StorageConfigError:
+        check("unknown backend is a loud config error", True)
+
+    # Flask surface over object storage: token -> storage fetch -> %PDF.
+    store_app.BY_SKU["PR-D010"] = {
+        "sku": "PR-D010", "prefix": "PR-", "owner": "pushrod",
+        "type": "guide", "fulfillment_type": "digital",
+        "digital_file": "storage-guide.pdf", "title": "Storage Guide",
+        "description": "d", "base_color": "n/a", "design_file": "g.pdf",
+        "image_url": "/img/muscle/g.pdf",
+        "price": {"amount": 29.95, "status": "draft"},
+        "purchasable": True, "needs_size": False,
+    }
+    store_app.BY_SKU["PR-D011"] = {
+        **store_app.BY_SKU["PR-D010"], "sku": "PR-D011",
+        "digital_file": "absent.pdf",
+    }
+    r = client.get("/download/" + app_signer.mint(
+        "PR-D010", "buyer@example.com", ttl_seconds=600))
+    check("/download streams %PDF bytes from object storage",
+          r.status_code == 200 and r.data == b"%PDF-1.7 storage bytes\n",
+          f"{r.status_code} {r.data[:40]}")
+    check("storage download is an attachment with the PDF name",
+          "storage-guide.pdf" in (r.headers.get("Content-Disposition") or ""),
+          r.headers.get("Content-Disposition"))
+    r = client.get("/download/not-a-token")
+    check("/download rejects a garbage token (403) on storage backend",
+          r.status_code == 403, r.status_code)
+    r = client.get("/download/" + app_signer.mint(
+        "PR-D010", "buyer@example.com", ttl_seconds=-10))
+    check("/download rejects an expired token (410) on storage backend",
+          r.status_code == 410, r.status_code)
+    r = client.get("/download/" + app_signer.mint(
+        "PR-D011", "buyer@example.com", ttl_seconds=600))
+    check("/download 404s when the storage object is missing",
+          r.status_code == 404, r.status_code)
+finally:
+    for k, v in _saved_env.items():
+        if v is None:
+            os.environ.pop(k, None)
+        else:
+            os.environ[k] = v
+    _server.shutdown()
+
+r = client.get(f"/download/{good}")
+check("local backend still serves exactly as before (env restored)",
+      r.status_code == 200 and b"%PDF-1.4 test bytes" in r.data,
+      r.status_code)
+
+# ---------- 6. dark catalog staging (listed=0) ----------
+dark_csv = os.path.join(TMP, "dark.csv")
+with open(dark_csv, "w") as f:
+    f.write("sku,type,title,description,base_color,design_file,"
+            "fulfillment_type,digital_file,listed\n")
+    f.write("PR-D020,guide,Dark Guide,d,n/a,g.pdf,digital,g.pdf,0\n")
+    f.write("PR-D021,guide,Listed Guide,d,n/a,g.pdf,digital,g.pdf,1\n")
+    f.write("PR-D022,guide,Blank Flag Guide,d,n/a,g.pdf,digital,g.pdf,\n")
+dark_prices = os.path.join(TMP, "dark-prices.json")
+with open(dark_prices, "w") as f:
+    json.dump({"products": [
+        {"sku": s, "msrp": 29.95} for s in ("PR-D020", "PR-D021", "PR-D022")
+    ]}, f)
+dark = {p["sku"]: p for p in _load_catalog(dark_csv, dark_prices, mapping={})}
+check("listed=0 loads dark: present, unlisted, NOT purchasable",
+      dark["PR-D020"]["listed"] is False
+      and dark["PR-D020"]["purchasable"] is False
+      and dark["PR-D020"]["price"] is not None)
+check("listed=1 behaves exactly as before",
+      dark["PR-D021"]["listed"] is True
+      and dark["PR-D021"]["purchasable"] is True)
+check("blank listed flag = listed (legacy default)",
+      dark["PR-D022"]["listed"] is True
+      and legacy["PR-T900"]["listed"] is True)
+
+# dark rows never surface publicly
+store_app.BY_SKU["PR-D020"] = dark["PR-D020"]
+store_app.PRODUCTS.append(dark["PR-D020"])
+r = client.get("/api/products")
+check("/api/products hides unlisted rows",
+      r.status_code == 200
+      and "PR-D020" not in {p["sku"] for p in r.get_json()})
+check("/api/products/<sku> 404s an unlisted row",
+      client.get("/api/products/PR-D020").status_code == 404)
+check("/product/<sku> 404s an unlisted row",
+      client.get("/product/PR-D020").status_code == 404)
+check("listed product page + API still serve",
+      client.get("/product/PR-D001").status_code == 200
+      and client.get("/api/products/PR-D001").status_code == 200)
+store_app.PRODUCTS.remove(dark["PR-D020"])
+del store_app.BY_SKU["PR-D020"]
+
+# the real staged RE guide catalog (checkout migration Lane 1)
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+re_prods = _load_catalog(os.path.join(REPO_ROOT, "data", "re-catalog.csv"),
+                         os.path.join(REPO_ROOT, "data", "re-prices.json"),
+                         sku_prefixes=["RE-GD-"])
+check("RE guide catalog loads 383 rows", len(re_prods) == 383, len(re_prods))
+check("every RE guide row is unlisted (dark)",
+      all(p["listed"] is False for p in re_prods))
+check("every RE guide row is NOT purchasable",
+      all(p["purchasable"] is False for p in re_prods))
+check("RE guide prices are draft (never confirmed) placeholders",
+      all(p["price"] and p["price"]["status"] == "draft" for p in re_prods))
+_amounts = {}
+for p in re_prods:
+    _amounts[p["price"]["amount"]] = _amounts.get(p["price"]["amount"], 0) + 1
+check("RE guide prices match the live index ($29.95 x382, $19.95 x1)",
+      _amounts == {29.95: 382, 19.95: 1}, str(_amounts))
+_with_file = [p for p in re_prods if p["digital_file"]]
+check("358 RE guides carry a deliverable; 25 await a source PDF",
+      len(_with_file) == 358
+      and all(p["digital_file"].endswith(".pdf") for p in _with_file)
+      and len(re_prods) - len(_with_file) == 25)
+_duster = next(p for p in re_prods if p["sku"] == "RE-GD-1970-PLYMOUTH-DUSTER")
+check("the manifest's $19.95 guide keeps its index price (Duster)",
+      _duster["price"]["amount"] == 19.95)
+
+with open(os.path.join(REPO_ROOT, "data", "re-digital-sources.json")) as f:
+    _sources = json.load(f)
+check("upload work order: 358 files / 587,159,744 bytes / 25 gaps",
+      _sources["storage"]["total_files"] == 358
+      and _sources["storage"]["total_bytes"] == 587159744
+      and sum(e["bytes"] for e in _sources["files"]) == 587159744
+      and len(_sources["missing_source_skus"]) == 25
+      and all(e["size_verified_against_manifest"] for e in _sources["files"]))
+
+with open(os.path.join(REPO_ROOT, "brands", "restorationessentials.yaml")) as f:
+    _re_brand = _yaml.safe_load(f)
+check("RE brand yaml claims RE-GD- and stages the guide catalog",
+      "RE-GD-" in _re_brand["brand"]["sku_prefixes"]
+      and any("re-catalog.csv" in (c.get("csv") or "")
+              for c in _re_brand["catalog"]["catalogs"])
+      and "download" in (_re_brand.get("fulfillment") or {}).get("delivery", ""))
+
 
 print()
 if fails:

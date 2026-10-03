@@ -23,6 +23,10 @@ OWNERSHIP = {
     "RE-MC-": "restorationessentials",
     "RE-CT-": "restorationessentials",
     "RE-MP-": "restorationessentials",
+    # RestorationEssentials guide PDFs (checkout migration Lane 1). Rows
+    # live in data/re-catalog.csv and load UNLISTED (dark) until the lane
+    # gate — see the `listed` handling in load_catalog.
+    "RE-GD-": "restorationessentials",
     "SF-": "skillforge",
     "IH-": "ironhead",
 }
@@ -34,9 +38,15 @@ IMAGE_LIBS = {
     "RE-MC-": "muscle",
     "RE-CT-": "truck",
     "RE-MP-": "modern",
+    "RE-GD-": "muscle",
     "SF-": "skillforge",
     "IH-": "ironhead",
 }
+
+# CSV `listed` values that take a product dark (loaded but never listed or
+# sellable). Anything else — including a missing column — means listed,
+# exactly as every pre-2026-10 catalog behaved.
+UNLISTED_VALUES = {"0", "false", "no", "dark", "unlisted"}
 
 # Product types that need a size choice at purchase time.
 SIZED_TYPES = {"tee", "sweatshirt"}
@@ -121,6 +131,15 @@ def load_catalog(csv_path, prices_json_path=None, sku_prefixes=None, mapping=Non
             price = prices.get(sku)
             design_file = row["design_file"].strip()
             ptype = row["type"].strip()
+            # Dark staging (2026-10-02, checkout migration Lane 1): a row
+            # may carry listed=0 to load into the catalog WITHOUT being
+            # listed or sellable on any surface — the catalog is staged
+            # ahead of its fulfillment (object-storage upload, service
+            # bring-up, test-purchase gate) and flips visible lane by
+            # lane. Unlisted forces not-purchasable regardless of price or
+            # deliverable, so a dark row can never be bought by accident.
+            listed = (row.get("listed") or "").strip().lower() \
+                not in UNLISTED_VALUES
             # Fulfillment seam (2026-10-02, SkillForge digital pilot): a
             # catalog row MAY carry fulfillment_type (print|digital) and
             # digital_file (the deliverable's filename, served from the
@@ -149,6 +168,8 @@ def load_catalog(csv_path, prices_json_path=None, sku_prefixes=None, mapping=Non
             else:
                 purchasable = price is not None and mapping_complete(
                     sku, ptype, mapping)
+            # Dark rows (listed=0) are never sellable, price/file or not.
+            purchasable = purchasable and listed
             products.append({
                 "sku": sku,
                 "prefix": prefix,
@@ -169,6 +190,9 @@ def load_catalog(csv_path, prices_json_path=None, sku_prefixes=None, mapping=Non
                 # enough — print needs every required Printful mapping key,
                 # digital needs its deliverable file (see above).
                 "purchasable": purchasable,
+                # Dark-staging flag (see above): False = loaded but never
+                # listed on public surfaces and never sellable.
+                "listed": listed,
                 "needs_size": ptype in SIZED_TYPES,
             })
     # Bill 2026-09-30: the 7B- seven-brand line sorts LAST in the catalog so
@@ -213,5 +237,7 @@ def catalog_stats(products):
         "price_tbd": sum(1 for p in products if p["price"] is None),
         "fulfillment_pending": sum(
             1 for p in products if p["price"] is not None and not p["purchasable"]),
+        # Dark-staged rows (listed=0): loaded, counted here, never listed.
+        "unlisted": sum(1 for p in products if not p.get("listed", True)),
         "by_owner": dict(Counter(p["owner"] for p in products)),
     }

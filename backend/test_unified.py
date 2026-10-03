@@ -156,7 +156,7 @@ check("mapping-status reports", r["mapped"] == len(SAMPLES),
       f"mapped={r['mapped']}")
 
 # 11. brand slices (catalog layer): pushrod PR- 156 (4 leather-patch hats removed
-# 2026-09-30) / RE 480
+# 2026-09-30) / RE 480 merch (+383 dark-staged guides since Lane 1, 2026-10-02)
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 push = load_unified_catalog(
     [(c["csv"], c.get("prices_json")) for c in
@@ -167,7 +167,16 @@ re = load_unified_catalog(
     [(c["csv"], c.get("prices_json")) for c in re_conf["catalog"]["catalogs"]],
     sku_prefixes=re_conf["brand"]["sku_prefixes"])
 check("pushrod slice 156", len(push) == 156, str(len(push)))
-check("RE slice 480", len(re) == 480, str(len(re)))
+# RE slice: 480 merch + 383 guide rows staged dark by checkout-migration
+# Lane 1 (2026-10-02, data/re-catalog.csv). The guide rows must stay
+# loaded-but-invisible until the lane gate — never listed, never sellable.
+check("RE slice 863 (480 merch + 383 dark guides)", len(re) == 863, str(len(re)))
+_guides = [p for p in re if p["prefix"] == "RE-GD-"]
+check("RE guide rows all dark in the slice",
+      len(_guides) == 383
+      and all(p["listed"] is False and p["purchasable"] is False
+              for p in _guides),
+      f"guides={len(_guides)}")
 check("RE slice has no PR-", all(p["prefix"] != "PR-" for p in re))
 
 print()

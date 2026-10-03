@@ -1,0 +1,2545 @@
+{
+  "catalog": "data/re-catalog.csv",
+  "generated_from": "your_files/business/render-checkout-migration-plan-2026-10-02.md \u00a79 (live /guides index crawl 2026-10-02)",
+  "storage": {
+    "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
+    "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
+    "total_files": 358,
+    "total_bytes": 587159744
+  },
+  "files": [
+    {
+      "sku": "RE-GD-1956-STUDEBAKER-HAWK",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1956-studebaker-hawk.pdf",
+      "bytes": 1858715,
+      "key": "RE_1956-studebaker-hawk.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1957-STUDEBAKER-HAWK",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1957-studebaker-hawk.pdf",
+      "bytes": 1861991,
+      "key": "RE_1957-studebaker-hawk.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1958-STUDEBAKER-HAWK",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1958-studebaker-hawk.pdf",
+      "bytes": 1866493,
+      "key": "RE_1958-studebaker-hawk.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1960-DODGE-DART",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1960-dodge-dart.pdf",
+      "bytes": 1714118,
+      "key": "RE_1960-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1961-DODGE-DART",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1961-dodge-dart.pdf",
+      "bytes": 1710995,
+      "key": "RE_1961-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1962-DODGE-DART",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1962-dodge-dart.pdf",
+      "bytes": 1710220,
+      "key": "RE_1962-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1962-PONTIAC-GRAND-PRIX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_pontiac-grand-prix-1962.pdf",
+      "bytes": 1726527,
+      "key": "RE_pontiac-grand-prix-1962.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1962-STUDEBAKER-HAWK",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1962-studebaker-hawk.pdf",
+      "bytes": 1854049,
+      "key": "RE_1962-studebaker-hawk.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1963-BUICK-RIVIERA",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-riviera-1963.pdf",
+      "bytes": 1737631,
+      "key": "RE_buick-riviera-1963.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1963-DODGE-DART",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1963-dodge-dart.pdf",
+      "bytes": 1707575,
+      "key": "RE_1963-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1963-PONTIAC-GRAND-PRIX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_pontiac-grand-prix-1963.pdf",
+      "bytes": 1726298,
+      "key": "RE_pontiac-grand-prix-1963.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1963-STUDEBAKER-HAWK",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1963-studebaker-hawk.pdf",
+      "bytes": 1868246,
+      "key": "RE_1963-studebaker-hawk.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1964-BUICK-RIVIERA",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-riviera-1964.pdf",
+      "bytes": 1734834,
+      "key": "RE_buick-riviera-1964.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1964-DODGE-DART",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1964-dodge-dart.pdf",
+      "bytes": 1709229,
+      "key": "RE_1964-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1964-PONTIAC-GRAND-PRIX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_pontiac-grand-prix-1964.pdf",
+      "bytes": 1726357,
+      "key": "RE_pontiac-grand-prix-1964.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1964-PONTIAC-GTO",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1964-pontiac-gto.pdf",
+      "bytes": 1782383,
+      "key": "RE_1964-pontiac-gto.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1964-STUDEBAKER-HAWK",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1964-studebaker-hawk.pdf",
+      "bytes": 1868753,
+      "key": "RE_1964-studebaker-hawk.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1965-BUICK-GRAN-SPORT-401-425",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1965-buick-gran-sport-401-425.pdf",
+      "bytes": 1708698,
+      "key": "RE_1965-buick-gran-sport-401-425.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1965-BUICK-GS",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-gs-1965.pdf",
+      "bytes": 1737067,
+      "key": "RE_buick-gs-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1965-BUICK-RIVIERA",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-riviera-1965.pdf",
+      "bytes": 1738327,
+      "key": "RE_buick-riviera-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1965-BUICK-RIVIERA-GS-401",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1965-buick-riviera-gs-401.pdf",
+      "bytes": 1706163,
+      "key": "RE_1965-buick-riviera-gs-401.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1965-BUICK-SKYLARK-GS",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-skylark-1965.pdf",
+      "bytes": 1735667,
+      "key": "RE_buick-skylark-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1965-DODGE-DART",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1965-dodge-dart.pdf",
+      "bytes": 1711071,
+      "key": "RE_1965-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1965-FORD-MUSTANG",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_ford-mustang-1965.pdf",
+      "bytes": 59658,
+      "key": "RE_ford-mustang-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1965-PONTIAC-GRAND-PRIX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_pontiac-grand-prix-1965.pdf",
+      "bytes": 1727133,
+      "key": "RE_pontiac-grand-prix-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1965-PONTIAC-GTO",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1965-pontiac-gto.pdf",
+      "bytes": 1819684,
+      "key": "RE_1965-pontiac-gto.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1965-SHELBY-GT350",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1965-shelby-gt350.pdf",
+      "bytes": 1795192,
+      "key": "RE_1965-shelby-gt350.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1966-BUICK-GRAN-SPORT-401-425",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1966-buick-gran-sport-401-425.pdf",
+      "bytes": 1707138,
+      "key": "RE_1966-buick-gran-sport-401-425.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1966-BUICK-GS",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-gs-1966.pdf",
+      "bytes": 1737775,
+      "key": "RE_buick-gs-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1966-BUICK-RIVIERA",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-riviera-1966.pdf",
+      "bytes": 1736761,
+      "key": "RE_buick-riviera-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1966-BUICK-SKYLARK-GS",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-skylark-1966.pdf",
+      "bytes": 1735673,
+      "key": "RE_buick-skylark-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1966-DODGE-CHARGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1966-dodge-charger.pdf",
+      "bytes": 1824803,
+      "key": "RE_1966-dodge-charger.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1966-FORD-SHELBY-GT350",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1966-ford-shelby-gt350.pdf",
+      "bytes": 1797466,
+      "key": "RE_1966-ford-shelby-gt350.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1966-PONTIAC-GRAND-PRIX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_pontiac-grand-prix-1966.pdf",
+      "bytes": 1727410,
+      "key": "RE_pontiac-grand-prix-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1966-PONTIAC-GTO",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1966-pontiac-gto.pdf",
+      "bytes": 1778773,
+      "key": "RE_1966-pontiac-gto.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-AMC-REBEL",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-amc-rebel.pdf",
+      "bytes": 1839948,
+      "key": "RE_1967-amc-rebel.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-BUICK-GRAN-SPORT-401-425",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-buick-gran-sport-401-425.pdf",
+      "bytes": 1708599,
+      "key": "RE_1967-buick-gran-sport-401-425.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-BUICK-GS",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-gs-1967.pdf",
+      "bytes": 1735991,
+      "key": "RE_buick-gs-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-BUICK-RIVIERA",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-riviera-1967.pdf",
+      "bytes": 1730952,
+      "key": "RE_buick-riviera-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-BUICK-SKYLARK-GS",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-skylark-1967.pdf",
+      "bytes": 1735318,
+      "key": "RE_buick-skylark-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-CHEVROLET-CAMARO",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-camaro-1967.pdf",
+      "bytes": 1752656,
+      "key": "RE_chevrolet-camaro-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-DODGE-CHARGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-dodge-charger.pdf",
+      "bytes": 1829105,
+      "key": "RE_1967-dodge-charger.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-FORD-MUSTANG-ELEANOR-RESTORATION",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_1967-ford-mustang-eleanor-restoration.pdf",
+      "bytes": 55207,
+      "key": "RE_1967-ford-mustang-eleanor-restoration.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-MUSTANG",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_1967-mustang.pdf",
+      "bytes": 51432,
+      "key": "RE_1967-mustang.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-PLYMOUTH-GTX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-plymouth-gtx.pdf",
+      "bytes": 1773454,
+      "key": "RE_1967-plymouth-gtx.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-PONTIAC-FIREBIRD",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-pontiac-firebird.pdf",
+      "bytes": 1784790,
+      "key": "RE_1967-pontiac-firebird.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-PONTIAC-GRAND-PRIX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_pontiac-grand-prix-1967.pdf",
+      "bytes": 1726150,
+      "key": "RE_pontiac-grand-prix-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-PONTIAC-GTO",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-pontiac-gto.pdf",
+      "bytes": 1727049,
+      "key": "RE_1967-pontiac-gto.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1967-SHELBY-GT500",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-shelby-gt500.pdf",
+      "bytes": 1824702,
+      "key": "RE_1967-shelby-gt500.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-AMC-AMX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-amc-amx.pdf",
+      "bytes": 1839310,
+      "key": "RE_1968-amc-amx.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-AMC-JAVELIN",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-amc-javelin.pdf",
+      "bytes": 1834736,
+      "key": "RE_1968-amc-javelin.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-BUICK-GRAN-SPORT-401-425",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-buick-gran-sport-401-425.pdf",
+      "bytes": 1709924,
+      "key": "RE_1968-buick-gran-sport-401-425.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-BUICK-RIVIERA",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-riviera-1968.pdf",
+      "bytes": 1730709,
+      "key": "RE_buick-riviera-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-BUICK-RIVIERA-GS-430",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-buick-riviera-gs-430.pdf",
+      "bytes": 1701977,
+      "key": "RE_1968-buick-riviera-gs-430.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-DODGE-CHARGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-dodge-charger.pdf",
+      "bytes": 1831395,
+      "key": "RE_1968-dodge-charger.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-DODGE-DART",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-dodge-dart.pdf",
+      "bytes": 1719015,
+      "key": "RE_1968-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-PLYMOUTH-GTX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-plymouth-gtx.pdf",
+      "bytes": 1774490,
+      "key": "RE_1968-plymouth-gtx.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-PLYMOUTH-ROAD-RUNNER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-plymouth-road-runner.pdf",
+      "bytes": 1728023,
+      "key": "RE_1968-plymouth-road-runner.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-PONTIAC-FIREBIRD",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-pontiac-firebird.pdf",
+      "bytes": 1809760,
+      "key": "RE_1968-pontiac-firebird.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-PONTIAC-GRAND-PRIX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_pontiac-grand-prix-1968.pdf",
+      "bytes": 1727406,
+      "key": "RE_pontiac-grand-prix-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-PONTIAC-GTO",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-pontiac-gto.pdf",
+      "bytes": 1782386,
+      "key": "RE_1968-pontiac-gto.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-PONTIAC-GTO-ENDURA",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-pontiac-gto-endura.pdf",
+      "bytes": 1729055,
+      "key": "RE_1968-pontiac-gto-endura.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1968-SHELBY-GT500KR",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-shelby-gt500kr.pdf",
+      "bytes": 1829702,
+      "key": "RE_1968-shelby-gt500kr.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-AMC-AMX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-amc-amx.pdf",
+      "bytes": 1846894,
+      "key": "RE_1969-amc-amx.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-AMC-JAVELIN",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-amc-javelin.pdf",
+      "bytes": 1841453,
+      "key": "RE_1969-amc-javelin.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-BUICK-GRAN-SPORT-401-425",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-buick-gran-sport-401-425.pdf",
+      "bytes": 1710190,
+      "key": "RE_1969-buick-gran-sport-401-425.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-BUICK-GS",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-gs-1969.pdf",
+      "bytes": 1748524,
+      "key": "RE_buick-gs-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-BUICK-RIVIERA",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-riviera-1969.pdf",
+      "bytes": 1730786,
+      "key": "RE_buick-riviera-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-BUICK-RIVIERA-GS-430",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-buick-riviera-gs-430.pdf",
+      "bytes": 1702222,
+      "key": "RE_1969-buick-riviera-gs-430.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-DODGE-CHARGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-dodge-charger.pdf",
+      "bytes": 1751498,
+      "key": "RE_1969-dodge-charger.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-DODGE-DART",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-dodge-dart.pdf",
+      "bytes": 1724848,
+      "key": "RE_1969-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-FORD-MUSTANG-BOSS-302-RESTORATION",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_1969-ford-mustang-boss-302-restoration.pdf",
+      "bytes": 54305,
+      "key": "RE_1969-ford-mustang-boss-302-restoration.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-PLYMOUTH-GTX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-plymouth-gtx.pdf",
+      "bytes": 1772414,
+      "key": "RE_1969-plymouth-gtx.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-PLYMOUTH-ROAD-RUNNER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-plymouth-road-runner.pdf",
+      "bytes": 1730738,
+      "key": "RE_1969-plymouth-road-runner.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-PONTIAC-FIREBIRD",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-pontiac-firebird.pdf",
+      "bytes": 1802869,
+      "key": "RE_1969-pontiac-firebird.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-PONTIAC-GRAND-PRIX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_pontiac-grand-prix-1969.pdf",
+      "bytes": 1725416,
+      "key": "RE_pontiac-grand-prix-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-PONTIAC-GTO",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-pontiac-gto.pdf",
+      "bytes": 1820647,
+      "key": "RE_1969-pontiac-gto.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1969-PONTIAC-GTO-JUDGE",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-pontiac-gto-judge.pdf",
+      "bytes": 1762610,
+      "key": "RE_1969-pontiac-gto-judge.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-AMC-AMX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-amc-amx.pdf",
+      "bytes": 1840851,
+      "key": "RE_1970-amc-amx.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-AMC-JAVELIN",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-amc-javelin.pdf",
+      "bytes": 1845246,
+      "key": "RE_1970-amc-javelin.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-BUICK-GS",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-gs-1970.pdf",
+      "bytes": 1747499,
+      "key": "RE_buick-gs-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-BUICK-GS-455",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-buick-gs-455.pdf",
+      "bytes": 1716922,
+      "key": "RE_1970-buick-gs-455.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-BUICK-GSX-455",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-buick-gsx-455.pdf",
+      "bytes": 1712277,
+      "key": "RE_1970-buick-gsx-455.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-BUICK-RIVIERA",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-riviera-1970.pdf",
+      "bytes": 1734195,
+      "key": "RE_buick-riviera-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-BUICK-SKYLARK-GSX-STAGE-1",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-buick-skylark-gsx-stage-1.pdf",
+      "bytes": 1710267,
+      "key": "RE_1970-buick-skylark-gsx-stage-1.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-CHEVELLE-SS-RESTORATION",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_1970-chevelle-ss-restoration.pdf",
+      "bytes": 62292,
+      "key": "RE_1970-chevelle-ss-restoration.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-CHEVY-CHEVELLE",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_1970-chevy-chevelle.pdf",
+      "bytes": 60885,
+      "key": "RE_1970-chevy-chevelle.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-DODGE-CHALLENGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-dodge-challenger.pdf",
+      "bytes": 1802027,
+      "key": "RE_1970-dodge-challenger.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-DODGE-CHARGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-dodge-charger.pdf",
+      "bytes": 1750482,
+      "key": "RE_1970-dodge-charger.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-DODGE-DART",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-dodge-dart.pdf",
+      "bytes": 1719112,
+      "key": "RE_1970-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-FORD-MUSTANG-BOSS-302-RESTORATION",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_1970-ford-mustang-boss-302-restoration.pdf",
+      "bytes": 51079,
+      "key": "RE_1970-ford-mustang-boss-302-restoration.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-PLYMOUTH-BARRACUDA",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-plymouth-barracuda.pdf",
+      "bytes": 1796678,
+      "key": "RE_1970-plymouth-barracuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-PLYMOUTH-GTX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-plymouth-gtx.pdf",
+      "bytes": 1731744,
+      "key": "RE_1970-plymouth-gtx.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-PLYMOUTH-HEMI-CUDA-RESTORATION",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-plymouth-hemi-cuda.pdf",
+      "bytes": 1781466,
+      "key": "RE_1970-plymouth-hemi-cuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-PLYMOUTH-ROAD-RUNNER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-plymouth-road-runner.pdf",
+      "bytes": 1734247,
+      "key": "RE_1970-plymouth-road-runner.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-PLYMOUTH-ROAD-RUNNER-SUPERBIRD",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-plymouth-road-runner-superbird.pdf",
+      "bytes": 1779822,
+      "key": "RE_1970-plymouth-road-runner-superbird.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-PONTIAC-FIREBIRD",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-pontiac-firebird.pdf",
+      "bytes": 1739420,
+      "key": "RE_1970-pontiac-firebird.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-PONTIAC-GRAND-PRIX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_pontiac-grand-prix-1970.pdf",
+      "bytes": 1726250,
+      "key": "RE_pontiac-grand-prix-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-PONTIAC-GTO",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-pontiac-gto.pdf",
+      "bytes": 1791106,
+      "key": "RE_1970-pontiac-gto.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1970-PONTIAC-TRANS-AM",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-pontiac-trans-am.pdf",
+      "bytes": 1761298,
+      "key": "RE_1970-pontiac-trans-am.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1971-AMC-JAVELIN",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-amc-javelin.pdf",
+      "bytes": 1846455,
+      "key": "RE_1971-amc-javelin.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1971-BUICK-GS",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-gs-1971.pdf",
+      "bytes": 1747391,
+      "key": "RE_buick-gs-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1971-BUICK-GS-455",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-buick-gs-455.pdf",
+      "bytes": 1712310,
+      "key": "RE_1971-buick-gs-455.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1971-DODGE-CHALLENGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-dodge-challenger.pdf",
+      "bytes": 1801806,
+      "key": "RE_1971-dodge-challenger.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1971-DODGE-CHARGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-dodge-charger.pdf",
+      "bytes": 1749582,
+      "key": "RE_1971-dodge-charger.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1971-DODGE-DART",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-dodge-dart.pdf",
+      "bytes": 1719227,
+      "key": "RE_1971-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1971-PLYMOUTH-GTX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-plymouth-gtx.pdf",
+      "bytes": 1732172,
+      "key": "RE_1971-plymouth-gtx.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1971-PONTIAC-FIREBIRD",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-pontiac-firebird.pdf",
+      "bytes": 1798617,
+      "key": "RE_1971-pontiac-firebird.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1971-PONTIAC-GRAND-PRIX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_pontiac-grand-prix-1971.pdf",
+      "bytes": 1726683,
+      "key": "RE_pontiac-grand-prix-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1971-PONTIAC-GTO",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-pontiac-gto.pdf",
+      "bytes": 1755874,
+      "key": "RE_1971-pontiac-gto.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1972-AMC-JAVELIN",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-amc-javelin.pdf",
+      "bytes": 1845034,
+      "key": "RE_1972-amc-javelin.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1972-BUICK-GS",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-gs-1972.pdf",
+      "bytes": 1747350,
+      "key": "RE_buick-gs-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1972-BUICK-GS-455",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-buick-gs-455.pdf",
+      "bytes": 1711567,
+      "key": "RE_1972-buick-gs-455.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1972-BUICK-RIVIERA",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-riviera-1972.pdf",
+      "bytes": 1735939,
+      "key": "RE_buick-riviera-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1972-DODGE-CHALLENGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-dodge-challenger.pdf",
+      "bytes": 1783937,
+      "key": "RE_1972-dodge-challenger.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1972-DODGE-CHARGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-dodge-charger.pdf",
+      "bytes": 1792011,
+      "key": "RE_1972-dodge-charger.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1972-DODGE-DART",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-dodge-dart.pdf",
+      "bytes": 1717383,
+      "key": "RE_1972-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1972-PONTIAC-FIREBIRD",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-pontiac-firebird.pdf",
+      "bytes": 1793363,
+      "key": "RE_1972-pontiac-firebird.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1972-PONTIAC-GRAND-PRIX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_pontiac-grand-prix-1972.pdf",
+      "bytes": 1726266,
+      "key": "RE_pontiac-grand-prix-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1972-PONTIAC-GTO",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-pontiac-gto.pdf",
+      "bytes": 1778946,
+      "key": "RE_1972-pontiac-gto.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1973-AMC-JAVELIN",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-amc-javelin.pdf",
+      "bytes": 1843712,
+      "key": "RE_1973-amc-javelin.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1973-BUICK-RIVIERA",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-riviera-1973.pdf",
+      "bytes": 1734821,
+      "key": "RE_buick-riviera-1973.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1973-DODGE-CHALLENGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-dodge-challenger.pdf",
+      "bytes": 1781326,
+      "key": "RE_1973-dodge-challenger.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1973-DODGE-CHARGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-dodge-charger.pdf",
+      "bytes": 1744405,
+      "key": "RE_1973-dodge-charger.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1973-DODGE-DART",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-dodge-dart.pdf",
+      "bytes": 1717826,
+      "key": "RE_1973-dodge-dart.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1973-PONTIAC-FIREBIRD",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-pontiac-firebird.pdf",
+      "bytes": 1800292,
+      "key": "RE_1973-pontiac-firebird.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1973-PONTIAC-GRAND-PRIX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_pontiac-grand-prix-1973.pdf",
+      "bytes": 1725173,
+      "key": "RE_pontiac-grand-prix-1973.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1973-PONTIAC-GTO",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-pontiac-gto.pdf",
+      "bytes": 1785670,
+      "key": "RE_1973-pontiac-gto.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-AMC-REBEL-1967-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-amc-rebel.pdf",
+      "bytes": 1808275,
+      "key": "RE_1970-amc-rebel.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-AMC-SC-RAMBLER-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_amc-sc-rambler-1969.pdf",
+      "bytes": 1722561,
+      "key": "RE_amc-sc-rambler-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-BUICK-GS-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-gs-1968.pdf",
+      "bytes": 1744369,
+      "key": "RE_buick-gs-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-BUICK-GS-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-gs-1973.pdf",
+      "bytes": 1733948,
+      "key": "RE_buick-gs-1973.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-BUICK-GSX",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-buick-gsx.pdf",
+      "bytes": 1801971,
+      "key": "RE_1972-buick-gsx.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-BUICK-RIVIERA-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-riviera-1971.pdf",
+      "bytes": 1733081,
+      "key": "RE_buick-riviera-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-BUICK-SKYLARK-1964",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_buick-skylark-1964.pdf",
+      "bytes": 1736658,
+      "key": "RE_buick-skylark-1964.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CADILLAC-ELDORADO",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_cadillac-eldorado-1967.pdf",
+      "bytes": 1774723,
+      "key": "RE_cadillac-eldorado-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-BEL-AIR-1955",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1955-chevrolet-bel-air.pdf",
+      "bytes": 1877227,
+      "key": "RE_1955-chevrolet-bel-air.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-BEL-AIR-1956",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1956-chevrolet-bel-air.pdf",
+      "bytes": 1852596,
+      "key": "RE_1956-chevrolet-bel-air.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-BEL-AIR-1957",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1957-chevrolet-bel-air.pdf",
+      "bytes": 1872138,
+      "key": "RE_1957-chevrolet-bel-air.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-chevrolet-camaro.pdf",
+      "bytes": 1811077,
+      "key": "RE_1967-chevrolet-camaro.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-camaro-1968.pdf",
+      "bytes": 1808361,
+      "key": "RE_chevrolet-camaro-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-camaro-1969.pdf",
+      "bytes": 1794326,
+      "key": "RE_chevrolet-camaro-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-camaro-1970.pdf",
+      "bytes": 1748746,
+      "key": "RE_chevrolet-camaro-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-camaro-1971.pdf",
+      "bytes": 1743198,
+      "key": "RE_chevrolet-camaro-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-camaro-1972.pdf",
+      "bytes": 1743113,
+      "key": "RE_chevrolet-camaro-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CAMARO-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-camaro-1973.pdf",
+      "bytes": 1738215,
+      "key": "RE_chevrolet-camaro-1973.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1964",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-1964.pdf",
+      "bytes": 42484,
+      "key": "RE_chevrolet-chevelle-1964.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1965",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-1965.pdf",
+      "bytes": 42086,
+      "key": "RE_chevrolet-chevelle-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1966",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-1966.pdf",
+      "bytes": 42596,
+      "key": "RE_chevrolet-chevelle-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1967",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-1967.pdf",
+      "bytes": 42966,
+      "key": "RE_chevrolet-chevelle-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1968",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-1968.pdf",
+      "bytes": 46236,
+      "key": "RE_chevrolet-chevelle-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1969",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-1969.pdf",
+      "bytes": 46596,
+      "key": "RE_chevrolet-chevelle-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1970",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-1970.pdf",
+      "bytes": 44179,
+      "key": "RE_chevrolet-chevelle-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1971",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-1971.pdf",
+      "bytes": 43696,
+      "key": "RE_chevrolet-chevelle-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1972",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-1972.pdf",
+      "bytes": 44216,
+      "key": "RE_chevrolet-chevelle-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-1973",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-1973.pdf",
+      "bytes": 43822,
+      "key": "RE_chevrolet-chevelle-1973.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-SS-454-1970",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-ss-454-1970.pdf",
+      "bytes": 58628,
+      "key": "RE_chevrolet-chevelle-ss-454-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-SS-454-1971",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-ss-454-1971.pdf",
+      "bytes": 57741,
+      "key": "RE_chevrolet-chevelle-ss-454-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CHEVELLE-SS-454-1972",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_chevrolet-chevelle-ss-454-1972.pdf",
+      "bytes": 58307,
+      "key": "RE_chevrolet-chevelle-ss-454-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1953",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-corvette-1953.pdf",
+      "bytes": 1814705,
+      "key": "RE_chevrolet-corvette-1953.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1954",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-corvette-1954.pdf",
+      "bytes": 1817354,
+      "key": "RE_chevrolet-corvette-1954.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1955",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-corvette-1955.pdf",
+      "bytes": 1857251,
+      "key": "RE_chevrolet-corvette-1955.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1956",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-corvette-1956.pdf",
+      "bytes": 1852782,
+      "key": "RE_chevrolet-corvette-1956.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1957",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-corvette-1957.pdf",
+      "bytes": 1851366,
+      "key": "RE_chevrolet-corvette-1957.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1958",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-corvette-1958.pdf",
+      "bytes": 1856741,
+      "key": "RE_chevrolet-corvette-1958.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1959",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-corvette-1959.pdf",
+      "bytes": 1822789,
+      "key": "RE_chevrolet-corvette-1959.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1960",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-corvette-1960.pdf",
+      "bytes": 1827818,
+      "key": "RE_chevrolet-corvette-1960.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1961",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-corvette-1961.pdf",
+      "bytes": 1853296,
+      "key": "RE_chevrolet-corvette-1961.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1962",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-corvette-1962.pdf",
+      "bytes": 1856656,
+      "key": "RE_chevrolet-corvette-1962.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1963",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-corvette-1963.pdf",
+      "bytes": 1861101,
+      "key": "RE_chevrolet-corvette-1963.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1964",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1964-chevrolet-corvette.pdf",
+      "bytes": 1851745,
+      "key": "RE_1964-chevrolet-corvette.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1965",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1965-chevrolet-corvette.pdf",
+      "bytes": 1862034,
+      "key": "RE_1965-chevrolet-corvette.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1966",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1966-chevrolet-corvette.pdf",
+      "bytes": 1854974,
+      "key": "RE_1966-chevrolet-corvette.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-chevrolet-corvette.pdf",
+      "bytes": 1860649,
+      "key": "RE_1967-chevrolet-corvette.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-chevrolet-corvette.pdf",
+      "bytes": 1857718,
+      "key": "RE_1968-chevrolet-corvette.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-chevrolet-corvette.pdf",
+      "bytes": 1864833,
+      "key": "RE_1969-chevrolet-corvette.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-chevrolet-corvette.pdf",
+      "bytes": 1852549,
+      "key": "RE_1970-chevrolet-corvette.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-chevrolet-corvette.pdf",
+      "bytes": 1854278,
+      "key": "RE_1971-chevrolet-corvette.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-chevrolet-corvette.pdf",
+      "bytes": 1855828,
+      "key": "RE_1972-chevrolet-corvette.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-CORVETTE-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-chevrolet-corvette.pdf",
+      "bytes": 1854349,
+      "key": "RE_1973-chevrolet-corvette.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1964",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-el-camino-1964.pdf",
+      "bytes": 1859258,
+      "key": "RE_chevrolet-el-camino-1964.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1965",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-el-camino-1965.pdf",
+      "bytes": 1850397,
+      "key": "RE_chevrolet-el-camino-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1966",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-el-camino-1966.pdf",
+      "bytes": 1863068,
+      "key": "RE_chevrolet-el-camino-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-el-camino-1967.pdf",
+      "bytes": 1860656,
+      "key": "RE_chevrolet-el-camino-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-el-camino-1968.pdf",
+      "bytes": 1855605,
+      "key": "RE_chevrolet-el-camino-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-el-camino-1969.pdf",
+      "bytes": 1866846,
+      "key": "RE_chevrolet-el-camino-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-el-camino-1970.pdf",
+      "bytes": 1864061,
+      "key": "RE_chevrolet-el-camino-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-el-camino-1971.pdf",
+      "bytes": 1859972,
+      "key": "RE_chevrolet-el-camino-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-EL-CAMINO-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-el-camino-1972.pdf",
+      "bytes": 1854889,
+      "key": "RE_chevrolet-el-camino-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1958",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1958-chevrolet-impala.pdf",
+      "bytes": 1855640,
+      "key": "RE_1958-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1959",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1959-chevrolet-impala.pdf",
+      "bytes": 1842108,
+      "key": "RE_1959-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1960",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1960-chevrolet-impala.pdf",
+      "bytes": 1845641,
+      "key": "RE_1960-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1961",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1961-chevrolet-impala.pdf",
+      "bytes": 1853212,
+      "key": "RE_1961-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1962",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1962-chevrolet-impala.pdf",
+      "bytes": 1850577,
+      "key": "RE_1962-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1963",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1963-chevrolet-impala.pdf",
+      "bytes": 1851218,
+      "key": "RE_1963-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1964",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1964-chevrolet-impala.pdf",
+      "bytes": 1853567,
+      "key": "RE_1964-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1965",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1965-chevrolet-impala.pdf",
+      "bytes": 1863232,
+      "key": "RE_1965-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1966",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1966-chevrolet-impala.pdf",
+      "bytes": 1855394,
+      "key": "RE_1966-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-chevrolet-impala.pdf",
+      "bytes": 1852386,
+      "key": "RE_1967-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-chevrolet-impala.pdf",
+      "bytes": 1862270,
+      "key": "RE_1968-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-chevrolet-impala.pdf",
+      "bytes": 1868211,
+      "key": "RE_1969-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-chevrolet-impala.pdf",
+      "bytes": 1863119,
+      "key": "RE_1970-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-chevrolet-impala.pdf",
+      "bytes": 1862123,
+      "key": "RE_1971-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-chevrolet-impala.pdf",
+      "bytes": 1863542,
+      "key": "RE_1972-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-chevrolet-impala.pdf",
+      "bytes": 1856084,
+      "key": "RE_1973-chevrolet-impala.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1961",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-impala-ss-1961.pdf",
+      "bytes": 1906899,
+      "key": "RE_chevrolet-impala-ss-1961.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1962",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-impala-ss-1962.pdf",
+      "bytes": 1890710,
+      "key": "RE_chevrolet-impala-ss-1962.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1963",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-impala-ss-1963.pdf",
+      "bytes": 1879598,
+      "key": "RE_chevrolet-impala-ss-1963.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1964",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-impala-ss-1964.pdf",
+      "bytes": 1884531,
+      "key": "RE_chevrolet-impala-ss-1964.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1965",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-impala-ss-1965.pdf",
+      "bytes": 1853621,
+      "key": "RE_chevrolet-impala-ss-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1966",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-impala-ss-1966.pdf",
+      "bytes": 1862620,
+      "key": "RE_chevrolet-impala-ss-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-impala-ss-1967.pdf",
+      "bytes": 1811388,
+      "key": "RE_chevrolet-impala-ss-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-impala-ss-1968.pdf",
+      "bytes": 1816617,
+      "key": "RE_chevrolet-impala-ss-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-IMPALA-SS-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-impala-ss-1969.pdf",
+      "bytes": 1821908,
+      "key": "RE_chevrolet-impala-ss-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-MONTE-CARLO-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-monte-carlo-1970.pdf",
+      "bytes": 1823737,
+      "key": "RE_chevrolet-monte-carlo-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-MONTE-CARLO-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-monte-carlo-1971.pdf",
+      "bytes": 1733740,
+      "key": "RE_chevrolet-monte-carlo-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-MONTE-CARLO-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-monte-carlo-1972.pdf",
+      "bytes": 1734508,
+      "key": "RE_chevrolet-monte-carlo-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-MONTE-CARLO-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-monte-carlo-1973.pdf",
+      "bytes": 1731819,
+      "key": "RE_chevrolet-monte-carlo-1973.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1962",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-nova-1962.pdf",
+      "bytes": 1755979,
+      "key": "RE_chevrolet-nova-1962.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1963",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-nova-1963.pdf",
+      "bytes": 1771852,
+      "key": "RE_chevrolet-nova-1963.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1964",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-nova-1964.pdf",
+      "bytes": 1733504,
+      "key": "RE_chevrolet-nova-1964.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1965",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-nova-1965.pdf",
+      "bytes": 1779108,
+      "key": "RE_chevrolet-nova-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1966",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-nova-1966.pdf",
+      "bytes": 1735387,
+      "key": "RE_chevrolet-nova-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-nova-1967.pdf",
+      "bytes": 1732718,
+      "key": "RE_chevrolet-nova-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-nova-1968.pdf",
+      "bytes": 1738419,
+      "key": "RE_chevrolet-nova-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-nova-1969.pdf",
+      "bytes": 1738862,
+      "key": "RE_chevrolet-nova-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-nova-1970.pdf",
+      "bytes": 1739201,
+      "key": "RE_chevrolet-nova-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-nova-1971.pdf",
+      "bytes": 1730571,
+      "key": "RE_chevrolet-nova-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-nova-1972.pdf",
+      "bytes": 1731661,
+      "key": "RE_chevrolet-nova-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-NOVA-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_chevrolet-nova-1973.pdf",
+      "bytes": 1731399,
+      "key": "RE_chevrolet-nova-1973.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHRYSLER-300",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/finished/RE_chrysler-300-1970.pdf",
+      "bytes": 4619476,
+      "key": "RE_chrysler-300-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-DODGE-CORONET-RT-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-dodge-coronet-rt.pdf",
+      "bytes": 1730174,
+      "key": "RE_1967-dodge-coronet-rt.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-DODGE-CORONET-RT-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-dodge-coronet-rt.pdf",
+      "bytes": 1729400,
+      "key": "RE_1968-dodge-coronet-rt.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-DODGE-CORONET-RT-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-dodge-coronet-rt.pdf",
+      "bytes": 1729627,
+      "key": "RE_1969-dodge-coronet-rt.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-DODGE-CORONET-RT-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-dodge-coronet-rt.pdf",
+      "bytes": 1731442,
+      "key": "RE_1970-dodge-coronet-rt.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-DODGE-DEMON-340-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-dodge-demon-340.pdf",
+      "bytes": 1726773,
+      "key": "RE_1971-dodge-demon-340.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-DODGE-DEMON-340-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-dodge-demon-340.pdf",
+      "bytes": 1728289,
+      "key": "RE_1972-dodge-demon-340.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-DODGE-SUPER-BEE-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-dodge-super-bee.pdf",
+      "bytes": 1731615,
+      "key": "RE_1968-dodge-super-bee.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-DODGE-SUPER-BEE-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-dodge-super-bee.pdf",
+      "bytes": 1737483,
+      "key": "RE_1969-dodge-super-bee.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-DODGE-SUPER-BEE-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-dodge-super-bee.pdf",
+      "bytes": 1733644,
+      "key": "RE_1970-dodge-super-bee.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-DODGE-SUPER-BEE-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-dodge-super-bee.pdf",
+      "bytes": 1744585,
+      "key": "RE_1971-dodge-super-bee.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1962",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1962-ford-fairlane.pdf",
+      "bytes": 1802650,
+      "key": "RE_1962-ford-fairlane.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1963",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1963-ford-fairlane.pdf",
+      "bytes": 1736449,
+      "key": "RE_1963-ford-fairlane.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1964",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1964-ford-fairlane.pdf",
+      "bytes": 1741724,
+      "key": "RE_1964-ford-fairlane.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1965",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1965-ford-fairlane.pdf",
+      "bytes": 1730833,
+      "key": "RE_1965-ford-fairlane.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1966",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1966-ford-fairlane.pdf",
+      "bytes": 1737463,
+      "key": "RE_1966-ford-fairlane.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-ford-fairlane.pdf",
+      "bytes": 1737075,
+      "key": "RE_1967-ford-fairlane.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-ford-fairlane.pdf",
+      "bytes": 1741973,
+      "key": "RE_1968-ford-fairlane.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-ford-fairlane.pdf",
+      "bytes": 1735672,
+      "key": "RE_1969-ford-fairlane.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-FAIRLANE-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-ford-fairlane.pdf",
+      "bytes": 1737798,
+      "key": "RE_1970-ford-fairlane.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1959",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1959.pdf",
+      "bytes": 1737674,
+      "key": "RE_ford-galaxie-1959.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1960",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1960.pdf",
+      "bytes": 1733271,
+      "key": "RE_ford-galaxie-1960.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1961",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1961.pdf",
+      "bytes": 1737679,
+      "key": "RE_ford-galaxie-1961.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1962",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1962.pdf",
+      "bytes": 1735669,
+      "key": "RE_ford-galaxie-1962.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1963",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1963.pdf",
+      "bytes": 1747174,
+      "key": "RE_ford-galaxie-1963.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1963-HALF",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1963-half.pdf",
+      "bytes": 1740875,
+      "key": "RE_ford-galaxie-1963-half.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1964",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1964.pdf",
+      "bytes": 1737751,
+      "key": "RE_ford-galaxie-1964.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1965",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1965.pdf",
+      "bytes": 1732886,
+      "key": "RE_ford-galaxie-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1966",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1966.pdf",
+      "bytes": 1735371,
+      "key": "RE_ford-galaxie-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1967.pdf",
+      "bytes": 1730334,
+      "key": "RE_ford-galaxie-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1969.pdf",
+      "bytes": 1737104,
+      "key": "RE_ford-galaxie-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1970.pdf",
+      "bytes": 1734329,
+      "key": "RE_ford-galaxie-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1971.pdf",
+      "bytes": 1735753,
+      "key": "RE_ford-galaxie-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1972.pdf",
+      "bytes": 1731681,
+      "key": "RE_ford-galaxie-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-GALAXIE-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-galaxie-1973.pdf",
+      "bytes": 1729464,
+      "key": "RE_ford-galaxie-1973.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1964",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_ford-mustang-1964.pdf",
+      "bytes": 59037,
+      "key": "RE_ford-mustang-1964.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1965",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_1965-ford-mustang.pdf",
+      "bytes": 49785,
+      "key": "RE_1965-ford-mustang.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1966",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_ford-mustang-1966.pdf",
+      "bytes": 56932,
+      "key": "RE_ford-mustang-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1967",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_ford-mustang-1967.pdf",
+      "bytes": 55334,
+      "key": "RE_ford-mustang-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1968",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_ford-mustang-1968.pdf",
+      "bytes": 54301,
+      "key": "RE_ford-mustang-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1969",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_ford-mustang-1969.pdf",
+      "bytes": 56185,
+      "key": "RE_ford-mustang-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1970",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_ford-mustang-1970.pdf",
+      "bytes": 56858,
+      "key": "RE_ford-mustang-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1971",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_ford-mustang-1971.pdf",
+      "bytes": 56969,
+      "key": "RE_ford-mustang-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1972",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_ford-mustang-1972.pdf",
+      "bytes": 50845,
+      "key": "RE_ford-mustang-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-1973",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_ford-mustang-1973.pdf",
+      "bytes": 47968,
+      "key": "RE_ford-mustang-1973.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-BOSS-1969",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_ford-mustang-boss-1969.pdf",
+      "bytes": 50072,
+      "key": "RE_ford-mustang-boss-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-BOSS-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-mustang-boss-1970.pdf",
+      "bytes": 1820485,
+      "key": "RE_ford-mustang-boss-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-BOSS-1971",
+      "source": "/home/hatch/workspace/goals/launch-my-five-brands-on-facebook/files/re-guide-rebuild/wave-1/RE_ford-mustang-boss-1971.pdf",
+      "bytes": 49274,
+      "key": "RE_ford-mustang-boss-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-BOSS-429-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-mustang-boss-429-1969.pdf",
+      "bytes": 1769839,
+      "key": "RE_ford-mustang-boss-429-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-MUSTANG-BOSS-429-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-mustang-boss-429-1970.pdf",
+      "bytes": 1764934,
+      "key": "RE_ford-mustang-boss-429-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-TALLADEGA-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_ford-talladega-1969.pdf",
+      "bytes": 1798425,
+      "key": "RE_ford-talladega-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-TORINO-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-ford-torino.pdf",
+      "bytes": 1742360,
+      "key": "RE_1968-ford-torino.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-TORINO-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-ford-torino.pdf",
+      "bytes": 1741125,
+      "key": "RE_1969-ford-torino.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-TORINO-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-ford-torino.pdf",
+      "bytes": 1736863,
+      "key": "RE_1970-ford-torino.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-TORINO-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-ford-torino.pdf",
+      "bytes": 1734622,
+      "key": "RE_1971-ford-torino.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-TORINO-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-ford-torino.pdf",
+      "bytes": 1729325,
+      "key": "RE_1972-ford-torino.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-TORINO-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-ford-torino.pdf",
+      "bytes": 1728951,
+      "key": "RE_1973-ford-torino.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-MERCURY-COUGAR-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_mercury-cougar-1967.pdf",
+      "bytes": 1837537,
+      "key": "RE_mercury-cougar-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-MERCURY-COUGAR-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_mercury-cougar-1968.pdf",
+      "bytes": 1846464,
+      "key": "RE_mercury-cougar-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-MERCURY-COUGAR-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_mercury-cougar-1969.pdf",
+      "bytes": 1848102,
+      "key": "RE_mercury-cougar-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-MERCURY-COUGAR-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_mercury-cougar-1970.pdf",
+      "bytes": 1844568,
+      "key": "RE_mercury-cougar-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-MERCURY-COUGAR-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_mercury-cougar-1971.pdf",
+      "bytes": 1840684,
+      "key": "RE_mercury-cougar-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1964",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1964-mercury-cyclone.pdf",
+      "bytes": 1724832,
+      "key": "RE_1964-mercury-cyclone.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1965",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1965-mercury-cyclone.pdf",
+      "bytes": 1729931,
+      "key": "RE_1965-mercury-cyclone.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1966",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1966-mercury-cyclone.pdf",
+      "bytes": 1735741,
+      "key": "RE_1966-mercury-cyclone.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-mercury-cyclone.pdf",
+      "bytes": 1788677,
+      "key": "RE_1967-mercury-cyclone.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-mercury-cyclone.pdf",
+      "bytes": 1738043,
+      "key": "RE_1968-mercury-cyclone.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-mercury-cyclone.pdf",
+      "bytes": 1737566,
+      "key": "RE_1969-mercury-cyclone.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-MERCURY-CYCLONE-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-mercury-cyclone.pdf",
+      "bytes": 1730796,
+      "key": "RE_1971-mercury-cyclone.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1964",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1964.pdf",
+      "bytes": 1793504,
+      "key": "RE_oldsmobile-442-1964.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1965",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1965.pdf",
+      "bytes": 1790294,
+      "key": "RE_oldsmobile-442-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1966",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1966.pdf",
+      "bytes": 1792796,
+      "key": "RE_oldsmobile-442-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1967.pdf",
+      "bytes": 1795208,
+      "key": "RE_oldsmobile-442-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1968.pdf",
+      "bytes": 1791046,
+      "key": "RE_oldsmobile-442-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1968-W45",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1968-w45.pdf",
+      "bytes": 1782343,
+      "key": "RE_oldsmobile-442-1968-w45.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1969.pdf",
+      "bytes": 1790363,
+      "key": "RE_oldsmobile-442-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1969-W45",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1969-w45.pdf",
+      "bytes": 1780958,
+      "key": "RE_oldsmobile-442-1969-w45.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1970.pdf",
+      "bytes": 1791841,
+      "key": "RE_oldsmobile-442-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1970-W30",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1970-w30.pdf",
+      "bytes": 1779132,
+      "key": "RE_oldsmobile-442-1970-w30.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1970-W45",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1970-w45.pdf",
+      "bytes": 1777154,
+      "key": "RE_oldsmobile-442-1970-w45.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1971.pdf",
+      "bytes": 1789875,
+      "key": "RE_oldsmobile-442-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1972.pdf",
+      "bytes": 1798965,
+      "key": "RE_oldsmobile-442-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-442-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-442-1973.pdf",
+      "bytes": 1796127,
+      "key": "RE_oldsmobile-442-1973.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1964",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-cutlass-1964.pdf",
+      "bytes": 1787150,
+      "key": "RE_oldsmobile-cutlass-1964.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1965",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-cutlass-1965.pdf",
+      "bytes": 1786733,
+      "key": "RE_oldsmobile-cutlass-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1966",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-cutlass-1966.pdf",
+      "bytes": 1786513,
+      "key": "RE_oldsmobile-cutlass-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-cutlass-1967.pdf",
+      "bytes": 1796967,
+      "key": "RE_oldsmobile-cutlass-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-cutlass-1968.pdf",
+      "bytes": 1790234,
+      "key": "RE_oldsmobile-cutlass-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-cutlass-1969.pdf",
+      "bytes": 1786733,
+      "key": "RE_oldsmobile-cutlass-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-cutlass-1970.pdf",
+      "bytes": 1796429,
+      "key": "RE_oldsmobile-cutlass-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-cutlass-1971.pdf",
+      "bytes": 1795526,
+      "key": "RE_oldsmobile-cutlass-1971.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-cutlass-1972.pdf",
+      "bytes": 1800167,
+      "key": "RE_oldsmobile-cutlass-1972.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-OLDSMOBILE-CUTLASS-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_oldsmobile-cutlass-1973.pdf",
+      "bytes": 1797500,
+      "key": "RE_oldsmobile-cutlass-1973.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1964",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1964-plymouth-barracuda.pdf",
+      "bytes": 1787183,
+      "key": "RE_1964-plymouth-barracuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1965",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1965-plymouth-barracuda.pdf",
+      "bytes": 1738461,
+      "key": "RE_1965-plymouth-barracuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1966",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1966-plymouth-barracuda.pdf",
+      "bytes": 1735041,
+      "key": "RE_1966-plymouth-barracuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1967-plymouth-barracuda.pdf",
+      "bytes": 1741942,
+      "key": "RE_1967-plymouth-barracuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-plymouth-barracuda.pdf",
+      "bytes": 1748142,
+      "key": "RE_1968-plymouth-barracuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-plymouth-barracuda.pdf",
+      "bytes": 1751849,
+      "key": "RE_1969-plymouth-barracuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_plymouth-barracuda-1970.pdf",
+      "bytes": 1744548,
+      "key": "RE_plymouth-barracuda-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-plymouth-barracuda.pdf",
+      "bytes": 1797463,
+      "key": "RE_1971-plymouth-barracuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-plymouth-barracuda.pdf",
+      "bytes": 1819013,
+      "key": "RE_1972-plymouth-barracuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-BARRACUDA-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-plymouth-barracuda.pdf",
+      "bytes": 1780549,
+      "key": "RE_1973-plymouth-barracuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-CUDA-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-plymouth-cuda.pdf",
+      "bytes": 1791513,
+      "key": "RE_1970-plymouth-cuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-CUDA-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-plymouth-cuda.pdf",
+      "bytes": 1745181,
+      "key": "RE_1971-plymouth-cuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-CUDA-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-plymouth-cuda.pdf",
+      "bytes": 1731674,
+      "key": "RE_1972-plymouth-cuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-CUDA-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-plymouth-cuda.pdf",
+      "bytes": 1729401,
+      "key": "RE_1973-plymouth-cuda.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-DUSTER-340-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-plymouth-duster-340.pdf",
+      "bytes": 1727170,
+      "key": "RE_1970-plymouth-duster-340.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-DUSTER-340-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-plymouth-duster-340.pdf",
+      "bytes": 1727972,
+      "key": "RE_1971-plymouth-duster-340.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-DUSTER-340-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-plymouth-duster-340.pdf",
+      "bytes": 1726347,
+      "key": "RE_1972-plymouth-duster-340.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-DUSTER-340-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-plymouth-duster-340.pdf",
+      "bytes": 1725055,
+      "key": "RE_1973-plymouth-duster-340.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1968-plymouth-satellite.pdf",
+      "bytes": 1792901,
+      "key": "RE_1968-plymouth-satellite.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1969-plymouth-satellite.pdf",
+      "bytes": 1785902,
+      "key": "RE_1969-plymouth-satellite.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1971",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1971-plymouth-road-runner.pdf",
+      "bytes": 1733114,
+      "key": "RE_1971-plymouth-road-runner.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1972",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1972-plymouth-road-runner.pdf",
+      "bytes": 1732515,
+      "key": "RE_1972-plymouth-road-runner.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1973",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1973-plymouth-road-runner.pdf",
+      "bytes": 1800745,
+      "key": "RE_1973-plymouth-road-runner.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-SATELLITE-1965",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_plymouth-satellite-1965.pdf",
+      "bytes": 1744587,
+      "key": "RE_plymouth-satellite-1965.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-SATELLITE-1966",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_plymouth-satellite-1966.pdf",
+      "bytes": 1746510,
+      "key": "RE_plymouth-satellite-1966.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-PLYMOUTH-SATELLITE-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_plymouth-satellite-1967.pdf",
+      "bytes": 1747646,
+      "key": "RE_plymouth-satellite-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT350-1967",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_shelby-gt350-1967.pdf",
+      "bytes": 1794718,
+      "key": "RE_shelby-gt350-1967.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT350-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_shelby-gt350-1968.pdf",
+      "bytes": 1793649,
+      "key": "RE_shelby-gt350-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT350-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_shelby-gt350-1969.pdf",
+      "bytes": 1793478,
+      "key": "RE_shelby-gt350-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT350-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_shelby-gt350-1970.pdf",
+      "bytes": 1800267,
+      "key": "RE_shelby-gt350-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT500-1968",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_shelby-gt500-1968.pdf",
+      "bytes": 1800072,
+      "key": "RE_shelby-gt500-1968.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT500-1969",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_shelby-gt500-1969.pdf",
+      "bytes": 1793486,
+      "key": "RE_shelby-gt500-1969.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-SHELBY-GT500-1970",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_shelby-gt500-1970.pdf",
+      "bytes": 1802296,
+      "key": "RE_shelby-gt500-1970.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-STUDEBAKER-AVANTI-R2",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_studebaker-avanti-r2-1963.pdf",
+      "bytes": 1816888,
+      "key": "RE_studebaker-avanti-r2-1963.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-STUDEBAKER-CHALLENGER",
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/finished/RE_studebaker-challenger-1964.pdf",
+      "bytes": 4614102,
+      "key": "RE_studebaker-challenger-1964.pdf",
+      "size_verified_against_manifest": true
+    }
+  ],
+  "missing_source_skus": [
+    "RE-GD-1970-BUICK-GRAN-SPORT-40TH-ANNIVERSARY",
+    "RE-GD-1970-MERCURY-CYCLONE-SPOILER-429-SCJ",
+    "RE-GD-1970-PLYMOUTH-DUSTER",
+    "RE-GD-1972-MERCURY-COUGAR",
+    "RE-GD-1973-MERCURY-COUGAR",
+    "RE-GD-CHEVROLET-C-K-TRUCK-RESTORATION-GUIDE-1960-1966",
+    "RE-GD-CHEVROLET-C-K-TRUCK-RESTORATION-GUIDE-1967-1972-ACTION-LINE",
+    "RE-GD-CHEVROLET-CHEVELLE-SS-454",
+    "RE-GD-FORD-BRONCO-DRIVETRAIN-4X4-SYSTEMS-1966-1977",
+    "RE-GD-FORD-BRONCO-RESTORATION-GUIDE-1966-1977",
+    "RE-GD-FORD-F-SERIES-RESTORATION-GUIDE-1967-1972-BUMPSIDE",
+    "RE-GD-FORD-F-SERIES-RESTORATION-GUIDE-1973-1979-DENTSIDE",
+    "RE-GD-FORD-FALCON-SPRINT-1963-HALF",
+    "RE-GD-FORD-FALCON-SPRINT-1964",
+    "RE-GD-FORD-FALCON-SPRINT-1965",
+    "RE-GD-FOX-BODY-MUSTANG-1979-1993-5-0L-V8",
+    "RE-GD-FOX-BODY-MUSTANG-2-3T-SVO-SPECIAL-PERFORMANCE",
+    "RE-GD-GM-SQUAREBODY-TRUCK-RESTORATION-GUIDE-1973-1980",
+    "RE-GD-GM-SQUAREBODY-TRUCK-RESTORATION-GUIDE-1981-1987",
+    "RE-GD-K5-BLAZER-JIMMY-RESTORATION-GUIDE-1969-1972",
+    "RE-GD-K5-BLAZER-JIMMY-RESTORATION-GUIDE-1973-1991",
+    "RE-GD-MERCURY-429-SCJ",
+    "RE-GD-PLYMOUTH-ROAD-RUNNER-SATELLITE-1970",
+    "RE-GD-THIRD-GEN-CAMARO-1982-1992-Z28-IROC-Z",
+    "RE-GD-THIRD-GEN-FIREBIRD-1982-1992-TRANS-AM-GTA-FORMULA"
+  ]
+}

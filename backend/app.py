@@ -27,7 +27,7 @@ import os
 
 import stripe
 import yaml
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, Response, jsonify, request, send_from_directory, stream_with_context
 
 from catalog import load_unified_catalog, catalog_stats, APPAREL_SIZES, mapping_keys_for, mapping_complete
 from fulfillment.fulfill import (
@@ -35,6 +35,7 @@ from fulfillment.fulfill import (
     split_cart_lines,
 )
 from fulfillment import digital as digital_mod
+from fulfillment import storage as storage_mod
 from fulfillment.printful_client import PrintfulConfigError, PrintfulAPIError
 import wholesale as wholesale_mod
 import auctions as auctions_mod
@@ -210,7 +211,9 @@ def index():
 
 @app.get("/product/<sku>")
 def product_page(sku):
-    if sku not in BY_SKU:
+    p = BY_SKU.get(sku)
+    # Dark-staged rows (listed=0) have no public product page.
+    if not p or not p.get("listed", True):
         return "Not found", 404
     return send_from_directory(FRONTEND, "product.html")
 
@@ -290,17 +293,20 @@ def api_brand():
 @app.get("/api/products")
 def api_products():
     # wholesale_eligible is additive metadata for the storefront's partner
-    # pricing display; retail guests ignore it.
+    # pricing display; retail guests ignore it. Dark-staged rows (listed=0)
+    # never appear on public surfaces.
     return jsonify([
         {**p, "wholesale_eligible": wholesale_mod.is_wholesale_eligible(p)}
-        for p in PRODUCTS
+        for p in PRODUCTS if p.get("listed", True)
     ])
 
 
 @app.get("/api/products/<sku>")
 def api_product(sku):
     p = BY_SKU.get(sku)
-    return (jsonify(p), 200) if p else (jsonify({"error": "not found"}), 404)
+    if not p or not p.get("listed", True):
+        return jsonify({"error": "not found"}), 404
+    return jsonify(p)
 
 
 def _validate_cart(items, price_fn=None):
@@ -673,17 +679,41 @@ def download_file(token):
     if (not product or not _is_digital(sku)
             or not product.get("digital_file")):
         return jsonify({"error": "not found"}), 404
-    files_dir = os.path.realpath(_digital_files_dir())
-    # Basename only, and the resolved path must sit directly in the files
-    # dir — a catalog value can never traverse out of it.
+    # Byte source behind the token check (fulfillment/storage.py): local
+    # disk by default; private S3-compatible object storage when the
+    # catalog outgrows git (DIGITAL_STORAGE_BACKEND=s3). Token behavior is
+    # identical either way — only the byte fetch changes.
+    try:
+        backend = storage_mod.get_storage(_digital_files_dir())
+    except storage_mod.StorageConfigError as e:
+        return jsonify({"error": str(e)}), 503
+    # Basename only — a catalog value can never traverse out of the files
+    # dir or address an arbitrary storage key.
     filename = os.path.basename(product["digital_file"])
-    if os.path.dirname(os.path.realpath(
-            os.path.join(files_dir, filename))) != files_dir \
-            or not os.path.isfile(os.path.join(files_dir, filename)):
-        log.warning("download: digital file missing for sku %s", sku)
+    if backend.is_local:
+        files_dir = os.path.realpath(_digital_files_dir())
+        # The resolved path must sit directly in the files dir.
+        if os.path.dirname(os.path.realpath(
+                os.path.join(files_dir, filename))) != files_dir \
+                or not os.path.isfile(os.path.join(files_dir, filename)):
+            log.warning("download: digital file missing for sku %s", sku)
+            return jsonify({"error": "file not available — contact support"}), 404
+        log.info("download: sku %s served", sku)
+        return send_from_directory(files_dir, filename, as_attachment=True)
+    try:
+        chunks, size, content_type = backend.open(filename)
+    except storage_mod.StorageNotFound:
+        log.warning("download: digital object missing in storage for sku %s", sku)
         return jsonify({"error": "file not available — contact support"}), 404
-    log.info("download: sku %s served", sku)
-    return send_from_directory(files_dir, filename, as_attachment=True)
+    except storage_mod.StorageError as e:
+        log.warning("download: storage fetch failed for sku %s: %s", sku, e)
+        return jsonify({"error": "file temporarily unavailable — contact support"}), 502
+    log.info("download: sku %s served (object storage)", sku)
+    headers = {"Content-Disposition": f'attachment; filename="{filename}"'}
+    if size is not None:
+        headers["Content-Length"] = str(size)
+    return Response(stream_with_context(chunks),
+                    content_type=content_type, headers=headers)
 
 
 @app.get("/api/printful/mapping-status")
