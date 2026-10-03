@@ -568,12 +568,15 @@ check("RE brand yaml claims RE-GD- and stages the guide catalog",
 
 
 # ---------- 7. EverReady lane (checkout migration, Bill 2026-10-02) ----------
-# Canonical lineup staged dark. Delivery is the STANDARD store token path
+# Canonical lineup. Delivery is the STANDARD store token path
 # (fulfillment/digital.py): signed, expiring download links emailed on
 # payment, files served from the store disk — same as SkillForge/RE.
 # (Bill 2026-10-02 superseded the 2026-09-19 per-buyer Drive-sharing
 # decision; fulfillment/drive.py stays in the tree dormant, env-gated,
-# and routes nothing.)
+# and routes nothing.) The ER-FCC-001 $37 test-purchase gate passed
+# 2026-10-02 (charge -> tax -> byte-identical PDF), then the four
+# remaining deliverable rows flipped live; the four file-less rows
+# (AUTO/EAP/FPA/CSO) stay dark and unpurchasable by construction.
 from fulfillment import drive as drive_mod                     # noqa: E402
 import fulfillment.fulfill as _fulfill_mod                     # noqa: E402
 from fulfillment.fulfill import fulfill_paid_order             # noqa: E402
@@ -597,13 +600,18 @@ check("EverReady prices are the canonical lineup, confirmed",
       all(er_by_sku[s]["price"]["amount"] == amt
           and er_by_sku[s]["price"]["status"] == "confirmed"
           for s, amt in CANONICAL_PRICES.items()))
-check("EverReady gate SKU ER-FCC-001 is listed and purchasable at $37",
-      er_by_sku["ER-FCC-001"]["listed"] is True
-      and er_by_sku["ER-FCC-001"]["purchasable"] is True
-      and er_by_sku["ER-FCC-001"]["price"]["amount"] == 37.0)
-check("every other EverReady row stays unlisted (dark) and NOT purchasable",
+FILELESS = {"ER-AUTO-001", "ER-EAP-001", "ER-FPA-001", "ER-CSO-001"}
+LIVE_ER = {"ER-FCC-001", "ER-EK-001", "ER-DAI-001", "ER-LSIK-001", "ER-FRB-001"}
+check("the five deliverable EverReady products are listed and purchasable "
+      "at canonical prices (ER-FCC-001 gate passed 2026-10-02, then flip-all)",
+      all(er_by_sku[s]["listed"] is True
+          and er_by_sku[s]["purchasable"] is True
+          and er_by_sku[s]["price"]["amount"] == CANONICAL_PRICES[s]
+          for s in LIVE_ER), str(sorted(LIVE_ER)))
+check("the four file-less EverReady rows stay unlisted (dark) and NOT purchasable",
       all(p["listed"] is False and p["purchasable"] is False
-          for p in er_prods if p["sku"] != "ER-FCC-001"))
+          for p in er_prods if p["sku"] in FILELESS),
+      str(sorted(FILELESS)))
 check("every EverReady row is owned by everready and digital",
       all(p["owner"] == "everready" and p["fulfillment_type"] == "digital"
           for p in er_prods))
@@ -618,7 +626,6 @@ check("the bundle carries no file of its own but names both components",
       er_by_sku["ER-FRB-001"]["digital_file"] == ""
       and er_by_sku["ER-FRB-001"]["bundle_skus"]
       == ["ER-FCC-001", "ER-EK-001"])
-FILELESS = {"ER-AUTO-001", "ER-EAP-001", "ER-FPA-001", "ER-CSO-001"}
 check("manual/file-less rows can never be sold (no file, no bundle)",
       all(er_by_sku[s]["digital_file"] == ""
           and er_by_sku[s]["bundle_skus"] == [] for s in FILELESS),
@@ -643,16 +650,16 @@ check("the shared skillforge service loads ER rows dark (same store)",
       and any("everready-catalog.csv" in (c.get("csv") or "")
               for c in _sf_brand["catalog"]["catalogs"]))
 
-# a dark ER row cannot be sold even when loaded into the live catalog
-store_app.BY_SKU["ER-EK-001"] = er_by_sku["ER-EK-001"]
-r = client.post("/api/checkout", json={"items": [{"sku": "ER-EK-001",
+# a dark (file-less) ER row cannot be sold even when loaded into the live catalog
+store_app.BY_SKU["ER-EAP-001"] = er_by_sku["ER-EAP-001"]
+r = client.post("/api/checkout", json={"items": [{"sku": "ER-EAP-001",
                                                    "qty": 1}]})
 check("dark EverReady SKU is rejected at checkout (400)",
       r.status_code == 400 and "cannot be sold" in
       (r.get_json() or {}).get("error", ""), r.status_code)
 check("unlisted EverReady SKU 404s on the public API",
-      client.get("/api/products/ER-EK-001").status_code == 404)
-del store_app.BY_SKU["ER-EK-001"]
+      client.get("/api/products/ER-EAP-001").status_code == 404)
+del store_app.BY_SKU["ER-EAP-001"]
 
 # drive.py is dormant: unconfigured it can only dry-run, gate-on without
 # credentials is still a loud error, and the fulfillment router no
