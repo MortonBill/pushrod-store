@@ -151,9 +151,17 @@ def run_gate():
           f"price={lot['current_price_cents']}")
 
     # 5. Soft close: a bid inside the final 5 minutes extends +5.
+    # Compress the schedule so the next bid lands inside the final
+    # window. scheduled_close_at moves with current_close_at: the
+    # engine keeps current >= scheduled everywhere (approve/reschedule
+    # set them equal, soft close only extends) and the Postgres DDL
+    # enforces that as chk_close_times — rewinding current alone
+    # writes a state production code can never produce.
     with A._connect() as c:
-        c.execute("UPDATE lots SET current_close_at = ? WHERE id = ?",
-                  ((T0 + timedelta(minutes=2)).isoformat(), lot["id"]))
+        c.execute("UPDATE lots SET scheduled_close_at = ?,"
+                  " current_close_at = ? WHERE id = ?",
+                  ((T0 + timedelta(minutes=2)).isoformat(),
+                   (T0 + timedelta(minutes=2)).isoformat(), lot["id"]))
     res = A.place_bid(bid_lo["id"], lot["id"], 21000,
                       now=T0 + timedelta(minutes=1))
     lot = A.get_lot(lot["id"])

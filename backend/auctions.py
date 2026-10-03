@@ -371,6 +371,23 @@ class _Conn:
         self._cur.execute(_sql(sqlite_sql), _adapt_params(params))
         return self
 
+    def execute_script(self, script):
+        """Execute a multi-statement DDL script verbatim (Postgres only).
+
+        The schema script must NOT flow through execute(): psycopg scans
+        every query that arrives WITH a params argument — even an empty
+        one — for %s-style placeholders, and auctions_schema.sql carries
+        literal '%' characters ("4% buyer premium" comments), which
+        psycopg rejects with a ProgrammingError. Called with no params,
+        the driver sends the script uninterpreted and Postgres runs
+        every statement as written.
+        """
+        if _DIALECT != "postgres":
+            raise RuntimeError(
+                "execute_script is the Postgres DDL path; the SQLite"
+                " branch applies its own per-statement DDL")
+        self._cur.execute(script)
+
     def fetchone(self):
         return _adapt_row(self._cur.fetchone())
 
@@ -701,7 +718,10 @@ def _init_schema():
         with open(schema_path) as f:
             script = f.read()
         with _connect() as c:
-            c.execute(script)
+            # NOT c.execute(script): execute() always binds a params
+            # tuple, and psycopg's placeholder scan chokes on the
+            # script's literal '%' (see _Conn.execute_script).
+            c.execute_script(script)
         log.info("auctions schema ready (postgres)")
         return
     os.makedirs(os.path.dirname(_DB_PATH), exist_ok=True)
@@ -1457,9 +1477,9 @@ def _place_bid_validated(bidder_account_id, lot_id, max_bid_cents,
                 "INSERT INTO bids (id, lot_id, bidder_account_id,"
                 " max_bid_cents, effective_price_cents, status, proxy_rank,"
                 " placed_at, ip_address, user_agent, triggered_extension, created_at)"
-                " VALUES (?,?,?,?,?,'ACTIVE',1,?,?,?,0,?)",
+                " VALUES (?,?,?,?,?,'ACTIVE',1,?,?,?,?,?)",
                 (bid_id, lot_id, bidder["id"], max_bid, new_price,
-                 now_iso, ip_address, user_agent, now_iso))
+                 now_iso, ip_address, user_agent, False, now_iso))
             outcome = "leading"
         elif leader["bidder_account_id"] == bidder["id"]:
             # Case C — leader raising their own max: price never moves.
@@ -1470,10 +1490,10 @@ def _place_bid_validated(bidder_account_id, lot_id, max_bid_cents,
                 "INSERT INTO bids (id, lot_id, bidder_account_id,"
                 " max_bid_cents, effective_price_cents, status, proxy_rank,"
                 " placed_at, ip_address, user_agent, triggered_extension, created_at)"
-                " VALUES (?,?,?,?,?,'ACTIVE',?, ?,?,?,0,?)",
+                " VALUES (?,?,?,?,?,'ACTIVE',?, ?,?,?,?,?)",
                 (bid_id, lot_id, bidder["id"], max_bid,
                  int(leader["effective_price_cents"]),
-                 (leader["proxy_rank"] or 1) + 1, now_iso, ip_address, user_agent, now_iso))
+                 (leader["proxy_rank"] or 1) + 1, now_iso, ip_address, user_agent, False, now_iso))
             outcome = "raised"
         elif max_bid > int(leader["max_bid_cents"]):
             # Case B-1 — challenger wins at second-highest max + increment.
@@ -1487,9 +1507,9 @@ def _place_bid_validated(bidder_account_id, lot_id, max_bid_cents,
                 "INSERT INTO bids (id, lot_id, bidder_account_id,"
                 " max_bid_cents, effective_price_cents, status, proxy_rank,"
                 " placed_at, ip_address, user_agent, triggered_extension, created_at)"
-                " VALUES (?,?,?,?,?,'ACTIVE',?, ?,?,?,0,?)",
+                " VALUES (?,?,?,?,?,'ACTIVE',?, ?,?,?,?,?)",
                 (bid_id, lot_id, bidder["id"], max_bid, new_price,
-                 (leader["proxy_rank"] or 1) + 1, now_iso, ip_address, user_agent, now_iso))
+                 (leader["proxy_rank"] or 1) + 1, now_iso, ip_address, user_agent, False, now_iso))
             outcome = "leading"
         elif max_bid == int(leader["max_bid_cents"]):
             # Tie (§2.5): earliest bid keeps the lead at its full max.
@@ -1501,9 +1521,9 @@ def _place_bid_validated(bidder_account_id, lot_id, max_bid_cents,
                 "INSERT INTO bids (id, lot_id, bidder_account_id,"
                 " max_bid_cents, effective_price_cents, status, proxy_rank,"
                 " placed_at, ip_address, user_agent, triggered_extension, created_at)"
-                " VALUES (?,?,?,?,?,'OUTBID',?, ?,?,?,0,?)",
+                " VALUES (?,?,?,?,?,'OUTBID',?, ?,?,?,?,?)",
                 (bid_id, lot_id, bidder["id"], max_bid, max_bid,
-                 leader["proxy_rank"], now_iso, ip_address, user_agent, now_iso))
+                 leader["proxy_rank"], now_iso, ip_address, user_agent, False, now_iso))
             outcome = "outbid"
         else:
             # Case B-2 — challenger loses; leader's price rises to the
@@ -1518,9 +1538,9 @@ def _place_bid_validated(bidder_account_id, lot_id, max_bid_cents,
                 "INSERT INTO bids (id, lot_id, bidder_account_id,"
                 " max_bid_cents, effective_price_cents, status, proxy_rank,"
                 " placed_at, ip_address, user_agent, triggered_extension, created_at)"
-                " VALUES (?,?,?,?,?,'OUTBID',?, ?,?,?,0,?)",
+                " VALUES (?,?,?,?,?,'OUTBID',?, ?,?,?,?,?)",
                 (bid_id, lot_id, bidder["id"], max_bid, max_bid,
-                 leader["proxy_rank"], now_iso, ip_address, user_agent, now_iso))
+                 leader["proxy_rank"], now_iso, ip_address, user_agent, False, now_iso))
             outcome = "outbid"
         # Soft close (spec §3.1): a bid inside the final window extends
         # the close by 5 minutes, capped at +120 total.
@@ -1533,8 +1553,8 @@ def _place_bid_validated(bidder_account_id, lot_id, max_bid_cents,
             close_at = close_at + timedelta(minutes=step)
             used += step
             c.execute(
-                "UPDATE bids SET triggered_extension = 1 WHERE id = ?",
-                (bid_id,))
+                "UPDATE bids SET triggered_extension = ? WHERE id = ?",
+                (True, bid_id))
             c.execute(
                 "UPDATE lots SET current_close_at = ?,"
                 " extension_minutes_used = ? WHERE id = ?",

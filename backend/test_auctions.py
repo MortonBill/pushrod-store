@@ -1383,6 +1383,128 @@ check("guides are priced, digital, and flagged awaiting delivery files",
       all(p["price"] is not None and p["fulfillment_type"] == "digital"
           and p["purchasable"] is False for p in _ih_products.values()))
 
+# ---------------------------------------------------------------------------
+# 7. Slice 5 fix: the Postgres DDL script never goes through psycopg's
+#    placeholder machinery. (Live deploy dep-db041h0u01pc738pdkfg died at
+#    boot: psycopg.ProgrammingError — _init_schema sent auctions_schema.sql
+#    through _Conn.execute(), which always binds a params tuple, and
+#    psycopg's scan rejects the script's literal '%'.) Proven here with a
+#    placeholder-strict cursor that replicates psycopg 3's rules; the
+#    same rules were probe-verified against a live database.
+# ---------------------------------------------------------------------------
+
+
+def _psycopg_placeholder_scan(sql, params):
+    """Stand-in for psycopg 3's bound-query scan: with params bound
+    (anything but None), every '%' must open a %s/%b/%t placeholder, a
+    %% literal, or a %(name)s placeholder. With params=None the driver
+    sends the query uninterpreted. Returns the '%' count either way."""
+    count = sql.count("%")
+    if params is None:
+        return count
+    i, n = 0, len(sql)
+    while i < n:
+        if sql[i] != "%":
+            i += 1
+            continue
+        nxt = sql[i + 1] if i + 1 < n else ""
+        if nxt == "%":
+            i += 2
+        elif nxt in "sbt":
+            i += 2
+        elif nxt == "(":
+            end = sql.find(")s", i)
+            if end < 0:
+                raise ValueError("incomplete placeholder: '%'")
+            i = end + 2
+        else:
+            raise ValueError("incomplete placeholder: '%'")
+    return count
+
+
+class _PlaceholderStrictCursor:
+    """Records every (sql, params) call and applies psycopg's scan."""
+
+    def __init__(self):
+        self.calls = []
+
+    def execute(self, sql, params=None):
+        _psycopg_placeholder_scan(sql, params)
+        self.calls.append((sql, params))
+
+
+with open(os.path.join(os.path.dirname(os.path.abspath(amod.__file__)),
+                       "auctions_schema.sql")) as f:
+    _pg_script = f.read()
+
+check("postgres schema script carries a literal '%' (the deploy killer)",
+      _pg_script.count("%") >= 2)
+expect_raises("bound-params scan rejects the raw script (the old bug)",
+              lambda: _psycopg_placeholder_scan(_pg_script, ()))
+check("unbound send passes the script through untouched",
+      _psycopg_placeholder_scan(_pg_script, None) == _pg_script.count("%"))
+
+_pg_cursor = _PlaceholderStrictCursor()
+_pg_conn = amod._Conn.__new__(amod._Conn)
+_pg_conn._raw = None
+_pg_conn._cur = _pg_cursor
+_save_dialect = amod._DIALECT
+amod._DIALECT = "postgres"
+try:
+    _pg_conn.execute_script(_pg_script)
+    check("execute_script sends the DDL with NO params bound",
+          _pg_cursor.calls == [(_pg_script, None)])
+    expect_raises("_Conn.execute() on the script still raises (why the "
+                  "DDL needed its own path)",
+                  lambda: _pg_conn.execute(_pg_script), (ValueError,))
+    amod._DIALECT = "sqlite"
+    expect_raises("execute_script refuses the sqlite dialect",
+                  lambda: _pg_conn.execute_script(_pg_script),
+                  (RuntimeError,))
+finally:
+    amod._DIALECT = _save_dialect
+
+import contextlib as _ctxlib
+
+_strict_cursor2 = _PlaceholderStrictCursor()
+_init_conn = amod._Conn.__new__(amod._Conn)
+_init_conn._raw = None
+_init_conn._cur = _strict_cursor2
+
+
+@_ctxlib.contextmanager
+def _fake_pg_connect():
+    yield _init_conn
+
+
+_save_connect = amod._connect
+amod._connect = _fake_pg_connect
+amod._DIALECT = "postgres"
+try:
+    amod._init_schema()
+    check("_init_schema (postgres) ships the script byte-identical, "
+          "unbound", _strict_cursor2.calls == [(_pg_script, None)],
+          str(_strict_cursor2.calls)[:120])
+finally:
+    amod._connect = _save_connect
+    amod._DIALECT = _save_dialect
+
+# DDL variance guards (Slice 5 live-fire fallout, real Postgres): the
+# two 72h deadlines are engine-frozen plain columns (timestamptz +
+# interval is not immutable, so GENERATED rejected them), and the
+# script stays boot-idempotent (_init_schema re-applies it every boot).
+_sql_lines = _pg_script.split("\n")
+check("DDL: no GENERATED deadline over timestamptz arithmetic",
+      "GENERATED ALWAYS AS (issued_at" not in _pg_script
+      and "GENERATED ALWAYS AS (offered_at" not in _pg_script)
+check("DDL: every CREATE TABLE is boot-guarded",
+      all(("CREATE TABLE IF NOT EXISTS " in ln)
+          for ln in _sql_lines if ln.startswith("CREATE TABLE")))
+check("DDL: every enum CREATE TYPE sits inside a duplicate guard",
+      all(_sql_lines[i - 1] == "DO $$ BEGIN"
+          for i, ln in enumerate(_sql_lines)
+          if ln.startswith("CREATE TYPE ")))
+
 print()
 if fails:
     print(f"{len(fails)} FAILURES: {fails}")

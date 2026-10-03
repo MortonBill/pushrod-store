@@ -15,12 +15,16 @@
 -- Runtime note: backend/auctions.py carries a SQLite mirror of this schema
 -- for local/dev per repo convention (see wholesale.py). This file is what a
 -- production Postgres (Render, ~$6/mo per the migration plan) is built from.
+-- _init_schema re-applies it on EVERY service boot, so every statement is
+-- boot-idempotent: IF NOT EXISTS guards, DO-blocked enum creation, and
+-- conflict-guarded seed inserts. (Slice 5 live-fire gate, 2026-10-02.)
 -- ============================================================================
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;   -- gen_random_uuid(), gen_random_bytes()
 CREATE EXTENSION IF NOT EXISTS btree_gist; -- exclusion constraints on ranges (future)
 
 -- ---------------------------------------------------------------- enums
+DO $$ BEGIN
 CREATE TYPE lot_status AS ENUM (
     'DRAFT',          -- seller has submitted; not yet in mod queue
     'IN_MODERATION',  -- admin has claimed it for review
@@ -37,6 +41,7 @@ CREATE TYPE lot_status AS ENUM (
     'RELISTED',       -- pulled back to DRAFT after unpaid/second-chance exhausted
     'CANCELLED'       -- admin cancelled at any pre-PAID stage; terminal
 );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ALLOWED TRANSITIONS (enforced in application layer — backend/auctions.py
 -- TRANSITIONS — from spec §1.3):
@@ -55,14 +60,19 @@ CREATE TYPE lot_status AS ENUM (
 -- CANCELLED         -> (terminal)
 -- RELISTED          -> DRAFT                   <- restarts lifecycle
 
+DO $$ BEGIN
 CREATE TYPE brand_id AS ENUM ('RE', 'IH');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
+DO $$ BEGIN
 CREATE TYPE bid_status AS ENUM (
     'ACTIVE',    -- currently valid
     'OUTBID',    -- superseded by a higher proxy
     'VOIDED'     -- admin-voided; excluded from all winner/price calculations
 );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
+DO $$ BEGIN
 CREATE TYPE offer_status AS ENUM (
     'PENDING',
     'ACCEPTED',
@@ -70,13 +80,17 @@ CREATE TYPE offer_status AS ENUM (
     'EXPIRED',
     'CANCELLED'  -- admin cancelled before expiry
 );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
+DO $$ BEGIN
 CREATE TYPE invoice_status AS ENUM (
     'OPEN',
     'PAID',
     'VOID'       -- voided when second-chance supersedes or admin cancels
 );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
+DO $$ BEGIN
 CREATE TYPE moderation_action_type AS ENUM (
     'SUBMITTED',
     'CLAIMED',
@@ -88,7 +102,9 @@ CREATE TYPE moderation_action_type AS ENUM (
     'RENDER_FAIL',
     'CANCELLED'
 );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
+DO $$ BEGIN
 CREATE TYPE notification_event AS ENUM (
     'OUTBID',
     'WINNING',          -- your proxy now leads after someone else bid
@@ -104,9 +120,10 @@ CREATE TYPE notification_event AS ENUM (
     'COMMENT_QUESTION',
     'SELLER_REPLIED'
 );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ---------------------------------------------------------------- accounts
-CREATE TABLE accounts (
+CREATE TABLE IF NOT EXISTS accounts (
     id                          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     brand                       brand_id NOT NULL,
     email                       text NOT NULL,
@@ -124,8 +141,8 @@ CREATE TABLE accounts (
     CONSTRAINT uq_accounts_brand_email UNIQUE (brand, email)
 );
 
-CREATE INDEX idx_accounts_brand ON accounts (brand);
-CREATE INDEX idx_accounts_email ON accounts (email);
+CREATE INDEX IF NOT EXISTS idx_accounts_brand ON accounts (brand);
+CREATE INDEX IF NOT EXISTS idx_accounts_email ON accounts (email);
 
 -- ---------------------------------------------------------------- lots
 -- The critical invariant: the transition out of CLOSED is the only place a
@@ -133,7 +150,7 @@ CREATE INDEX idx_accounts_email ON accounts (email);
 -- There is NO `reserve_met` boolean column — reserve outcome is DERIVED at
 -- close time and selects NO_SALE vs INVOICED. A lot can therefore never be
 -- both SOLD and reserve-not-met (the old Polsia contradiction).
-CREATE TABLE lots (
+CREATE TABLE IF NOT EXISTS lots (
     id                      uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     brand                   brand_id NOT NULL,
     seller_account_id       uuid NOT NULL REFERENCES accounts(id),
@@ -144,9 +161,13 @@ CREATE TABLE lots (
     category                text NOT NULL,
     condition_notes         text,
     flaws                   text,
-    image_keys              text[] NOT NULL DEFAULT '{}',  -- S3/R2 object keys
-    video_keys              text[] NOT NULL DEFAULT '{}',
-    id_photo_keys           text[] NOT NULL DEFAULT '{}',  -- VIN/title (admin-only)
+    -- Media key lists are jsonb: the engine writes JSON text and reads
+    -- via _json_list() on both dialects (the SQLite mirror stores JSON
+    -- TEXT). text[] here rejected the engine's JSON writes with
+    -- "malformed array literal" — Slice 5 live-fire gate variance.
+    image_keys              jsonb NOT NULL DEFAULT '[]',  -- S3/R2 object keys
+    video_keys              jsonb NOT NULL DEFAULT '[]',
+    id_photo_keys           jsonb NOT NULL DEFAULT '[]',  -- VIN/title (admin-only)
     no_ai_photos_attested   boolean NOT NULL DEFAULT false,
 
     -- Pricing
@@ -231,14 +252,14 @@ CREATE TABLE lots (
     )
 );
 
-CREATE INDEX idx_lots_brand ON lots (brand);
-CREATE INDEX idx_lots_status ON lots (status);
-CREATE INDEX idx_lots_current_close_at ON lots (current_close_at) WHERE status = 'LIVE';
-CREATE INDEX idx_lots_seller ON lots (seller_account_id);
-CREATE INDEX idx_lots_brand_status ON lots (brand, status);
+CREATE INDEX IF NOT EXISTS idx_lots_brand ON lots (brand);
+CREATE INDEX IF NOT EXISTS idx_lots_status ON lots (status);
+CREATE INDEX IF NOT EXISTS idx_lots_current_close_at ON lots (current_close_at) WHERE status = 'LIVE';
+CREATE INDEX IF NOT EXISTS idx_lots_seller ON lots (seller_account_id);
+CREATE INDEX IF NOT EXISTS idx_lots_brand_status ON lots (brand, status);
 
 -- ---------------------------------------------------------------- bids
-CREATE TABLE bids (
+CREATE TABLE IF NOT EXISTS bids (
     id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     lot_id              uuid NOT NULL REFERENCES lots(id),
     bidder_account_id   uuid NOT NULL REFERENCES accounts(id),
@@ -284,13 +305,13 @@ CREATE TABLE bids (
     )
 );
 
-CREATE INDEX idx_bids_lot ON bids (lot_id);
-CREATE INDEX idx_bids_bidder ON bids (bidder_account_id);
-CREATE INDEX idx_bids_lot_status ON bids (lot_id, status);
-CREATE INDEX idx_bids_lot_placed ON bids (lot_id, placed_at);
+CREATE INDEX IF NOT EXISTS idx_bids_lot ON bids (lot_id);
+CREATE INDEX IF NOT EXISTS idx_bids_bidder ON bids (bidder_account_id);
+CREATE INDEX IF NOT EXISTS idx_bids_lot_status ON bids (lot_id, status);
+CREATE INDEX IF NOT EXISTS idx_bids_lot_placed ON bids (lot_id, placed_at);
 
 -- Used by the winner computation query
-CREATE INDEX idx_bids_lot_active_max
+CREATE INDEX IF NOT EXISTS idx_bids_lot_active_max
     ON bids (lot_id, max_bid_cents DESC, placed_at ASC)
     WHERE status = 'ACTIVE';
 
@@ -319,7 +340,7 @@ CREATE INDEX IF NOT EXISTS idx_bid_attempts_bidder ON bid_attempts (bidder_accou
 -- Per-brand increment table. Rows are mutually exclusive price ranges.
 -- "If current price is in [range_low_cents, range_high_cents), increment = increment_cents"
 -- range_high_cents NULL = unbounded upper end.
-CREATE TABLE increment_rules (
+CREATE TABLE IF NOT EXISTS increment_rules (
     id                  serial PRIMARY KEY,
     brand               brand_id NOT NULL,
     range_low_cents     bigint NOT NULL CHECK (range_low_cents >= 0),
@@ -344,7 +365,8 @@ INSERT INTO increment_rules (brand, range_low_cents, range_high_cents, increment
     ('RE',  100000,    500000,     2500),    -- $1,000 – $4,999.99 -> $25.00
     ('RE',  500000,   1000000,     5000),    -- $5,000 – $9,999.99 -> $50.00
     ('RE', 1000000,   2500000,    10000),    -- $10,000 – $24,999.99 -> $100.00
-    ('RE', 2500000,       NULL,    25000);   -- $25,000+ -> $250.00
+    ('RE', 2500000,       NULL,    25000)   -- $25,000+ -> $250.00
+    ON CONFLICT (brand, range_low_cents, effective_from) DO NOTHING;
 
 -- IronHead (vintage motorcycle parts/guides, ~1/10th scale)
 INSERT INTO increment_rules (brand, range_low_cents, range_high_cents, increment_cents) VALUES
@@ -354,13 +376,14 @@ INSERT INTO increment_rules (brand, range_low_cents, range_high_cents, increment
     ('IH',   10000,     25000,      500),   -- $100 – $249.99 -> $5.00
     ('IH',   25000,    100000,     1000),   -- $250 – $999.99 -> $10.00
     ('IH',  100000,    250000,     2500),   -- $1,000 – $2,499.99 -> $25.00
-    ('IH',  250000,       NULL,     5000);  -- $2,500+ -> $50.00
+    ('IH',  250000,       NULL,     5000)  -- $2,500+ -> $50.00
+    ON CONFLICT (brand, range_low_cents, effective_from) DO NOTHING;
 
-CREATE INDEX idx_increment_brand_low ON increment_rules (brand, range_low_cents);
+CREATE INDEX IF NOT EXISTS idx_increment_brand_low ON increment_rules (brand, range_low_cents);
 
 -- ---------------------------------------------------------------- invoices
 -- NOTE (repair 1): created before pay_page_tokens; see header.
-CREATE TABLE invoices (
+CREATE TABLE IF NOT EXISTS invoices (
     id                          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     lot_id                      uuid NOT NULL REFERENCES lots(id),
     winner_account_id           uuid NOT NULL REFERENCES accounts(id),
@@ -391,9 +414,13 @@ CREATE TABLE invoices (
     reminder_24h_sent_at        timestamptz,
     reminder_48h_sent_at        timestamptz,
 
-    -- Deadline: 72h after issued_at; cron checks this
-    payment_deadline_at         timestamptz NOT NULL
-        GENERATED ALWAYS AS (issued_at + INTERVAL '72 hours') STORED,
+    -- Deadline: 72h after issued_at; cron checks this. App-maintained
+    -- (the engine freezes issued_at + PAYMENT_WINDOW on the row at
+    -- insert, exactly like the SQLite mirror). It cannot be a GENERATED
+    -- column: timestamptz + interval is not immutable in Postgres, and
+    -- the engine names this column on INSERT, which generated columns
+    -- reject. (DDL variance found by the Slice 5 live-fire gate.)
+    payment_deadline_at         timestamptz NOT NULL,
 
     -- Slice 3: one OPEN invoice per lot (partial unique index below);
     -- voided invoices remain for audit, so no UNIQUE(lot_id) — a
@@ -411,14 +438,14 @@ CREATE TABLE invoices (
     )
 );
 
-CREATE INDEX idx_invoices_lot ON invoices (lot_id);
-CREATE INDEX idx_invoices_status ON invoices (status);
-CREATE INDEX idx_invoices_deadline ON invoices (payment_deadline_at) WHERE status = 'OPEN';
-CREATE UNIQUE INDEX uq_invoices_open_per_lot ON invoices (lot_id)
+CREATE INDEX IF NOT EXISTS idx_invoices_lot ON invoices (lot_id);
+CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices (status);
+CREATE INDEX IF NOT EXISTS idx_invoices_deadline ON invoices (payment_deadline_at) WHERE status = 'OPEN';
+CREATE UNIQUE INDEX IF NOT EXISTS uq_invoices_open_per_lot ON invoices (lot_id)
     WHERE status = 'OPEN';
 
 -- ---------------------------------------------------------------- pay page tokens
-CREATE TABLE pay_page_tokens (
+CREATE TABLE IF NOT EXISTS pay_page_tokens (
     id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     lot_id          uuid NOT NULL REFERENCES lots(id),
     invoice_id      uuid NOT NULL REFERENCES invoices(id),
@@ -440,13 +467,13 @@ CREATE TABLE pay_page_tokens (
     )
 );
 
-CREATE INDEX idx_pay_page_tokens_token_hash ON pay_page_tokens (token_hash);
-CREATE INDEX idx_pay_page_tokens_lot ON pay_page_tokens (lot_id);
-CREATE UNIQUE INDEX uq_pay_page_active_token_per_lot ON pay_page_tokens (lot_id)
+CREATE INDEX IF NOT EXISTS idx_pay_page_tokens_token_hash ON pay_page_tokens (token_hash);
+CREATE INDEX IF NOT EXISTS idx_pay_page_tokens_lot ON pay_page_tokens (lot_id);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_pay_page_active_token_per_lot ON pay_page_tokens (lot_id)
     WHERE revoked_at IS NULL;
 
 -- ---------------------------------------------------------------- settlements
-CREATE TABLE settlements (
+CREATE TABLE IF NOT EXISTS settlements (
     id                      uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     lot_id                  uuid NOT NULL REFERENCES lots(id),
     invoice_id              uuid NOT NULL REFERENCES invoices(id),
@@ -487,15 +514,15 @@ CREATE TABLE settlements (
     )
 );
 
-CREATE INDEX idx_settlements_lot ON settlements (lot_id);
-CREATE INDEX idx_settlements_seller ON settlements (seller_account_id);
+CREATE INDEX IF NOT EXISTS idx_settlements_lot ON settlements (lot_id);
+CREATE INDEX IF NOT EXISTS idx_settlements_seller ON settlements (seller_account_id);
 
 -- ---------------------------------------------------------------- second chance offers
 -- NOTE (repair 2): the saved spec truncated this DDL after offered_price_cents.
 -- Remaining columns completed following the invoices pattern; offer expiry is
 -- 72h per the migration plan's second-chance step (§4: unpaid at 72h ->
 -- second-chance offer; the offer itself needs its own deadline).
-CREATE TABLE second_chance_offers (
+CREATE TABLE IF NOT EXISTS second_chance_offers (
     id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     lot_id              uuid NOT NULL REFERENCES lots(id),
     original_invoice_id uuid REFERENCES invoices(id),
@@ -512,8 +539,10 @@ CREATE TABLE second_chance_offers (
 
     status              offer_status NOT NULL DEFAULT 'PENDING',
     offered_at          timestamptz NOT NULL DEFAULT now(),
-    expires_at          timestamptz NOT NULL
-        GENERATED ALWAYS AS (offered_at + INTERVAL '72 hours') STORED,
+    -- Offer expiry = offered_at + SECOND_CHANCE_WINDOW (72h), frozen by
+    -- the engine on the row at insert (app-maintained — same reason as
+    -- invoices.payment_deadline_at above).
+    expires_at          timestamptz NOT NULL,
     responded_at        timestamptz,
 
     created_at          timestamptz NOT NULL DEFAULT now(),
@@ -523,15 +552,15 @@ CREATE TABLE second_chance_offers (
     )
 );
 
-CREATE INDEX idx_sco_lot ON second_chance_offers (lot_id);
-CREATE INDEX idx_sco_status ON second_chance_offers (status);
-CREATE INDEX idx_sco_offeree ON second_chance_offers (offeree_account_id);
+CREATE INDEX IF NOT EXISTS idx_sco_lot ON second_chance_offers (lot_id);
+CREATE INDEX IF NOT EXISTS idx_sco_status ON second_chance_offers (status);
+CREATE INDEX IF NOT EXISTS idx_sco_offeree ON second_chance_offers (offeree_account_id);
 
 -- ---------------------------------------------------------------- moderation actions [§6-derived]
 -- The moderation_action_type enum exists in spec §1.3; the §6 body (queue
 -- design) was not saved. This table is the queue's audit trail: every
 -- moderation-relevant lifecycle move writes one row, atomically with it.
-CREATE TABLE moderation_actions (
+CREATE TABLE IF NOT EXISTS moderation_actions (
     id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     lot_id              uuid NOT NULL REFERENCES lots(id),
     actor_account_id    uuid REFERENCES accounts(id),  -- NULL = system (render check)
@@ -540,13 +569,13 @@ CREATE TABLE moderation_actions (
     created_at          timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_mod_actions_lot ON moderation_actions (lot_id, created_at);
-CREATE INDEX idx_mod_actions_action ON moderation_actions (action);
+CREATE INDEX IF NOT EXISTS idx_mod_actions_lot ON moderation_actions (lot_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_mod_actions_action ON moderation_actions (action);
 
 -- ---------------------------------------------------------------- notifications [§7-derived]
 -- Event outbox: rows are written by the engine; delivery (email/push) is a
 -- later slice. notification_event enum is spec §1.3.
-CREATE TABLE notifications (
+CREATE TABLE IF NOT EXISTS notifications (
     id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     account_id          uuid NOT NULL REFERENCES accounts(id),
     lot_id              uuid REFERENCES lots(id),
@@ -556,13 +585,13 @@ CREATE TABLE notifications (
     read_at             timestamptz
 );
 
-CREATE INDEX idx_notifications_account ON notifications (account_id, created_at);
-CREATE INDEX idx_notifications_lot ON notifications (lot_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_account ON notifications (account_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_notifications_lot ON notifications (lot_id);
 
 -- ---------------------------------------------------------------- comments [Slice 4]
 -- Public lot Q&A (best-practices #1): verified accounts post, seller
 -- replies are flagged, admin hides are stamped on the row itself.
-CREATE TABLE comments (
+CREATE TABLE IF NOT EXISTS comments (
     id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     lot_id          uuid NOT NULL REFERENCES lots(id),
     account_id      uuid NOT NULL REFERENCES accounts(id),
@@ -577,10 +606,10 @@ CREATE TABLE comments (
     created_at      timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_comments_lot ON comments (lot_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_comments_lot ON comments (lot_id, created_at);
 
 -- ---------------------------------------------------------------- watchlist [Slice 4]
-CREATE TABLE watchlist (
+CREATE TABLE IF NOT EXISTS watchlist (
     id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     account_id      uuid NOT NULL REFERENCES accounts(id),
     lot_id          uuid NOT NULL REFERENCES lots(id),
@@ -588,7 +617,7 @@ CREATE TABLE watchlist (
     CONSTRAINT uq_watchlist_account_lot UNIQUE (account_id, lot_id)
 );
 
-CREATE INDEX idx_watchlist_account ON watchlist (account_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_watchlist_account ON watchlist (account_id, created_at);
 
 -- ---------------------------------------------------------------------------
 -- Slice 4 backfill — idempotent; covers databases created before Slice 4.
@@ -596,8 +625,8 @@ CREATE INDEX idx_watchlist_account ON watchlist (account_id, created_at);
 -- guards make this file safe to re-run either way.
 -- ---------------------------------------------------------------------------
 ALTER TABLE lots ADD COLUMN IF NOT EXISTS flaws text;
-ALTER TABLE lots ADD COLUMN IF NOT EXISTS video_keys text[] NOT NULL DEFAULT '{}';
-ALTER TABLE lots ADD COLUMN IF NOT EXISTS id_photo_keys text[] NOT NULL DEFAULT '{}';
+ALTER TABLE lots ADD COLUMN IF NOT EXISTS video_keys jsonb NOT NULL DEFAULT '[]';
+ALTER TABLE lots ADD COLUMN IF NOT EXISTS id_photo_keys jsonb NOT NULL DEFAULT '[]';
 ALTER TABLE lots ADD COLUMN IF NOT EXISTS no_ai_photos_attested boolean NOT NULL DEFAULT false;
 ALTER TABLE invoices ADD COLUMN IF NOT EXISTS hammer_cents bigint;
 ALTER TABLE invoices ADD COLUMN IF NOT EXISTS buyer_premium_cents bigint NOT NULL DEFAULT 0;
