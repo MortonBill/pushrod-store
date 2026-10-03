@@ -29,6 +29,10 @@ OWNERSHIP = {
     "RE-GD-": "restorationessentials",
     "SF-": "skillforge",
     "IH-": "ironhead",
+    # EverReady Family (checkout migration, Bill 2026-10-02). Rows live
+    # in data/everready-catalog.csv and load UNLISTED (dark); fulfillment
+    # is per-buyer Drive sharing — see fulfillment/drive.py.
+    "ER-": "everready",
 }
 
 # SKU prefix -> merch-library key, for resolving design artwork per line.
@@ -41,6 +45,7 @@ IMAGE_LIBS = {
     "RE-GD-": "muscle",
     "SF-": "skillforge",
     "IH-": "ironhead",
+    "ER-": "everready",
 }
 
 # CSV `listed` values that take a product dark (loaded but never listed or

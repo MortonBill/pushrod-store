@@ -558,6 +558,12 @@ def api_fulfill():
                         "status": po.get("status"),
                         "dry_run": po.get("dry_run", False),
                         "digital": result.get("digital")})
+    if isinstance(result, dict) and "everready_drive" in result:
+        po = result.get("printful") or {}
+        return jsonify({"printful_order_id": po.get("id"),
+                        "status": po.get("status"),
+                        "dry_run": po.get("dry_run", False),
+                        "everready_drive": result.get("everready_drive")})
     return jsonify({"printful_order_id": result.get("id"), "status": result.get("status"),
                     "dry_run": result.get("dry_run", False)})
 

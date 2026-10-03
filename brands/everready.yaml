@@ -1,0 +1,80 @@
+# Brand #5 — EVERREADY FAMILY storefront (brand id: everready)
+# Family readiness: command center, executor tools, legacy capture.
+# DIGITAL brand with PER-BUYER DRIVE fulfillment (never download links,
+# never "anyone with the link") — see backend/fulfillment/drive.py and
+# ~/workspace/your_files/everready-family/per-buyer-delivery-decision-2026-09-19.md.
+# Same codebase as pushrod/skillforge; select with BRAND=everready.
+# NO new service is provisioned for this lane: the EverReady rows stage
+# dark in the shared catalog (checkout migration, Bill 2026-10-02) and the
+# gate flips them visible lane by lane.
+brand:
+  id: everready
+  name: EverReady Family
+  tagline: "Everything your family needs, ready before it's needed"
+  # SKU prefixes this brand store serves.
+  sku_prefixes:
+    - "ER-"
+  # Unified-catalog ownership: which brand owns each prefix (gateway routing).
+  ownership:
+    "PR-": pushrod
+    "RE-MC-": restorationessentials
+    "RE-CT-": restorationessentials
+    "RE-MP-": restorationessentials
+    "SF-": skillforge
+    "ER-": everready
+
+theme:
+  bg: "#141210"          # warm charcoal
+  bg2: "#1a1713"
+  card: "#221e19"
+  accent: "#c9a24b"      # brass — distinct from pushrod amber and RE shop gold
+  accent2: "#7a9b5a"     # sage
+  text: "#f3ede2"
+  muted: "#a89e8d"
+  font_display: "'Georgia','Times New Roman',serif"
+  font_body: "'Helvetica Neue',Arial,sans-serif"
+
+# Catalog sources of truth (never edited by the store — read-only).
+# Relative paths resolve against the project root (see backend/app.py).
+# Every row ships listed=0 (dark) until the EverReady gate: no product
+# page, no /api/products entry, never purchasable.
+catalog:
+  catalogs:
+    - csv: "data/everready-catalog.csv"
+      prices_json: "data/everready-prices.json"
+  image_base: "/img"
+
+# Pricing policy: ONLY the canonical lineup prices are sellable
+# (~/workspace/your_files/everready-family/product-lineup-canonical-2026-09-24.md).
+# Never invent prices; never re-derive the lineup.
+pricing:
+  allow_draft_prices: true
+  draft_label: "Intro price"
+
+# Fulfillment: DIGITAL via per-buyer Google Drive sharing. On
+# checkout.session.completed, backend/fulfillment/drive.py grants the
+# buyer Viewer access to exactly the file(s) they purchased (bundle =
+# both component files) and emails the Drive links via Brevo. Files are
+# NEVER public and NEVER served through /download tokens. Printful is
+# NOT used by this brand; the printful fields below exist only for schema
+# parity and must never be wired to a live order for EverReady.
+fulfillment:
+  mode: digital
+  delivery: "per-buyer Drive share (Viewer) + email on payment (backend/fulfillment/drive.py)"
+
+store:
+  currency: usd
+  # Order idempotency prefix (per-brand).
+  order_prefix: "er"
+  # Stripe: TEST MODE ONLY until the gate. Key must start with sk_test_;
+  # live keys are refused at runtime (see backend/app.py). The live flip
+  # is a later, separately gated step — do not rename these envs early.
+  # No stripe_connect_account_id_env: EverReady charges the master Stripe
+  # account directly (no Connect header). NEVER set STRIPE_CONNECT_ACCOUNT_ID.
+  stripe_secret_key_env: "EVERREADY_STRIPE_TEST_SECRET_KEY"
+  stripe_publishable_key_env: "EVERREADY_STRIPE_TEST_PUBLISHABLE_KEY"
+  stripe_webhook_secret_env: "EVERREADY_STRIPE_WEBHOOK_SECRET"
+  # UNUSED for this digital brand — schema parity only. Never fulfill an
+  # EverReady order through Printful.
+  printful_api_key_env: "EVERREADY_PRINTFUL_API_TOKEN"
+  printful_dry_run: false

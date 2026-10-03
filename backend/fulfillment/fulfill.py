@@ -19,6 +19,7 @@ import os
 
 from .printful_client import PrintfulClient, PrintfulConfigError
 from . import digital as digital_mod
+from . import drive as drive_mod
 
 log = logging.getLogger("pushrod.fulfill")
 
@@ -96,6 +97,19 @@ def fulfill_paid_order(stripe_session_id, customer_email, shipping_address,
     {"printful": <order|None>, "digital": <summary>} instead."""
     print_lines, digital_lines = split_cart_lines(cart_lines, products_by_sku)
 
+    # EverReady lines (fulfillment/drive.py) never take the download-token
+    # path: delivery is per-buyer Drive sharing. Split them off BEFORE the
+    # token flow can mint a link no ER buyer should ever receive.
+    drive_lines = [l for l in digital_lines if drive_mod.is_drive_sku(l["sku"])]
+    digital_lines = [l for l in digital_lines
+                     if not drive_mod.is_drive_sku(l["sku"])]
+
+    drive_result = None
+    if drive_lines:
+        drive_result = drive_mod.fulfill_drive_lines(
+            stripe_session_id, customer_email, drive_lines,
+            products_by_sku, store_name=store_name or "EverReady Family")
+
     digital_result = None
     if digital_lines:
         if not download_base_url:
@@ -139,6 +153,11 @@ def fulfill_paid_order(stripe_session_id, customer_email, shipping_address,
         log.info("Printful order created for %s: %s", stripe_session_id,
                  order.get("id"))
 
-    if digital_result is not None:
-        return {"printful": order, "digital": digital_result}
+    if digital_result is not None or drive_result is not None:
+        result = {"printful": order}
+        if digital_result is not None:
+            result["digital"] = digital_result
+        if drive_result is not None:
+            result["everready_drive"] = drive_result
+        return result
     return order
