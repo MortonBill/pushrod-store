@@ -517,6 +517,10 @@ def api_fulfill():
     except (ValueError, TypeError):
         return jsonify({"error": "unreadable cart metadata on session"}), 400
     ship = _sget(session, "shipping_details", {}) or {}
+    if not _sget(ship, "address"):
+        # Modern Checkout (Link) puts shipping under collected_information.
+        ci = _sget(session, "collected_information", {}) or {}
+        ship = _sget(ci, "shipping_details", {}) or ship
     cust = _sget(session, "customer_details", {}) or {}
     addr = _sget(ship, "address", {}) or {}
     shipping_address = {
@@ -599,13 +603,17 @@ def stripe_webhook():
             cart = json.loads(_sget(meta, "cart", "[]") or "[]")
         except (ValueError, TypeError):
             return jsonify({"error": "unreadable cart metadata"}), 400
-        addr = _sget(_sget(session, "shipping_details", {}) or {}, "address", {}) or {}
+        ship_obj = _sget(session, "shipping_details", {}) or {}
+        if not _sget(ship_obj, "address"):
+            ci = _sget(session, "collected_information", {}) or {}
+            ship_obj = _sget(ci, "shipping_details", {}) or ship_obj
+        addr = _sget(ship_obj, "address", {}) or {}
         try:
             fulfill_paid_order(
                 stripe_session_id=_sget(session, "id", ""),
                 customer_email=_sget(_sget(session, "customer_details", {}) or {}, "email", "") or "",
                 shipping_address={
-                    "name": _sget(_sget(session, "shipping_details", {}) or {}, "name", "") or "",
+                    "name": _sget(ship_obj, "name", "") or "",
                     "line1": _sget(addr, "line1", "") or "", "line2": _sget(addr, "line2", "") or "",
                     "city": _sget(addr, "city", "") or "", "state": _sget(addr, "state", "") or "",
                     "country": _sget(addr, "country", "US") or "US",
