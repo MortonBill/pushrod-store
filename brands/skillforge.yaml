@@ -9,12 +9,19 @@ brand:
   # SKU prefixes this brand store serves.
   sku_prefixes:
     - "SF-"
+    # RE guide PDFs (checkout migration Lane 1, 2026-10-02 — Bill: "Already
+    # on render stay there": NO separate RE service; the guide library rides
+    # THIS service). Every RE-GD- row ships listed=0 (dark): loaded so the
+    # token-gated /download + checkout machinery can resolve the SKUs, but
+    # never listed, never purchasable, until the lane gate flips rows.
+    - "RE-GD-"
   # Unified-catalog ownership: which brand owns each prefix (gateway routing).
   ownership:
     "PR-": pushrod
     "RE-MC-": restorationessentials
     "RE-CT-": restorationessentials
     "RE-MP-": restorationessentials
+    "RE-GD-": restorationessentials
     "SF-": skillforge
 
 theme:
@@ -37,6 +44,14 @@ catalog:
   catalogs:
     - csv: "data/skillforge-catalog.csv"
       prices_json: "data/skillforge-prices.json"
+    # Lane 1 RE guide catalog: 383 staged rows, ALL listed=0 (dark) — see
+    # the sku_prefixes note above. Deliverables are NOT in git: they live
+    # in the digital-files dir (DIGITAL_FILES_DIR; on this service a
+    # persistent disk) under their PDF basenames — data/re-digital-sources.json
+    # is the staging work order (358 matched files, 25 gap rows with no
+    # deliverable stay unpurchasable even after any flip).
+    - csv: "data/re-catalog.csv"
+      prices_json: "data/re-prices.json"
   image_base: "/img"
 
 # Pricing policy: ONLY verified prices are sellable. Live PDP price verified
