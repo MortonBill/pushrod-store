@@ -28,6 +28,11 @@ brand:
     # SKUs, but never listed, never purchasable, until the lane gate flips
     # rows — see data/ironhead-catalog.csv + data/ih-digital-sources.json.
     - "IH-"
+    # Stitchfolk patterns (checkout migration Lane 3, 2026-10-03 — patterns
+    # ride THIS service like RE/ER/IH; Etsy stays its own channel and is
+    # untouched). Every ST- row ships listed=0 (dark) until the lane gate
+    # flips rows — see data/stitchfolk-catalog.csv.
+    - "ST-"
   # Unified-catalog ownership: which brand owns each prefix (gateway routing).
   ownership:
     "PR-": pushrod
@@ -37,6 +42,7 @@ brand:
     "RE-GD-": restorationessentials
     "ER-": everready
     "IH-": ironhead
+    "ST-": stitchfolk
     "SF-": skillforge
 
 theme:
@@ -83,6 +89,11 @@ catalog:
     # until their component guides stage in later waves.
     - csv: "data/ironhead-catalog.csv"
       prices_json: "data/ironhead-prices.json"
+    # Stitchfolk pattern catalog (Lane 3): 10 wave-1 rows, ALL listed=0
+    # (dark). Deliverables live on this service's disk under their PDF
+    # basenames (sha256 manifest: stitchfolk-wave1-disk-verification-2026-10-03.md).
+    - csv: "data/stitchfolk-catalog.csv"
+      prices_json: "data/stitchfolk-prices.json"
   image_base: "/img"
 
 # Pricing policy: ONLY verified prices are sellable. Live PDP price verified

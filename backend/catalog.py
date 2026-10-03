@@ -27,6 +27,10 @@ OWNERSHIP = {
     # live in data/re-catalog.csv and load UNLISTED (dark) until the lane
     # gate — see the `listed` handling in load_catalog.
     "RE-GD-": "restorationessentials",
+    # Stitchfolk patterns (checkout migration Lane 3, 2026-10-03). Rows
+    # live in data/stitchfolk-catalog.csv and load UNLISTED (dark) until
+    # the lane gate flips them.
+    "ST-": "stitchfolk",
     "SF-": "skillforge",
     "IH-": "ironhead",
     # EverReady Family (checkout migration, Bill 2026-10-02). Rows live
@@ -43,6 +47,7 @@ IMAGE_LIBS = {
     "RE-CT-": "truck",
     "RE-MP-": "modern",
     "RE-GD-": "muscle",
+    "ST-": "stitchfolk",
     "SF-": "skillforge",
     "IH-": "ironhead",
     "ER-": "everready",
