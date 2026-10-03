@@ -112,10 +112,10 @@ else:
     check("checkout monthly 200", r.status_code == 200, r.get_data(as_text=True))
     check("checkout monthly mode=subscription", created.get("mode") == "subscription")
     check("checkout monthly price", created["line_items"][0]["price"] == "price_monthly_test")
-    check("checkout monthly trial 14d",
-          created["subscription_data"]["trial_period_days"] == 14)
-    check("checkout monthly card required",
-          created.get("payment_method_collection") == "always")
+    check("checkout monthly trial 30d",
+          created["subscription_data"]["trial_period_days"] == 30)
+    check("checkout monthly no card up front",
+          created.get("payment_method_collection") == "if_required")
     check("checkout monthly metadata kind",
           created["metadata"].get("kind") == "sr_sub")
     check("checkout monthly no automatic_tax in test mode",

@@ -30,10 +30,12 @@ SR_PRICE_LIFETIME) — creating those Billing products/prices is a
 separate, separately-authorized step (see
 ~/workspace/your_files/business/sportroots-billing-staging-2026-10-03.md).
 
-Trial semantics per the live SportRoots catalog (verified 2026-10-02):
-Monthly $12.99/mo and Annual $99/yr carry a 14-day free trial, card
-required up front (payment_method_collection=always); Club $199/yr has
-no trial; Lifetime $299 is a plain one-time Checkout payment.
+Trial semantics per the LOCKED SportRoots pricing packet (Bill
+2026-10-03, sportroots-pricing-packet-reconciled-2026-10-03.md):
+Plus Monthly $4.99/mo and Plus Annual $39/yr carry a 30-day free
+start with NO card up front (payment_method_collection=if_required);
+Club $99/yr has no trial (card required, charged immediately);
+Lifetime $99 is a plain one-time Checkout payment.
 """
 import hashlib
 import hmac
@@ -57,9 +59,9 @@ ENTITLED_STATUSES = {"trialing", "active"}
 # Stripe Prices, never in code (pricing policy: never invent prices).
 PLANS = {
     "monthly": {"price_env": "SR_PRICE_MONTHLY", "mode": "subscription",
-                "trial_days": 14},
+                "trial_days": 30},
     "annual": {"price_env": "SR_PRICE_ANNUAL", "mode": "subscription",
-               "trial_days": 14},
+               "trial_days": 30},
     "club": {"price_env": "SR_PRICE_CLUB", "mode": "subscription",
              "trial_days": 0},
     "lifetime": {"price_env": "SR_PRICE_LIFETIME", "mode": "payment",
@@ -351,15 +353,19 @@ def init(app, stripe_ready, stripe_mode, stripe_acct, public_base_url):
             **_stripe_acct(),
         )
         if cfg["mode"] == "subscription":
-            # Card up front even on trial plans (catalog promise:
-            # "14-day free trial, card required"). Dunning after a
-            # failed charge is Stripe Smart Retries + the portal.
-            kwargs["payment_method_collection"] = "always"
             if cfg["trial_days"]:
+                # Locked packet (2026-10-03): 30-day free start, NO
+                # card up front — payment_method_collection=if_required
+                # so Checkout does not demand a card for a $0-due trial.
+                kwargs["payment_method_collection"] = "if_required"
                 kwargs["subscription_data"] = {
                     "trial_period_days": cfg["trial_days"],
                     "metadata": {"kind": "sr_sub", "plan": plan},
                 }
+            else:
+                # No-trial subscriptions (club) charge immediately —
+                # a payment method is required at Checkout.
+                kwargs["payment_method_collection"] = "always"
         # Stripe Tax, same rule as the one-time checkout: live only.
         if _stripe_mode == "live":
             kwargs["automatic_tax"] = {"enabled": True}
