@@ -2990,16 +2990,19 @@ def _pay_page_impl(token):
             body="This payment link is not valid."), 404
     if invoice["status"] == "PAID":
         return _PAY_PAGE_HTML.format(
-            title="Already paid",
+            title=f"Already paid · "
+                  f"{BRAND_NAMES.get(lot['brand'], '')} Auctions",
             body=f"Payment for {_esc(lot['title'])} is complete."
             f"{_esc(_invoice_breakdown(invoice))} Thank you.")
     if invoice["status"] != "OPEN" or lot["status"] != "INVOICED":
         return _PAY_PAGE_HTML.format(
-            title="No longer payable",
+            title=f"No longer payable · "
+                  f"{BRAND_NAMES.get(lot['brand'], '')} Auctions",
             body="This invoice is no longer open for payment."), 410
     if request.args.get("return"):
         return _PAY_PAGE_HTML.format(
-            title="Payment processing",
+            title=f"Payment processing · "
+                  f"{BRAND_NAMES.get(lot['brand'], '')} Auctions",
             body=f"If you completed checkout, your payment is being"
             f" confirmed — this page will show as paid once Stripe"
             f" confirms it.{_esc(_invoice_breakdown(invoice))}")
@@ -3011,11 +3014,14 @@ def _pay_page_impl(token):
             cancel_url=pay_url)
     except AuctionError as exc:
         return _PAY_PAGE_HTML.format(
-            title="Checkout unavailable", body=str(exc)), 503
+            title=f"Checkout unavailable · "
+                  f"{BRAND_NAMES.get(lot['brand'], '')} Auctions",
+            body=str(exc)), 503
     url = _session_get(checkout, "url")
     if not url:
         return _PAY_PAGE_HTML.format(
-            title="Checkout unavailable",
+            title=f"Checkout unavailable · "
+                  f"{BRAND_NAMES.get(lot['brand'], '')} Auctions",
             body="Stripe did not return a checkout URL."), 502
     return redirect(url, code=302)
 
@@ -3094,13 +3100,15 @@ img.lot-photo{max-width:100%;border-radius:8px;margin:8px 0}
 def _page(title, body, brand=None):
     accent = BRAND_ACCENTS.get(brand, "#1b2a41")
     name = BRAND_NAMES.get(brand, "Auctions")
+    home = (f"/auctions?brand={brand}" if brand in BRAND_NAMES
+            else "/auctions")
     return (
         "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
         "<meta name=\"viewport\" content=\"width=device-width,"
         "initial-scale=1\">"
         f"<title>{_esc(title)} · {_esc(name)} Auctions</title>"
         f"<style>:root{{--accent:{accent}}}{_PAGE_CSS}</style></head>"
-        f"<body><main><p><a href=\"/auctions\">&larr; {_esc(name)}"
+        f"<body><main><p><a href=\"{home}\">&larr; {_esc(name)}"
         " auctions</a></p>"
         f"<h1>{_esc(title)}</h1>{body}</main></body></html>")
 
@@ -3112,13 +3120,14 @@ def _flash():
     return f"<div class=\"flash\">{_esc(msg)}</div>"
 
 
-def _session_bar(account):
+def _session_bar(account, brand=None):
     if account:
         return (f"<p>Signed in as {_esc(account['display_name'])} · "
                 "<a href=\"/auctions/watchlist\">Watchlist</a> · "
                 "<a href=\"/auctions/logout\">Sign out</a></p>")
-    return ("<p><a href=\"/auctions/login\">Sign in</a> · "
-            "<a href=\"/auctions/register\">Create account</a></p>")
+    q = f"?brand={brand}" if brand in BRAND_NAMES else ""
+    return (f"<p><a href=\"/auctions/login{q}\">Sign in</a> · "
+            f"<a href=\"/auctions/register{q}\">Create account</a></p>")
 
 
 def _money_form(form, key):
@@ -3189,7 +3198,7 @@ def auctions_index():
     # get the muscle-car/truck/modern-performance link).
     sibling = sibling_brand(brand) if brand else None
     return _page("Live & upcoming auctions",
-                 _flash() + _session_bar(_current_account()) + cards
+                 _flash() + _session_bar(_current_account(), brand) + cards
                  + _cross_brand_card(sibling),
                  brand)
 
@@ -3202,11 +3211,14 @@ def auctions_lot_page(lot_id):
         if lot else False
     if not lot or (lot["status"] in ("DRAFT", "IN_MODERATION", "REJECTED")
                    and not is_owner and not _is_admin_request()):
+        req_brand = (request.args.get("brand") or "").strip().upper()
+        if req_brand not in BRAND_NAMES:
+            req_brand = _BRAND_CODE
         return _page("Not found", "<p>This lot is not available.</p>",
-                     _BRAND_CODE), 404
+                     req_brand), 404
     d = public_lot_dict(lot, account["id"] if account else None)
     brand = lot["brand"]
-    parts = [_flash(), _session_bar(account)]
+    parts = [_flash(), _session_bar(account, brand)]
     if account and account["is_admin"]:
         admin_view = admin_lot_dict(lot)
         items = "".join(
@@ -3288,7 +3300,8 @@ premium is the amount due.</p></div>""")
 "/comment'><textarea name='body' rows='3' placeholder='Ask about "
 "this lot…'></textarea><button type='submit'>Post comment</button>"
 "</form>" if account else
-'<p><a href="/auctions/login">Sign in</a> to comment.</p>'}
+f'<p><a href="/auctions/login?brand={brand}">Sign in</a> to '
+"comment.</p>"}
 </div>""")
     return _page(lot["title"],
                  "".join(parts) + _lot_cross_brand_card(lot), brand)
@@ -3329,7 +3342,7 @@ def auctions_watchlist_page():
     cards = "".join(_lot_card(lot) for lot in
                     watched_lots(account["id"])) or (
         "<p>You're not watching any lots yet.</p>")
-    return _page("Your watchlist", _flash() + cards, _BRAND_CODE)
+    return _page("Your watchlist", _flash() + cards, account["brand"])
 
 
 @bp.get("/auctions/bidder/<account_id>")
@@ -3354,29 +3367,49 @@ def auctions_bidder_page(account_id):
     return _page(profile["display_name"], body, profile["brand"])
 
 
+def _request_brand(fallback=None):
+    """The brand a page should present as: an explicit valid ?brand=
+    wins (cross-brand visitors keep their brand's chrome), then the
+    caller's fallback, then the service's own brand code."""
+    brand = (request.args.get("brand") or "").strip().upper()
+    if brand in BRAND_NAMES:
+        return brand
+    if fallback in BRAND_NAMES:
+        return fallback
+    return _BRAND_CODE
+
+
 @bp.get("/auctions/login")
 def auctions_login_page():
     if _current_account():
         return redirect("/auctions")
+    brand = _request_brand()
     return _page("Sign in", f"""{_flash()}
 <form method="post" action="/auctions/login">
+<input type="hidden" name="brand" value="{_esc(brand)}">
 <label>Email <input name="email" type="email" required></label>
 <label>Password <input name="password" type="password" required>
 </label><button type="submit">Sign in</button></form>
-<p>No account? <a href="/auctions/register">Create one</a></p>""",
-                 _BRAND_CODE)
+<p>No account? <a href="/auctions/register?brand={_esc(brand)}">
+Create one</a></p>""",
+                 brand)
 
 
 @bp.post("/auctions/login")
 def auctions_login():
-    account = authenticate(_BRAND_CODE, request.form.get("email"),
+    brand = (request.form.get("brand") or "").strip().upper()
+    if brand not in BRAND_NAMES:
+        brand = _BRAND_CODE
+    account = authenticate(brand, request.form.get("email"),
                            request.form.get("password"))
     if not account:
-        return redirect("/auctions/login?msg=Invalid+credentials")
+        return redirect(
+            f"/auctions/login?brand={brand}&msg=Invalid+credentials")
     if account["is_suspended"]:
-        return redirect("/auctions/login?msg=Account+suspended")
+        return redirect(
+            f"/auctions/login?brand={brand}&msg=Account+suspended")
     session[SESSION_KEY] = account["id"]
-    return redirect("/auctions")
+    return redirect(f"/auctions?brand={account['brand']}")
 
 
 @bp.get("/auctions/logout")
@@ -3389,7 +3422,7 @@ def auctions_logout():
 def auctions_register_page():
     if _current_account():
         return redirect("/auctions")
-    brand = _BRAND_CODE or "RE"
+    brand = _request_brand() or "RE"
     return _page("Create account", f"""{_flash()}
 <form method="post" action="/auctions/register">
 <input type="hidden" name="brand" value="{_esc(brand)}">
@@ -3410,7 +3443,7 @@ def auctions_register():
         request.form.get("password"),
         is_seller=bool(request.form.get("is_seller")))
     session[SESSION_KEY] = account["id"]
-    return redirect("/auctions")
+    return redirect(f"/auctions?brand={account['brand']}")
 
 
 # ---------------------------------------------------------------------------

@@ -1347,6 +1347,34 @@ r = anon.get("/auctions/lot/" + api_lot["id"])
 check("RE lot page carries the motorcycle cross-link to IronHead",
       r.status_code == 200 and "/auctions?brand=IH" in r.get_data(as_text=True))
 
+# --- Slice 5 fix: brand context survives auth pages (Bill 2026-10-02) ---
+# An IronHead visitor following Sign in / Create account from the IH
+# index keeps IronHead chrome and registers an IronHead account; the
+# service's own brand stays the default with no ?brand=.
+r = anon.get("/auctions/login?brand=IH")
+check("IH login page carries IronHead branding",
+      r.status_code == 200
+      and "IronHead Auctions" in r.get_data(as_text=True)
+      and 'value="IH"' in r.get_data(as_text=True))
+r = anon.get("/auctions/register?brand=IH")
+check("IH register page carries IronHead branding + brand field",
+      r.status_code == 200
+      and "IronHead Auctions" in r.get_data(as_text=True)
+      and 'value="IH"' in r.get_data(as_text=True))
+r = anon.get("/auctions/login")
+check("login page defaults to the service brand (no SkillForge)",
+      r.status_code == 200
+      and "SkillForge" not in r.get_data(as_text=True))
+r = anon.get("/auctions?brand=IH")
+check("IH index sign-in links keep the IH brand",
+      r.status_code == 200
+      and "/auctions/login?brand=IH" in r.get_data(as_text=True)
+      and "/auctions/register?brand=IH" in r.get_data(as_text=True))
+r = anon.get("/auctions/lot/nope?brand=IH")
+check("unknown-lot 404 keeps the requested brand",
+      r.status_code == 404
+      and "IronHead Auctions" in r.get_data(as_text=True))
+
 # --- Slice 5 prep: IronHead catalog seed (real guide products only) -------
 import csv as _csv  # noqa: E402
 from catalog import load_catalog as _load_catalog  # noqa: E402
