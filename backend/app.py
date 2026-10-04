@@ -246,6 +246,33 @@ def cancel_page():
     return send_from_directory(FRONTEND, "cancel.html")
 
 
+# ---------- SEO discovery (sitemap / robots) ----------
+@app.get("/sitemap.xml")
+def sitemap_xml():
+    # Base URL from the request host (never hardcoded) so every host this
+    # service serves gets URLs on its own domain. RestorationEssentials-owned
+    # products only: restoreessentials.com is the RE storefront face, and
+    # other brands' SKUs belong on their own domains.
+    base = request.host_url.rstrip("/")
+    entries = [base + "/"]
+    for p in PRODUCTS:
+        if (p.get("listed", True) and p["purchasable"]
+                and p["owner"] == "restorationessentials"):
+            entries.append(f"{base}/product/{p['sku']}")
+    urls = "\n".join(f"  <url><loc>{u}</loc></url>" for u in entries)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           f"{urls}\n</urlset>\n")
+    return Response(xml, mimetype="application/xml")
+
+
+@app.get("/robots.txt")
+def robots_txt():
+    base = request.host_url.rstrip("/")
+    return Response(f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n",
+                    mimetype="text/plain")
+
+
 # ---------- wholesale pages ----------
 @app.get("/wholesale")
 def wholesale_home():
