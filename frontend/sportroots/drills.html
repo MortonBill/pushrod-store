@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Drill Library — 718 drills across 18 sports | SportRoots</title>
+<link rel="canonical" href="https://sportroots.coach/drills">
+<meta name="description" content="Search and browse the full SportRoots drill library: 718 drills across 18 sports, sorted by U6–U8, U10–U12, U14–U16 and U18 age bands. Free to browse.">
+<style>
+  :root{--bg:#0c1a12;--bg2:#10231a;--card:#14301f;--accent:#8bd450;--accent2:#f2b138;--text:#eef7ee;--muted:#a7bfa9}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.6}
+  h1,h2,h3{font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.25;margin:0 0 .6rem}
+  a{color:var(--accent)} .wrap{max-width:960px;margin:0 auto;padding:0 1.25rem}
+  header.top{background:var(--bg2);border-bottom:1px solid #1e3a28;position:sticky;top:0;z-index:5}
+  header.top .wrap{display:flex;align-items:center;gap:1.5rem;padding-top:.8rem;padding-bottom:.8rem;flex-wrap:wrap}
+  .brand{font-size:1.3rem;font-weight:800;color:var(--text);text-decoration:none}
+  .brand small{display:block;font-weight:400;font-size:.72rem;color:var(--muted);letter-spacing:.04em}
+  nav.main{margin-left:auto;display:flex;gap:1.1rem;flex-wrap:wrap}
+  nav.main a{color:var(--text);text-decoration:none;font-size:.95rem} nav.main a:hover{color:var(--accent)}
+  main{padding:2.5rem 0 3rem}
+  .hero h1{font-size:2.3rem} .lede{font-size:1.12rem;color:var(--muted);max-width:44rem}
+  .btnrow{display:flex;gap:.8rem;flex-wrap:wrap;margin:1.4rem 0}
+  .btn{display:inline-block;background:var(--accent);color:#0c1a12;text-decoration:none;font-weight:700;padding:.7rem 1.3rem;border-radius:.5rem}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .card{background:var(--card);border:1px solid #1e3a28;border-radius:.8rem;padding:1.4rem;margin:1.2rem 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
+  .price{color:var(--accent2);font-weight:700;font-size:1.3rem}
+  .tag{display:inline-block;background:var(--bg2);border:1px solid #1e3a28;border-radius:2rem;padding:.15rem .7rem;font-size:.8rem;color:var(--muted);margin:.15rem .2rem .15rem 0}
+  ul.drills{list-style:none;padding:0;margin:.5rem 0}
+  ul.drills li{padding:.45rem .2rem;border-bottom:1px solid #1e3a28;display:flex;justify-content:space-between;gap:1rem}
+  ul.drills li .band{color:var(--muted);font-size:.85rem;white-space:nowrap}
+  input.search{width:100%;padding:.7rem 1rem;border-radius:.5rem;border:1px solid #1e3a28;background:var(--bg2);color:var(--text);font-size:1rem}
+  details.faq{border-bottom:1px solid #1e3a28;padding:.8rem 0}
+  details.faq summary{cursor:pointer;font-weight:700}
+  footer.page{border-top:1px solid #1e3a28;background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2rem 0;margin-top:2rem}
+  footer.page a{color:var(--muted)}
+  label{display:block;margin:.8rem 0 .3rem;font-weight:600}
+  input.f,select.f,textarea.f{width:100%;padding:.6rem .8rem;border-radius:.5rem;border:1px solid #1e3a28;background:var(--bg2);color:var(--text)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/">SportRoots<small>Youth sports coaching and training</small></a>
+  <nav class="main">
+    <a href="/sports">Sports</a>
+    <a href="/drills">Drill Library</a>
+    <a href="/coaches">Coaches</a>
+    <a href="/book">Book a Coach</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/faq">FAQ</a>
+  </nav>
+</div></header>
+<main><div class="wrap">
+
+  <h1>The drill library — 718 drills</h1>
+  <p class="lede">Search by drill name, or narrow by sport and age band. Every listing is free to browse.</p>
+  <div class="card">
+    <label for="q">Search drills</label>
+    <input class="search" id="q" type="search" placeholder="Try “first touch”, “free throw”, “vault”…" oninput="filterDrills()">
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:.8rem">
+      <div style="flex:1;min-width:200px"><label for="fs">Sport</label>
+        <select class="f" id="fs" onchange="filterDrills()"><option value="">All sports</option><option value="baseball">Baseball</option><option value="basketball">Basketball</option><option value="cheerleading">Cheerleading</option><option value="football">Football</option><option value="golf">Golf</option><option value="gymnastics">Gymnastics</option><option value="hockey">Hockey</option><option value="lacrosse">Lacrosse</option><option value="martial-arts">Martial Arts</option><option value="skiing">Skiing</option><option value="soccer">Soccer</option><option value="softball">Softball</option><option value="swimming">Swimming</option><option value="tennis">Tennis</option><option value="track">Track & Field</option><option value="volleyball">Volleyball</option><option value="weight-training">Weight Training</option><option value="wrestling">Wrestling</option></select></div>
+      <div style="flex:1;min-width:200px"><label for="fb">Age band</label>
+        <select class="f" id="fb" onchange="filterDrills()"><option value="">All age bands</option><option value="u6-u8">U6–U8</option><option value="u10-u12">U10–U12</option><option value="u14-u16">U14–U16</option><option value="u18">U18</option></select></div>
+    </div>
+    <p id="count" style="color:var(--muted)"></p>
+    <ul class="drills" id="list">
+      <li data-s="baseball" data-b="u6-u8" data-t="catching a soft pop-up"><a href="/drills/baseball">Catching a Soft Pop-Up</a><span class="band">Baseball · U6–U8</span></li>
+      <li data-s="baseball" data-b="u6-u8" data-t="catching with two hands"><a href="/drills/baseball">Catching with Two Hands</a><span class="band">Baseball · U6–U8</span></li>
+      <li data-s="baseball" data-b="u6-u8" data-t="hitting off the tee"><a href="/drills/baseball">Hitting Off the Tee</a><span class="band">Baseball · U6–U8</span></li>
+      <li data-s="baseball" data-b="u6-u8" data-t="hold the bat right"><a href="/drills/baseball">Hold the Bat Right</a><span class="band">Baseball · U6–U8</span></li>
+      <li data-s="baseball" data-b="u6-u8" data-t="putting it all together"><a href="/drills/baseball">Putting It All Together</a><span class="band">Baseball · U6–U8</span></li>
+      <li data-s="baseball" data-b="u6-u8" data-t="ready position"><a href="/drills/baseball">Ready Position</a><span class="band">Baseball · U6–U8</span></li>
+      <li data-s="baseball" data-b="u6-u8" data-t="running the bases"><a href="/drills/baseball">Running the Bases</a><span class="band">Baseball · U6–U8</span></li>
+      <li data-s="baseball" data-b="u6-u8" data-t="soft toss hitting"><a href="/drills/baseball">Soft Toss Hitting</a><span class="band">Baseball · U6–U8</span></li>
+      <li data-s="baseball" data-b="u6-u8" data-t="throwing overhand"><a href="/drills/baseball">Throwing Overhand</a><span class="band">Baseball · U6–U8</span></li>
+      <li data-s="baseball" data-b="u6-u8" data-t="throwing to a target"><a href="/drills/baseball">Throwing to a Target</a><span class="band">Baseball · U6–U8</span></li>
+      <li data-s="baseball" data-b="u10-u12" data-t="base-running leads"><a href="/drills/baseball">Base-Running Leads</a><span class="band">Baseball · U10–U12</span></li>
+      <li data-s="baseball" data-b="u10-u12" data-t="batting stance"><a href="/drills/baseball">Batting Stance</a><span class="band">Baseball · U10–U12</span></li>
+      <li data-s="baseball" data-b="u10-u12" data-t="catching fly balls"><a href="/drills/baseball">Catching Fly Balls</a><span class="band">Baseball · U10–U12</span></li>
+      <li data-s="baseball" data-b="u10-u12" data-t="fielding grounders"><a href="/drills/baseball">Fielding Grounders</a><span class="band">Baseball · U10–U12</span></li>
+      <li data-s="baseball" data-b="u10-u12" data-t="hitting coach-pitch"><a href="/drills/baseball">Hitting Coach-Pitch</a><span class="band">Baseball · U10–U12</span></li>
+      <li data-s="baseball" data-b="u10-u12" data-t="infield pop-up communication"><a href="/drills/baseball">Infield Pop-Up Communication</a><span class="band">Baseball · U10–U12</span></li>
+      <li data-s="baseball" data-b="u10-u12" data-t="level swing"><a href="/drills/baseball">Level Swing</a><span class="band">Baseball · U10–U12</span></li>
+      <li data-s="baseball" data-b="u10-u12" data-t="rounding first base"><a href="/drills/baseball">Rounding First Base</a><span class="band">Baseball · U10–U12</span></li>
+      <li data-s="baseball" data-b="u10-u12" data-t="throwing mechanics (crow hop)"><a href="/drills/baseball">Throwing Mechanics (Crow Hop)</a><span class="band">Baseball · U10–U12</span></li>
+      <li data-s="baseball" data-b="u10-u12" data-t="throwing to bases / cutoff basics"><a href="/drills/baseball">Throwing to Bases / Cutoff Basics</a><span class="band">Baseball · U10–U12</span></li>
+      <li data-s="baseball" data-b="u14-u16" data-t="back up every throw"><a href="/drills/baseball">Back Up Every Throw</a><span class="band">Baseball · U14–U16</span></li>
+      <li data-s="baseball" data-b="u14-u16" data-t="double-play footwork"><a href="/drills/baseball">Double-Play Footwork</a><span class="band">Baseball · U14–U16</span></li>
+      <li data-s="baseball" data-b="u14-u16" data-t="feet-first slide"><a href="/drills/baseball">Feet-First Slide</a><span class="band">Baseball · U14–U16</span></li>
+      <li data-s="baseball" data-b="u14-u16" data-t="first-and-third defense"><a href="/drills/baseball">First-and-Third Defense</a><span class="band">Baseball · U14–U16</span></li>
+      <li data-s="baseball" data-b="u14-u16" data-t="hit the cutoff man"><a href="/drills/baseball">Hit the Cutoff Man</a><span class="band">Baseball · U14–U16</span></li>
+      <li data-s="baseball" data-b="u14-u16" data-t="pick your pitch — hitting approach"><a href="/drills/baseball">Pick Your Pitch — Hitting Approach</a><span class="band">Baseball · U14–U16</span></li>
+      <li data-s="baseball" data-b="u14-u16" data-t="pitcher covers first"><a href="/drills/baseball">Pitcher Covers First</a><span class="band">Baseball · U14–U16</span></li>
+      <li data-s="baseball" data-b="u14-u16" data-t="the outfield drop step"><a href="/drills/baseball">The Outfield Drop Step</a><span class="band">Baseball · U14–U16</span></li>
+      <li data-s="baseball" data-b="u14-u16" data-t="the sacrifice bunt"><a href="/drills/baseball">The Sacrifice Bunt</a><span class="band">Baseball · U14–U16</span></li>
+      <li data-s="baseball" data-b="u14-u16" data-t="the steal — lead and jump"><a href="/drills/baseball">The Steal — Lead and Jump</a><span class="band">Baseball · U14–U16</span></li>
+      <li data-s="baseball" data-b="u18" data-t="catcher pop time / throwing out runners"><a href="/drills/baseball">Catcher Pop Time / Throwing Out Runners</a><span class="band">Baseball · U18</span></li>
+      <li data-s="baseball" data-b="u18" data-t="first-step quickness (infield reads)"><a href="/drills/baseball">First-Step Quickness (Infield Reads)</a><span class="band">Baseball · U18</span></li>
+      <li data-s="baseball" data-b="u18" data-t="hitting the breaking ball"><a href="/drills/baseball">Hitting the Breaking Ball</a><span class="band">Baseball · U18</span></li>
+      <li data-s="baseball" data-b="u18" data-t="hitting to the opposite field"><a href="/drills/baseball">Hitting to the Opposite Field</a><span class="band">Baseball · U18</span></li>
+      <li data-s="baseball" data-b="u18" data-t="pickoff moves (pitcher)"><a href="/drills/baseball">Pickoff Moves (Pitcher)</a><span class="band">Baseball · U18</span></li>
+      <li data-s="baseball" data-b="u18" data-t="pitch recognition"><a href="/drills/baseball">Pitch Recognition</a><span class="band">Baseball · U18</span></li>
+      <li data-s="baseball" data-b="u18" data-t="relay throws (outfield to home)"><a href="/drills/baseball">Relay Throws (Outfield to Home)</a><span class="band">Baseball · U18</span></li>
+      <li data-s="baseball" data-b="u18" data-t="rundown execution"><a href="/drills/baseball">Rundown Execution</a><span class="band">Baseball · U18</span></li>
+      <li data-s="baseball" data-b="u18" data-t="situational hitting (hit and run)"><a href="/drills/baseball">Situational Hitting (Hit and Run)</a><span class="band">Baseball · U18</span></li>
+      <li data-s="baseball" data-b="u18" data-t="two-strike approach"><a href="/drills/baseball">Two-Strike Approach</a><span class="band">Baseball · U18</span></li>
+      <li data-s="basketball" data-b="u6-u8" data-t="ball around the body (ball-around-the-body)"><a href="/drills/basketball">Ball Around the Body (ball-around-the-body)</a><span class="band">Basketball · U6–U8</span></li>
+      <li data-s="basketball" data-b="u6-u8" data-t="catch it clean (catching clean)"><a href="/drills/basketball">Catch It Clean (catching clean)</a><span class="band">Basketball · U6–U8</span></li>
+      <li data-s="basketball" data-b="u6-u8" data-t="crab-walk shuffle (crab-walk shuffle)"><a href="/drills/basketball">Crab-Walk Shuffle (crab-walk shuffle)</a><span class="band">Basketball · U6–U8</span></li>
+      <li data-s="basketball" data-b="u6-u8" data-t="first bounce (bouncing the ball)"><a href="/drills/basketball">First Bounce (bouncing the ball)</a><span class="band">Basketball · U6–U8</span></li>
+      <li data-s="basketball" data-b="u6-u8" data-t="first mini game (first mini-game)"><a href="/drills/basketball">First Mini Game (first mini-game)</a><span class="band">Basketball · U6–U8</span></li>
+      <li data-s="basketball" data-b="u6-u8" data-t="follow the leader (follow-the-leader dribble)"><a href="/drills/basketball">Follow the Leader (follow-the-leader dribble)</a><span class="band">Basketball · U6–U8</span></li>
+      <li data-s="basketball" data-b="u6-u8" data-t="hit the target (target tosses)"><a href="/drills/basketball">Hit the Target (target tosses)</a><span class="band">Basketball · U6–U8</span></li>
+      <li data-s="basketball" data-b="u6-u8" data-t="little chest passes (little chest passes)"><a href="/drills/basketball">Little Chest Passes (little chest passes)</a><span class="band">Basketball · U6–U8</span></li>
+      <li data-s="basketball" data-b="u6-u8" data-t="red light, green light (red-light-green-light dribble)"><a href="/drills/basketball">Red Light, Green Light (red-light-green-light dribble)</a><span class="band">Basketball · U6–U8</span></li>
+      <li data-s="basketball" data-b="u6-u8" data-t="slide your feet (sliding feet)"><a href="/drills/basketball">Slide Your Feet (sliding feet)</a><span class="band">Basketball · U6–U8</span></li>
+      <li data-s="basketball" data-b="u10-u12" data-t="catch and shoot"><a href="/drills/basketball">Catch and Shoot</a><span class="band">Basketball · U10–U12</span></li>
+      <li data-s="basketball" data-b="u10-u12" data-t="defensive stance and slide"><a href="/drills/basketball">Defensive Stance and Slide</a><span class="band">Basketball · U10–U12</span></li>
+      <li data-s="basketball" data-b="u10-u12" data-t="layup footwork"><a href="/drills/basketball">Layup Footwork</a><span class="band">Basketball · U10–U12</span></li>
+      <li data-s="basketball" data-b="u10-u12" data-t="left-hand dribble control"><a href="/drills/basketball">Left-Hand Dribble Control</a><span class="band">Basketball · U10–U12</span></li>
+      <li data-s="basketball" data-b="u10-u12" data-t="pivoting without traveling"><a href="/drills/basketball">Pivoting Without Traveling</a><span class="band">Basketball · U10–U12</span></li>
+      <li data-s="basketball" data-b="u10-u12" data-t="right-hand dribble control"><a href="/drills/basketball">Right-Hand Dribble Control</a><span class="band">Basketball · U10–U12</span></li>
+      <li data-s="basketball" data-b="u10-u12" data-t="shooting form — the beef method"><a href="/drills/basketball">Shooting Form — The BEEF Method</a><span class="band">Basketball · U10–U12</span></li>
+      <li data-s="basketball" data-b="u10-u12" data-t="the bounce pass"><a href="/drills/basketball">The Bounce Pass</a><span class="band">Basketball · U10–U12</span></li>
+      <li data-s="basketball" data-b="u10-u12" data-t="the chest pass"><a href="/drills/basketball">The Chest Pass</a><span class="band">Basketball · U10–U12</span></li>
+      <li data-s="basketball" data-b="u10-u12" data-t="your free-throw routine"><a href="/drills/basketball">Your Free-Throw Routine</a><span class="band">Basketball · U10–U12</span></li>
+      <li data-s="basketball" data-b="u14-u16" data-t="box-out and rebounding"><a href="/drills/basketball">Box-Out and Rebounding</a><span class="band">Basketball · U14–U16</span></li>
+      <li data-s="basketball" data-b="u14-u16" data-t="closeout technique"><a href="/drills/basketball">Closeout Technique</a><span class="band">Basketball · U14–U16</span></li>
+      <li data-s="basketball" data-b="u14-u16" data-t="crossover dribble"><a href="/drills/basketball">Crossover Dribble</a><span class="band">Basketball · U14–U16</span></li>
+      <li data-s="basketball" data-b="u14-u16" data-t="help-side defense"><a href="/drills/basketball">Help-Side Defense</a><span class="band">Basketball · U14–U16</span></li>
+      <li data-s="basketball" data-b="u14-u16" data-t="jump stop"><a href="/drills/basketball">Jump Stop</a><span class="band">Basketball · U14–U16</span></li>
+      <li data-s="basketball" data-b="u14-u16" data-t="jump-shot mechanics"><a href="/drills/basketball">Jump-Shot Mechanics</a><span class="band">Basketball · U14–U16</span></li>
+      <li data-s="basketball" data-b="u14-u16" data-t="one-dribble pull-up"><a href="/drills/basketball">One-Dribble Pull-Up</a><span class="band">Basketball · U14–U16</span></li>
+      <li data-s="basketball" data-b="u14-u16" data-t="pick-and-roll basics"><a href="/drills/basketball">Pick-and-Roll Basics</a><span class="band">Basketball · U14–U16</span></li>
+      <li data-s="basketball" data-b="u14-u16" data-t="post footwork"><a href="/drills/basketball">Post Footwork</a><span class="band">Basketball · U14–U16</span></li>
+      <li data-s="basketball" data-b="u14-u16" data-t="transition lanes"><a href="/drills/basketball">Transition Lanes</a><span class="band">Basketball · U14–U16</span></li>
+      <li data-s="basketball" data-b="u18" data-t="defensive rotations"><a href="/drills/basketball">Defensive Rotations</a><span class="band">Basketball · U18</span></li>
+      <li data-s="basketball" data-b="u18" data-t="finishing through contact"><a href="/drills/basketball">Finishing Through Contact</a><span class="band">Basketball · U18</span></li>
+      <li data-s="basketball" data-b="u18" data-t="free-throw pressure routine"><a href="/drills/basketball">Free-Throw Pressure Routine</a><span class="band">Basketball · U18</span></li>
+      <li data-s="basketball" data-b="u18" data-t="full-court press break"><a href="/drills/basketball">Full-Court Press Break</a><span class="band">Basketball · U18</span></li>
+      <li data-s="basketball" data-b="u18" data-t="late-clock scoring"><a href="/drills/basketball">Late-Clock Scoring</a><span class="band">Basketball · U18</span></li>
+      <li data-s="basketball" data-b="u18" data-t="on-ball screen reads"><a href="/drills/basketball">On-Ball Screen Reads</a><span class="band">Basketball · U18</span></li>
+      <li data-s="basketball" data-b="u18" data-t="shot-fake series"><a href="/drills/basketball">Shot-Fake Series</a><span class="band">Basketball · U18</span></li>
+      <li data-s="basketball" data-b="u18" data-t="step-back jumper"><a href="/drills/basketball">Step-Back Jumper</a><span class="band">Basketball · U18</span></li>
+      <li data-s="basketball" data-b="u18" data-t="three-point mechanics"><a href="/drills/basketball">Three-Point Mechanics</a><span class="band">Basketball · U18</span></li>
+      <li data-s="basketball" data-b="u18" data-t="transition offense"><a href="/drills/basketball">Transition Offense</a><span class="band">Basketball · U18</span></li>
+      <li data-s="cheerleading" data-b="u6-u8" data-t="cartwheel prep — lunge and hand placement"><a href="/drills/cheerleading">Cartwheel Prep — Lunge and Hand Placement</a><span class="band">Cheerleading · U6–U8</span></li>
+      <li data-s="cheerleading" data-b="u6-u8" data-t="clap and catch — sharp hands"><a href="/drills/cheerleading">Clap and Catch — Sharp Hands</a><span class="band">Cheerleading · U6–U8</span></li>
+      <li data-s="cheerleading" data-b="u6-u8" data-t="forward roll on the mat"><a href="/drills/cheerleading">Forward Roll on the Mat</a><span class="band">Cheerleading · U6–U8</span></li>
+      <li data-s="cheerleading" data-b="u6-u8" data-t="jump and stick — clap, jump, land"><a href="/drills/cheerleading">Jump and Stick — Clap, Jump, Land</a><span class="band">Cheerleading · U6–U8</span></li>
+      <li data-s="cheerleading" data-b="u6-u8" data-t="motion simon — sharpness game"><a href="/drills/cheerleading">Motion Simon — Sharpness Game</a><span class="band">Cheerleading · U6–U8</span></li>
+      <li data-s="cheerleading" data-b="u6-u8" data-t="spirit voice — loud, clear, together"><a href="/drills/cheerleading">Spirit Voice — Loud, Clear, Together</a><span class="band">Cheerleading · U6–U8</span></li>
+      <li data-s="cheerleading" data-b="u6-u8" data-t="straight jump — feet together, arms up"><a href="/drills/cheerleading">Straight Jump — Feet Together, Arms Up</a><span class="band">Cheerleading · U6–U8</span></li>
+      <li data-s="cheerleading" data-b="u6-u8" data-t="the big three — high v, low v, and t"><a href="/drills/cheerleading">The Big Three — High V, Low V, and T</a><span class="band">Cheerleading · U6–U8</span></li>
+      <li data-s="cheerleading" data-b="u6-u8" data-t="touchdown and punch"><a href="/drills/cheerleading">Touchdown and Punch</a><span class="band">Cheerleading · U6–U8</span></li>
+      <li data-s="cheerleading" data-b="u6-u8" data-t="tuck jump prep — knees up on the mat"><a href="/drills/cheerleading">Tuck Jump Prep — Knees Up on the Mat</a><span class="band">Cheerleading · U6–U8</span></li>
+      <li data-s="cheerleading" data-b="u10-u12" data-t="backbend bridge — bend, don&#x27;t break"><a href="/drills/cheerleading">Backbend Bridge — Bend, Don&#x27;t Break</a><span class="band">Cheerleading · U10–U12</span></li>
+      <li data-s="cheerleading" data-b="u10-u12" data-t="cartwheel on the mat — straight line travel"><a href="/drills/cheerleading">Cartwheel on the Mat — Straight Line Travel</a><span class="band">Cheerleading · U10–U12</span></li>
+      <li data-s="cheerleading" data-b="u10-u12" data-t="double jump combo — back to back"><a href="/drills/cheerleading">Double Jump Combo — Back to Back</a><span class="band">Cheerleading · U10–U12</span></li>
+      <li data-s="cheerleading" data-b="u10-u12" data-t="motion sequence on counts — eight-count sharpness"><a href="/drills/cheerleading">Motion Sequence on Counts — Eight-Count Sharpness</a><span class="band">Cheerleading · U10–U12</span></li>
+      <li data-s="cheerleading" data-b="u10-u12" data-t="pike and hurdler — jump variety"><a href="/drills/cheerleading">Pike and Hurdler — Jump Variety</a><span class="band">Cheerleading · U10–U12</span></li>
+      <li data-s="cheerleading" data-b="u10-u12" data-t="prep-level stunt — standing on hands"><a href="/drills/cheerleading">Prep-Level Stunt — Standing on Hands</a><span class="band">Cheerleading · U10–U12</span></li>
+      <li data-s="cheerleading" data-b="u10-u12" data-t="splits stretch routine — flexibility the safe way"><a href="/drills/cheerleading">Splits Stretch Routine — Flexibility the Safe Way</a><span class="band">Cheerleading · U10–U12</span></li>
+      <li data-s="cheerleading" data-b="u10-u12" data-t="thigh stand basics — first stunt"><a href="/drills/cheerleading">Thigh Stand Basics — First Stunt</a><span class="band">Cheerleading · U10–U12</span></li>
+      <li data-s="cheerleading" data-b="u10-u12" data-t="toe touch prep — spread eagle in the air"><a href="/drills/cheerleading">Toe Touch Prep — Spread Eagle in the Air</a><span class="band">Cheerleading · U10–U12</span></li>
+      <li data-s="cheerleading" data-b="u10-u12" data-t="wall handstand — upside-down confidence"><a href="/drills/cheerleading">Wall Handstand — Upside-Down Confidence</a><span class="band">Cheerleading · U10–U12</span></li>
+      <li data-s="cheerleading" data-b="u14-u16" data-t="back handspring drills — spotted and safe"><a href="/drills/cheerleading">Back Handspring Drills — Spotted and Safe</a><span class="band">Cheerleading · U14–U16</span></li>
+      <li data-s="cheerleading" data-b="u14-u16" data-t="basket toss intro — straight ride, safe catch"><a href="/drills/cheerleading">Basket Toss Intro — Straight Ride, Safe Catch</a><span class="band">Cheerleading · U14–U16</span></li>
+      <li data-s="cheerleading" data-b="u14-u16" data-t="cradle dismount — the safe way down"><a href="/drills/cheerleading">Cradle Dismount — The Safe Way Down</a><span class="band">Cheerleading · U14–U16</span></li>
+      <li data-s="cheerleading" data-b="u14-u16" data-t="extension stunt technique — press to the top"><a href="/drills/cheerleading">Extension Stunt Technique — Press to the Top</a><span class="band">Cheerleading · U14–U16</span></li>
+      <li data-s="cheerleading" data-b="u14-u16" data-t="jump combo — toe touch to pike"><a href="/drills/cheerleading">Jump Combo — Toe Touch to Pike</a><span class="band">Cheerleading · U14–U16</span></li>
+      <li data-s="cheerleading" data-b="u14-u16" data-t="liberty stunt basics — one-leg balance in the air"><a href="/drills/cheerleading">Liberty Stunt Basics — One-Leg Balance in the Air</a><span class="band">Cheerleading · U14–U16</span></li>
+      <li data-s="cheerleading" data-b="u14-u16" data-t="pyramid basics — connected stunts, one structure"><a href="/drills/cheerleading">Pyramid Basics — Connected Stunts, One Structure</a><span class="band">Cheerleading · U14–U16</span></li>
+      <li data-s="cheerleading" data-b="u14-u16" data-t="roundoff on the spring floor"><a href="/drills/cheerleading">Roundoff on the Spring Floor</a><span class="band">Cheerleading · U14–U16</span></li>
+      <li data-s="cheerleading" data-b="u14-u16" data-t="running tumbling pass — roundoff back handspring"><a href="/drills/cheerleading">Running Tumbling Pass — Roundoff Back Handspring</a><span class="band">Cheerleading · U14–U16</span></li>
+      <li data-s="cheerleading" data-b="u14-u16" data-t="standing back handspring progression"><a href="/drills/cheerleading">Standing Back Handspring Progression</a><span class="band">Cheerleading · U14–U16</span></li>
+      <li data-s="cheerleading" data-b="u18" data-t="back tuck combo pass — handspring to tuck"><a href="/drills/cheerleading">Back Tuck Combo Pass — Handspring to Tuck</a><span class="band">Cheerleading · U18</span></li>
+      <li data-s="cheerleading" data-b="u18" data-t="coed stunt basics — toss to hands"><a href="/drills/cheerleading">Coed Stunt Basics — Toss to Hands</a><span class="band">Cheerleading · U18</span></li>
+      <li data-s="cheerleading" data-b="u18" data-t="cradle dismount from extension — full height"><a href="/drills/cheerleading">Cradle Dismount from Extension — Full Height</a><span class="band">Cheerleading · U18</span></li>
+      <li data-s="cheerleading" data-b="u18" data-t="extended liberty technique — one leg at the top"><a href="/drills/cheerleading">Extended Liberty Technique — One Leg at the Top</a><span class="band">Cheerleading · U18</span></li>
+      <li data-s="cheerleading" data-b="u18" data-t="flyer conditioning — balance and core"><a href="/drills/cheerleading">Flyer Conditioning — Balance and Core</a><span class="band">Cheerleading · U18</span></li>
+      <li data-s="cheerleading" data-b="u18" data-t="full pyramid build — two-and-a-half high"><a href="/drills/cheerleading">Full Pyramid Build — Two-and-a-Half High</a><span class="band">Cheerleading · U18</span></li>
+      <li data-s="cheerleading" data-b="u18" data-t="jump combo — toe touch to pike to hurdler"><a href="/drills/cheerleading">Jump Combo — Toe Touch to Pike to Hurdler</a><span class="band">Cheerleading · U18</span></li>
+      <li data-s="cheerleading" data-b="u18" data-t="running roundoff back handspring — power pass"><a href="/drills/cheerleading">Running Roundoff Back Handspring — Power Pass</a><span class="band">Cheerleading · U18</span></li>
+      <li data-s="cheerleading" data-b="u18" data-t="scorpion stretch prep — flyer flexibility"><a href="/drills/cheerleading">Scorpion Stretch Prep — Flyer Flexibility</a><span class="band">Cheerleading · U18</span></li>
+      <li data-s="cheerleading" data-b="u18" data-t="standing back tuck progressions — spotted"><a href="/drills/cheerleading">Standing Back Tuck Progressions — Spotted</a><span class="band">Cheerleading · U18</span></li>
+      <li data-s="football" data-b="u6-u8" data-t="backpedal basics"><a href="/drills/football">Backpedal Basics</a><span class="band">Football · U6–U8</span></li>
+      <li data-s="football" data-b="u6-u8" data-t="flag pull shuffle"><a href="/drills/football">Flag Pull Shuffle</a><span class="band">Football · U6–U8</span></li>
+      <li data-s="football" data-b="u6-u8" data-t="grip and throw"><a href="/drills/football">Grip and Throw</a><span class="band">Football · U6–U8</span></li>
+      <li data-s="football" data-b="u6-u8" data-t="handoff exchange"><a href="/drills/football">Handoff Exchange</a><span class="band">Football · U6–U8</span></li>
+      <li data-s="football" data-b="u6-u8" data-t="hands catch"><a href="/drills/football">Hands Catch</a><span class="band">Football · U6–U8</span></li>
+      <li data-s="football" data-b="u6-u8" data-t="kick catch"><a href="/drills/football">Kick Catch</a><span class="band">Football · U6–U8</span></li>
+      <li data-s="football" data-b="u6-u8" data-t="ladder quick feet"><a href="/drills/football">Ladder Quick Feet</a><span class="band">Football · U6–U8</span></li>
+      <li data-s="football" data-b="u6-u8" data-t="stance and start"><a href="/drills/football">Stance and Start</a><span class="band">Football · U6–U8</span></li>
+      <li data-s="football" data-b="u6-u8" data-t="straight route"><a href="/drills/football">Straight Route</a><span class="band">Football · U6–U8</span></li>
+      <li data-s="football" data-b="u6-u8" data-t="toss and catch"><a href="/drills/football">Toss and Catch</a><span class="band">Football · U6–U8</span></li>
+      <li data-s="football" data-b="u10-u12" data-t="ball security (d05)"><a href="/drills/football">Ball Security (d05)</a><span class="band">Football · U10–U12</span></li>
+      <li data-s="football" data-b="u10-u12" data-t="curl route (d02)"><a href="/drills/football">Curl Route (d02)</a><span class="band">Football · U10–U12</span></li>
+      <li data-s="football" data-b="u10-u12" data-t="kick return setup (d09)"><a href="/drills/football">Kick Return Setup (d09)</a><span class="band">Football · U10–U12</span></li>
+      <li data-s="football" data-b="u10-u12" data-t="pursuit angles (d04)"><a href="/drills/football">Pursuit Angles (d04)</a><span class="band">Football · U10–U12</span></li>
+      <li data-s="football" data-b="u10-u12" data-t="read steps (d10)"><a href="/drills/football">Read Steps (d10)</a><span class="band">Football · U10–U12</span></li>
+      <li data-s="football" data-b="u10-u12" data-t="shotgun snap (d06)"><a href="/drills/football">Shotgun Snap (d06)</a><span class="band">Football · U10–U12</span></li>
+      <li data-s="football" data-b="u10-u12" data-t="sideline catch (d03)"><a href="/drills/football">Sideline Catch (d03)</a><span class="band">Football · U10–U12</span></li>
+      <li data-s="football" data-b="u10-u12" data-t="spin move (d08)"><a href="/drills/football">Spin Move (d08)</a><span class="band">Football · U10–U12</span></li>
+      <li data-s="football" data-b="u10-u12" data-t="three-step drop (d01)"><a href="/drills/football">Three-Step Drop (d01)</a><span class="band">Football · U10–U12</span></li>
+      <li data-s="football" data-b="u10-u12" data-t="zone shuffle (d07)"><a href="/drills/football">Zone Shuffle (d07)</a><span class="band">Football · U10–U12</span></li>
+      <li data-s="football" data-b="u14-u16" data-t="blitz pickup"><a href="/drills/football">Blitz Pickup</a><span class="band">Football · U14–U16</span></li>
+      <li data-s="football" data-b="u14-u16" data-t="dummy form tackle"><a href="/drills/football">Dummy Form Tackle</a><span class="band">Football · U14–U16</span></li>
+      <li data-s="football" data-b="u14-u16" data-t="five-step drop"><a href="/drills/football">Five-Step Drop</a><span class="band">Football · U14–U16</span></li>
+      <li data-s="football" data-b="u14-u16" data-t="high-point catch"><a href="/drills/football">High-Point Catch</a><span class="band">Football · U14–U16</span></li>
+      <li data-s="football" data-b="u14-u16" data-t="mirror drill"><a href="/drills/football">Mirror Drill</a><span class="band">Football · U14–U16</span></li>
+      <li data-s="football" data-b="u14-u16" data-t="pass block mirror"><a href="/drills/football">Pass Block Mirror</a><span class="band">Football · U14–U16</span></li>
+      <li data-s="football" data-b="u14-u16" data-t="pass rush get-off"><a href="/drills/football">Pass Rush Get-Off</a><span class="band">Football · U14–U16</span></li>
+      <li data-s="football" data-b="u14-u16" data-t="pat hold and kick"><a href="/drills/football">PAT Hold and Kick</a><span class="band">Football · U14–U16</span></li>
+      <li data-s="football" data-b="u14-u16" data-t="play-action fake"><a href="/drills/football">Play-Action Fake</a><span class="band">Football · U14–U16</span></li>
+      <li data-s="football" data-b="u14-u16" data-t="post route"><a href="/drills/football">Post Route</a><span class="band">Football · U14–U16</span></li>
+      <li data-s="football" data-b="u18" data-t="double-move route deception (d02 — double-moves)"><a href="/drills/football">Double-Move Route Deception (d02 — double-moves)</a><span class="band">Football · U18</span></li>
+      <li data-s="football" data-b="u18" data-t="onside kick recovery — positioning and securing the ball (d10 — onside-recovery)"><a href="/drills/football">Onside Kick Recovery — Positioning and Securing the Ball (d10 — onside-recovery)</a><span class="band">Football · U18</span></li>
+      <li data-s="football" data-b="u18" data-t="open-field pursuit angles at game speed (d04 — pursuit-angles-speed)"><a href="/drills/football">Open-Field Pursuit Angles at Game Speed (d04 — pursuit-angles-speed)</a><span class="band">Football · U18</span></li>
+      <li data-s="football" data-b="u18" data-t="pre-snap coverage reads (d01 — presnap-reads)"><a href="/drills/football">Pre-Snap Coverage Reads (d01 — presnap-reads)</a><span class="band">Football · U18</span></li>
+      <li data-s="football" data-b="u18" data-t="punt coverage lane discipline and spacing (d08 — punt-lanes)"><a href="/drills/football">Punt Coverage Lane Discipline and Spacing (d08 — punt-lanes)</a><span class="band">Football · U18</span></li>
+      <li data-s="football" data-b="u18" data-t="quarterback pocket movement — climbing the pocket (d09 — pocket-movement)"><a href="/drills/football">Quarterback Pocket Movement — Climbing the Pocket (d09 — pocket-movement)</a><span class="band">Football · U18</span></li>
+      <li data-s="football" data-b="u18" data-t="red-zone fade — timing and ball placement (d05 — redzone-fade)"><a href="/drills/football">Red-Zone Fade — Timing and Ball Placement (d05 — redzone-fade)</a><span class="band">Football · U18</span></li>
+      <li data-s="football" data-b="u18" data-t="rip and swim moves — hand technique on air (d03 — rip-swim-moves)"><a href="/drills/football">Rip and Swim Moves — Hand Technique on Air (d03 — rip-swim-moves)</a><span class="band">Football · U18</span></li>
+      <li data-s="football" data-b="u18" data-t="screen pass setup — linemen release footwork and timing (d06 — screen-setup)"><a href="/drills/football">Screen Pass Setup — Linemen Release Footwork and Timing (d06 — screen-setup)</a><span class="band">Football · U18</span></li>
+      <li data-s="football" data-b="u18" data-t="wrap-and-roll form tackle on a tackling dummy (d07 — dummy-wrap-roll)"><a href="/drills/football">Wrap-and-Roll Form Tackle on a Tackling Dummy (d07 — dummy-wrap-roll)</a><span class="band">Football · U18</span></li>
+      <li data-s="golf" data-b="u6-u8" data-t="bucket chip"><a href="/drills/golf">Bucket Chip</a><span class="band">Golf · U6–U8</span></li>
+      <li data-s="golf" data-b="u6-u8" data-t="gate putting"><a href="/drills/golf">Gate Putting</a><span class="band">Golf · U6–U8</span></li>
+      <li data-s="golf" data-b="u6-u8" data-t="point the clubface"><a href="/drills/golf">Point the Clubface</a><span class="band">Golf · U6–U8</span></li>
+      <li data-s="golf" data-b="u6-u8" data-t="putter pendulum"><a href="/drills/golf">Putter Pendulum</a><span class="band">Golf · U6–U8</span></li>
+      <li data-s="golf" data-b="u6-u8" data-t="ready stance"><a href="/drills/golf">Ready Stance</a><span class="band">Golf · U6–U8</span></li>
+      <li data-s="golf" data-b="u6-u8" data-t="ring target putting"><a href="/drills/golf">Ring Target Putting</a><span class="band">Golf · U6–U8</span></li>
+      <li data-s="golf" data-b="u6-u8" data-t="statue finish"><a href="/drills/golf">Statue Finish</a><span class="band">Golf · U6–U8</span></li>
+      <li data-s="golf" data-b="u6-u8" data-t="the all-ten grip"><a href="/drills/golf">The All-Ten Grip</a><span class="band">Golf · U6–U8</span></li>
+      <li data-s="golf" data-b="u6-u8" data-t="the safety circle"><a href="/drills/golf">The Safety Circle</a><span class="band">Golf · U6–U8</span></li>
+      <li data-s="golf" data-b="u6-u8" data-t="tick-tock chip"><a href="/drills/golf">Tick-Tock Chip</a><span class="band">Golf · U6–U8</span></li>
+      <li data-s="golf" data-b="u10-u12" data-t="address basics"><a href="/drills/golf">Address Basics</a><span class="band">Golf · U10–U12</span></li>
+      <li data-s="golf" data-b="u10-u12" data-t="aim with a club"><a href="/drills/golf">Aim With a Club</a><span class="band">Golf · U10–U12</span></li>
+      <li data-s="golf" data-b="u10-u12" data-t="bump and run"><a href="/drills/golf">Bump and Run</a><span class="band">Golf · U10–U12</span></li>
+      <li data-s="golf" data-b="u10-u12" data-t="choose your grip"><a href="/drills/golf">Choose Your Grip</a><span class="band">Golf · U10–U12</span></li>
+      <li data-s="golf" data-b="u10-u12" data-t="lag putting"><a href="/drills/golf">Lag Putting</a><span class="band">Golf · U10–U12</span></li>
+      <li data-s="golf" data-b="u10-u12" data-t="sand splash intro"><a href="/drills/golf">Sand Splash Intro</a><span class="band">Golf · U10–U12</span></li>
+      <li data-s="golf" data-b="u10-u12" data-t="tee it and aim"><a href="/drills/golf">Tee It and Aim</a><span class="band">Golf · U10–U12</span></li>
+      <li data-s="golf" data-b="u10-u12" data-t="the 9-to-3 pitch"><a href="/drills/golf">The 9-to-3 Pitch</a><span class="band">Golf · U10–U12</span></li>
+      <li data-s="golf" data-b="u10-u12" data-t="the putting stroke"><a href="/drills/golf">The Putting Stroke</a><span class="band">Golf · U10–U12</span></li>
+      <li data-s="golf" data-b="u10-u12" data-t="turn and turn back"><a href="/drills/golf">Turn and Turn Back</a><span class="band">Golf · U10–U12</span></li>
+      <li data-s="golf" data-b="u14-u16" data-t="ball first, then turf"><a href="/drills/golf">Ball First, Then Turf</a><span class="band">Golf · U14–U16</span></li>
+      <li data-s="golf" data-b="u14-u16" data-t="bunker distance control"><a href="/drills/golf">Bunker Distance Control</a><span class="band">Golf · U14–U16</span></li>
+      <li data-s="golf" data-b="u14-u16" data-t="landing spot pitching"><a href="/drills/golf">Landing Spot Pitching</a><span class="band">Golf · U14–U16</span></li>
+      <li data-s="golf" data-b="u14-u16" data-t="one-piece takeaway"><a href="/drills/golf">One-Piece Takeaway</a><span class="band">Golf · U14–U16</span></li>
+      <li data-s="golf" data-b="u14-u16" data-t="play to your number"><a href="/drills/golf">Play to Your Number</a><span class="band">Golf · U14–U16</span></li>
+      <li data-s="golf" data-b="u14-u16" data-t="runner or flop"><a href="/drills/golf">Runner or Flop</a><span class="band">Golf · U14–U16</span></li>
+      <li data-s="golf" data-b="u14-u16" data-t="step-through weight shift"><a href="/drills/golf">Step-Through Weight Shift</a><span class="band">Golf · U14–U16</span></li>
+      <li data-s="golf" data-b="u14-u16" data-t="the downswing sequence"><a href="/drills/golf">The Downswing Sequence</a><span class="band">Golf · U14–U16</span></li>
+      <li data-s="golf" data-b="u14-u16" data-t="the punch out"><a href="/drills/golf">The Punch Out</a><span class="band">Golf · U14–U16</span></li>
+      <li data-s="golf" data-b="u14-u16" data-t="the putting gate"><a href="/drills/golf">The Putting Gate</a><span class="band">Golf · U14–U16</span></li>
+      <li data-s="golf" data-b="u18" data-t="fairway bunker escape"><a href="/drills/golf">Fairway Bunker Escape</a><span class="band">Golf · U18</span></li>
+      <li data-s="golf" data-b="u18" data-t="miss in the right spot"><a href="/drills/golf">Miss in the Right Spot</a><span class="band">Golf · U18</span></li>
+      <li data-s="golf" data-b="u18" data-t="one-hop-and-stop chip"><a href="/drills/golf">One-Hop-and-Stop Chip</a><span class="band">Golf · U18</span></li>
+      <li data-s="golf" data-b="u18" data-t="reading greens"><a href="/drills/golf">Reading Greens</a><span class="band">Golf · U18</span></li>
+      <li data-s="golf" data-b="u18" data-t="see it, feel it, trust it"><a href="/drills/golf">See It, Feel It, Trust It</a><span class="band">Golf · U18</span></li>
+      <li data-s="golf" data-b="u18" data-t="shaping a draw"><a href="/drills/golf">Shaping a Draw</a><span class="band">Golf · U18</span></li>
+      <li data-s="golf" data-b="u18" data-t="shaping a fade"><a href="/drills/golf">Shaping a Fade</a><span class="band">Golf · U18</span></li>
+      <li data-s="golf" data-b="u18" data-t="the bounce-back"><a href="/drills/golf">The Bounce-Back</a><span class="band">Golf · U18</span></li>
+      <li data-s="golf" data-b="u18" data-t="the hundred-yard wedge"><a href="/drills/golf">The Hundred-Yard Wedge</a><span class="band">Golf · U18</span></li>
+      <li data-s="golf" data-b="u18" data-t="the knockdown"><a href="/drills/golf">The Knockdown</a><span class="band">Golf · U18</span></li>
+      <li data-s="gymnastics" data-b="u6-u8" data-t="&quot;bunny hops&quot; (bunny hops)"><a href="/drills/gymnastics">&quot;Bunny Hops&quot; (Bunny Hops)</a><span class="band">Gymnastics · U6–U8</span></li>
+      <li data-s="gymnastics" data-b="u6-u8" data-t="&quot;crab shuffle&quot; (crab walk)"><a href="/drills/gymnastics">&quot;Crab Shuffle&quot; (Crab Walk)</a><span class="band">Gymnastics · U6–U8</span></li>
+      <li data-s="gymnastics" data-b="u6-u8" data-t="&quot;jumping stars&quot; (star jumps)"><a href="/drills/gymnastics">&quot;Jumping Stars&quot; (Star Jumps)</a><span class="band">Gymnastics · U6–U8</span></li>
+      <li data-s="gymnastics" data-b="u6-u8" data-t="&quot;pencil roll slide&quot; (pencil roll)"><a href="/drills/gymnastics">&quot;Pencil Roll Slide&quot; (Pencil Roll)</a><span class="band">Gymnastics · U6–U8</span></li>
+      <li data-s="gymnastics" data-b="u6-u8" data-t="&quot;rolly-polly race&quot; (log roll fun)"><a href="/drills/gymnastics">&quot;Rolly-Polly Race&quot; (Log Roll Fun)</a><span class="band">Gymnastics · U6–U8</span></li>
+      <li data-s="gymnastics" data-b="u6-u8" data-t="&quot;soft feet landings&quot; (safe landings — bend your knees)"><a href="/drills/gymnastics">&quot;Soft Feet Landings&quot; (Safe Landings — Bend Your Knees)</a><span class="band">Gymnastics · U6–U8</span></li>
+      <li data-s="gymnastics" data-b="u6-u8" data-t="&quot;the busy bear&quot; (bear crawl)"><a href="/drills/gymnastics">&quot;The Busy Bear&quot; (Bear Crawl)</a><span class="band">Gymnastics · U6–U8</span></li>
+      <li data-s="gymnastics" data-b="u6-u8" data-t="&quot;the rolling turtle&quot; (forward roll)"><a href="/drills/gymnastics">&quot;The Rolling Turtle&quot; (Forward Roll)</a><span class="band">Gymnastics · U6–U8</span></li>
+      <li data-s="gymnastics" data-b="u6-u8" data-t="&quot;walk the line&quot; (balancing on a line)"><a href="/drills/gymnastics">&quot;Walk the Line&quot; (Balancing on a Line)</a><span class="band">Gymnastics · U6–U8</span></li>
+      <li data-s="gymnastics" data-b="u6-u8" data-t="&quot;wiggle and stretch&quot; (stretching basics)"><a href="/drills/gymnastics">&quot;Wiggle and Stretch&quot; (Stretching Basics)</a><span class="band">Gymnastics · U6–U8</span></li>
+      <li data-s="gymnastics" data-b="u10-u12" data-t="back roll to stand"><a href="/drills/gymnastics">Back Roll to Stand</a><span class="band">Gymnastics · U10–U12</span></li>
+      <li data-s="gymnastics" data-b="u10-u12" data-t="bar hangs and knee tucks"><a href="/drills/gymnastics">Bar Hangs and Knee Tucks</a><span class="band">Gymnastics · U10–U12</span></li>
+      <li data-s="gymnastics" data-b="u10-u12" data-t="bridge hold"><a href="/drills/gymnastics">Bridge Hold</a><span class="band">Gymnastics · U10–U12</span></li>
+      <li data-s="gymnastics" data-b="u10-u12" data-t="cartwheel basics"><a href="/drills/gymnastics">Cartwheel Basics</a><span class="band">Gymnastics · U10–U12</span></li>
+      <li data-s="gymnastics" data-b="u10-u12" data-t="forward roll to stand"><a href="/drills/gymnastics">Forward Roll to Stand</a><span class="band">Gymnastics · U10–U12</span></li>
+      <li data-s="gymnastics" data-b="u10-u12" data-t="handstand against the wall"><a href="/drills/gymnastics">Handstand Against the Wall</a><span class="band">Gymnastics · U10–U12</span></li>
+      <li data-s="gymnastics" data-b="u10-u12" data-t="hollow body hold"><a href="/drills/gymnastics">Hollow Body Hold</a><span class="band">Gymnastics · U10–U12</span></li>
+      <li data-s="gymnastics" data-b="u10-u12" data-t="low beam walks"><a href="/drills/gymnastics">Low Beam Walks</a><span class="band">Gymnastics · U10–U12</span></li>
+      <li data-s="gymnastics" data-b="u10-u12" data-t="split leap basics"><a href="/drills/gymnastics">Split Leap Basics</a><span class="band">Gymnastics · U10–U12</span></li>
+      <li data-s="gymnastics" data-b="u10-u12" data-t="tuck jumps"><a href="/drills/gymnastics">Tuck Jumps</a><span class="band">Gymnastics · U10–U12</span></li>
+      <li data-s="gymnastics" data-b="u14-u16" data-t="back handspring basics (with a spotter)"><a href="/drills/gymnastics">Back Handspring Basics (With a Spotter)</a><span class="band">Gymnastics · U14–U16</span></li>
+      <li data-s="gymnastics" data-b="u14-u16" data-t="back walkover"><a href="/drills/gymnastics">Back Walkover</a><span class="band">Gymnastics · U14–U16</span></li>
+      <li data-s="gymnastics" data-b="u14-u16" data-t="bar swing basics"><a href="/drills/gymnastics">Bar Swing Basics</a><span class="band">Gymnastics · U14–U16</span></li>
+      <li data-s="gymnastics" data-b="u14-u16" data-t="beam turns"><a href="/drills/gymnastics">Beam Turns</a><span class="band">Gymnastics · U14–U16</span></li>
+      <li data-s="gymnastics" data-b="u14-u16" data-t="dismount basics"><a href="/drills/gymnastics">Dismount Basics</a><span class="band">Gymnastics · U14–U16</span></li>
+      <li data-s="gymnastics" data-b="u14-u16" data-t="front handspring basics"><a href="/drills/gymnastics">Front Handspring Basics</a><span class="band">Gymnastics · U14–U16</span></li>
+      <li data-s="gymnastics" data-b="u14-u16" data-t="handstand holds"><a href="/drills/gymnastics">Handstand Holds</a><span class="band">Gymnastics · U14–U16</span></li>
+      <li data-s="gymnastics" data-b="u14-u16" data-t="kip introduction"><a href="/drills/gymnastics">Kip Introduction</a><span class="band">Gymnastics · U14–U16</span></li>
+      <li data-s="gymnastics" data-b="u14-u16" data-t="roundoff technique"><a href="/drills/gymnastics">Roundoff Technique</a><span class="band">Gymnastics · U14–U16</span></li>
+      <li data-s="gymnastics" data-b="u14-u16" data-t="vault run-up technique"><a href="/drills/gymnastics">Vault Run-Up Technique</a><span class="band">Gymnastics · U14–U16</span></li>
+      <li data-s="gymnastics" data-b="u18" data-t="back tuck progressions"><a href="/drills/gymnastics">Back Tuck Progressions</a><span class="band">Gymnastics · U18</span></li>
+      <li data-s="gymnastics" data-b="u18" data-t="beam series"><a href="/drills/gymnastics">Beam Series</a><span class="band">Gymnastics · U18</span></li>
+      <li data-s="gymnastics" data-b="u18" data-t="floor pass construction"><a href="/drills/gymnastics">Floor Pass Construction</a><span class="band">Gymnastics · U18</span></li>
+      <li data-s="gymnastics" data-b="u18" data-t="full turns on beam"><a href="/drills/gymnastics">Full Turns on Beam</a><span class="band">Gymnastics · U18</span></li>
+      <li data-s="gymnastics" data-b="u18" data-t="giants introduction"><a href="/drills/gymnastics">Giants Introduction</a><span class="band">Gymnastics · U18</span></li>
+      <li data-s="gymnastics" data-b="u18" data-t="layout basics"><a href="/drills/gymnastics">Layout Basics</a><span class="band">Gymnastics · U18</span></li>
+      <li data-s="gymnastics" data-b="u18" data-t="release move basics (with coach)"><a href="/drills/gymnastics">Release Move Basics (With Coach)</a><span class="band">Gymnastics · U18</span></li>
+      <li data-s="gymnastics" data-b="u18" data-t="routine composition"><a href="/drills/gymnastics">Routine Composition</a><span class="band">Gymnastics · U18</span></li>
+      <li data-s="gymnastics" data-b="u18" data-t="twisting introduction"><a href="/drills/gymnastics">Twisting Introduction</a><span class="band">Gymnastics · U18</span></li>
+      <li data-s="gymnastics" data-b="u18" data-t="vault technique"><a href="/drills/gymnastics">Vault Technique</a><span class="band">Gymnastics · U18</span></li>
+      <li data-s="hockey" data-b="u6-u8" data-t="basic hockey stance"><a href="/drills/hockey">Basic Hockey Stance</a><span class="band">Hockey · U6–U8</span></li>
+      <li data-s="hockey" data-b="u6-u8" data-t="falling safely and getting up"><a href="/drills/hockey">Falling Safely and Getting Up</a><span class="band">Hockey · U6–U8</span></li>
+      <li data-s="hockey" data-b="u6-u8" data-t="heads-up freeze game"><a href="/drills/hockey">Heads-Up Freeze Game</a><span class="band">Hockey · U6–U8</span></li>
+      <li data-s="hockey" data-b="u6-u8" data-t="marching on the ice"><a href="/drills/hockey">Marching on the Ice</a><span class="band">Hockey · U6–U8</span></li>
+      <li data-s="hockey" data-b="u6-u8" data-t="puck dribbling — wide touches"><a href="/drills/hockey">Puck Dribbling — Wide Touches</a><span class="band">Hockey · U6–U8</span></li>
+      <li data-s="hockey" data-b="u6-u8" data-t="push and glide"><a href="/drills/hockey">Push and Glide</a><span class="band">Hockey · U6–U8</span></li>
+      <li data-s="hockey" data-b="u6-u8" data-t="snowplow stop"><a href="/drills/hockey">Snowplow Stop</a><span class="band">Hockey · U6–U8</span></li>
+      <li data-s="hockey" data-b="u6-u8" data-t="stick grip basics"><a href="/drills/hockey">Stick Grip Basics</a><span class="band">Hockey · U6–U8</span></li>
+      <li data-s="hockey" data-b="u6-u8" data-t="turning wide"><a href="/drills/hockey">Turning Wide</a><span class="band">Hockey · U6–U8</span></li>
+      <li data-s="hockey" data-b="u6-u8" data-t="two-foot glide balance"><a href="/drills/hockey">Two-Foot Glide Balance</a><span class="band">Hockey · U6–U8</span></li>
+      <li data-s="hockey" data-b="u10-u12" data-t="backward skating intro"><a href="/drills/hockey">Backward Skating Intro</a><span class="band">Hockey · U10–U12</span></li>
+      <li data-s="hockey" data-b="u10-u12" data-t="catching a pass"><a href="/drills/hockey">Catching a Pass</a><span class="band">Hockey · U10–U12</span></li>
+      <li data-s="hockey" data-b="u10-u12" data-t="crossover intro"><a href="/drills/hockey">Crossover Intro</a><span class="band">Hockey · U10–U12</span></li>
+      <li data-s="hockey" data-b="u10-u12" data-t="forehand pass"><a href="/drills/hockey">Forehand Pass</a><span class="band">Hockey · U10–U12</span></li>
+      <li data-s="hockey" data-b="u10-u12" data-t="full stride extension"><a href="/drills/hockey">Full Stride Extension</a><span class="band">Hockey · U10–U12</span></li>
+      <li data-s="hockey" data-b="u10-u12" data-t="hockey stop intro"><a href="/drills/hockey">Hockey Stop Intro</a><span class="band">Hockey · U10–U12</span></li>
+      <li data-s="hockey" data-b="u10-u12" data-t="puck protection basics"><a href="/drills/hockey">Puck Protection Basics</a><span class="band">Hockey · U10–U12</span></li>
+      <li data-s="hockey" data-b="u10-u12" data-t="skating with the puck — head up"><a href="/drills/hockey">Skating with the Puck — Head Up</a><span class="band">Hockey · U10–U12</span></li>
+      <li data-s="hockey" data-b="u10-u12" data-t="stickhandling box"><a href="/drills/hockey">Stickhandling Box</a><span class="band">Hockey · U10–U12</span></li>
+      <li data-s="hockey" data-b="u10-u12" data-t="wrist shot basics"><a href="/drills/hockey">Wrist Shot Basics</a><span class="band">Hockey · U10–U12</span></li>
+      <li data-s="hockey" data-b="u14-u16" data-t="backhand shot"><a href="/drills/hockey">Backhand Shot</a><span class="band">Hockey · U14–U16</span></li>
+      <li data-s="hockey" data-b="u14-u16" data-t="crossovers at speed"><a href="/drills/hockey">Crossovers at Speed</a><span class="band">Hockey · U14–U16</span></li>
+      <li data-s="hockey" data-b="u14-u16" data-t="edge control — inside and outside rides"><a href="/drills/hockey">Edge Control — Inside and Outside Rides</a><span class="band">Hockey · U14–U16</span></li>
+      <li data-s="hockey" data-b="u14-u16" data-t="net-front positioning"><a href="/drills/hockey">Net-Front Positioning</a><span class="band">Hockey · U14–U16</span></li>
+      <li data-s="hockey" data-b="u14-u16" data-t="pivots — forward to backward"><a href="/drills/hockey">Pivots — Forward to Backward</a><span class="band">Hockey · U14–U16</span></li>
+      <li data-s="hockey" data-b="u14-u16" data-t="power stride"><a href="/drills/hockey">Power Stride</a><span class="band">Hockey · U14–U16</span></li>
+      <li data-s="hockey" data-b="u14-u16" data-t="puck protection along the boards"><a href="/drills/hockey">Puck Protection Along the Boards</a><span class="band">Hockey · U14–U16</span></li>
+      <li data-s="hockey" data-b="u14-u16" data-t="shooting in stride"><a href="/drills/hockey">Shooting in Stride</a><span class="band">Hockey · U14–U16</span></li>
+      <li data-s="hockey" data-b="u14-u16" data-t="slap shot basics"><a href="/drills/hockey">Slap Shot Basics</a><span class="band">Hockey · U14–U16</span></li>
+      <li data-s="hockey" data-b="u14-u16" data-t="wrist shot power"><a href="/drills/hockey">Wrist Shot Power</a><span class="band">Hockey · U14–U16</span></li>
+      <li data-s="hockey" data-b="u18" data-t="2-on-1 rush"><a href="/drills/hockey">2-on-1 Rush</a><span class="band">Hockey · U18</span></li>
+      <li data-s="hockey" data-b="u18" data-t="backchecking — transition skating"><a href="/drills/hockey">Backchecking — Transition Skating</a><span class="band">Hockey · U18</span></li>
+      <li data-s="hockey" data-b="u18" data-t="board battles — legal body positioning"><a href="/drills/hockey">Board Battles — Legal Body Positioning</a><span class="band">Hockey · U18</span></li>
+      <li data-s="hockey" data-b="u18" data-t="deception — shot fake and go"><a href="/drills/hockey">Deception — Shot Fake and Go</a><span class="band">Hockey · U18</span></li>
+      <li data-s="hockey" data-b="u18" data-t="faceoff basics"><a href="/drills/hockey">Faceoff Basics</a><span class="band">Hockey · U18</span></li>
+      <li data-s="hockey" data-b="u18" data-t="give and go"><a href="/drills/hockey">Give and Go</a><span class="band">Hockey · U18</span></li>
+      <li data-s="hockey" data-b="u18" data-t="lateral mobility — tight turns"><a href="/drills/hockey">Lateral Mobility — Tight Turns</a><span class="band">Hockey · U18</span></li>
+      <li data-s="hockey" data-b="u18" data-t="one-timer progression"><a href="/drills/hockey">One-Timer Progression</a><span class="band">Hockey · U18</span></li>
+      <li data-s="hockey" data-b="u18" data-t="overspeed stride laps"><a href="/drills/hockey">Overspeed Stride Laps</a><span class="band">Hockey · U18</span></li>
+      <li data-s="hockey" data-b="u18" data-t="stickhandling at speed — toe drags"><a href="/drills/hockey">Stickhandling at Speed — Toe Drags</a><span class="band">Hockey · U18</span></li>
+      <li data-s="lacrosse" data-b="u6-u8" data-t="catching with soft hands"><a href="/drills/lacrosse">Catching With Soft Hands</a><span class="band">Lacrosse · U6–U8</span></li>
+      <li data-s="lacrosse" data-b="u6-u8" data-t="cradle and run relay"><a href="/drills/lacrosse">Cradle and Run Relay</a><span class="band">Lacrosse · U6–U8</span></li>
+      <li data-s="lacrosse" data-b="u6-u8" data-t="dodging around cones"><a href="/drills/lacrosse">Dodging Around Cones</a><span class="band">Lacrosse · U6–U8</span></li>
+      <li data-s="lacrosse" data-b="u6-u8" data-t="know your stick"><a href="/drills/lacrosse">Know Your Stick</a><span class="band">Lacrosse · U6–U8</span></li>
+      <li data-s="lacrosse" data-b="u6-u8" data-t="passing to a partner"><a href="/drills/lacrosse">Passing to a Partner</a><span class="band">Lacrosse · U6–U8</span></li>
+      <li data-s="lacrosse" data-b="u6-u8" data-t="ready stance and footwork"><a href="/drills/lacrosse">Ready Stance and Footwork</a><span class="band">Lacrosse · U6–U8</span></li>
+      <li data-s="lacrosse" data-b="u6-u8" data-t="scooping ground balls"><a href="/drills/lacrosse">Scooping Ground Balls</a><span class="band">Lacrosse · U6–U8</span></li>
+      <li data-s="lacrosse" data-b="u6-u8" data-t="shooting at a big target"><a href="/drills/lacrosse">Shooting at a Big Target</a><span class="band">Lacrosse · U6–U8</span></li>
+      <li data-s="lacrosse" data-b="u6-u8" data-t="soft cradle"><a href="/drills/lacrosse">Soft Cradle</a><span class="band">Lacrosse · U6–U8</span></li>
+      <li data-s="lacrosse" data-b="u6-u8" data-t="switching hands"><a href="/drills/lacrosse">Switching Hands</a><span class="band">Lacrosse · U6–U8</span></li>
+      <li data-s="lacrosse" data-b="u10-u12" data-t="chest pass and catch"><a href="/drills/lacrosse">Chest Pass and Catch</a><span class="band">Lacrosse · U10–U12</span></li>
+      <li data-s="lacrosse" data-b="u10-u12" data-t="clearing pass basics"><a href="/drills/lacrosse">Clearing Pass Basics</a><span class="band">Lacrosse · U10–U12</span></li>
+      <li data-s="lacrosse" data-b="u10-u12" data-t="cradling on the run"><a href="/drills/lacrosse">Cradling on the Run</a><span class="band">Lacrosse · U10–U12</span></li>
+      <li data-s="lacrosse" data-b="u10-u12" data-t="defensive stance and shuffling"><a href="/drills/lacrosse">Defensive Stance and Shuffling</a><span class="band">Lacrosse · U10–U12</span></li>
+      <li data-s="lacrosse" data-b="u10-u12" data-t="fast break 2v1"><a href="/drills/lacrosse">Fast Break 2v1</a><span class="band">Lacrosse · U10–U12</span></li>
+      <li data-s="lacrosse" data-b="u10-u12" data-t="goalie stance basics (intro)"><a href="/drills/lacrosse">Goalie Stance Basics (intro)</a><span class="band">Lacrosse · U10–U12</span></li>
+      <li data-s="lacrosse" data-b="u10-u12" data-t="ground balls: scoop through"><a href="/drills/lacrosse">Ground Balls: Scoop Through</a><span class="band">Lacrosse · U10–U12</span></li>
+      <li data-s="lacrosse" data-b="u10-u12" data-t="off-hand cradling"><a href="/drills/lacrosse">Off-Hand Cradling</a><span class="band">Lacrosse · U10–U12</span></li>
+      <li data-s="lacrosse" data-b="u10-u12" data-t="overhand shooting form"><a href="/drills/lacrosse">Overhand Shooting Form</a><span class="band">Lacrosse · U10–U12</span></li>
+      <li data-s="lacrosse" data-b="u10-u12" data-t="split dodge (intro)"><a href="/drills/lacrosse">Split Dodge (intro)</a><span class="band">Lacrosse · U10–U12</span></li>
+      <li data-s="lacrosse" data-b="u14-u16" data-t="clearing: goalie outlet pass"><a href="/drills/lacrosse">Clearing: Goalie Outlet Pass</a><span class="band">Lacrosse · U14–U16</span></li>
+      <li data-s="lacrosse" data-b="u14-u16" data-t="face-off stance basics"><a href="/drills/lacrosse">Face-Off Stance Basics</a><span class="band">Lacrosse · U14–U16</span></li>
+      <li data-s="lacrosse" data-b="u14-u16" data-t="goalie positioning and arcs"><a href="/drills/lacrosse">Goalie Positioning and Arcs</a><span class="band">Lacrosse · U14–U16</span></li>
+      <li data-s="lacrosse" data-b="u14-u16" data-t="man-up passing rotation"><a href="/drills/lacrosse">Man-Up Passing Rotation</a><span class="band">Lacrosse · U14–U16</span></li>
+      <li data-s="lacrosse" data-b="u14-u16" data-t="riding basics"><a href="/drills/lacrosse">Riding Basics</a><span class="band">Lacrosse · U14–U16</span></li>
+      <li data-s="lacrosse" data-b="u14-u16" data-t="roll dodge"><a href="/drills/lacrosse">Roll Dodge</a><span class="band">Lacrosse · U14–U16</span></li>
+      <li data-s="lacrosse" data-b="u14-u16" data-t="shooting on the run"><a href="/drills/lacrosse">Shooting on the Run</a><span class="band">Lacrosse · U14–U16</span></li>
+      <li data-s="lacrosse" data-b="u14-u16" data-t="split dodge technique"><a href="/drills/lacrosse">Split Dodge Technique</a><span class="band">Lacrosse · U14–U16</span></li>
+      <li data-s="lacrosse" data-b="u14-u16" data-t="stick checks: poke and lift"><a href="/drills/lacrosse">Stick Checks: Poke and Lift</a><span class="band">Lacrosse · U14–U16</span></li>
+      <li data-s="lacrosse" data-b="u14-u16" data-t="time and room shooting"><a href="/drills/lacrosse">Time and Room Shooting</a><span class="band">Lacrosse · U14–U16</span></li>
+      <li data-s="lacrosse" data-b="u18" data-t="advanced goalie: reading the shooter"><a href="/drills/lacrosse">Advanced Goalie: Reading the Shooter</a><span class="band">Lacrosse · U18</span></li>
+      <li data-s="lacrosse" data-b="u18" data-t="bounce shots and placement"><a href="/drills/lacrosse">Bounce Shots and Placement</a><span class="band">Lacrosse · U18</span></li>
+      <li data-s="lacrosse" data-b="u18" data-t="face-off moves: clamp and rake"><a href="/drills/lacrosse">Face-Off Moves: Clamp and Rake</a><span class="band">Lacrosse · U18</span></li>
+      <li data-s="lacrosse" data-b="u18" data-t="feeding from behind (x)"><a href="/drills/lacrosse">Feeding From Behind (X)</a><span class="band">Lacrosse · U18</span></li>
+      <li data-s="lacrosse" data-b="u18" data-t="inside roll"><a href="/drills/lacrosse">Inside Roll</a><span class="band">Lacrosse · U18</span></li>
+      <li data-s="lacrosse" data-b="u18" data-t="man-down rotation"><a href="/drills/lacrosse">Man-Down Rotation</a><span class="band">Lacrosse · U18</span></li>
+      <li data-s="lacrosse" data-b="u18" data-t="question-mark dodge"><a href="/drills/lacrosse">Question-Mark Dodge</a><span class="band">Lacrosse · U18</span></li>
+      <li data-s="lacrosse" data-b="u18" data-t="slide and recover defense"><a href="/drills/lacrosse">Slide and Recover Defense</a><span class="band">Lacrosse · U18</span></li>
+      <li data-s="lacrosse" data-b="u18" data-t="transition offense 4v3"><a href="/drills/lacrosse">Transition Offense 4v3</a><span class="band">Lacrosse · U18</span></li>
+      <li data-s="lacrosse" data-b="u18" data-t="two-man game: pick and roll"><a href="/drills/lacrosse">Two-Man Game: Pick and Roll</a><span class="band">Lacrosse · U18</span></li>
+      <li data-s="martial-arts" data-b="u6-u8" data-t="crane balance challenge"><a href="/drills/martial-arts">Crane Balance Challenge</a><span class="band">Martial Arts · U6–U8</span></li>
+      <li data-s="martial-arts" data-b="u6-u8" data-t="freeze focus game"><a href="/drills/martial-arts">Freeze Focus Game</a><span class="band">Martial Arts · U6–U8</span></li>
+      <li data-s="martial-arts" data-b="u6-u8" data-t="front kick march"><a href="/drills/martial-arts">Front Kick March</a><span class="band">Martial Arts · U6–U8</span></li>
+      <li data-s="martial-arts" data-b="u6-u8" data-t="high block shield"><a href="/drills/martial-arts">High Block Shield</a><span class="band">Martial Arts · U6–U8</span></li>
+      <li data-s="martial-arts" data-b="u6-u8" data-t="low block sweep"><a href="/drills/martial-arts">Low Block Sweep</a><span class="band">Martial Arts · U6–U8</span></li>
+      <li data-s="martial-arts" data-b="u6-u8" data-t="ninja side-step"><a href="/drills/martial-arts">Ninja Side-Step</a><span class="band">Martial Arts · U6–U8</span></li>
+      <li data-s="martial-arts" data-b="u6-u8" data-t="punch the target pad"><a href="/drills/martial-arts">Punch the Target Pad</a><span class="band">Martial Arts · U6–U8</span></li>
+      <li data-s="martial-arts" data-b="u6-u8" data-t="ready stance snap"><a href="/drills/martial-arts">Ready Stance Snap</a><span class="band">Martial Arts · U6–U8</span></li>
+      <li data-s="martial-arts" data-b="u6-u8" data-t="strong horse stance"><a href="/drills/martial-arts">Strong Horse Stance</a><span class="band">Martial Arts · U6–U8</span></li>
+      <li data-s="martial-arts" data-b="u6-u8" data-t="tuck-and-roll landing"><a href="/drills/martial-arts">Tuck-and-Roll Landing</a><span class="band">Martial Arts · U6–U8</span></li>
+      <li data-s="martial-arts" data-b="u10-u12" data-t="back breakfall"><a href="/drills/martial-arts">Back Breakfall</a><span class="band">Martial Arts · U10–U12</span></li>
+      <li data-s="martial-arts" data-b="u10-u12" data-t="first form — four moves"><a href="/drills/martial-arts">First Form — Four Moves</a><span class="band">Martial Arts · U10–U12</span></li>
+      <li data-s="martial-arts" data-b="u10-u12" data-t="form turns — pivoting footwork"><a href="/drills/martial-arts">Form Turns — Pivoting Footwork</a><span class="band">Martial Arts · U10–U12</span></li>
+      <li data-s="martial-arts" data-b="u10-u12" data-t="front kick chamber drill"><a href="/drills/martial-arts">Front Kick Chamber Drill</a><span class="band">Martial Arts · U10–U12</span></li>
+      <li data-s="martial-arts" data-b="u10-u12" data-t="jab-cross combo"><a href="/drills/martial-arts">Jab-Cross Combo</a><span class="band">Martial Arts · U10–U12</span></li>
+      <li data-s="martial-arts" data-b="u10-u12" data-t="partner block-and-counter"><a href="/drills/martial-arts">Partner Block-and-Counter</a><span class="band">Martial Arts · U10–U12</span></li>
+      <li data-s="martial-arts" data-b="u10-u12" data-t="roundhouse kick on the pad"><a href="/drills/martial-arts">Roundhouse Kick on the Pad</a><span class="band">Martial Arts · U10–U12</span></li>
+      <li data-s="martial-arts" data-b="u10-u12" data-t="side breakfall"><a href="/drills/martial-arts">Side Breakfall</a><span class="band">Martial Arts · U10–U12</span></li>
+      <li data-s="martial-arts" data-b="u10-u12" data-t="side kick basics"><a href="/drills/martial-arts">Side Kick Basics</a><span class="band">Martial Arts · U10–U12</span></li>
+      <li data-s="martial-arts" data-b="u10-u12" data-t="stepping punches"><a href="/drills/martial-arts">Stepping Punches</a><span class="band">Martial Arts · U10–U12</span></li>
+      <li data-s="martial-arts" data-b="u14-u16" data-t="45-degree angle footwork"><a href="/drills/martial-arts">45-Degree Angle Footwork</a><span class="band">Martial Arts · U14–U16</span></li>
+      <li data-s="martial-arts" data-b="u14-u16" data-t="back kick basics"><a href="/drills/martial-arts">Back Kick Basics</a><span class="band">Martial Arts · U14–U16</span></li>
+      <li data-s="martial-arts" data-b="u14-u16" data-t="bridge and shrimp escape"><a href="/drills/martial-arts">Bridge and Shrimp Escape</a><span class="band">Martial Arts · U14–U16</span></li>
+      <li data-s="martial-arts" data-b="u14-u16" data-t="clinch knee on the pad"><a href="/drills/martial-arts">Clinch Knee on the Pad</a><span class="band">Martial Arts · U14–U16</span></li>
+      <li data-s="martial-arts" data-b="u14-u16" data-t="controlled touch sparring"><a href="/drills/martial-arts">Controlled Touch Sparring</a><span class="band">Martial Arts · U14–U16</span></li>
+      <li data-s="martial-arts" data-b="u14-u16" data-t="front kick to roundhouse combo"><a href="/drills/martial-arts">Front Kick to Roundhouse Combo</a><span class="band">Martial Arts · U14–U16</span></li>
+      <li data-s="martial-arts" data-b="u14-u16" data-t="hip throw on the mats"><a href="/drills/martial-arts">Hip Throw on the Mats</a><span class="band">Martial Arts · U14–U16</span></li>
+      <li data-s="martial-arts" data-b="u14-u16" data-t="jab-cross-hook combo"><a href="/drills/martial-arts">Jab-Cross-Hook Combo</a><span class="band">Martial Arts · U14–U16</span></li>
+      <li data-s="martial-arts" data-b="u14-u16" data-t="pad round conditioning"><a href="/drills/martial-arts">Pad Round Conditioning</a><span class="band">Martial Arts · U14–U16</span></li>
+      <li data-s="martial-arts" data-b="u14-u16" data-t="slip and counter"><a href="/drills/martial-arts">Slip and Counter</a><span class="band">Martial Arts · U14–U16</span></li>
+      <li data-s="martial-arts" data-b="u18" data-t="clinch position basics"><a href="/drills/martial-arts">Clinch Position Basics</a><span class="band">Martial Arts · U18</span></li>
+      <li data-s="martial-arts" data-b="u18" data-t="controlled body sparring"><a href="/drills/martial-arts">Controlled Body Sparring</a><span class="band">Martial Arts · U18</span></li>
+      <li data-s="martial-arts" data-b="u18" data-t="counter-kick timing"><a href="/drills/martial-arts">Counter-Kick Timing</a><span class="band">Martial Arts · U18</span></li>
+      <li data-s="martial-arts" data-b="u18" data-t="feint and attack"><a href="/drills/martial-arts">Feint and Attack</a><span class="band">Martial Arts · U18</span></li>
+      <li data-s="martial-arts" data-b="u18" data-t="fight fitness circuit"><a href="/drills/martial-arts">Fight Fitness Circuit</a><span class="band">Martial Arts · U18</span></li>
+      <li data-s="martial-arts" data-b="u18" data-t="four-punch combo with head movement"><a href="/drills/martial-arts">Four-Punch Combo with Head Movement</a><span class="band">Martial Arts · U18</span></li>
+      <li data-s="martial-arts" data-b="u18" data-t="kick catch and counter"><a href="/drills/martial-arts">Kick Catch and Counter</a><span class="band">Martial Arts · U18</span></li>
+      <li data-s="martial-arts" data-b="u18" data-t="pad blitz rounds"><a href="/drills/martial-arts">Pad Blitz Rounds</a><span class="band">Martial Arts · U18</span></li>
+      <li data-s="martial-arts" data-b="u18" data-t="spinning hook kick"><a href="/drills/martial-arts">Spinning Hook Kick</a><span class="band">Martial Arts · U18</span></li>
+      <li data-s="martial-arts" data-b="u18" data-t="throw to pin flow"><a href="/drills/martial-arts">Throw to Pin Flow</a><span class="band">Martial Arts · U18</span></li>
+      <li data-s="skiing" data-b="u6-u8" data-t="boots on, clicked in"><a href="/drills/skiing">Boots On, Clicked In</a><span class="band">Skiing · U6–U8</span></li>
+      <li data-s="skiing" data-b="u6-u8" data-t="bumps on the bunny slope"><a href="/drills/skiing">Bumps on the Bunny Slope</a><span class="band">Skiing · U6–U8</span></li>
+      <li data-s="skiing" data-b="u6-u8" data-t="falling down and getting up"><a href="/drills/skiing">Falling Down and Getting Up</a><span class="band">Skiing · U6–U8</span></li>
+      <li data-s="skiing" data-b="u6-u8" data-t="look where you go"><a href="/drills/skiing">Look Where You Go</a><span class="band">Skiing · U6–U8</span></li>
+      <li data-s="skiing" data-b="u6-u8" data-t="magic carpet ride"><a href="/drills/skiing">Magic Carpet Ride</a><span class="band">Skiing · U6–U8</span></li>
+      <li data-s="skiing" data-b="u6-u8" data-t="marching in skis"><a href="/drills/skiing">Marching in Skis</a><span class="band">Skiing · U6–U8</span></li>
+      <li data-s="skiing" data-b="u6-u8" data-t="pizza slice — the snowplow shape"><a href="/drills/skiing">Pizza Slice — The Snowplow Shape</a><span class="band">Skiing · U6–U8</span></li>
+      <li data-s="skiing" data-b="u6-u8" data-t="pizza stop"><a href="/drills/skiing">Pizza Stop</a><span class="band">Skiing · U6–U8</span></li>
+      <li data-s="skiing" data-b="u6-u8" data-t="red light, green light on skis"><a href="/drills/skiing">Red Light, Green Light on Skis</a><span class="band">Skiing · U6–U8</span></li>
+      <li data-s="skiing" data-b="u6-u8" data-t="straight glide on the bunny slope"><a href="/drills/skiing">Straight Glide on the Bunny Slope</a><span class="band">Skiing · U6–U8</span></li>
+      <li data-s="skiing" data-b="u10-u12" data-t="chairlift ride and unload"><a href="/drills/skiing">Chairlift Ride and Unload</a><span class="band">Skiing · U10–U12</span></li>
+      <li data-s="skiing" data-b="u10-u12" data-t="falling leaf — traverse both ways"><a href="/drills/skiing">Falling Leaf — Traverse Both Ways</a><span class="band">Skiing · U10–U12</span></li>
+      <li data-s="skiing" data-b="u10-u12" data-t="first green run top to bottom"><a href="/drills/skiing">First Green Run Top to Bottom</a><span class="band">Skiing · U10–U12</span></li>
+      <li data-s="skiing" data-b="u10-u12" data-t="hop turns in place"><a href="/drills/skiing">Hop Turns in Place</a><span class="band">Skiing · U10–U12</span></li>
+      <li data-s="skiing" data-b="u10-u12" data-t="j-turns for stopping control"><a href="/drills/skiing">J-Turns for Stopping Control</a><span class="band">Skiing · U10–U12</span></li>
+      <li data-s="skiing" data-b="u10-u12" data-t="linking snowplow turns"><a href="/drills/skiing">Linking Snowplow Turns</a><span class="band">Skiing · U10–U12</span></li>
+      <li data-s="skiing" data-b="u10-u12" data-t="pole plant introduction"><a href="/drills/skiing">Pole Plant Introduction</a><span class="band">Skiing · U10–U12</span></li>
+      <li data-s="skiing" data-b="u10-u12" data-t="sideslipping down the slope"><a href="/drills/skiing">Sideslipping Down the Slope</a><span class="band">Skiing · U10–U12</span></li>
+      <li data-s="skiing" data-b="u10-u12" data-t="snowplow turns — left and right"><a href="/drills/skiing">Snowplow Turns — Left and Right</a><span class="band">Skiing · U10–U12</span></li>
+      <li data-s="skiing" data-b="u10-u12" data-t="speed control on a steeper pitch"><a href="/drills/skiing">Speed Control on a Steeper Pitch</a><span class="band">Skiing · U10–U12</span></li>
+      <li data-s="skiing" data-b="u14-u16" data-t="carving basics — let the ski turn you"><a href="/drills/skiing">Carving Basics — Let the Ski Turn You</a><span class="band">Skiing · U14–U16</span></li>
+      <li data-s="skiing" data-b="u14-u16" data-t="first blue run with flow"><a href="/drills/skiing">First Blue Run with Flow</a><span class="band">Skiing · U14–U16</span></li>
+      <li data-s="skiing" data-b="u14-u16" data-t="matching your skis — parallel turn introduction"><a href="/drills/skiing">Matching Your Skis — Parallel Turn Introduction</a><span class="band">Skiing · U14–U16</span></li>
+      <li data-s="skiing" data-b="u14-u16" data-t="pole plant timing"><a href="/drills/skiing">Pole Plant Timing</a><span class="band">Skiing · U14–U16</span></li>
+      <li data-s="skiing" data-b="u14-u16" data-t="railroad tracks — edge awareness"><a href="/drills/skiing">Railroad Tracks — Edge Awareness</a><span class="band">Skiing · U14–U16</span></li>
+      <li data-s="skiing" data-b="u14-u16" data-t="reading the hill — line choice"><a href="/drills/skiing">Reading the Hill — Line Choice</a><span class="band">Skiing · U14–U16</span></li>
+      <li data-s="skiing" data-b="u14-u16" data-t="rollers and terrain changes"><a href="/drills/skiing">Rollers and Terrain Changes</a><span class="band">Skiing · U14–U16</span></li>
+      <li data-s="skiing" data-b="u14-u16" data-t="short turns vs long turns"><a href="/drills/skiing">Short Turns vs Long Turns</a><span class="band">Skiing · U14–U16</span></li>
+      <li data-s="skiing" data-b="u14-u16" data-t="speed control through turn shape"><a href="/drills/skiing">Speed Control Through Turn Shape</a><span class="band">Skiing · U14–U16</span></li>
+      <li data-s="skiing" data-b="u14-u16" data-t="upper and lower body separation"><a href="/drills/skiing">Upper and Lower Body Separation</a><span class="band">Skiing · U14–U16</span></li>
+      <li data-s="skiing" data-b="u18" data-t="all-mountain flow run"><a href="/drills/skiing">All-Mountain Flow Run</a><span class="band">Skiing · U18</span></li>
+      <li data-s="skiing" data-b="u18" data-t="angulation for higher edge angles"><a href="/drills/skiing">Angulation for Higher Edge Angles</a><span class="band">Skiing · U18</span></li>
+      <li data-s="skiing" data-b="u18" data-t="dynamic short swings"><a href="/drills/skiing">Dynamic Short Swings</a><span class="band">Skiing · U18</span></li>
+      <li data-s="skiing" data-b="u18" data-t="fore-aft balance — pressure control"><a href="/drills/skiing">Fore-Aft Balance — Pressure Control</a><span class="band">Skiing · U18</span></li>
+      <li data-s="skiing" data-b="u18" data-t="mogul line choice"><a href="/drills/skiing">Mogul Line Choice</a><span class="band">Skiing · U18</span></li>
+      <li data-s="skiing" data-b="u18" data-t="moguls — absorption basics"><a href="/drills/skiing">Moguls — Absorption Basics</a><span class="band">Skiing · U18</span></li>
+      <li data-s="skiing" data-b="u18" data-t="steeps technique"><a href="/drills/skiing">Steeps Technique</a><span class="band">Skiing · U18</span></li>
+      <li data-s="skiing" data-b="u18" data-t="the clean carved turn"><a href="/drills/skiing">The Clean Carved Turn</a><span class="band">Skiing · U18</span></li>
+      <li data-s="skiing" data-b="u18" data-t="turn shape in the gates — intro to racing turns"><a href="/drills/skiing">Turn Shape in the Gates — Intro to Racing Turns</a><span class="band">Skiing · U18</span></li>
+      <li data-s="skiing" data-b="u18" data-t="variable snow — crud and powder basics"><a href="/drills/skiing">Variable Snow — Crud and Powder Basics</a><span class="band">Skiing · U18</span></li>
+      <li data-s="soccer" data-b="u6-u8" data-t="dribbling around cones"><a href="/drills/soccer">Dribbling Around Cones</a><span class="band">Soccer · U6–U8</span></li>
+      <li data-s="soccer" data-b="u6-u8" data-t="first mini-scramble game"><a href="/drills/soccer">First Mini-Scramble Game</a><span class="band">Soccer · U6–U8</span></li>
+      <li data-s="soccer" data-b="u6-u8" data-t="first touches (dribbling basics)"><a href="/drills/soccer">First Touches (Dribbling Basics)</a><span class="band">Soccer · U6–U8</span></li>
+      <li data-s="soccer" data-b="u6-u8" data-t="follow the leader dribble"><a href="/drills/soccer">Follow the Leader Dribble</a><span class="band">Soccer · U6–U8</span></li>
+      <li data-s="soccer" data-b="u6-u8" data-t="keep the ball close"><a href="/drills/soccer">Keep the Ball Close</a><span class="band">Soccer · U6–U8</span></li>
+      <li data-s="soccer" data-b="u6-u8" data-t="kick with the inside of the foot"><a href="/drills/soccer">Kick with the Inside of the Foot</a><span class="band">Soccer · U6–U8</span></li>
+      <li data-s="soccer" data-b="u6-u8" data-t="little kicks at a target"><a href="/drills/soccer">Little Kicks at a Target</a><span class="band">Soccer · U6–U8</span></li>
+      <li data-s="soccer" data-b="u6-u8" data-t="red light, green light dribble"><a href="/drills/soccer">Red Light, Green Light Dribble</a><span class="band">Soccer · U6–U8</span></li>
+      <li data-s="soccer" data-b="u6-u8" data-t="stop the ball (sole trap)"><a href="/drills/soccer">Stop the Ball (Sole Trap)</a><span class="band">Soccer · U6–U8</span></li>
+      <li data-s="soccer" data-b="u6-u8" data-t="toe taps"><a href="/drills/soccer">Toe Taps</a><span class="band">Soccer · U6–U8</span></li>
+      <li data-s="soccer" data-b="u10-u12" data-t="1v1 move — the scissors"><a href="/drills/soccer">1v1 Move — The Scissors</a><span class="band">Soccer · U10–U12</span></li>
+      <li data-s="soccer" data-b="u10-u12" data-t="1v1 move — the stepover"><a href="/drills/soccer">1v1 Move — The Stepover</a><span class="band">Soccer · U10–U12</span></li>
+      <li data-s="soccer" data-b="u10-u12" data-t="dribbling with the outside of the foot"><a href="/drills/soccer">Dribbling with the Outside of the Foot</a><span class="band">Soccer · U10–U12</span></li>
+      <li data-s="soccer" data-b="u10-u12" data-t="first-touch trap"><a href="/drills/soccer">First-Touch Trap</a><span class="band">Soccer · U10–U12</span></li>
+      <li data-s="soccer" data-b="u10-u12" data-t="goalkeeping basics — ready stance and catch"><a href="/drills/soccer">Goalkeeping Basics — Ready Stance and Catch</a><span class="band">Soccer · U10–U12</span></li>
+      <li data-s="soccer" data-b="u10-u12" data-t="inside-foot pass to a partner"><a href="/drills/soccer">Inside-Foot Pass to a Partner</a><span class="band">Soccer · U10–U12</span></li>
+      <li data-s="soccer" data-b="u10-u12" data-t="juggling intro — the thigh catch"><a href="/drills/soccer">Juggling Intro — The Thigh Catch</a><span class="band">Soccer · U10–U12</span></li>
+      <li data-s="soccer" data-b="u10-u12" data-t="shielding the ball"><a href="/drills/soccer">Shielding the Ball</a><span class="band">Soccer · U10–U12</span></li>
+      <li data-s="soccer" data-b="u10-u12" data-t="shooting with the laces"><a href="/drills/soccer">Shooting with the Laces</a><span class="band">Soccer · U10–U12</span></li>
+      <li data-s="soccer" data-b="u10-u12" data-t="throw-in technique"><a href="/drills/soccer">Throw-In Technique</a><span class="band">Soccer · U10–U12</span></li>
+      <li data-s="soccer" data-b="u14-u16" data-t="crossing from the wing"><a href="/drills/soccer">Crossing From the Wing</a><span class="band">Soccer · U14–U16</span></li>
+      <li data-s="soccer" data-b="u14-u16" data-t="first touch out of the air"><a href="/drills/soccer">First Touch Out of the Air</a><span class="band">Soccer · U14–U16</span></li>
+      <li data-s="soccer" data-b="u14-u16" data-t="jockeying the attacker"><a href="/drills/soccer">Jockeying the Attacker</a><span class="band">Soccer · U14–U16</span></li>
+      <li data-s="soccer" data-b="u14-u16" data-t="shielding under pressure"><a href="/drills/soccer">Shielding Under Pressure</a><span class="band">Soccer · U14–U16</span></li>
+      <li data-s="soccer" data-b="u14-u16" data-t="the driven instep pass"><a href="/drills/soccer">The Driven Instep Pass</a><span class="band">Soccer · U14–U16</span></li>
+      <li data-s="soccer" data-b="u14-u16" data-t="the overlapping run"><a href="/drills/soccer">The Overlapping Run</a><span class="band">Soccer · U14–U16</span></li>
+      <li data-s="soccer" data-b="u14-u16" data-t="the wall pass"><a href="/drills/soccer">The Wall Pass</a><span class="band">Soccer · U14–U16</span></li>
+      <li data-s="soccer" data-b="u14-u16" data-t="turning with the ball"><a href="/drills/soccer">Turning With the Ball</a><span class="band">Soccer · U14–U16</span></li>
+      <li data-s="soccer" data-b="u14-u16" data-t="weak-foot finishing"><a href="/drills/soccer">Weak-Foot Finishing</a><span class="band">Soccer · U14–U16</span></li>
+      <li data-s="soccer" data-b="u14-u16" data-t="winning the header"><a href="/drills/soccer">Winning the Header</a><span class="band">Soccer · U14–U16</span></li>
+      <li data-s="soccer" data-b="u18" data-t="bending free kicks"><a href="/drills/soccer">Bending Free Kicks</a><span class="band">Soccer · U18</span></li>
+      <li data-s="soccer" data-b="u18" data-t="defensive recovery run"><a href="/drills/soccer">Defensive Recovery Run</a><span class="band">Soccer · U18</span></li>
+      <li data-s="soccer" data-b="u18" data-t="driven cross on the run"><a href="/drills/soccer">Driven Cross on the Run</a><span class="band">Soccer · U18</span></li>
+      <li data-s="soccer" data-b="u18" data-t="finishing under pressure"><a href="/drills/soccer">Finishing Under Pressure</a><span class="band">Soccer · U18</span></li>
+      <li data-s="soccer" data-b="u18" data-t="penalty-kick composure"><a href="/drills/soccer">Penalty-Kick Composure</a><span class="band">Soccer · U18</span></li>
+      <li data-s="soccer" data-b="u18" data-t="pressing triggers"><a href="/drills/soccer">Pressing Triggers</a><span class="band">Soccer · U18</span></li>
+      <li data-s="soccer" data-b="u18" data-t="set-piece near-post run"><a href="/drills/soccer">Set-Piece Near-Post Run</a><span class="band">Soccer · U18</span></li>
+      <li data-s="soccer" data-b="u18" data-t="switching the point of attack"><a href="/drills/soccer">Switching the Point of Attack</a><span class="band">Soccer · U18</span></li>
+      <li data-s="soccer" data-b="u18" data-t="tactical positioning in a 4-3-3"><a href="/drills/soccer">Tactical Positioning in a 4-3-3</a><span class="band">Soccer · U18</span></li>
+      <li data-s="soccer" data-b="u18" data-t="volleys from a cross"><a href="/drills/soccer">Volleys from a Cross</a><span class="band">Soccer · U18</span></li>
+      <li data-s="softball" data-b="u6-u8" data-t="base running basics"><a href="/drills/softball">Base Running Basics</a><span class="band">Softball · U6–U8</span></li>
+      <li data-s="softball" data-b="u6-u8" data-t="coach toss hits"><a href="/drills/softball">Coach Toss Hits</a><span class="band">Softball · U6–U8</span></li>
+      <li data-s="softball" data-b="u6-u8" data-t="feet-first slide"><a href="/drills/softball">Feet-First Slide</a><span class="band">Softball · U6–U8</span></li>
+      <li data-s="softball" data-b="u6-u8" data-t="first throw"><a href="/drills/softball">First Throw</a><span class="band">Softball · U6–U8</span></li>
+      <li data-s="softball" data-b="u6-u8" data-t="ready position"><a href="/drills/softball">Ready Position</a><span class="band">Softball · U6–U8</span></li>
+      <li data-s="softball" data-b="u6-u8" data-t="scoop the roller"><a href="/drills/softball">Scoop the Roller</a><span class="band">Softball · U6–U8</span></li>
+      <li data-s="softball" data-b="u6-u8" data-t="target throw"><a href="/drills/softball">Target Throw</a><span class="band">Softball · U6–U8</span></li>
+      <li data-s="softball" data-b="u6-u8" data-t="tee up and swing"><a href="/drills/softball">Tee Up and Swing</a><span class="band">Softball · U6–U8</span></li>
+      <li data-s="softball" data-b="u6-u8" data-t="two-hand catch"><a href="/drills/softball">Two-Hand Catch</a><span class="band">Softball · U6–U8</span></li>
+      <li data-s="softball" data-b="u6-u8" data-t="under the pop-up"><a href="/drills/softball">Under the Pop-Up</a><span class="band">Softball · U6–U8</span></li>
+      <li data-s="softball" data-b="u10-u12" data-t="bunt basics"><a href="/drills/softball">Bunt Basics</a><span class="band">Softball · U10–U12</span></li>
+      <li data-s="softball" data-b="u10-u12" data-t="call it mine"><a href="/drills/softball">Call It Mine</a><span class="band">Softball · U10–U12</span></li>
+      <li data-s="softball" data-b="u10-u12" data-t="catching fly balls"><a href="/drills/softball">Catching Fly Balls</a><span class="band">Softball · U10–U12</span></li>
+      <li data-s="softball" data-b="u10-u12" data-t="covering first"><a href="/drills/softball">Covering First</a><span class="band">Softball · U10–U12</span></li>
+      <li data-s="softball" data-b="u10-u12" data-t="fielding grounders"><a href="/drills/softball">Fielding Grounders</a><span class="band">Softball · U10–U12</span></li>
+      <li data-s="softball" data-b="u10-u12" data-t="hitting coach pitch"><a href="/drills/softball">Hitting Coach Pitch</a><span class="band">Softball · U10–U12</span></li>
+      <li data-s="softball" data-b="u10-u12" data-t="power throw"><a href="/drills/softball">Power Throw</a><span class="band">Softball · U10–U12</span></li>
+      <li data-s="softball" data-b="u10-u12" data-t="relay throws"><a href="/drills/softball">Relay Throws</a><span class="band">Softball · U10–U12</span></li>
+      <li data-s="softball" data-b="u10-u12" data-t="rounding the bases"><a href="/drills/softball">Rounding the Bases</a><span class="band">Softball · U10–U12</span></li>
+      <li data-s="softball" data-b="u10-u12" data-t="windmill warm-up"><a href="/drills/softball">Windmill Warm-Up</a><span class="band">Softball · U10–U12</span></li>
+      <li data-s="softball" data-b="u14-u16" data-t="backing up every play"><a href="/drills/softball">Backing Up Every Play</a><span class="band">Softball · U14–U16</span></li>
+      <li data-s="softball" data-b="u14-u16" data-t="blocking in the dirt"><a href="/drills/softball">Blocking in the Dirt</a><span class="band">Softball · U14–U16</span></li>
+      <li data-s="softball" data-b="u14-u16" data-t="cutoffs and relays"><a href="/drills/softball">Cutoffs and Relays</a><span class="band">Softball · U14–U16</span></li>
+      <li data-s="softball" data-b="u14-u16" data-t="drag bunt"><a href="/drills/softball">Drag Bunt</a><span class="band">Softball · U14–U16</span></li>
+      <li data-s="softball" data-b="u14-u16" data-t="drop step reads"><a href="/drills/softball">Drop Step Reads</a><span class="band">Softball · U14–U16</span></li>
+      <li data-s="softball" data-b="u14-u16" data-t="hit behind the runner"><a href="/drills/softball">Hit Behind the Runner</a><span class="band">Softball · U14–U16</span></li>
+      <li data-s="softball" data-b="u14-u16" data-t="hitting the changeup"><a href="/drills/softball">Hitting the Changeup</a><span class="band">Softball · U14–U16</span></li>
+      <li data-s="softball" data-b="u14-u16" data-t="stealing second"><a href="/drills/softball">Stealing Second</a><span class="band">Softball · U14–U16</span></li>
+      <li data-s="softball" data-b="u14-u16" data-t="turning two"><a href="/drills/softball">Turning Two</a><span class="band">Softball · U14–U16</span></li>
+      <li data-s="softball" data-b="u14-u16" data-t="windmill pitching mechanics"><a href="/drills/softball">Windmill Pitching Mechanics</a><span class="band">Softball · U14–U16</span></li>
+      <li data-s="softball" data-b="u18" data-t="catcher throwdowns"><a href="/drills/softball">Catcher Throwdowns</a><span class="band">Softball · U18</span></li>
+      <li data-s="softball" data-b="u18" data-t="first-and-third defense"><a href="/drills/softball">First-and-Third Defense</a><span class="band">Softball · U18</span></li>
+      <li data-s="softball" data-b="u18" data-t="pitching the corners"><a href="/drills/softball">Pitching the Corners</a><span class="band">Softball · U18</span></li>
+      <li data-s="softball" data-b="u18" data-t="reading the defense"><a href="/drills/softball">Reading the Defense</a><span class="band">Softball · U18</span></li>
+      <li data-s="softball" data-b="u18" data-t="running the rundown"><a href="/drills/softball">Running the Rundown</a><span class="band">Softball · U18</span></li>
+      <li data-s="softball" data-b="u18" data-t="slap hitting"><a href="/drills/softball">Slap Hitting</a><span class="band">Softball · U18</span></li>
+      <li data-s="softball" data-b="u18" data-t="the delayed steal"><a href="/drills/softball">The Delayed Steal</a><span class="band">Softball · U18</span></li>
+      <li data-s="softball" data-b="u18" data-t="the rise ball"><a href="/drills/softball">The Rise Ball</a><span class="band">Softball · U18</span></li>
+      <li data-s="softball" data-b="u18" data-t="the squeeze bunt"><a href="/drills/softball">The Squeeze Bunt</a><span class="band">Softball · U18</span></li>
+      <li data-s="softball" data-b="u18" data-t="two-strike hitting"><a href="/drills/softball">Two-Strike Hitting</a><span class="band">Softball · U18</span></li>
+      <li data-s="swimming" data-b="u6-u8" data-t="bubble blowing basics"><a href="/drills/swimming">Bubble Blowing Basics</a><span class="band">Swimming · U6–U8</span></li>
+      <li data-s="swimming" data-b="u6-u8" data-t="face in the water"><a href="/drills/swimming">Face in the Water</a><span class="band">Swimming · U6–U8</span></li>
+      <li data-s="swimming" data-b="u6-u8" data-t="kickboard flutter kick"><a href="/drills/swimming">Kickboard Flutter Kick</a><span class="band">Swimming · U6–U8</span></li>
+      <li data-s="swimming" data-b="u6-u8" data-t="monkey crawl along the wall"><a href="/drills/swimming">Monkey Crawl Along the Wall</a><span class="band">Swimming · U6–U8</span></li>
+      <li data-s="swimming" data-b="u6-u8" data-t="noodle treading feet"><a href="/drills/swimming">Noodle Treading Feet</a><span class="band">Swimming · U6–U8</span></li>
+      <li data-s="swimming" data-b="u6-u8" data-t="ring pickup on the steps"><a href="/drills/swimming">Ring Pickup on the Steps</a><span class="band">Swimming · U6–U8</span></li>
+      <li data-s="swimming" data-b="u6-u8" data-t="seated jump entries (shallow, &quot;humpty dumpty&quot;)"><a href="/drills/swimming">Seated Jump Entries (shallow, &quot;humpty dumpty&quot;)</a><span class="band">Swimming · U6–U8</span></li>
+      <li data-s="swimming" data-b="u6-u8" data-t="starfish back float (with support)"><a href="/drills/swimming">Starfish Back Float (with support)</a><span class="band">Swimming · U6–U8</span></li>
+      <li data-s="swimming" data-b="u6-u8" data-t="streamline arms overhead"><a href="/drills/swimming">Streamline Arms Overhead</a><span class="band">Swimming · U6–U8</span></li>
+      <li data-s="swimming" data-b="u6-u8" data-t="superman front glide"><a href="/drills/swimming">Superman Front Glide</a><span class="band">Swimming · U6–U8</span></li>
+      <li data-s="swimming" data-b="u10-u12" data-t="back float to stand recovery"><a href="/drills/swimming">Back Float to Stand Recovery</a><span class="band">Swimming · U10–U12</span></li>
+      <li data-s="swimming" data-b="u10-u12" data-t="backstroke arms basics"><a href="/drills/swimming">Backstroke Arms Basics</a><span class="band">Swimming · U10–U12</span></li>
+      <li data-s="swimming" data-b="u10-u12" data-t="breaststroke whip kick"><a href="/drills/swimming">Breaststroke Whip Kick</a><span class="band">Swimming · U10–U12</span></li>
+      <li data-s="swimming" data-b="u10-u12" data-t="dolphin kick intro"><a href="/drills/swimming">Dolphin Kick Intro</a><span class="band">Swimming · U10–U12</span></li>
+      <li data-s="swimming" data-b="u10-u12" data-t="freestyle arms catch-up"><a href="/drills/swimming">Freestyle Arms Catch-Up</a><span class="band">Swimming · U10–U12</span></li>
+      <li data-s="swimming" data-b="u10-u12" data-t="reach and pull distance"><a href="/drills/swimming">Reach and Pull Distance</a><span class="band">Swimming · U10–U12</span></li>
+      <li data-s="swimming" data-b="u10-u12" data-t="rotary side breathing"><a href="/drills/swimming">Rotary Side Breathing</a><span class="band">Swimming · U10–U12</span></li>
+      <li data-s="swimming" data-b="u10-u12" data-t="somersault turn intro"><a href="/drills/swimming">Somersault Turn Intro</a><span class="band">Swimming · U10–U12</span></li>
+      <li data-s="swimming" data-b="u10-u12" data-t="streamline push-offs"><a href="/drills/swimming">Streamline Push-Offs</a><span class="band">Swimming · U10–U12</span></li>
+      <li data-s="swimming" data-b="u10-u12" data-t="treading water intro"><a href="/drills/swimming">Treading Water Intro</a><span class="band">Swimming · U10–U12</span></li>
+      <li data-s="swimming" data-b="u14-u16" data-t="backstroke turn stroke count"><a href="/drills/swimming">Backstroke Turn Stroke Count</a><span class="band">Swimming · U14–U16</span></li>
+      <li data-s="swimming" data-b="u14-u16" data-t="bilateral breathing pattern"><a href="/drills/swimming">Bilateral Breathing Pattern</a><span class="band">Swimming · U14–U16</span></li>
+      <li data-s="swimming" data-b="u14-u16" data-t="breaststroke underwater pullout"><a href="/drills/swimming">Breaststroke Underwater Pullout</a><span class="band">Swimming · U14–U16</span></li>
+      <li data-s="swimming" data-b="u14-u16" data-t="butterfly arms with freestyle kick"><a href="/drills/swimming">Butterfly Arms with Freestyle Kick</a><span class="band">Swimming · U14–U16</span></li>
+      <li data-s="swimming" data-b="u14-u16" data-t="descend set pacing"><a href="/drills/swimming">Descend Set Pacing</a><span class="band">Swimming · U14–U16</span></li>
+      <li data-s="swimming" data-b="u14-u16" data-t="flip turn basics"><a href="/drills/swimming">Flip Turn Basics</a><span class="band">Swimming · U14–U16</span></li>
+      <li data-s="swimming" data-b="u14-u16" data-t="im stroke transitions"><a href="/drills/swimming">IM Stroke Transitions</a><span class="band">Swimming · U14–U16</span></li>
+      <li data-s="swimming" data-b="u14-u16" data-t="reading the pace clock"><a href="/drills/swimming">Reading the Pace Clock</a><span class="band">Swimming · U14–U16</span></li>
+      <li data-s="swimming" data-b="u14-u16" data-t="six-kick switch freestyle"><a href="/drills/swimming">Six-Kick Switch Freestyle</a><span class="band">Swimming · U14–U16</span></li>
+      <li data-s="swimming" data-b="u14-u16" data-t="streamline dolphin kick off the wall"><a href="/drills/swimming">Streamline Dolphin Kick Off the Wall</a><span class="band">Swimming · U14–U16</span></li>
+      <li data-s="swimming" data-b="u18" data-t="backstroke start deep water"><a href="/drills/swimming">Backstroke Start Deep Water</a><span class="band">Swimming · U18</span></li>
+      <li data-s="swimming" data-b="u18" data-t="block starts deep water"><a href="/drills/swimming">Block Starts Deep Water</a><span class="band">Swimming · U18</span></li>
+      <li data-s="swimming" data-b="u18" data-t="high-elbow catch refinement"><a href="/drills/swimming">High-Elbow Catch Refinement</a><span class="band">Swimming · U18</span></li>
+      <li data-s="swimming" data-b="u18" data-t="im turns at speed"><a href="/drills/swimming">IM Turns at Speed</a><span class="band">Swimming · U18</span></li>
+      <li data-s="swimming" data-b="u18" data-t="open water sighting"><a href="/drills/swimming">Open Water Sighting</a><span class="band">Swimming · U18</span></li>
+      <li data-s="swimming" data-b="u18" data-t="pacing 200 race strategy"><a href="/drills/swimming">Pacing 200 Race Strategy</a><span class="band">Swimming · U18</span></li>
+      <li data-s="swimming" data-b="u18" data-t="relay exchange timing"><a href="/drills/swimming">Relay Exchange Timing</a><span class="band">Swimming · U18</span></li>
+      <li data-s="swimming" data-b="u18" data-t="speed flip turns"><a href="/drills/swimming">Speed Flip Turns</a><span class="band">Swimming · U18</span></li>
+      <li data-s="swimming" data-b="u18" data-t="sprint finish technique"><a href="/drills/swimming">Sprint Finish Technique</a><span class="band">Swimming · U18</span></li>
+      <li data-s="swimming" data-b="u18" data-t="underwater dolphin kick 15m"><a href="/drills/swimming">Underwater Dolphin Kick 15m</a><span class="band">Swimming · U18</span></li>
+      <li data-s="tennis" data-b="u6-u8" data-t="bounce the ball (keep-ups on the racket)"><a href="/drills/tennis">Bounce the Ball (Keep-Ups on the Racket)</a><span class="band">Tennis · U6–U8</span></li>
+      <li data-s="tennis" data-b="u6-u8" data-t="drop hit (drop the ball, hit it over the net)"><a href="/drills/tennis">Drop Hit (Drop the Ball, Hit It Over the Net)</a><span class="band">Tennis · U6–U8</span></li>
+      <li data-s="tennis" data-b="u6-u8" data-t="first mini-match (play a short game to three)"><a href="/drills/tennis">First Mini-Match (Play a Short Game to Three)</a><span class="band">Tennis · U6–U8</span></li>
+      <li data-s="tennis" data-b="u6-u8" data-t="first volley (punching the ball at the net)"><a href="/drills/tennis">First Volley (Punching the Ball at the Net)</a><span class="band">Tennis · U6–U8</span></li>
+      <li data-s="tennis" data-b="u6-u8" data-t="forehand swing basics"><a href="/drills/tennis">Forehand Swing Basics</a><span class="band">Tennis · U6–U8</span></li>
+      <li data-s="tennis" data-b="u6-u8" data-t="hold the racket (the handshake grip)"><a href="/drills/tennis">Hold the Racket (The Handshake Grip)</a><span class="band">Tennis · U6–U8</span></li>
+      <li data-s="tennis" data-b="u6-u8" data-t="move to the ball (ready position, small steps)"><a href="/drills/tennis">Move to the Ball (Ready Position, Small Steps)</a><span class="band">Tennis · U6–U8</span></li>
+      <li data-s="tennis" data-b="u6-u8" data-t="rally with a coach (or partner catch)"><a href="/drills/tennis">Rally With a Coach (or Partner Catch)</a><span class="band">Tennis · U6–U8</span></li>
+      <li data-s="tennis" data-b="u6-u8" data-t="target practice (hit into big zones)"><a href="/drills/tennis">Target Practice (Hit Into Big Zones)</a><span class="band">Tennis · U6–U8</span></li>
+      <li data-s="tennis" data-b="u6-u8" data-t="toss and catch (hand-eye with the ball)"><a href="/drills/tennis">Toss and Catch (Hand-Eye With the Ball)</a><span class="band">Tennis · U6–U8</span></li>
+      <li data-s="tennis" data-b="u10-u12" data-t="backhand technique (two-handed)"><a href="/drills/tennis">Backhand Technique (Two-Handed)</a><span class="band">Tennis · U10–U12</span></li>
+      <li data-s="tennis" data-b="u10-u12" data-t="footwork patterns (recovery and crossovers)"><a href="/drills/tennis">Footwork Patterns (Recovery and Crossovers)</a><span class="band">Tennis · U10–U12</span></li>
+      <li data-s="tennis" data-b="u10-u12" data-t="forehand technique (unit turn)"><a href="/drills/tennis">Forehand Technique (Unit Turn)</a><span class="band">Tennis · U10–U12</span></li>
+      <li data-s="tennis" data-b="u10-u12" data-t="mini-set play (put it all together)"><a href="/drills/tennis">Mini-Set Play (Put It All Together)</a><span class="band">Tennis · U10–U12</span></li>
+      <li data-s="tennis" data-b="u10-u12" data-t="rally basics (send and receive)"><a href="/drills/tennis">Rally Basics (Send and Receive)</a><span class="band">Tennis · U10–U12</span></li>
+      <li data-s="tennis" data-b="u10-u12" data-t="return of serve (short swing, deep target)"><a href="/drills/tennis">Return of Serve (Short Swing, Deep Target)</a><span class="band">Tennis · U10–U12</span></li>
+      <li data-s="tennis" data-b="u10-u12" data-t="scoring and games (how a game works)"><a href="/drills/tennis">Scoring and Games (How a Game Works)</a><span class="band">Tennis · U10–U12</span></li>
+      <li data-s="tennis" data-b="u10-u12" data-t="serving stance (trophy position)"><a href="/drills/tennis">Serving Stance (Trophy Position)</a><span class="band">Tennis · U10–U12</span></li>
+      <li data-s="tennis" data-b="u10-u12" data-t="split step (timing the hop)"><a href="/drills/tennis">Split Step (Timing the Hop)</a><span class="band">Tennis · U10–U12</span></li>
+      <li data-s="tennis" data-b="u10-u12" data-t="volley technique (block at the net)"><a href="/drills/tennis">Volley Technique (Block at the Net)</a><span class="band">Tennis · U10–U12</span></li>
+      <li data-s="tennis" data-b="u14-u16" data-t="approach shots"><a href="/drills/tennis">Approach Shots</a><span class="band">Tennis · U14–U16</span></li>
+      <li data-s="tennis" data-b="u14-u16" data-t="attacking volleys"><a href="/drills/tennis">Attacking Volleys</a><span class="band">Tennis · U14–U16</span></li>
+      <li data-s="tennis" data-b="u14-u16" data-t="baseline strategy"><a href="/drills/tennis">Baseline Strategy</a><span class="band">Tennis · U14–U16</span></li>
+      <li data-s="tennis" data-b="u14-u16" data-t="drop shot"><a href="/drills/tennis">Drop Shot</a><span class="band">Tennis · U14–U16</span></li>
+      <li data-s="tennis" data-b="u14-u16" data-t="overhead smash"><a href="/drills/tennis">Overhead Smash</a><span class="band">Tennis · U14–U16</span></li>
+      <li data-s="tennis" data-b="u14-u16" data-t="return patterns"><a href="/drills/tennis">Return Patterns</a><span class="band">Tennis · U14–U16</span></li>
+      <li data-s="tennis" data-b="u14-u16" data-t="serve with spin"><a href="/drills/tennis">Serve With Spin</a><span class="band">Tennis · U14–U16</span></li>
+      <li data-s="tennis" data-b="u14-u16" data-t="slice backhand"><a href="/drills/tennis">Slice Backhand</a><span class="band">Tennis · U14–U16</span></li>
+      <li data-s="tennis" data-b="u14-u16" data-t="tiebreak tactics"><a href="/drills/tennis">Tiebreak Tactics</a><span class="band">Tennis · U14–U16</span></li>
+      <li data-s="tennis" data-b="u14-u16" data-t="topspin forehand"><a href="/drills/tennis">Topspin Forehand</a><span class="band">Tennis · U14–U16</span></li>
+      <li data-s="tennis" data-b="u18" data-t="defensive baseline — neutralize on the run"><a href="/drills/tennis">Defensive Baseline — Neutralize on the Run</a><span class="band">Tennis · U18</span></li>
+      <li data-s="tennis" data-b="u18" data-t="match routines — between-point resets"><a href="/drills/tennis">Match Routines — Between-Point Resets</a><span class="band">Tennis · U18</span></li>
+      <li data-s="tennis" data-b="u18" data-t="match simulation — everything under pressure"><a href="/drills/tennis">Match Simulation — Everything Under Pressure</a><span class="band">Tennis · U18</span></li>
+      <li data-s="tennis" data-b="u18" data-t="net rushing — serve-and-volley options"><a href="/drills/tennis">Net Rushing — Serve-and-Volley Options</a><span class="band">Tennis · U18</span></li>
+      <li data-s="tennis" data-b="u18" data-t="physical preparation — tennis movement prep"><a href="/drills/tennis">Physical Preparation — Tennis Movement Prep</a><span class="band">Tennis · U18</span></li>
+      <li data-s="tennis" data-b="u18" data-t="pressure points — break points and deuce"><a href="/drills/tennis">Pressure Points — Break Points and Deuce</a><span class="band">Tennis · U18</span></li>
+      <li data-s="tennis" data-b="u18" data-t="return positioning — read it early"><a href="/drills/tennis">Return Positioning — Read It Early</a><span class="band">Tennis · U18</span></li>
+      <li data-s="tennis" data-b="u18" data-t="second-serve weapon — the aggressive kick"><a href="/drills/tennis">Second-Serve Weapon — The Aggressive Kick</a><span class="band">Tennis · U18</span></li>
+      <li data-s="tennis" data-b="u18" data-t="serve placement — wide, body, and t"><a href="/drills/tennis">Serve Placement — Wide, Body, and T</a><span class="band">Tennis · U18</span></li>
+      <li data-s="tennis" data-b="u18" data-t="transition game — approach and close"><a href="/drills/tennis">Transition Game — Approach and Close</a><span class="band">Tennis · U18</span></li>
+      <li data-s="track" data-b="u6-u8" data-t="animal runs warm-up"><a href="/drills/track">Animal Runs Warm-Up</a><span class="band">Track & Field · U6–U8</span></li>
+      <li data-s="track" data-b="u6-u8" data-t="arm-swing switch"><a href="/drills/track">Arm-Swing Switch</a><span class="band">Track & Field · U6–U8</span></li>
+      <li data-s="track" data-b="u6-u8" data-t="baton pass tag"><a href="/drills/track">Baton Pass Tag</a><span class="band">Track & Field · U6–U8</span></li>
+      <li data-s="track" data-b="u6-u8" data-t="butt-kick run"><a href="/drills/track">Butt-Kick Run</a><span class="band">Track & Field · U6–U8</span></li>
+      <li data-s="track" data-b="u6-u8" data-t="cone chase relay"><a href="/drills/track">Cone Chase Relay</a><span class="band">Track & Field · U6–U8</span></li>
+      <li data-s="track" data-b="u6-u8" data-t="fast-feet lines"><a href="/drills/track">Fast-Feet Lines</a><span class="band">Track & Field · U6–U8</span></li>
+      <li data-s="track" data-b="u6-u8" data-t="high-knee march"><a href="/drills/track">High-Knee March</a><span class="band">Track & Field · U6–U8</span></li>
+      <li data-s="track" data-b="u6-u8" data-t="ready-set-go starts"><a href="/drills/track">Ready-Set-Go Starts</a><span class="band">Track & Field · U6–U8</span></li>
+      <li data-s="track" data-b="u6-u8" data-t="shuttle sprint game"><a href="/drills/track">Shuttle Sprint Game</a><span class="band">Track & Field · U6–U8</span></li>
+      <li data-s="track" data-b="u6-u8" data-t="standing broad jump"><a href="/drills/track">Standing Broad Jump</a><span class="band">Track & Field · U6–U8</span></li>
+      <li data-s="track" data-b="u10-u12" data-t="a-skip"><a href="/drills/track">A-Skip</a><span class="band">Track & Field · U10–U12</span></li>
+      <li data-s="track" data-b="u10-u12" data-t="acceleration lean push"><a href="/drills/track">Acceleration Lean Push</a><span class="band">Track & Field · U10–U12</span></li>
+      <li data-s="track" data-b="u10-u12" data-t="b-skip"><a href="/drills/track">B-Skip</a><span class="band">Track & Field · U10–U12</span></li>
+      <li data-s="track" data-b="u10-u12" data-t="fly 30 build-up"><a href="/drills/track">Fly 30 Build-Up</a><span class="band">Track & Field · U10–U12</span></li>
+      <li data-s="track" data-b="u10-u12" data-t="lane discipline dash"><a href="/drills/track">Lane Discipline Dash</a><span class="band">Track & Field · U10–U12</span></li>
+      <li data-s="track" data-b="u10-u12" data-t="long jump run-up rhythm"><a href="/drills/track">Long Jump Run-Up Rhythm</a><span class="band">Track & Field · U10–U12</span></li>
+      <li data-s="track" data-b="u10-u12" data-t="moving baton exchange"><a href="/drills/track">Moving Baton Exchange</a><span class="band">Track & Field · U10–U12</span></li>
+      <li data-s="track" data-b="u10-u12" data-t="pace-change run"><a href="/drills/track">Pace-Change Run</a><span class="band">Track & Field · U10–U12</span></li>
+      <li data-s="track" data-b="u10-u12" data-t="standing broad jump power"><a href="/drills/track">Standing Broad Jump Power</a><span class="band">Track & Field · U10–U12</span></li>
+      <li data-s="track" data-b="u10-u12" data-t="tall posture sprint"><a href="/drills/track">Tall Posture Sprint</a><span class="band">Track & Field · U10–U12</span></li>
+      <li data-s="track" data-b="u14-u16" data-t="400-meter even-split pacing"><a href="/drills/track">400-Meter Even-Split Pacing</a><span class="band">Track & Field · U14–U16</span></li>
+      <li data-s="track" data-b="u14-u16" data-t="block setup basics"><a href="/drills/track">Block Setup Basics</a><span class="band">Track & Field · U14–U16</span></li>
+      <li data-s="track" data-b="u14-u16" data-t="discus stand throw"><a href="/drills/track">Discus Stand Throw</a><span class="band">Track & Field · U14–U16</span></li>
+      <li data-s="track" data-b="u14-u16" data-t="hurdle walk-overs"><a href="/drills/track">Hurdle Walk-Overs</a><span class="band">Track & Field · U14–U16</span></li>
+      <li data-s="track" data-b="u14-u16" data-t="lead-leg snap drill"><a href="/drills/track">Lead-Leg Snap Drill</a><span class="band">Track & Field · U14–U16</span></li>
+      <li data-s="track" data-b="u14-u16" data-t="relay exchange zone timing"><a href="/drills/track">Relay Exchange Zone Timing</a><span class="band">Track & Field · U14–U16</span></li>
+      <li data-s="track" data-b="u14-u16" data-t="standing shot put throw"><a href="/drills/track">Standing Shot Put Throw</a><span class="band">Track & Field · U14–U16</span></li>
+      <li data-s="track" data-b="u14-u16" data-t="stride-out build-up"><a href="/drills/track">Stride-Out Build-Up</a><span class="band">Track & Field · U14–U16</span></li>
+      <li data-s="track" data-b="u14-u16" data-t="three-point start"><a href="/drills/track">Three-Point Start</a><span class="band">Track & Field · U14–U16</span></li>
+      <li data-s="track" data-b="u14-u16" data-t="trail-leg hip circles"><a href="/drills/track">Trail-Leg Hip Circles</a><span class="band">Track & Field · U14–U16</span></li>
+      <li data-s="track" data-b="u18" data-t="800-meter race strategy"><a href="/drills/track">800-Meter Race Strategy</a><span class="band">Track & Field · U18</span></li>
+      <li data-s="track" data-b="u18" data-t="anchor leg exchange strategy"><a href="/drills/track">Anchor Leg Exchange Strategy</a><span class="band">Track & Field · U18</span></li>
+      <li data-s="track" data-b="u18" data-t="block clearance drive phase"><a href="/drills/track">Block Clearance Drive Phase</a><span class="band">Track & Field · U18</span></li>
+      <li data-s="track" data-b="u18" data-t="discus rotation intro"><a href="/drills/track">Discus Rotation Intro</a><span class="band">Track & Field · U18</span></li>
+      <li data-s="track" data-b="u18" data-t="flying 30s"><a href="/drills/track">Flying 30s</a><span class="band">Track & Field · U18</span></li>
+      <li data-s="track" data-b="u18" data-t="hurdle 3-step rhythm"><a href="/drills/track">Hurdle 3-Step Rhythm</a><span class="band">Track & Field · U18</span></li>
+      <li data-s="track" data-b="u18" data-t="long jump air technique basics"><a href="/drills/track">Long Jump Air Technique Basics</a><span class="band">Track & Field · U18</span></li>
+      <li data-s="track" data-b="u18" data-t="max-velocity mechanics"><a href="/drills/track">Max-Velocity Mechanics</a><span class="band">Track & Field · U18</span></li>
+      <li data-s="track" data-b="u18" data-t="shot put full glide"><a href="/drills/track">Shot Put Full Glide</a><span class="band">Track & Field · U18</span></li>
+      <li data-s="track" data-b="u18" data-t="sprint endurance repeats"><a href="/drills/track">Sprint Endurance Repeats</a><span class="band">Track & Field · U18</span></li>
+      <li data-s="volleyball" data-b="u6-u8" data-t="basket hands — catch and throw setting"><a href="/drills/volleyball">Basket Hands — Catch and Throw Setting</a><span class="band">Volleyball · U6–U8</span></li>
+      <li data-s="volleyball" data-b="u6-u8" data-t="bump back — partner passing"><a href="/drills/volleyball">Bump Back — Partner Passing</a><span class="band">Volleyball · U6–U8</span></li>
+      <li data-s="volleyball" data-b="u6-u8" data-t="catch it clean — toss and catch warm-up"><a href="/drills/volleyball">Catch It Clean — Toss and Catch Warm-Up</a><span class="band">Volleyball · U6–U8</span></li>
+      <li data-s="volleyball" data-b="u6-u8" data-t="chase it down — move to the ball"><a href="/drills/volleyball">Chase It Down — Move to the Ball</a><span class="band">Volleyball · U6–U8</span></li>
+      <li data-s="volleyball" data-b="u6-u8" data-t="crab walk shuffle — sideways footwork"><a href="/drills/volleyball">Crab Walk Shuffle — Sideways Footwork</a><span class="band">Volleyball · U6–U8</span></li>
+      <li data-s="volleyball" data-b="u6-u8" data-t="first rally — toss, bump, catch relay"><a href="/drills/volleyball">First Rally — Toss, Bump, Catch Relay</a><span class="band">Volleyball · U6–U8</span></li>
+      <li data-s="volleyball" data-b="u6-u8" data-t="flat arm friends — make your platform"><a href="/drills/volleyball">Flat Arm Friends — Make Your Platform</a><span class="band">Volleyball · U6–U8</span></li>
+      <li data-s="volleyball" data-b="u6-u8" data-t="hit the hula hoop — target toss game"><a href="/drills/volleyball">Hit the Hula Hoop — Target Toss Game</a><span class="band">Volleyball · U6–U8</span></li>
+      <li data-s="volleyball" data-b="u6-u8" data-t="loud and proud — call &quot;mine!&quot;"><a href="/drills/volleyball">Loud and Proud — Call &quot;Mine!&quot;</a><span class="band">Volleyball · U6–U8</span></li>
+      <li data-s="volleyball" data-b="u6-u8" data-t="pendulum swing — underhand serve motion"><a href="/drills/volleyball">Pendulum Swing — Underhand Serve Motion</a><span class="band">Volleyball · U6–U8</span></li>
+      <li data-s="volleyball" data-b="u10-u12" data-t="bucket bullseye"><a href="/drills/volleyball">Bucket Bullseye</a><span class="band">Volleyball · U10–U12</span></li>
+      <li data-s="volleyball" data-b="u10-u12" data-t="build your platform"><a href="/drills/volleyball">Build Your Platform</a><span class="band">Volleyball · U10–U12</span></li>
+      <li data-s="volleyball" data-b="u10-u12" data-t="first steps to the pass"><a href="/drills/volleyball">First Steps to the Pass</a><span class="band">Volleyball · U10–U12</span></li>
+      <li data-s="volleyball" data-b="u10-u12" data-t="left-right-left — the spiker&#x27;s steps"><a href="/drills/volleyball">Left-Right-Left — The Spiker&#x27;s Steps</a><span class="band">Volleyball · U10–U12</span></li>
+      <li data-s="volleyball" data-b="u10-u12" data-t="pepper — pass, set, hit, repeat"><a href="/drills/volleyball">Pepper — Pass, Set, Hit, Repeat</a><span class="band">Volleyball · U10–U12</span></li>
+      <li data-s="volleyball" data-b="u10-u12" data-t="seal the net"><a href="/drills/volleyball">Seal the Net</a><span class="band">Volleyball · U10–U12</span></li>
+      <li data-s="volleyball" data-b="u10-u12" data-t="talk on the court"><a href="/drills/volleyball">Talk on the Court</a><span class="band">Volleyball · U10–U12</span></li>
+      <li data-s="volleyball" data-b="u10-u12" data-t="the pancake save"><a href="/drills/volleyball">The Pancake Save</a><span class="band">Volleyball · U10–U12</span></li>
+      <li data-s="volleyball" data-b="u10-u12" data-t="the triangle touch"><a href="/drills/volleyball">The Triangle Touch</a><span class="band">Volleyball · U10–U12</span></li>
+      <li data-s="volleyball" data-b="u10-u12" data-t="your first serve over the net"><a href="/drills/volleyball">Your First Serve Over the Net</a><span class="band">Volleyball · U10–U12</span></li>
+      <li data-s="volleyball" data-b="u14-u16" data-t="blocking — footwork and penetration"><a href="/drills/volleyball">Blocking — Footwork and Penetration</a><span class="band">Volleyball · U14–U16</span></li>
+      <li data-s="volleyball" data-b="u14-u16" data-t="deep and short serving targets"><a href="/drills/volleyball">Deep and Short Serving Targets</a><span class="band">Volleyball · U14–U16</span></li>
+      <li data-s="volleyball" data-b="u14-u16" data-t="line vs cross-court hitting"><a href="/drills/volleyball">Line vs Cross-Court Hitting</a><span class="band">Volleyball · U14–U16</span></li>
+      <li data-s="volleyball" data-b="u14-u16" data-t="pass footwork and platform angle"><a href="/drills/volleyball">Pass Footwork and Platform Angle</a><span class="band">Volleyball · U14–U16</span></li>
+      <li data-s="volleyball" data-b="u14-u16" data-t="serve receive formation"><a href="/drills/volleyball">Serve Receive Formation</a><span class="band">Volleyball · U14–U16</span></li>
+      <li data-s="volleyball" data-b="u14-u16" data-t="setting — hands and feet"><a href="/drills/volleyball">Setting — Hands and Feet</a><span class="band">Volleyball · U14–U16</span></li>
+      <li data-s="volleyball" data-b="u14-u16" data-t="talk it up — court communication"><a href="/drills/volleyball">Talk It Up — Court Communication</a><span class="band">Volleyball · U14–U16</span></li>
+      <li data-s="volleyball" data-b="u14-u16" data-t="the full four-step approach"><a href="/drills/volleyball">The Full Four-Step Approach</a><span class="band">Volleyball · U14–U16</span></li>
+      <li data-s="volleyball" data-b="u14-u16" data-t="the overhand serve"><a href="/drills/volleyball">The Overhand Serve</a><span class="band">Volleyball · U14–U16</span></li>
+      <li data-s="volleyball" data-b="u14-u16" data-t="transition — dig to attack"><a href="/drills/volleyball">Transition — Dig to Attack</a><span class="band">Volleyball · U14–U16</span></li>
+      <li data-s="volleyball" data-b="u18" data-t="back-row attack — d-ball and pipe"><a href="/drills/volleyball">Back-Row Attack — D-Ball and Pipe</a><span class="band">Volleyball · U18</span></li>
+      <li data-s="volleyball" data-b="u18" data-t="blocking reads and timing"><a href="/drills/volleyball">Blocking Reads and Timing</a><span class="band">Volleyball · U18</span></li>
+      <li data-s="volleyball" data-b="u18" data-t="jump serve technique"><a href="/drills/volleyball">Jump Serve Technique</a><span class="band">Volleyball · U18</span></li>
+      <li data-s="volleyball" data-b="u18" data-t="match-tempo wash scoring drill"><a href="/drills/volleyball">Match-Tempo Wash Scoring Drill</a><span class="band">Volleyball · U18</span></li>
+      <li data-s="volleyball" data-b="u18" data-t="out-of-system setting"><a href="/drills/volleyball">Out-of-System Setting</a><span class="band">Volleyball · U18</span></li>
+      <li data-s="volleyball" data-b="u18" data-t="perimeter defensive positioning"><a href="/drills/volleyball">Perimeter Defensive Positioning</a><span class="band">Volleyball · U18</span></li>
+      <li data-s="volleyball" data-b="u18" data-t="serve receive against tough servers"><a href="/drills/volleyball">Serve Receive Against Tough Servers</a><span class="band">Volleyball · U18</span></li>
+      <li data-s="volleyball" data-b="u18" data-t="setter dump and deception"><a href="/drills/volleyball">Setter Dump and Deception</a><span class="band">Volleyball · U18</span></li>
+      <li data-s="volleyball" data-b="u18" data-t="slide attack footwork and timing"><a href="/drills/volleyball">Slide Attack Footwork and Timing</a><span class="band">Volleyball · U18</span></li>
+      <li data-s="volleyball" data-b="u18" data-t="transition offense — dig to attack"><a href="/drills/volleyball">Transition Offense — Dig to Attack</a><span class="band">Volleyball · U18</span></li>
+      <li data-s="weight-training" data-b="u6-u8" data-t="bear crawl adventure"><a href="/drills/weight-training">Bear Crawl Adventure</a><span class="band">Weight Training · U6–U8</span></li>
+      <li data-s="weight-training" data-b="u6-u8" data-t="bridge builders"><a href="/drills/weight-training">Bridge Builders</a><span class="band">Weight Training · U6–U8</span></li>
+      <li data-s="weight-training" data-b="u6-u8" data-t="bunny hops — stick the landing"><a href="/drills/weight-training">Bunny Hops — Stick the Landing</a><span class="band">Weight Training · U6–U8</span></li>
+      <li data-s="weight-training" data-b="u6-u8" data-t="crab walk"><a href="/drills/weight-training">Crab Walk</a><span class="band">Weight Training · U6–U8</span></li>
+      <li data-s="weight-training" data-b="u6-u8" data-t="frog jumps"><a href="/drills/weight-training">Frog Jumps</a><span class="band">Weight Training · U6–U8</span></li>
+      <li data-s="weight-training" data-b="u6-u8" data-t="knee push-up positives"><a href="/drills/weight-training">Knee Push-Up Positives</a><span class="band">Weight Training · U6–U8</span></li>
+      <li data-s="weight-training" data-b="u6-u8" data-t="statue plank"><a href="/drills/weight-training">Statue Plank</a><span class="band">Weight Training · U6–U8</span></li>
+      <li data-s="weight-training" data-b="u6-u8" data-t="superhero squat-to-stand"><a href="/drills/weight-training">Superhero Squat-To-Stand</a><span class="band">Weight Training · U6–U8</span></li>
+      <li data-s="weight-training" data-b="u6-u8" data-t="superman flying"><a href="/drills/weight-training">Superman Flying</a><span class="band">Weight Training · U6–U8</span></li>
+      <li data-s="weight-training" data-b="u6-u8" data-t="walking tall lunges"><a href="/drills/weight-training">Walking Tall Lunges</a><span class="band">Weight Training · U6–U8</span></li>
+      <li data-s="weight-training" data-b="u10-u12" data-t="band row"><a href="/drills/weight-training">Band Row</a><span class="band">Weight Training · U10–U12</span></li>
+      <li data-s="weight-training" data-b="u10-u12" data-t="bird-dog"><a href="/drills/weight-training">Bird-Dog</a><span class="band">Weight Training · U10–U12</span></li>
+      <li data-s="weight-training" data-b="u10-u12" data-t="bodyweight squat mastery"><a href="/drills/weight-training">Bodyweight Squat Mastery</a><span class="band">Weight Training · U10–U12</span></li>
+      <li data-s="weight-training" data-b="u10-u12" data-t="glute bridge"><a href="/drills/weight-training">Glute Bridge</a><span class="band">Weight Training · U10–U12</span></li>
+      <li data-s="weight-training" data-b="u10-u12" data-t="hollow hold"><a href="/drills/weight-training">Hollow Hold</a><span class="band">Weight Training · U10–U12</span></li>
+      <li data-s="weight-training" data-b="u10-u12" data-t="plank hold"><a href="/drills/weight-training">Plank Hold</a><span class="band">Weight Training · U10–U12</span></li>
+      <li data-s="weight-training" data-b="u10-u12" data-t="step-up"><a href="/drills/weight-training">Step-Up</a><span class="band">Weight Training · U10–U12</span></li>
+      <li data-s="weight-training" data-b="u10-u12" data-t="the perfect push-up"><a href="/drills/weight-training">The Perfect Push-Up</a><span class="band">Weight Training · U10–U12</span></li>
+      <li data-s="weight-training" data-b="u10-u12" data-t="walking lunge"><a href="/drills/weight-training">Walking Lunge</a><span class="band">Weight Training · U10–U12</span></li>
+      <li data-s="weight-training" data-b="u10-u12" data-t="wall sit"><a href="/drills/weight-training">Wall Sit</a><span class="band">Weight Training · U10–U12</span></li>
+      <li data-s="weight-training" data-b="u14-u16" data-t="band pallof press"><a href="/drills/weight-training">Band Pallof Press</a><span class="band">Weight Training · U14–U16</span></li>
+      <li data-s="weight-training" data-b="u14-u16" data-t="dumbbell overhead press"><a href="/drills/weight-training">Dumbbell Overhead Press</a><span class="band">Weight Training · U14–U16</span></li>
+      <li data-s="weight-training" data-b="u14-u16" data-t="dumbbell romanian deadlift"><a href="/drills/weight-training">Dumbbell Romanian Deadlift</a><span class="band">Weight Training · U14–U16</span></li>
+      <li data-s="weight-training" data-b="u14-u16" data-t="farmer&#x27;s carry"><a href="/drills/weight-training">Farmer&#x27;s Carry</a><span class="band">Weight Training · U14–U16</span></li>
+      <li data-s="weight-training" data-b="u14-u16" data-t="goblet squat"><a href="/drills/weight-training">Goblet Squat</a><span class="band">Weight Training · U14–U16</span></li>
+      <li data-s="weight-training" data-b="u14-u16" data-t="light dumbbell deadlift"><a href="/drills/weight-training">Light Dumbbell Deadlift</a><span class="band">Weight Training · U14–U16</span></li>
+      <li data-s="weight-training" data-b="u14-u16" data-t="one-arm dumbbell row"><a href="/drills/weight-training">One-Arm Dumbbell Row</a><span class="band">Weight Training · U14–U16</span></li>
+      <li data-s="weight-training" data-b="u14-u16" data-t="plank with shoulder taps"><a href="/drills/weight-training">Plank with Shoulder Taps</a><span class="band">Weight Training · U14–U16</span></li>
+      <li data-s="weight-training" data-b="u14-u16" data-t="split squat"><a href="/drills/weight-training">Split Squat</a><span class="band">Weight Training · U14–U16</span></li>
+      <li data-s="weight-training" data-b="u18" data-t="barbell back squat — setup and first reps"><a href="/drills/weight-training">Barbell Back Squat — Setup and First Reps</a><span class="band">Weight Training · U18</span></li>
+      <li data-s="weight-training" data-b="u18" data-t="bench press — setup"><a href="/drills/weight-training">Bench Press — Setup</a><span class="band">Weight Training · U18</span></li>
+      <li data-s="weight-training" data-b="u18" data-t="bulgarian split squat"><a href="/drills/weight-training">Bulgarian Split Squat</a><span class="band">Weight Training · U18</span></li>
+      <li data-s="weight-training" data-b="u18" data-t="deadlift — setup"><a href="/drills/weight-training">Deadlift — Setup</a><span class="band">Weight Training · U18</span></li>
+      <li data-s="weight-training" data-b="u18" data-t="glute bridge and hip thrust basics"><a href="/drills/weight-training">Glute Bridge and Hip Thrust Basics</a><span class="band">Weight Training · U18</span></li>
+      <li data-s="weight-training" data-b="u18" data-t="overhead press with the barbell"><a href="/drills/weight-training">Overhead Press with the Barbell</a><span class="band">Weight Training · U18</span></li>
+      <li data-s="weight-training" data-b="u18" data-t="sets, reps, and rest — your first program"><a href="/drills/weight-training">Sets, Reps, and Rest — Your First Program</a><span class="band">Weight Training · U18</span></li>
+      <li data-s="weight-training" data-b="u18" data-t="training log and progression rules"><a href="/drills/weight-training">Training Log and Progression Rules</a><span class="band">Weight Training · U18</span></li>
+      <li data-s="weight-training" data-b="u18" data-t="warm-up routine for lift day"><a href="/drills/weight-training">Warm-Up Routine for Lift Day</a><span class="band">Weight Training · U18</span></li>
+      <li data-s="wrestling" data-b="u6-u8" data-t="bear crawl relay"><a href="/drills/wrestling">Bear Crawl Relay</a><span class="band">Wrestling · U6–U8</span></li>
+      <li data-s="wrestling" data-b="u6-u8" data-t="circle the mat"><a href="/drills/wrestling">Circle the Mat</a><span class="band">Wrestling · U6–U8</span></li>
+      <li data-s="wrestling" data-b="u6-u8" data-t="duck walk races"><a href="/drills/wrestling">Duck Walk Races</a><span class="band">Wrestling · U6–U8</span></li>
+      <li data-s="wrestling" data-b="u6-u8" data-t="head position game"><a href="/drills/wrestling">Head Position Game</a><span class="band">Wrestling · U6–U8</span></li>
+      <li data-s="wrestling" data-b="u6-u8" data-t="level change touch"><a href="/drills/wrestling">Level Change Touch</a><span class="band">Wrestling · U6–U8</span></li>
+      <li data-s="wrestling" data-b="u6-u8" data-t="partner push"><a href="/drills/wrestling">Partner Push</a><span class="band">Wrestling · U6–U8</span></li>
+      <li data-s="wrestling" data-b="u6-u8" data-t="penetration step race"><a href="/drills/wrestling">Penetration Step Race</a><span class="band">Wrestling · U6–U8</span></li>
+      <li data-s="wrestling" data-b="u6-u8" data-t="stance and sprawl game"><a href="/drills/wrestling">Stance and Sprawl Game</a><span class="band">Wrestling · U6–U8</span></li>
+      <li data-s="wrestling" data-b="u6-u8" data-t="stance freeze"><a href="/drills/wrestling">Stance Freeze</a><span class="band">Wrestling · U6–U8</span></li>
+      <li data-s="wrestling" data-b="u6-u8" data-t="toe-to-heel shuffle"><a href="/drills/wrestling">Toe-to-Heel Shuffle</a><span class="band">Wrestling · U6–U8</span></li>
+      <li data-s="wrestling" data-b="u10-u12" data-t="down block drill"><a href="/drills/wrestling">Down Block Drill</a><span class="band">Wrestling · U10–U12</span></li>
+      <li data-s="wrestling" data-b="u10-u12" data-t="half nelson turn"><a href="/drills/wrestling">Half Nelson Turn</a><span class="band">Wrestling · U10–U12</span></li>
+      <li data-s="wrestling" data-b="u10-u12" data-t="hand fighting (pummeling)"><a href="/drills/wrestling">Hand Fighting (Pummeling)</a><span class="band">Wrestling · U10–U12</span></li>
+      <li data-s="wrestling" data-b="u10-u12" data-t="penetration step with high c"><a href="/drills/wrestling">Penetration Step with High C</a><span class="band">Wrestling · U10–U12</span></li>
+      <li data-s="wrestling" data-b="u10-u12" data-t="perfect stance and motion"><a href="/drills/wrestling">Perfect Stance and Motion</a><span class="band">Wrestling · U10–U12</span></li>
+      <li data-s="wrestling" data-b="u10-u12" data-t="referee&#x27;s position starts"><a href="/drills/wrestling">Referee&#x27;s Position Starts</a><span class="band">Wrestling · U10–U12</span></li>
+      <li data-s="wrestling" data-b="u10-u12" data-t="single-leg pick and finish"><a href="/drills/wrestling">Single-Leg Pick and Finish</a><span class="band">Wrestling · U10–U12</span></li>
+      <li data-s="wrestling" data-b="u10-u12" data-t="sprawl drill"><a href="/drills/wrestling">Sprawl Drill</a><span class="band">Wrestling · U10–U12</span></li>
+      <li data-s="wrestling" data-b="u10-u12" data-t="stand-up and escape"><a href="/drills/wrestling">Stand-Up and Escape</a><span class="band">Wrestling · U10–U12</span></li>
+      <li data-s="wrestling" data-b="u10-u12" data-t="switch drill"><a href="/drills/wrestling">Switch Drill</a><span class="band">Wrestling · U10–U12</span></li>
+      <li data-s="wrestling" data-b="u14-u16" data-t="arm bar and tilt"><a href="/drills/wrestling">Arm Bar and Tilt</a><span class="band">Wrestling · U14–U16</span></li>
+      <li data-s="wrestling" data-b="u14-u16" data-t="double-leg setup and finish"><a href="/drills/wrestling">Double-Leg Setup and Finish</a><span class="band">Wrestling · U14–U16</span></li>
+      <li data-s="wrestling" data-b="u14-u16" data-t="front headlock position"><a href="/drills/wrestling">Front Headlock Position</a><span class="band">Wrestling · U14–U16</span></li>
+      <li data-s="wrestling" data-b="u14-u16" data-t="granby roll"><a href="/drills/wrestling">Granby Roll</a><span class="band">Wrestling · U14–U16</span></li>
+      <li data-s="wrestling" data-b="u14-u16" data-t="half nelson to cradle"><a href="/drills/wrestling">Half Nelson to Cradle</a><span class="band">Wrestling · U14–U16</span></li>
+      <li data-s="wrestling" data-b="u14-u16" data-t="power half nelson"><a href="/drills/wrestling">Power Half Nelson</a><span class="band">Wrestling · U14–U16</span></li>
+      <li data-s="wrestling" data-b="u14-u16" data-t="shot to the outside single"><a href="/drills/wrestling">Shot to the Outside Single</a><span class="band">Wrestling · U14–U16</span></li>
+      <li data-s="wrestling" data-b="u14-u16" data-t="sit-out escape"><a href="/drills/wrestling">Sit-Out Escape</a><span class="band">Wrestling · U14–U16</span></li>
+      <li data-s="wrestling" data-b="u14-u16" data-t="sprawl and go-behind"><a href="/drills/wrestling">Sprawl and Go-Behind</a><span class="band">Wrestling · U14–U16</span></li>
+      <li data-s="wrestling" data-b="u14-u16" data-t="whizzer defense"><a href="/drills/wrestling">Whizzer Defense</a><span class="band">Wrestling · U14–U16</span></li>
+      <li data-s="wrestling" data-b="u18" data-t="bottom — stand-up to whizzer counter"><a href="/drills/wrestling">Bottom — Stand-Up to Whizzer Counter</a><span class="band">Wrestling · U18</span></li>
+      <li data-s="wrestling" data-b="u18" data-t="chaining takedowns — single to double"><a href="/drills/wrestling">Chaining Takedowns — Single to Double</a><span class="band">Wrestling · U18</span></li>
+      <li data-s="wrestling" data-b="u18" data-t="defense — hip heist"><a href="/drills/wrestling">Defense — Hip Heist</a><span class="band">Wrestling · U18</span></li>
+      <li data-s="wrestling" data-b="u18" data-t="leg attacks — ankle pick setup"><a href="/drills/wrestling">Leg Attacks — Ankle Pick Setup</a><span class="band">Wrestling · U18</span></li>
+      <li data-s="wrestling" data-b="u18" data-t="match strategy — scoring in the third period"><a href="/drills/wrestling">Match Strategy — Scoring in the Third Period</a><span class="band">Wrestling · U18</span></li>
+      <li data-s="wrestling" data-b="u18" data-t="overtime strategy — first score wins"><a href="/drills/wrestling">Overtime Strategy — First Score Wins</a><span class="band">Wrestling · U18</span></li>
+      <li data-s="wrestling" data-b="u18" data-t="russian tie to fireman&#x27;s carry"><a href="/drills/wrestling">Russian Tie to Fireman&#x27;s Carry</a><span class="band">Wrestling · U18</span></li>
+      <li data-s="wrestling" data-b="u18" data-t="setups — fake and shoot"><a href="/drills/wrestling">Setups — Fake and Shoot</a><span class="band">Wrestling · U18</span></li>
+      <li data-s="wrestling" data-b="u18" data-t="top — spiral ride breakdown"><a href="/drills/wrestling">Top — Spiral Ride Breakdown</a><span class="band">Wrestling · U18</span></li>
+      <li data-s="wrestling" data-b="u18" data-t="wrist control and bar arm"><a href="/drills/wrestling">Wrist Control and Bar Arm</a><span class="band">Wrestling · U18</span></li>
+    </ul>
+  </div>
+  <script>
+    function filterDrills(){
+      var q=document.getElementById('q').value.toLowerCase(),
+          s=document.getElementById('fs').value,
+          b=document.getElementById('fb').value, n=0;
+      document.querySelectorAll('#list li').forEach(function(li){
+        var ok=(!q||li.dataset.t.indexOf(q)>-1)&&(!s||li.dataset.s===s)&&(!b||li.dataset.b===b);
+        li.style.display=ok?'':'none'; if(ok)n++;
+      });
+      document.getElementById('count').textContent=n+' drills shown';
+    }
+    filterDrills();
+  </script>
+
+</div></main>
+<footer class="page"><div class="wrap">
+  <p><strong style="color:var(--text)">SportRoots</strong> — Youth sports coaching and training.</p>
+  <p>
+    <a href="/sports">Sports</a> ·
+    <a href="/drills">Drill library</a> ·
+    <a href="/coaches">Coaches</a> ·
+    <a href="/book">Book a coach</a> ·
+    <a href="/pricing">Pricing</a> ·
+    <a href="/faq">FAQ</a>
+  </p>
+  <p>Our family of brands: RestorationEssentials — classic American car restoration guides · IronHead — vintage motorcycle restoration and riding guides · Stitchfolk — knit and crochet patterns · SportRoots — youth sports coaching and training · SkillForge AI — practical AI playbooks for the trades · EverReady Family — family emergency preparedness.</p>
+  <p>© 2026 SportRoots</p>
+</div></footer>
+</body>
+</html>

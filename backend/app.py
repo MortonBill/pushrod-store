@@ -98,7 +98,9 @@ for _host, _brand_id in (("restoreessentials.com", "restorationessentials"),
                          ("everreadyfamily.co", "everready"),
                          ("www.everreadyfamily.co", "everready"),
                          ("stitchfolkpatterns.com", "stitchfolk"),
-                         ("www.stitchfolkpatterns.com", "stitchfolk")):
+                         ("www.stitchfolkpatterns.com", "stitchfolk"),
+                         ("sportroots.coach", "sportroots"),
+                         ("www.sportroots.coach", "sportroots")):
     try:
         HOST_FACES[_host] = load_brand(_brand_id)
     except Exception as exc:
@@ -299,10 +301,41 @@ FACE_PAGES = {
             "/designer-patterns": "designer-patterns.html",
         },
     },
+    "sportroots": {
+        "dir": "sportroots",
+        "home": "home.html",
+        "pages": {
+            "/sports": "sports.html",
+            "/drills": "drills.html",
+            "/drills/baseball": "drills-baseball.html",
+            "/drills/basketball": "drills-basketball.html",
+            "/drills/cheerleading": "drills-cheerleading.html",
+            "/drills/football": "drills-football.html",
+            "/drills/golf": "drills-golf.html",
+            "/drills/gymnastics": "drills-gymnastics.html",
+            "/drills/hockey": "drills-hockey.html",
+            "/drills/lacrosse": "drills-lacrosse.html",
+            "/drills/martial-arts": "drills-martial-arts.html",
+            "/drills/skiing": "drills-skiing.html",
+            "/drills/soccer": "drills-soccer.html",
+            "/drills/softball": "drills-softball.html",
+            "/drills/swimming": "drills-swimming.html",
+            "/drills/tennis": "drills-tennis.html",
+            "/drills/track": "drills-track.html",
+            "/drills/volleyball": "drills-volleyball.html",
+            "/drills/weight-training": "drills-weight-training.html",
+            "/drills/wrestling": "drills-wrestling.html",
+            "/coaches": "coaches.html",
+            "/book": "book.html",
+            "/pricing": "pricing.html",
+            "/faq": "faq.html",
+        },
+    },
 }
 
 ER_PAGES = FACE_PAGES["everready"]["pages"]
 ST_PAGES = FACE_PAGES["stitchfolk"]["pages"]
+SR_PAGES = FACE_PAGES["sportroots"]["pages"]
 
 
 def _face_page(path):
@@ -362,6 +395,26 @@ def sitemap_st_xml():
            f"{urls}\n</urlset>\n")
     return Response(xml, mimetype="application/xml")
 
+
+# ---------- SportRoots sitemap (face only) ----------
+@app.get("/sitemap-sr.xml")
+def sitemap_sr_xml():
+    # Same pattern as /sitemap-er.xml and /sitemap-st.xml: the shared
+    # /sitemap.xml stays RE-scoped on every host; the SportRoots
+    # content pages (home, sports index, the drill library and its
+    # per-sport views, coaches, booking-request, pricing, faq) get
+    # their own sitemap for whoever submits the SportRoots domain.
+    # SR sells subscriptions, not SKUs: no /product/<SKU> URLs here.
+    cfg, _products = _face()
+    if cfg["brand"]["id"] != "sportroots":
+        return "Not found", 404
+    base = request.host_url.rstrip("/")
+    paths = ["/"] + sorted(SR_PAGES)
+    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           f"{urls}\n</urlset>\n")
+    return Response(xml, mimetype="application/xml")
 
 # ---------- face-host SEO head (server-side) ----------
 # The shared storefront shells (frontend/index.html, frontend/product.html)

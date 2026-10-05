@@ -1,0 +1,55 @@
+# Brand #7 — SPORTROOTS storefront face (brand id: sportroots)
+# Youth sports coaching and training: an 18-sport, 718-drill library
+# plus a founding-coach directory. This face rides the shared store
+# service like everready/stitchfolk (sportroots.coach host map); it is
+# a CONTENT face, not a catalog face — SportRoots sells subscriptions,
+# not SKUs, and subscription billing stays DARK until the live-gate
+# runbook passes (SR_BILLING_ENABLED off; see
+# ~/workspace/your_files/business/sportroots-live-gate-runbook-2026-10-03.md).
+# The face never wires a subscribe flow: /pricing renders the locked
+# prices, /book is a free booking-request path, checkout untouched.
+brand:
+  id: sportroots
+  name: SportRoots
+  tagline: "Youth sports coaching and training"
+  # No SKU prefixes: the face owns no catalog rows. The SR
+  # subscription products live in Stripe, gated by subscriptions.py.
+  sku_prefixes: []
+  ownership: {}
+
+theme:
+  bg: "#0c1a12"            # deep field green-black
+  bg2: "#10231a"
+  card: "#14301f"
+  accent: "#8bd450"        # field green
+  accent2: "#f2b138"       # gold
+  text: "#eef7ee"
+  muted: "#a7bfa9"
+  font_display: "'Helvetica Neue',Arial,sans-serif"
+  font_body: "'Helvetica Neue',Arial,sans-serif"
+
+# Schema parity only — the sportroots face loads no catalog (no SR
+# SKUs exist in the unified catalog and none are added by this face).
+catalog:
+  catalogs: []
+  image_base: "/img"
+
+pricing:
+  allow_draft_prices: false
+
+fulfillment:
+  mode: digital
+  delivery: "subscription entitlements via backend/subscriptions.py (DARK: SR_BILLING_ENABLED off)"
+
+store:
+  currency: usd
+  order_prefix: "sr"
+  # Schema parity only: this file is a host face on the shared
+  # service; the per-brand env names below are never read while the
+  # face rides it. SR billing, when the gate opens, runs through
+  # subscriptions.py on the process Stripe config.
+  stripe_secret_key_env: "SPORTROOTS_STRIPE_TEST_SECRET_KEY"
+  stripe_publishable_key_env: "SPORTROOTS_STRIPE_TEST_PUBLISHABLE_KEY"
+  stripe_webhook_secret_env: "SPORTROOTS_STRIPE_WEBHOOK_SECRET"
+  printful_api_key_env: "SPORTROOTS_PRINTFUL_API_TOKEN"
+  printful_dry_run: false
