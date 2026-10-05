@@ -3188,6 +3188,45 @@ def _cross_brand_card(target):
         f"See {_esc(target['brand_name'])} auctions &rarr;</a></p></div>")
 
 
+# Consignor intake (Bill, 2026-10-05: "open and advertise" consignments
+# ahead of the first live lots). Copy states only that we are accepting
+# consignments for our first sales — it never claims a live lot exists
+# and quotes no price or fee. The CTA is the brand's own register route
+# (the seller intake: account creation with the "I plan to sell" flag).
+_CONSIGN_COPY = {
+    "RE": ("Have a classic to sell?",
+           "RestorationEssentials auctions is now accepting consignments "
+           "for our first sales — 1953–1973 American classics: muscle "
+           "cars, trucks, and modern performance. Create a seller "
+           "account and tell us about your car."),
+    "IH": ("Have a classic motorcycle to sell?",
+           "IronHead auctions is now accepting consignments for our "
+           "first sales — classic motorcycles. Create a seller account "
+           "and tell us about your bike."),
+}
+
+
+def _consign_card(brand):
+    """The consignor-intake block for one brand's auctions index."""
+    copy = _CONSIGN_COPY.get(brand)
+    if not copy:
+        return ""
+    heading, text = copy
+    return (
+        f"<div class=\"card\"><h3>{_esc(heading)}</h3>"
+        f"<p>{_esc(text)}</p>"
+        f"<p><a href=\"/auctions/register?brand={_esc(brand)}\">"
+        "Register to consign &rarr;</a></p></div>")
+
+
+def _consign_cards(brand):
+    """The consignor block for a known brand's index; on the brand-less
+    index both brands' blocks show so every visitor sees a way in."""
+    if brand in BRAND_NAMES:
+        return _consign_card(brand)
+    return _consign_card("RE") + _consign_card("IH")
+
+
 def _lot_cross_brand_card(lot):
     """Lot-level routing: a lot whose category belongs on the sibling
     brand points the reader there; on-brand lots show the standing
@@ -3211,6 +3250,7 @@ def auctions_index():
     sibling = sibling_brand(brand) if brand else None
     return _page("Live & upcoming auctions",
                  _flash() + _session_bar(_current_account(), brand) + cards
+                 + _consign_cards(brand)
                  + _cross_brand_card(sibling),
                  brand)
 
