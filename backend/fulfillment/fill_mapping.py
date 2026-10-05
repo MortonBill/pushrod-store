@@ -21,7 +21,7 @@ Usage:
   python3 backend/fulfillment/fill_mapping.py [--dry-run] [--limit N]
                                              [--mapping PATH]
 """
-import argparse, json, os, sys, time, base64, urllib.request, urllib.error
+import argparse, hashlib, json, os, sys, time, base64, urllib.request, urllib.error, http.client
 
 sys.path.insert(0, "/opt/hatch/skills/skill-creator/bin")
 from dynamic_credentials import add_surrogate_to_request, read_json_response  # noqa: E402
@@ -46,29 +46,45 @@ def pf(method, path, payload=None, retries=3):
         try:
             return read_json_response(urllib.request.urlopen(req, timeout=60))
         except urllib.error.HTTPError as e:
-            body = e.read()[:300]
+            try:
+                body = e.read()[:300]
+            except Exception:
+                body = b"<error body unreadable>"
             if e.code == 429 and attempt < retries - 1:
                 time.sleep(5 * (attempt + 1))
                 continue
             raise RuntimeError(f"Printful {method} {path} -> HTTP {e.code}: {body}")
 
 
-def gh(method, path, payload=None, retries=4):
+def gh(method, path, payload=None, retries=6):
     data = json.dumps(payload).encode() if payload is not None else None
     for attempt in range(retries):
-        req = urllib.request.Request(GH_API + path, data=data, method=method,
-                                     headers={"Accept": "application/vnd.github+json", **UA})
-        if data:
-            req.add_header("Content-Type", "application/json")
-        add_surrogate_to_request(req, "custom.github", allowed_hosts=("api.github.com",))
         try:
+            req = urllib.request.Request(GH_API + path, data=data, method=method,
+                                         headers={"Accept": "application/vnd.github+json", **UA})
+            if data:
+                req.add_header("Content-Type", "application/json")
+            add_surrogate_to_request(req, "custom.github", allowed_hosts=("api.github.com",))
             return read_json_response(urllib.request.urlopen(req, timeout=120))
         except urllib.error.HTTPError as e:
-            body = e.read()[:300]
-            if e.code in (502, 503, 504) and attempt < retries - 1:
+            try:
+                body = e.read()[:300]
+            except Exception:
+                body = b"<error body unreadable>"
+            # 2026-10-05: the surrogate proxy intermittently mangles large
+            # base64 blob POSTs (HTTP 400 "malformed request" / dropped
+            # connection) while thousands of others succeed; retry those
+            # transient failures instead of aborting the whole fill.
+            if e.code in (400, 429, 502, 503, 504) and attempt < retries - 1:
                 time.sleep(5 * (attempt + 1))
                 continue
             raise RuntimeError(f"GitHub {method} {path} -> HTTP {e.code}: {body}")
+        except (urllib.error.URLError, ConnectionError, TimeoutError, OSError,
+                http.client.HTTPException) as e:
+            if attempt < retries - 1:
+                time.sleep(5 * (attempt + 1))
+                continue
+            raise RuntimeError(f"GitHub {method} {path} -> connection error: {e}")
 
 
 # ---------------------------------------------------------------- products
@@ -79,6 +95,9 @@ PRODUCT_MATCH = {  # blank_product -> distinctive substrings to find in catalog 
     "11oz Black Mug": ["11oz black mug"],
     "Kiss-Cut Stickers": ["kiss-cut"],
     "Embroidered Patches": ["embroidered patch"],
+    "Glossy Metal Print": ["glossy metal"],
+    "All-Over Print Flag": ["all-over print flag"],
+    "Otto Cap 105-1247": ["105-1247"],
 }
 
 
@@ -216,22 +235,67 @@ def push_print_files(dry_run=False):
         parent = ref["object"]["sha"]
         print("seeded initial commit")
 
-    blobs = []
+    # 2026-10-05: reuse blobs already on GitHub (content-addressed) and build
+    # the tree bottom-up per directory. The old single 449-entry tree POST
+    # died with HTTP 502 through the surrogate, and re-uploading ~1.2 GB of
+    # PNGs every attempt multiplied the transient-failure surface.
+    remote_sha = {}
+    if parent:
+        commit0 = gh("GET", f"/repos/{PF_REPO_OWNER}/{PF_REPO_NAME}/git/commits/{parent}")
+        tree0 = gh("GET", f"/repos/{PF_REPO_OWNER}/{PF_REPO_NAME}/git/trees/"
+                          f"{commit0['tree']['sha']}?recursive=1")
+        for item in tree0.get("tree", []):
+            if item.get("type") == "blob":
+                remote_sha[item["path"]] = item["sha"]
+    blob_sha = {}
+    uploaded = reused = 0
     for i, (rel, full) in enumerate(entries):
         if full is None:
-            content = base64.b64encode(
-                b"# pushrod-print-files\nPublic print-ready PNGs for PushRod store fulfillment.\n"
-            ).decode()
+            raw = (b"# pushrod-print-files\nPublic print-ready PNGs for "
+                   b"PushRod store fulfillment.\n")
         else:
             with open(full, "rb") as f:
-                content = base64.b64encode(f.read()).decode()
-        blob = gh("POST", f"/repos/{PF_REPO_OWNER}/{PF_REPO_NAME}/git/blobs",
-                  {"content": content, "encoding": "base64"})
-        blobs.append({"path": rel, "mode": "100644", "type": "blob", "sha": blob["sha"]})
-        if (i + 1) % 50 == 0:
+                raw = f.read()
+        sha = hashlib.sha1(b"blob %d\0" % len(raw) + raw).hexdigest()
+        if remote_sha.get(rel) == sha:
+            reused += 1
+        else:
+            blob = gh("POST", f"/repos/{PF_REPO_OWNER}/{PF_REPO_NAME}/git/blobs",
+                      {"content": base64.b64encode(raw).decode(), "encoding": "base64"})
+            sha = blob["sha"]
+            uploaded += 1
+        blob_sha[rel] = sha
+        if (i + 1) % 100 == 0:
             print(f"  blobs {i + 1}/{len(entries)}")
+    print(f"blobs: {uploaded} uploaded, {reused} reused")
+
+    dirs = set()
+    for rel in blob_sha:
+        parts = rel.split("/")[:-1]
+        for j in range(1, len(parts) + 1):
+            dirs.add("/".join(parts[:j]))
+    dir_sha = {}
+    for d in sorted(dirs, key=lambda p: -p.count("/")):
+        items = []
+        prefix = d + "/"
+        for rel, sha in blob_sha.items():
+            if rel.startswith(prefix) and "/" not in rel[len(prefix):]:
+                items.append({"path": rel[len(prefix):], "mode": "100644",
+                              "type": "blob", "sha": sha})
+        for sub, ssha in dir_sha.items():
+            if sub.rpartition("/")[0] == d:
+                items.append({"path": sub.rpartition("/")[2], "mode": "040000",
+                              "type": "tree", "sha": ssha})
+        t = gh("POST", f"/repos/{PF_REPO_OWNER}/{PF_REPO_NAME}/git/trees",
+               {"tree": items, "base_tree": None})
+        dir_sha[d] = t["sha"]
+    root_items = [{"path": rel, "mode": "100644", "type": "blob", "sha": sha}
+                  for rel, sha in blob_sha.items() if "/" not in rel]
+    for d, ssha in dir_sha.items():
+        if "/" not in d:
+            root_items.append({"path": d, "mode": "040000", "type": "tree", "sha": ssha})
     tree = gh("POST", f"/repos/{PF_REPO_OWNER}/{PF_REPO_NAME}/git/trees",
-              {"tree": blobs, "base_tree": None})
+              {"tree": root_items, "base_tree": None})
     commit_payload = {"message": "print-ready art for Printful fulfillment",
                       "tree": tree["sha"]}
     if parent:

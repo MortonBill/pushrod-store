@@ -10,8 +10,10 @@ against the live Printful API (credential was invalid as of 2026-09-30). The _fi
 block on each entry holds everything the fill script needs: blank product, color
 candidates, size, and the local print-file path.
 
-Non-mappable types (metal sign, sign, keychain, banner, vinyl banner, flag,
-decal set, decal sheet) are recorded in _meta.unmapped with reasons; they get no keys.
+Non-mappable types (keychain, vinyl banner, flag, decal set, decal sheet) are
+recorded in _meta.unmapped with reasons; they get no keys. Metal signs and
+banners became mappable 2026-10-05 via the Glossy Metal Print and
+All-Over Print Flag blanks (see BLANKS).
 
 Usage: python3 backend/fulfillment/build_mapping.py   (run from repo root)
 """
@@ -73,6 +75,18 @@ BLANKS = {
         "placement": "front",
         "note": "square 3x3 default; rectangle 3.5x2.25 for wide designs (chosen by art aspect)",
     },
+    "metal sign": {
+        "product": "Glossy Metal Print",
+        "technique": "sublimation",
+        "placement": "default",
+        "note": "added 2026-10-05 close-out: Printful catalog 588; one chosen size per SKU (12x12)",
+    },
+    "banner": {
+        "product": "All-Over Print Flag",
+        "technique": "cut-sew",
+        "placement": "front",
+        "note": "added 2026-10-05 close-out: Printful catalog 490, single variant 12584 (White/One size)",
+    },
 }
 
 COLOR_CANDIDATES = {
@@ -102,10 +116,8 @@ COLOR_CANDIDATES = {
 }
 
 UNMAPPABLE = {
-    "metal sign": "no sane Printful equivalent (rigid metal signage)",
     "sign": "no sane Printful equivalent",
     "keychain": "no sane Printful equivalent",
-    "banner": "no sane Printful equivalent",
     "vinyl banner": "no sane Printful equivalent",
     "flag": "no sane Printful equivalent",
     "decal set": "multi-piece set; no Printful equivalent",
@@ -115,7 +127,37 @@ UNMAPPABLE = {
 PROFILE_OF = {
     "tee": "apparel", "sweatshirt": "apparel", "hat": "hat", "mug": "mug",
     "decal": "sticker", "patch": "patch", "embroidered patch": "patch",
+    "metal sign": "misc", "banner": "misc",
 }
+
+# Per-SKU blank overrides (2026-10-05 close-out): the camo truckers were
+# saddled with the Yupoong 6606, which has no camo colorway at all, so their
+# entries could never fill. Re-blank them onto the Otto Cap 105-1247
+# (Printful catalog 680), whose camo colorways exist. Candidate order steers
+# the fill to Camo/Black (variant 16856) for both designs.
+SKU_BLANK_OVERRIDES = {
+    "PR-H027": {
+        "blank": {
+            "product": "Otto Cap 105-1247",
+            "technique": "embroidery",
+            "placement": "embroidery_front",
+            "note": "re-blanked 2026-10-05: Yupoong 6606 has no Camo variant; Otto Cap 105-1247 camo colorways do",
+        },
+        "color_candidates": ["Camo/Black", "Camo/Brown", "Camo/Olive"],
+    },
+    "PR-H038": {
+        "blank": {
+            "product": "Otto Cap 105-1247",
+            "technique": "embroidery",
+            "placement": "embroidery_front",
+            "note": "re-blanked 2026-10-05: Yupoong 6606 has no Camo variant; Otto Cap 105-1247 camo colorways do",
+        },
+        "color_candidates": ["Camo/Black", "Camo/Brown", "Camo/Olive"],
+    },
+}
+
+# Metal signs ship one chosen size per SKU: 12x12 (variant 15135 family).
+METAL_SIGN_SIZE = "12″×12″"
 
 HAT_COLOR_REVIEW = {"Forest", "Olive"}  # no confident 6606 match; flag for manual review
 
@@ -182,6 +224,9 @@ def main():
             continue
 
         blank = BLANKS[ptype]
+        override = SKU_BLANK_OVERRIDES.get(sku)
+        if override:
+            blank = {**blank, **override["blank"]}
         profile = PROFILE_OF[ptype]
         print_local = os.path.join(PRINT_FILES, lib, profile, base + ".png")
         stats["skus"] += 1
@@ -219,7 +264,10 @@ def main():
                 })
                 stats["keys"] += 1
         elif ptype == "hat":
-            cands = COLOR_CANDIDATES["hat"].get(color_raw, [color_raw] if color_raw else [])
+            if override:
+                cands = override["color_candidates"]
+            else:
+                cands = COLOR_CANDIDATES["hat"].get(color_raw, [color_raw] if color_raw else [])
             e = entry({"color": color_raw, "color_candidates": cands})
             if color_raw in HAT_COLOR_REVIEW:
                 e["_fill"]["color_review"] = (
@@ -232,6 +280,19 @@ def main():
             mapping[sku] = entry({
                 "color": "Black",
                 "color_candidates": COLOR_CANDIDATES["mug"]["black"],
+            })
+            stats["keys"] += 1
+        elif ptype == "metal sign":
+            mapping[sku] = entry({
+                "color": "White",
+                "color_candidates": ["White"],
+                "size": METAL_SIGN_SIZE,
+            })
+            stats["keys"] += 1
+        elif ptype == "banner":
+            mapping[sku] = entry({
+                "color": "White",
+                "color_candidates": ["White"],
             })
             stats["keys"] += 1
         elif ptype == "decal":
