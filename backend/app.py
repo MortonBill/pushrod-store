@@ -14,6 +14,10 @@ the frontend talks to:
   GET  /download/<token>        signed, expiring download for a digital SKU
                                  (token minted at fulfillment — see
                                  fulfillment/digital.py)
+  POST /api/sr/checkout         SportRoots subscription checkout (DARK:
+                                 SR_BILLING_ENABLED=1; see subscriptions.py)
+  POST /api/sr/portal           SportRoots Customer Portal session (DARK)
+  GET  /api/sr/entitlement      signed subscriber check for Polsia (DARK)
 
 Order flow: customer buys on our site -> Stripe (test or live per STRIPE_MODE) ->
 backend creates the Printful order via API -> Printful prints and ships.
@@ -24,6 +28,8 @@ brands/<id>.yaml (name, theme, sku_prefixes). Same codebase, N brands.
 import json
 import logging
 import os
+import re
+from html import escape as _html_escape
 
 import stripe
 import yaml
@@ -39,6 +45,7 @@ from fulfillment import storage as storage_mod
 from fulfillment.printful_client import PrintfulConfigError, PrintfulAPIError
 import wholesale as wholesale_mod
 import auctions as auctions_mod
+import subscriptions as sr_mod
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("pushrod")
@@ -76,6 +83,41 @@ theme = brand["theme"]
 catalog_cfg = brand["catalog"]
 store_cfg = brand["store"]
 
+# Host-mapped storefront faces (2026-10-04): restoreessentials.com is
+# attached to this service, but its customers must see the Restoration
+# Essentials brand over RE-owned products only — never this process's own
+# brand over the whole unified catalog. A face changes ONLY /api/brand
+# and /api/products; the catalog load, checkout, and fulfillment stay
+# process-wide and identical on every host. A face config that fails to
+# load is skipped with a warning — it must never take the store down.
+HOST_FACES = {}
+for _host, _brand_id in (("restoreessentials.com", "restorationessentials"),
+                         ("www.restoreessentials.com", "restorationessentials"),
+                         ("everreadyfamily.com", "everready"),
+                         ("www.everreadyfamily.com", "everready"),
+                         ("everreadyfamily.co", "everready"),
+                         ("www.everreadyfamily.co", "everready"),
+                         ("everready-family.com", "everready"),
+                         ("www.everready-family.com", "everready"),
+                         ("stitchfolkpatterns.com", "stitchfolk"),
+                         ("www.stitchfolkpatterns.com", "stitchfolk"),
+                         ("sportroots.coach", "sportroots"),
+                         ("www.sportroots.coach", "sportroots"),
+                         ("sportrootsdrills.com", "sportroots"),
+                         ("www.sportrootsdrills.com", "sportroots"),
+                         ("ironheadguides.com", "ironhead"),
+                         ("www.ironheadguides.com", "ironhead"),
+                         ("skillforge.co", "skillforge"),
+                         ("www.skillforge.co", "skillforge"),
+                         ("skillforgeai.co", "skillforge"),
+                         ("www.skillforgeai.co", "skillforge"),
+                         ("skillforgeaihub.com", "skillforge"),
+                         ("www.skillforgeaihub.com", "skillforge")):
+    try:
+        HOST_FACES[_host] = load_brand(_brand_id)
+    except Exception as exc:
+        log.warning("host face %s (%s) not loaded: %s", _host, _brand_id, exc)
+
 PRODUCTS = None  # assigned below after the mapping loads
 BY_SKU = {}
 
@@ -103,13 +145,26 @@ log.info("printful mapping: %d keys, %d/%d products purchasable",
 
 # Merch-library roots for /img/<lib>/... (keys match catalog.IMAGE_LIBS).
 # Bundled under data/img/ for portable deploys; DATA_DIR env overrides.
+# If the bundled copy is absent (the build-time Catbox fetch in
+# render-build.sh failed while that host was unreachable), fall back to
+# the persistent-disk cache (/var/data/img-cache) so a deploy can never
+# take the merch artwork down with it.
 _DATA_DIR = os.environ.get("DATA_DIR", os.path.join(ROOT, "data"))
-IMAGE_LIB_DIRS = {
-    "pushrod": os.path.join(_DATA_DIR, "img", "pushrod"),
-    "muscle": os.path.join(_DATA_DIR, "img", "muscle"),
-    "modern": os.path.join(_DATA_DIR, "img", "modern"),
-    "truck": os.path.join(_DATA_DIR, "img", "truck"),
-}
+
+
+def _img_lib_dir(lib):
+    bundled = os.path.join(_DATA_DIR, "img", lib)
+    if os.path.isdir(bundled):
+        return bundled
+    if os.path.isdir("/var/data"):
+        cached = os.path.join("/var/data", "img-cache", lib)
+        if os.path.isdir(cached):
+            return cached
+    return bundled
+
+
+IMAGE_LIB_DIRS = {lib: _img_lib_dir(lib)
+                  for lib in ("pushrod", "muscle", "modern", "truck")}
 
 ORDER_PREFIX = store_cfg.get("order_prefix", "pushrod")
 STRIPE_WEBHOOK_SECRET = os.environ.get(
@@ -203,10 +258,423 @@ wholesale_mod.init(
 auctions_mod.init(app, brand_cfg=brand, root_dir=ROOT)
 
 
+# ---------- host-face content pages ----------
+# Static content served only on its own host face; every other host
+# keeps the exact pre-face behavior (these paths 404 there). The buy
+# buttons on these pages point at the shared /product/<SKU> routes.
+# One registry serves both faces: a path shared by two faces (e.g.
+# /faq) is registered once and dispatched to the requesting host's
+# face — behavior on each face is unchanged.
+FACE_PAGES = {
+    "everready": {
+        "dir": "everready",
+        "home": "home.html",
+        "pages": {
+            "/products": "products.html",
+            "/faq": "faq.html",
+            "/founder": "founder.html",
+            "/checklist": "checklist.html",
+            "/guides/executors-first-30-days": "guide-executors-first-30-days.html",
+            "/guides/five-conversations-before-you-need-them": "guide-five-conversations.html",
+            "/guides/paperwork-after-someone-dies": "guide-paperwork-after-someone-dies.html",
+            "/products/life-story-interview": "product-life-story.html",
+            "/products/family-command-center": "product-family-command-center.html",
+            "/products/executors-kit": "product-executors-kit.html",
+        },
+    },
+    "stitchfolk": {
+        "dir": "stitchfolk",
+        "home": "home.html",
+        "pages": {
+            "/patterns": "patterns.html",
+            "/free-pattern": "free-pattern.html",
+            "/crochet": "crochet.html",
+            "/knitting": "knitting.html",
+            "/needlepoint": "needlepoint.html",
+            "/learn": "learn.html",
+            "/learn/cast-on": "learn-cast-on.html",
+            "/learn/picking-needles": "learn-picking-needles.html",
+            "/learn/reading-knitting-abbreviations": "learn-reading-knitting-abbreviations.html",
+            "/learn/which-pattern": "learn-which-pattern.html",
+            "/about": "about.html",
+            "/faq": "faq.html",
+            "/policies": "policies.html",
+            "/policies/privacy": "policy-privacy.html",
+            "/policies/terms": "policy-terms.html",
+            "/policies/digital-downloads-refunds": "policy-digital-downloads-refunds.html",
+            "/policies/cookies": "policy-cookies.html",
+            "/policies/affiliate-disclosure": "policy-affiliate-disclosure.html",
+            "/policies/contributor-terms": "policy-contributor-terms.html",
+            "/policies/copyright-takedown": "policy-copyright-takedown.html",
+            "/contact": "contact.html",
+            "/testimonials": "testimonials.html",
+            "/gallery": "gallery.html",
+            "/new-arrivals": "new-arrivals.html",
+            "/designer-patterns": "designer-patterns.html",
+        },
+    },
+    "sportroots": {
+        "dir": "sportroots",
+        "home": "home.html",
+        "pages": {
+            "/sports": "sports.html",
+            "/drills": "drills.html",
+            "/drills/baseball": "drills-baseball.html",
+            "/drills/basketball": "drills-basketball.html",
+            "/drills/cheerleading": "drills-cheerleading.html",
+            "/drills/football": "drills-football.html",
+            "/drills/golf": "drills-golf.html",
+            "/drills/gymnastics": "drills-gymnastics.html",
+            "/drills/hockey": "drills-hockey.html",
+            "/drills/lacrosse": "drills-lacrosse.html",
+            "/drills/martial-arts": "drills-martial-arts.html",
+            "/drills/skiing": "drills-skiing.html",
+            "/drills/soccer": "drills-soccer.html",
+            "/drills/softball": "drills-softball.html",
+            "/drills/swimming": "drills-swimming.html",
+            "/drills/tennis": "drills-tennis.html",
+            "/drills/track": "drills-track.html",
+            "/drills/volleyball": "drills-volleyball.html",
+            "/drills/weight-training": "drills-weight-training.html",
+            "/drills/wrestling": "drills-wrestling.html",
+            "/coaches": "coaches.html",
+            "/book": "book.html",
+            "/pricing": "pricing.html",
+            "/faq": "faq.html",
+        },
+    },
+    "ironhead": {
+        "dir": "ironhead",
+        "home": "home.html",
+        "pages": {
+            "/guides": "guides.html",
+            "/guides/harley-sportster": "shelf-sportster.html",
+            "/guides/harley-shovelhead": "shelf-shovelhead.html",
+            "/guides/harley-panhead": "shelf-panhead.html",
+            "/guides/indian-chief": "shelf-indian-chief.html",
+            "/guides/indian-scout": "shelf-indian-scout.html",
+            "/guides/triumph-bonneville": "shelf-bonneville.html",
+            "/guides/triumph-preunit": "shelf-preunit.html",
+            "/guides/bmw-slash7": "shelf-bmw.html",
+            "/guides/bsa": "shelf-bsa.html",
+            "/guides/honda": "shelf-honda.html",
+            "/guides/yamaha-xs650": "shelf-yamaha.html",
+            "/guides/restoration-bundles": "shelf-bundles.html",
+            "/pricing": "pricing.html",
+            "/faq": "faq.html",
+            "/about": "about.html",
+            "/testimonials": "testimonials.html",
+            "/blog": "blog.html",
+            "/blog/ironhead-sportster-buying-guide": "blog-sportster.html",
+            "/blog/ironhead-bmw-airhead-buying-guide": "blog-bmw-airhead.html",
+            "/blog/ironhead-honda-cb750-buying-guide": "blog-honda-cb750.html",
+            "/legal": "legal.html",
+            "/legal/disclosure-summary": "legal-disclosure-summary.html",
+            "/legal/terms": "legal-terms.html",
+            "/legal/auction-rules": "legal-auction-rules.html",
+            "/legal/seller-agreement": "legal-seller-agreement.html",
+            "/legal/buyer-disclosures": "legal-buyer-disclosures.html",
+            "/legal/refunds-cancellations": "legal-refunds-cancellations.html",
+            "/legal/dispute-resolution": "legal-dispute-resolution.html",
+            "/legal/guides-disclaimer": "legal-guides-disclaimer.html",
+            "/contact": "contact.html",
+            "/privacy": "privacy.html",
+            "/workshop": "workshop.html",
+            "/community": "community.html",
+        },
+    },
+    "skillforge": {
+        "dir": "skillforge",
+        "home": "home.html",
+        "pages": {
+            "/playbooks": "playbooks.html",
+            "/about": "about.html",
+            "/faq": "faq.html",
+            "/contact": "contact.html",
+        },
+    },
+}
+
+ER_PAGES = FACE_PAGES["everready"]["pages"]
+ST_PAGES = FACE_PAGES["stitchfolk"]["pages"]
+SR_PAGES = FACE_PAGES["sportroots"]["pages"]
+IH_PAGES = FACE_PAGES["ironhead"]["pages"]
+SF_PAGES = FACE_PAGES["skillforge"]["pages"]
+SKILLFORGE_FACE_HOSTS = {"skillforge.co", "www.skillforge.co",
+                         "skillforgeai.co", "www.skillforgeai.co",
+                         "skillforgeaihub.com", "www.skillforgeaihub.com"}
+
+
+def _skillforge_self_canonical(resp):
+    """Point a SkillForge face page's canonical at the serving host.
+
+    The same static face serves the candidate domains (skillforge.co
+    and skillforgeai.co, inert and not owned; and skillforgeaihub.com,
+    picked by Bill 2026-10-05 -- "Hub" covers playbooks, forms, and
+    whatever comes next -- inert until it registers and attaches);
+    the files carry a skillforge.co canonical placeholder and this
+    rewrite makes each host canonical to itself, per the SEO pattern.
+    Only SkillForge face responses pass through here.
+    """
+    host = _request_host_key()
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    html_text = re.sub(
+        r'(<link rel="canonical" href="https://)'
+        r'(?:skillforgeaihub\.com|skillforge\.co|skillforgeai\.co)',
+        lambda m: m.group(1) + host, html_text, count=1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
+    return resp
+
+
+def _everready_self_canonical(resp):
+    """Point an EverReady face page's canonical at the serving host.
+
+    The same static face serves everreadyfamily.co and everready-family.com
+    (the hyphenated .com is the domain Bill is registering; the .co stays
+    routed); the files carry an everreadyfamily.co canonical placeholder
+    and this rewrite makes each host canonical to itself, mirroring the
+    SkillForge dual-host pattern above. Only EverReady face responses
+    pass through here.
+    """
+    host = _request_host_key()
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    html_text = re.sub(
+        r'(<link rel="canonical" href="https://)'
+        r'(?:everreadyfamily\.com|everready-family\.com|everreadyfamily\.co)'
+        r'(?=[/"])',
+        lambda m: m.group(1) + host, html_text, count=1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
+    return resp
+
+
+def _face_page(path):
+    cfg, _products = _face()
+    spec = FACE_PAGES.get(cfg["brand"]["id"])
+    if not spec or path not in spec["pages"]:
+        return "Not found", 404
+    if cfg["brand"]["id"] == "skillforge":
+        # SkillForge is also this process's own brand: without the host
+        # gate its face pages would leak onto the default onrender host
+        # and change long-standing routes there. Face hosts only.
+        if _request_host_key() not in SKILLFORGE_FACE_HOSTS:
+            return "Not found", 404
+        resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
+                                   spec["pages"][path])
+        return _skillforge_self_canonical(resp)
+    if cfg["brand"]["id"] == "everready":
+        # One static face, two routed hosts (everreadyfamily.co and
+        # everready-family.com): each host canonical to itself.
+        resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
+                                   spec["pages"][path])
+        return _everready_self_canonical(resp)
+    return send_from_directory(os.path.join(FRONTEND, spec["dir"]),
+                               spec["pages"][path])
+
+
+for _path in sorted({p for _s in FACE_PAGES.values() for p in _s["pages"]}):
+    app.add_url_rule(_path, endpoint="face" + _path.replace("/", "_"),
+                     view_func=lambda p=_path: _face_page(p))
+
+
+# ---------- EverReady sitemap (face only) ----------
+@app.get("/sitemap-er.xml")
+def sitemap_er_xml():
+    # The shared /sitemap.xml stays RE-scoped on every host (pre-existing
+    # behavior, zero risk to the live RE face). The EverReady content
+    # pages get their own sitemap here for whoever ends up submitting
+    # the EverReady domain.
+    cfg, _products = _face()
+    if cfg["brand"]["id"] != "everready":
+        return "Not found", 404
+    base = request.host_url.rstrip("/")
+    paths = ["/"] + sorted(ER_PAGES) + ["/product/ER-FCC-001",
+                                        "/product/ER-EK-001",
+                                        "/product/ER-FRB-001",
+                                        "/product/ER-DAI-001",
+                                        "/product/ER-LSIK-001"]
+    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           f"{urls}\n</urlset>\n")
+    return Response(xml, mimetype="application/xml")
+
+
+# ---------- Stitchfolk sitemap (face only) ----------
+@app.get("/sitemap-st.xml")
+def sitemap_st_xml():
+    # Same pattern as /sitemap-er.xml: the shared /sitemap.xml stays
+    # RE-scoped on every host; the Stitchfolk content pages and live
+    # pattern pages get their own sitemap for whoever submits the
+    # Stitchfolk domain.
+    cfg, products = _face()
+    if cfg["brand"]["id"] != "stitchfolk":
+        return "Not found", 404
+    base = request.host_url.rstrip("/")
+    paths = ["/"] + sorted(ST_PAGES) + [
+        f"/product/{p['sku']}" for p in products
+        if p.get("listed", True) and p["purchasable"]]
+    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           f"{urls}\n</urlset>\n")
+    return Response(xml, mimetype="application/xml")
+
+
+# ---------- SportRoots sitemap (face only) ----------
+@app.get("/sitemap-sr.xml")
+def sitemap_sr_xml():
+    # Same pattern as /sitemap-er.xml and /sitemap-st.xml: the shared
+    # /sitemap.xml stays RE-scoped on every host; the SportRoots
+    # content pages (home, sports index, the drill library and its
+    # per-sport views, coaches, booking-request, pricing, faq) get
+    # their own sitemap for whoever submits the SportRoots domain.
+    # SR sells subscriptions, not SKUs: no /product/<SKU> URLs here.
+    cfg, _products = _face()
+    if cfg["brand"]["id"] != "sportroots":
+        return "Not found", 404
+    base = request.host_url.rstrip("/")
+    paths = ["/"] + sorted(SR_PAGES)
+    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           f"{urls}\n</urlset>\n")
+    return Response(xml, mimetype="application/xml")
+
+
+# ---------- IronHead sitemap (face only) ----------
+@app.get("/sitemap-ih.xml")
+def sitemap_ih_xml():
+    # Same pattern as /sitemap-er.xml, /sitemap-st.xml and
+    # /sitemap-sr.xml: the shared /sitemap.xml stays RE-scoped on every
+    # host; the IronHead content pages and live guide pages get their
+    # own sitemap for whoever submits the IronHead domain.
+    cfg, products = _face()
+    if cfg["brand"]["id"] != "ironhead":
+        return "Not found", 404
+    base = request.host_url.rstrip("/")
+    paths = ["/"] + sorted(IH_PAGES) + [
+        f"/product/{p['sku']}" for p in products
+        if p.get("listed", True) and p["purchasable"]]
+    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           f"{urls}\n</urlset>\n")
+    return Response(xml, mimetype="application/xml")
+
+
+# ---------- SkillForge sitemap (face only) ----------
+@app.get("/sitemap-sf.xml")
+def sitemap_sf_xml():
+    # Same pattern as /sitemap-er.xml, /sitemap-st.xml, /sitemap-sr.xml
+    # and /sitemap-ih.xml: the shared /sitemap.xml stays RE-scoped on
+    # every host; the SkillForge content pages and live playbook pages
+    # get their own sitemap for whoever submits the SkillForge domain.
+    # This is the first sitemap anywhere that lists SF SKUs (the GSC
+    # plan's finding 4). SkillForge is also the process brand, so the
+    # host gate below is what keeps this face-only: the default
+    # onrender host 404s here like every other face sitemap.
+    cfg, products = _face()
+    if (cfg["brand"]["id"] != "skillforge"
+            or _request_host_key() not in SKILLFORGE_FACE_HOSTS):
+        return "Not found", 404
+    base = request.host_url.rstrip("/")
+    paths = ["/"] + sorted(SF_PAGES) + [
+        f"/product/{p['sku']}" for p in products
+        if p.get("listed", True) and p["purchasable"]]
+    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           f"{urls}\n</urlset>\n")
+    return Response(xml, mimetype="application/xml")
+
+# ---------- face-host SEO head (server-side) ----------
+# The shared storefront shells (frontend/index.html, frontend/product.html)
+# carry PUSHROD titles, no meta description, and no canonical in their raw
+# bytes — JS rebrands after load, so a non-rendering crawler reads the
+# wrong brand on a face domain (GSC finding: restoreessentials.com raw
+# HTML served <title>PUSHROD™</title>). On host-mapped face hosts only,
+# rewrite the served shell's head: the face brand's title, a real meta
+# description, and a self-host canonical for the exact URL requested.
+# Responses on every other host are returned untouched (byte-identical
+# to the pre-face behavior), and the face content pages (FACE_PAGES)
+# carry their canonicals baked into their static files.
+FACE_HOME_HEAD = {
+    "restorationessentials": (
+        "Restoration Essentials | American iron, restored right",
+        "Restoration Essentials — American iron, restored right. "
+        "Restoration guides for classic American cars and trucks, 1953–1973."),
+}
+_TITLE_RE = re.compile(r"<title>.*?</title>", re.IGNORECASE | re.DOTALL)
+
+
+def _request_host_key():
+    return (request.host or "").split(":")[0].strip().lower()
+
+
+def _face_head(resp, title=None, description=None):
+    """Rewrite a shared-shell response's <head> for a face host (above).
+    The canonical always points at this request's own URL on the serving
+    host; title/description are applied only when supplied. Caller
+    guarantees the request host is in HOST_FACES."""
+    canonical = f"https://{_request_host_key()}{request.path}"
+    resp.direct_passthrough = False  # send_from_directory streams; buffer it
+    html_text = resp.get_data(as_text=True)
+    if title:
+        html_text = _TITLE_RE.sub(
+            lambda _m: f"<title>{_html_escape(title)}</title>",
+            html_text, count=1)
+    if description and 'name="description"' not in html_text:
+        html_text = html_text.replace(
+            "</title>",
+            '</title>\n<meta name="description" '
+            f'content="{_html_escape(description, quote=True)}">', 1)
+    if 'rel="canonical"' not in html_text:
+        html_text = html_text.replace(
+            "</head>", f'<link rel="canonical" href="{canonical}">\n</head>', 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)  # body changed; the file's ETag is stale
+    return resp
+
+
 # ---------- storefront pages (static frontend) ----------
 @app.get("/")
 def index():
-    return send_from_directory(FRONTEND, "index.html")
+    # Host faces (EverReady, Stitchfolk): the root serves that
+    # storefront's home instead of the shared product-grid shell.
+    # Every other host keeps the grid.
+    cfg, _products = _face()
+    spec = FACE_PAGES.get(cfg["brand"]["id"])
+    if spec:
+        # SkillForge is the process brand too: its face home serves only
+        # on the candidate face hosts, never on the default host.
+        if (cfg["brand"]["id"] == "skillforge"
+                and _request_host_key() not in SKILLFORGE_FACE_HOSTS):
+            spec = None
+        else:
+            resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
+                                       spec["home"])
+            if cfg["brand"]["id"] == "skillforge":
+                resp = _skillforge_self_canonical(resp)
+            elif cfg["brand"]["id"] == "everready":
+                resp = _everready_self_canonical(resp)
+            return resp
+    resp = send_from_directory(FRONTEND, "index.html")
+    if _request_host_key() in HOST_FACES:
+        # Face host on the shared shell (RestorationEssentials): the raw
+        # bytes must carry the face brand, not PUSHROD (see _face_head).
+        b = cfg["brand"]
+        title, desc = FACE_HOME_HEAD.get(
+            b["id"], (f"{b['name']} | {b['tagline']}",
+                      f"{b['name']} — {b['tagline']}."))
+        resp = _face_head(resp, title=title, description=desc)
+    return resp
 
 
 @app.get("/product/<sku>")
@@ -215,7 +683,19 @@ def product_page(sku):
     # Dark-staged rows (listed=0) have no public product page.
     if not p or not p.get("listed", True):
         return "Not found", 404
-    return send_from_directory(FRONTEND, "product.html")
+    resp = send_from_directory(FRONTEND, "product.html")
+    if _request_host_key() in HOST_FACES:
+        # Face host (RestorationEssentials/EverReady/Stitchfolk): the raw
+        # bytes carry the product and the face brand, not the shared
+        # PUSHROD shell (see _face_head). Other hosts unchanged.
+        cfg, _products = _face()
+        b = cfg["brand"]
+        resp = _face_head(
+            resp,
+            title=f"{p['title']} | {b['name']}",
+            description=(p.get("description") or "").strip()
+            or f"{p['title']} — {b['name']}.")
+    return resp
 
 
 @app.get("/checkout/success")
@@ -226,6 +706,33 @@ def success_page():
 @app.get("/checkout/cancel")
 def cancel_page():
     return send_from_directory(FRONTEND, "cancel.html")
+
+
+# ---------- SEO discovery (sitemap / robots) ----------
+@app.get("/sitemap.xml")
+def sitemap_xml():
+    # Base URL from the request host (never hardcoded) so every host this
+    # service serves gets URLs on its own domain. RestorationEssentials-owned
+    # products only: restoreessentials.com is the RE storefront face, and
+    # other brands' SKUs belong on their own domains.
+    base = request.host_url.rstrip("/")
+    entries = [base + "/"]
+    for p in PRODUCTS:
+        if (p.get("listed", True) and p["purchasable"]
+                and p["owner"] == "restorationessentials"):
+            entries.append(f"{base}/product/{p['sku']}")
+    urls = "\n".join(f"  <url><loc>{u}</loc></url>" for u in entries)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           f"{urls}\n</urlset>\n")
+    return Response(xml, mimetype="application/xml")
+
+
+@app.get("/robots.txt")
+def robots_txt():
+    base = request.host_url.rstrip("/")
+    return Response(f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n",
+                    mimetype="text/plain")
 
 
 # ---------- wholesale pages ----------
@@ -277,13 +784,29 @@ def catalog_image(lib, filename):
 
 
 # ---------- API ----------
+def _face():
+    """(brand config, products) for this request's storefront face.
+
+    Hosts in HOST_FACES get that brand's identity and only that brand's
+    products; every other host gets the process brand and the full loaded
+    catalog — byte-for-byte the pre-face behavior. Checkout and
+    fulfillment never consult the face (process-wide on purpose), so a
+    shopper who landed on the RE domain checks out identically to one
+    who landed on the process domain."""
+    cfg = HOST_FACES.get((request.host or "").split(":")[0].strip().lower())
+    if cfg is None:
+        return brand, PRODUCTS
+    return cfg, [p for p in PRODUCTS if p["owner"] == cfg["brand"]["id"]]
+
+
 @app.get("/api/brand")
 def api_brand():
-    b = brand["brand"]
+    cfg, products = _face()
+    b = cfg["brand"]
     return jsonify({
         "id": b["id"], "name": b["name"], "tagline": b["tagline"],
         "doors": b.get("doors", []),
-        "theme": theme, "stats": catalog_stats(PRODUCTS),
+        "theme": cfg["theme"], "stats": catalog_stats(products),
         "sizes": APPAREL_SIZES,
         "stripe_ready": STRIPE_READY,
         "stripe_mode": STRIPE_MODE,
@@ -294,10 +817,12 @@ def api_brand():
 def api_products():
     # wholesale_eligible is additive metadata for the storefront's partner
     # pricing display; retail guests ignore it. Dark-staged rows (listed=0)
-    # never appear on public surfaces.
+    # never appear on public surfaces. On a host-mapped brand face the
+    # grid is that brand's products only (see _face); other hosts unchanged.
+    _cfg, products = _face()
     return jsonify([
         {**p, "wholesale_eligible": wholesale_mod.is_wholesale_eligible(p)}
-        for p in PRODUCTS if p.get("listed", True)
+        for p in products if p.get("listed", True)
     ])
 
 
@@ -472,15 +997,6 @@ def api_checkout():
             {"allowed_countries": ["US"]}
     if discounts:
         create_kwargs["discounts"] = discounts
-    else:
-        # Show the promotion-code field on Stripe Checkout (money-path
-        # probe fix, 2026-10-05): without this flag Stripe renders no
-        # promo entry point at all, so a code like FOUNDER100 can never
-        # be typed. Mutually exclusive with `discounts` (Stripe rejects
-        # a session carrying both), hence the else. A code only takes
-        # effect if a matching coupon + promotion code exists in the
-        # session-creating account; the flag alone grants no discount.
-        create_kwargs["allow_promotion_codes"] = True
     # Stripe Tax: calculate/collect automatically (live mode only — in test
     # mode the flag stays off so test checkout can never fail on Tax
     # activation state; the per-line tax_code above is harmless either way).
@@ -526,6 +1042,10 @@ def api_fulfill():
     except (ValueError, TypeError):
         return jsonify({"error": "unreadable cart metadata on session"}), 400
     ship = _sget(session, "shipping_details", {}) or {}
+    if not _sget(ship, "address"):
+        # Modern Checkout (Link) puts shipping under collected_information.
+        ci = _sget(session, "collected_information", {}) or {}
+        ship = _sget(ci, "shipping_details", {}) or ship
     cust = _sget(session, "customer_details", {}) or {}
     addr = _sget(ship, "address", {}) or {}
     shipping_address = {
@@ -594,6 +1114,17 @@ def stripe_webhook():
         session = _sget(event, "data", {}) or {}
         session = _sget(session, "object", {}) or {}
         meta = _sget(session, "metadata", {}) or {}
+        if _sget(meta, "kind") == "sr_sub":
+            # SportRoots subscription checkout (subscriptions.py Lane 4):
+            # record the entitlement; there is no cart to fulfill. No-op
+            # unless SR_BILLING_ENABLED is on (handle_event checks).
+            try:
+                sr = sr_mod.handle_event(event, _sget)
+            except Exception:  # noqa: BLE001 — webhook must not crash; alert instead
+                log.exception("sportroots entitlement record failed for %s",
+                              _sget(session, "id", "?"))
+                return jsonify({"error": "sportroots entitlement failed"}), 500
+            return jsonify({"received": True, "sportroots": sr})
         if _sget(meta, "kind") == "auction_pay":
             # Auction winner pay page (auctions.py Slice 3): the handler
             # marks invoice + lot PAID idempotently. Signature already
@@ -608,13 +1139,17 @@ def stripe_webhook():
             cart = json.loads(_sget(meta, "cart", "[]") or "[]")
         except (ValueError, TypeError):
             return jsonify({"error": "unreadable cart metadata"}), 400
-        addr = _sget(_sget(session, "shipping_details", {}) or {}, "address", {}) or {}
+        ship_obj = _sget(session, "shipping_details", {}) or {}
+        if not _sget(ship_obj, "address"):
+            ci = _sget(session, "collected_information", {}) or {}
+            ship_obj = _sget(ci, "shipping_details", {}) or ship_obj
+        addr = _sget(ship_obj, "address", {}) or {}
         try:
             fulfill_paid_order(
                 stripe_session_id=_sget(session, "id", ""),
                 customer_email=_sget(_sget(session, "customer_details", {}) or {}, "email", "") or "",
                 shipping_address={
-                    "name": _sget(_sget(session, "shipping_details", {}) or {}, "name", "") or "",
+                    "name": _sget(ship_obj, "name", "") or "",
                     "line1": _sget(addr, "line1", "") or "", "line2": _sget(addr, "line2", "") or "",
                     "city": _sget(addr, "city", "") or "", "state": _sget(addr, "state", "") or "",
                     "country": _sget(addr, "country", "US") or "US",
@@ -628,6 +1163,20 @@ def stripe_webhook():
         except Exception as e:  # noqa: BLE001 — webhook must not crash; alert instead
             log.exception("fulfillment failed for %s", _sget(session, "id", "?"))
             return jsonify({"error": str(e)}), 500
+    if _sget(event, "type") in ("invoice.paid",
+                                "customer.subscription.updated",
+                                "customer.subscription.deleted"):
+        # SportRoots billing lifecycle: keep the entitlement store
+        # (subscriptions.py) current. handle_event returns None when
+        # SR_BILLING_ENABLED is off — the webhook then just acks.
+        try:
+            sr = sr_mod.handle_event(event, _sget)
+        except Exception:  # noqa: BLE001 — webhook must not crash; alert instead
+            log.exception("sportroots billing event failed: %s",
+                          _sget(event, "type", "?"))
+            return jsonify({"error": "sportroots billing failed"}), 500
+        if sr is not None:
+            return jsonify({"received": True, "sportroots": sr})
     if _sget(event, "type") == "charge.refunded":
         # Refund runbook (fulfillment/README.md): refunds are issued by a
         # human in the Stripe dashboard. Here we only LOG and flag the
@@ -650,6 +1199,13 @@ def stripe_webhook():
             "valid until expiry (cannot be recalled)",
             _sget(charge, "id", "?"), _sget(charge, "amount_refunded", "?"),
             sid or "(not on charge metadata)", flagged)
+        # SportRoots: a refunded subscription charge revokes entitlement
+        # (subscriptions.py). No-op when SR_BILLING_ENABLED is off.
+        if sr_mod.is_enabled():
+            try:
+                sr_mod.handle_charge_refunded(charge, _sget)
+            except Exception:  # noqa: BLE001 — logging must not crash
+                log.exception("sportroots refund handling failed")
     return jsonify({"received": True})
 
 
@@ -666,6 +1222,17 @@ def _digital_files_dir():
 
 def _public_base_url():
     return (os.environ.get("PUBLIC_BASE_URL") or request.host_url).rstrip("/")
+
+
+# ---------- SportRoots subscription billing (Lane 4, 2026-10-03) ----------
+# Recurring Billing + Customer Portal + webhook-kept entitlement store
+# (backend/subscriptions.py). DARK unless SR_BILLING_ENABLED=1: with the
+# flag off no /api/sr/* routes exist and the webhook below passes
+# subscription events through untouched. sr_mod.init registers the
+# routes; the webhook branches call sr_mod.handle_event / handle_charge_
+# refunded, which no-op when disabled.
+sr_mod.init(app, stripe_ready=STRIPE_READY, stripe_mode=STRIPE_MODE,
+            stripe_acct=_stripe_acct, public_base_url=_public_base_url)
 
 
 def _is_digital(sku):
