@@ -28,6 +28,8 @@ brands/<id>.yaml (name, theme, sku_prefixes). Same codebase, N brands.
 import json
 import logging
 import os
+import re
+from html import escape as _html_escape
 
 import stripe
 import yaml
@@ -361,6 +363,56 @@ def sitemap_st_xml():
     return Response(xml, mimetype="application/xml")
 
 
+# ---------- face-host SEO head (server-side) ----------
+# The shared storefront shells (frontend/index.html, frontend/product.html)
+# carry PUSHROD titles, no meta description, and no canonical in their raw
+# bytes — JS rebrands after load, so a non-rendering crawler reads the
+# wrong brand on a face domain (GSC finding: restoreessentials.com raw
+# HTML served <title>PUSHROD™</title>). On host-mapped face hosts only,
+# rewrite the served shell's head: the face brand's title, a real meta
+# description, and a self-host canonical for the exact URL requested.
+# Responses on every other host are returned untouched (byte-identical
+# to the pre-face behavior), and the face content pages (FACE_PAGES)
+# carry their canonicals baked into their static files.
+FACE_HOME_HEAD = {
+    "restorationessentials": (
+        "Restoration Essentials | American iron, restored right",
+        "Restoration Essentials — American iron, restored right. "
+        "Restoration guides for classic American cars and trucks, 1953–1973."),
+}
+_TITLE_RE = re.compile(r"<title>.*?</title>", re.IGNORECASE | re.DOTALL)
+
+
+def _request_host_key():
+    return (request.host or "").split(":")[0].strip().lower()
+
+
+def _face_head(resp, title=None, description=None):
+    """Rewrite a shared-shell response's <head> for a face host (above).
+    The canonical always points at this request's own URL on the serving
+    host; title/description are applied only when supplied. Caller
+    guarantees the request host is in HOST_FACES."""
+    canonical = f"https://{_request_host_key()}{request.path}"
+    resp.direct_passthrough = False  # send_from_directory streams; buffer it
+    html_text = resp.get_data(as_text=True)
+    if title:
+        html_text = _TITLE_RE.sub(
+            lambda _m: f"<title>{_html_escape(title)}</title>",
+            html_text, count=1)
+    if description and 'name="description"' not in html_text:
+        html_text = html_text.replace(
+            "</title>",
+            '</title>\n<meta name="description" '
+            f'content="{_html_escape(description, quote=True)}">', 1)
+    if 'rel="canonical"' not in html_text:
+        html_text = html_text.replace(
+            "</head>", f'<link rel="canonical" href="{canonical}">\n</head>', 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)  # body changed; the file's ETag is stale
+    return resp
+
+
 # ---------- storefront pages (static frontend) ----------
 @app.get("/")
 def index():
@@ -372,7 +424,16 @@ def index():
     if spec:
         return send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                    spec["home"])
-    return send_from_directory(FRONTEND, "index.html")
+    resp = send_from_directory(FRONTEND, "index.html")
+    if _request_host_key() in HOST_FACES:
+        # Face host on the shared shell (RestorationEssentials): the raw
+        # bytes must carry the face brand, not PUSHROD (see _face_head).
+        b = cfg["brand"]
+        title, desc = FACE_HOME_HEAD.get(
+            b["id"], (f"{b['name']} | {b['tagline']}",
+                      f"{b['name']} — {b['tagline']}."))
+        resp = _face_head(resp, title=title, description=desc)
+    return resp
 
 
 @app.get("/product/<sku>")
@@ -381,7 +442,19 @@ def product_page(sku):
     # Dark-staged rows (listed=0) have no public product page.
     if not p or not p.get("listed", True):
         return "Not found", 404
-    return send_from_directory(FRONTEND, "product.html")
+    resp = send_from_directory(FRONTEND, "product.html")
+    if _request_host_key() in HOST_FACES:
+        # Face host (RestorationEssentials/EverReady/Stitchfolk): the raw
+        # bytes carry the product and the face brand, not the shared
+        # PUSHROD shell (see _face_head). Other hosts unchanged.
+        cfg, _products = _face()
+        b = cfg["brand"]
+        resp = _face_head(
+            resp,
+            title=f"{p['title']} | {b['name']}",
+            description=(p.get("description") or "").strip()
+            or f"{p['title']} — {b['name']}.")
+    return resp
 
 
 @app.get("/checkout/success")
