@@ -81,6 +81,21 @@ theme = brand["theme"]
 catalog_cfg = brand["catalog"]
 store_cfg = brand["store"]
 
+# Host-mapped storefront faces (2026-10-04): restoreessentials.com is
+# attached to this service, but its customers must see the Restoration
+# Essentials brand over RE-owned products only — never this process's own
+# brand over the whole unified catalog. A face changes ONLY /api/brand
+# and /api/products; the catalog load, checkout, and fulfillment stay
+# process-wide and identical on every host. A face config that fails to
+# load is skipped with a warning — it must never take the store down.
+HOST_FACES = {}
+for _host, _brand_id in (("restoreessentials.com", "restorationessentials"),
+                         ("www.restoreessentials.com", "restorationessentials")):
+    try:
+        HOST_FACES[_host] = load_brand(_brand_id)
+    except Exception as exc:
+        log.warning("host face %s (%s) not loaded: %s", _host, _brand_id, exc)
+
 PRODUCTS = None  # assigned below after the mapping loads
 BY_SKU = {}
 
@@ -322,13 +337,29 @@ def catalog_image(lib, filename):
 
 
 # ---------- API ----------
+def _face():
+    """(brand config, products) for this request's storefront face.
+
+    Hosts in HOST_FACES get that brand's identity and only that brand's
+    products; every other host gets the process brand and the full loaded
+    catalog — byte-for-byte the pre-face behavior. Checkout and
+    fulfillment never consult the face (process-wide on purpose), so a
+    shopper who landed on the RE domain checks out identically to one
+    who landed on the process domain."""
+    cfg = HOST_FACES.get((request.host or "").split(":")[0].strip().lower())
+    if cfg is None:
+        return brand, PRODUCTS
+    return cfg, [p for p in PRODUCTS if p["owner"] == cfg["brand"]["id"]]
+
+
 @app.get("/api/brand")
 def api_brand():
-    b = brand["brand"]
+    cfg, products = _face()
+    b = cfg["brand"]
     return jsonify({
         "id": b["id"], "name": b["name"], "tagline": b["tagline"],
         "doors": b.get("doors", []),
-        "theme": theme, "stats": catalog_stats(PRODUCTS),
+        "theme": cfg["theme"], "stats": catalog_stats(products),
         "sizes": APPAREL_SIZES,
         "stripe_ready": STRIPE_READY,
         "stripe_mode": STRIPE_MODE,
@@ -339,10 +370,12 @@ def api_brand():
 def api_products():
     # wholesale_eligible is additive metadata for the storefront's partner
     # pricing display; retail guests ignore it. Dark-staged rows (listed=0)
-    # never appear on public surfaces.
+    # never appear on public surfaces. On a host-mapped brand face the
+    # grid is that brand's products only (see _face); other hosts unchanged.
+    _cfg, products = _face()
     return jsonify([
         {**p, "wholesale_eligible": wholesale_mod.is_wholesale_eligible(p)}
-        for p in PRODUCTS if p.get("listed", True)
+        for p in products if p.get("listed", True)
     ])
 
 

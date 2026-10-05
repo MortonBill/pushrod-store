@@ -3,7 +3,7 @@
 # Same codebase as pushrod; select with BRAND=restorationessentials.
 brand:
   id: restorationessentials
-  name: RestorationEssentials
+  name: Restoration Essentials
   tagline: "American iron, restored right"
   # SKU prefixes this brand store serves. Gateway routes shoppers here when
   # the SKU starts with one of these.
