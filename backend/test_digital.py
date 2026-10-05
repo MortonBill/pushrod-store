@@ -697,14 +697,20 @@ er_prods = _load_catalog(
     os.path.join(REPO_ROOT, "data", "everready-prices.json"),
     sku_prefixes=["ER-"])
 er_by_sku = {p["sku"]: p for p in er_prods}
+# Pinned ER prices: the 9 canonical-lineup amounts verbatim, plus
+# ER-FBK-001 Family Bidding Kit (added 2026-10-05, open-bidding-only
+# recreation on Bill's call; NOT in the canonical lineup file — $37 is
+# the canonical manual-kit tier, cf. Executor's Kit $37).
 CANONICAL_PRICES = {
     "ER-FCC-001": 37.0, "ER-EK-001": 37.0, "ER-FRB-001": 49.0,
     "ER-AUTO-001": 49.0, "ER-EAP-001": 49.0, "ER-DAI-001": 19.95,
     "ER-LSIK-001": 37.0, "ER-FPA-001": 49.0, "ER-CSO-001": 49.0,
+    "ER-FBK-001": 37.0,
 }
-check("EverReady catalog loads the 9 canonical priced products",
+check("EverReady catalog loads the 10 priced products "
+      "(9 canonical + Family Bidding Kit)",
       set(er_by_sku) == set(CANONICAL_PRICES), str(sorted(er_by_sku)))
-check("EverReady prices are the canonical lineup, confirmed",
+check("EverReady prices match the pinned lineup and are confirmed",
       all(er_by_sku[s]["price"]["amount"] == amt
           and er_by_sku[s]["price"]["status"] == "confirmed"
           for s, amt in CANONICAL_PRICES.items()))
@@ -740,6 +746,28 @@ check("manual/file-less rows can never be sold (no file, no bundle)",
       str(sorted(FILELESS)))
 check("the free Five Conversations magnet is NOT a checkout product",
       not any("five" in p["title"].lower() for p in er_prods))
+
+# Family Bidding Kit (2026-10-05): open-bidding-only paper kit, recreated
+# after the prior sealed-bid edition was banned by Bill's standing rule.
+# Staged listed=0 like every EverReady row until the ER checkout gate;
+# its deliverable ships in the repo at data/digital/family-bidding-kit.pdf.
+_fbk = er_by_sku["ER-FBK-001"]
+check("Family Bidding Kit carries its disk deliverable",
+      _fbk["digital_file"] == "family-bidding-kit.pdf",
+      _fbk["digital_file"])
+check("Family Bidding Kit staged dark (listed=0, not purchasable) "
+      "until the EverReady checkout gate",
+      _fbk["listed"] is False and _fbk["purchasable"] is False
+      and _fbk["price"]["amount"] == 37.0)
+store_app.BY_SKU["ER-FBK-001"] = _fbk
+rf = client.post("/api/checkout", json={"items": [{"sku": "ER-FBK-001",
+                                                    "qty": 1}]})
+check("dark Family Bidding Kit is rejected at checkout (400)",
+      rf.status_code == 400 and "cannot be sold" in
+      (rf.get_json() or {}).get("error", ""), rf.status_code)
+check("unlisted Family Bidding Kit 404s on the public API",
+      client.get("/api/products/ER-FBK-001").status_code == 404)
+del store_app.BY_SKU["ER-FBK-001"]
 
 with open(os.path.join(REPO_ROOT, "brands", "everready.yaml")) as f:
     _er_brand = _yaml.safe_load(f)
