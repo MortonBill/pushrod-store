@@ -844,6 +844,17 @@ def robots_txt():
                     mimetype="text/plain")
 
 
+@app.get("/google7140981d206ed08c.html")
+def google_site_verification():
+    # Google Search Console HTML verification file, served host-agnostic
+    # like /robots.txt above: stitchfolkpatterns.com and pushrodshop.com
+    # are both served by this backend, and Search Console issued this same
+    # filename/content for both properties, so one route puts the token at
+    # every host's root (2026-10-05).
+    return Response("google-site-verification: google7140981d206ed08c.html",
+                    mimetype="text/html")
+
+
 # ---------- wholesale pages ----------
 @app.get("/wholesale")
 def wholesale_home():
