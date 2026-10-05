@@ -100,7 +100,9 @@ for _host, _brand_id in (("restoreessentials.com", "restorationessentials"),
                          ("stitchfolkpatterns.com", "stitchfolk"),
                          ("www.stitchfolkpatterns.com", "stitchfolk"),
                          ("sportroots.coach", "sportroots"),
-                         ("www.sportroots.coach", "sportroots")):
+                         ("www.sportroots.coach", "sportroots"),
+                         ("ironheadguides.com", "ironhead"),
+                         ("www.ironheadguides.com", "ironhead")):
     try:
         HOST_FACES[_host] = load_brand(_brand_id)
     except Exception as exc:
@@ -331,11 +333,52 @@ FACE_PAGES = {
             "/faq": "faq.html",
         },
     },
+    "ironhead": {
+        "dir": "ironhead",
+        "home": "home.html",
+        "pages": {
+            "/guides": "guides.html",
+            "/guides/harley-sportster": "shelf-sportster.html",
+            "/guides/harley-shovelhead": "shelf-shovelhead.html",
+            "/guides/harley-panhead": "shelf-panhead.html",
+            "/guides/indian-chief": "shelf-indian-chief.html",
+            "/guides/indian-scout": "shelf-indian-scout.html",
+            "/guides/triumph-bonneville": "shelf-bonneville.html",
+            "/guides/triumph-preunit": "shelf-preunit.html",
+            "/guides/bmw-slash7": "shelf-bmw.html",
+            "/guides/bsa": "shelf-bsa.html",
+            "/guides/honda": "shelf-honda.html",
+            "/guides/yamaha-xs650": "shelf-yamaha.html",
+            "/guides/restoration-bundles": "shelf-bundles.html",
+            "/pricing": "pricing.html",
+            "/faq": "faq.html",
+            "/about": "about.html",
+            "/testimonials": "testimonials.html",
+            "/blog": "blog.html",
+            "/blog/ironhead-sportster-buying-guide": "blog-sportster.html",
+            "/blog/ironhead-bmw-airhead-buying-guide": "blog-bmw-airhead.html",
+            "/blog/ironhead-honda-cb750-buying-guide": "blog-honda-cb750.html",
+            "/legal": "legal.html",
+            "/legal/disclosure-summary": "legal-disclosure-summary.html",
+            "/legal/terms": "legal-terms.html",
+            "/legal/auction-rules": "legal-auction-rules.html",
+            "/legal/seller-agreement": "legal-seller-agreement.html",
+            "/legal/buyer-disclosures": "legal-buyer-disclosures.html",
+            "/legal/refunds-cancellations": "legal-refunds-cancellations.html",
+            "/legal/dispute-resolution": "legal-dispute-resolution.html",
+            "/legal/guides-disclaimer": "legal-guides-disclaimer.html",
+            "/contact": "contact.html",
+            "/privacy": "privacy.html",
+            "/workshop": "workshop.html",
+            "/community": "community.html",
+        },
+    },
 }
 
 ER_PAGES = FACE_PAGES["everready"]["pages"]
 ST_PAGES = FACE_PAGES["stitchfolk"]["pages"]
 SR_PAGES = FACE_PAGES["sportroots"]["pages"]
+IH_PAGES = FACE_PAGES["ironhead"]["pages"]
 
 
 def _face_page(path):
@@ -410,6 +453,27 @@ def sitemap_sr_xml():
         return "Not found", 404
     base = request.host_url.rstrip("/")
     paths = ["/"] + sorted(SR_PAGES)
+    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           f"{urls}\n</urlset>\n")
+    return Response(xml, mimetype="application/xml")
+
+
+# ---------- IronHead sitemap (face only) ----------
+@app.get("/sitemap-ih.xml")
+def sitemap_ih_xml():
+    # Same pattern as /sitemap-er.xml, /sitemap-st.xml and
+    # /sitemap-sr.xml: the shared /sitemap.xml stays RE-scoped on every
+    # host; the IronHead content pages and live guide pages get their
+    # own sitemap for whoever submits the IronHead domain.
+    cfg, products = _face()
+    if cfg["brand"]["id"] != "ironhead":
+        return "Not found", 404
+    base = request.host_url.rstrip("/")
+    paths = ["/"] + sorted(IH_PAGES) + [
+        f"/product/{p['sku']}" for p in products
+        if p.get("listed", True) and p["purchasable"]]
     urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'

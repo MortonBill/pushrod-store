@@ -1,11 +1,12 @@
 # Brand #3 — IRONHEAD storefront (brand id: ironhead)
-# Serves the IronHead motorcycle lines (guides + parts). The catalog is
-# SEEDED (7 rows from the canonical lineup doc); guide deliverables land
-# in Slice 5. Same codebase as pushrod; select with BRAND=ironhead.
+# Serves the IronHead motorcycle lines (guides + parts). Same
+# codebase as pushrod; select with BRAND=ironhead. As of 2026-10-04
+# this file also backs the ironheadguides.com host face (HOST_FACES):
+# /api/brand identity + the static face under frontend/ironhead/.
 brand:
   id: ironhead
   name: IronHead
-  tagline: "Vintage iron, kept running"
+  tagline: "Restore · Preserve · Ride"   # sourced: canonical IronHead logo badge line
   # SKU prefixes this brand store serves. Gateway routes shoppers here
   # when the SKU starts with one of these.
   sku_prefixes:
@@ -19,7 +20,7 @@ theme:
   bg: "#14100d"
   bg2: "#1c1611"
   card: "#241b15"
-  accent: "#c8402a"      # iron red
+  accent: "#E8590C"      # burnt orange (sourced: live-site theme-color)
   accent2: "#e8a020"     # shop gold
   text: "#f0e9d8"        # warm off-white
   muted: "#a89c8c"
@@ -27,12 +28,11 @@ theme:
   font_body: "'Helvetica Neue',Arial,sans-serif"
 
 # Catalog sources of truth (never edited by the store — read-only).
-# Slice 5 prep: data/ironhead-catalog.csv + data/ironhead-prices.json
-# EXIST (7 products seeded from the canonical lineup, priced from the
-# price list). Guide PDFs are NOT yet staged in data/digital, so rows
-# load priced but NOT purchasable until each guide PDF is copied in at
-# the Slice 5 cutover — the honest-purchasability gate keeps them
-# unsellable until then.
+# data/ironhead-catalog.csv + data/ironhead-prices.json carry the
+# per-year guide library (244 purchasable rows live 2026-10-04:
+# 239 single-year guides + the Shovelhead buyer's guide at $19.95,
+# 4 all-years restoration guides at $29.95). IH-HONDA-SOHC-6PACK and
+# IH-FULL-CATALOG-PASS stay dark (listed=0) behind their own gates.
 catalog:
   catalogs:
     - csv: "data/ironhead-catalog.csv"
