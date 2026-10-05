@@ -94,7 +94,9 @@ for _host, _brand_id in (("restoreessentials.com", "restorationessentials"),
                          ("everreadyfamily.com", "everready"),
                          ("www.everreadyfamily.com", "everready"),
                          ("everreadyfamily.co", "everready"),
-                         ("www.everreadyfamily.co", "everready")):
+                         ("www.everreadyfamily.co", "everready"),
+                         ("stitchfolkpatterns.com", "stitchfolk"),
+                         ("www.stitchfolkpatterns.com", "stitchfolk")):
     try:
         HOST_FACES[_host] = load_brand(_brand_id)
     except Exception as exc:
@@ -240,34 +242,79 @@ wholesale_mod.init(
 auctions_mod.init(app, brand_cfg=brand, root_dir=ROOT)
 
 
-# ---------- EverReady content pages (host-face only) ----------
-# Static content served only on the EverReady host face; every other host
+# ---------- host-face content pages ----------
+# Static content served only on its own host face; every other host
 # keeps the exact pre-face behavior (these paths 404 there). The buy
 # buttons on these pages point at the shared /product/<SKU> routes.
-ER_PAGES = {
-    "/products": "products.html",
-    "/faq": "faq.html",
-    "/founder": "founder.html",
-    "/checklist": "checklist.html",
-    "/guides/executors-first-30-days": "guide-executors-first-30-days.html",
-    "/guides/five-conversations-before-you-need-them": "guide-five-conversations.html",
-    "/guides/paperwork-after-someone-dies": "guide-paperwork-after-someone-dies.html",
-    "/products/life-story-interview": "product-life-story.html",
-    "/products/family-command-center": "product-family-command-center.html",
-    "/products/executors-kit": "product-executors-kit.html",
+# One registry serves both faces: a path shared by two faces (e.g.
+# /faq) is registered once and dispatched to the requesting host's
+# face — behavior on each face is unchanged.
+FACE_PAGES = {
+    "everready": {
+        "dir": "everready",
+        "home": "home.html",
+        "pages": {
+            "/products": "products.html",
+            "/faq": "faq.html",
+            "/founder": "founder.html",
+            "/checklist": "checklist.html",
+            "/guides/executors-first-30-days": "guide-executors-first-30-days.html",
+            "/guides/five-conversations-before-you-need-them": "guide-five-conversations.html",
+            "/guides/paperwork-after-someone-dies": "guide-paperwork-after-someone-dies.html",
+            "/products/life-story-interview": "product-life-story.html",
+            "/products/family-command-center": "product-family-command-center.html",
+            "/products/executors-kit": "product-executors-kit.html",
+        },
+    },
+    "stitchfolk": {
+        "dir": "stitchfolk",
+        "home": "home.html",
+        "pages": {
+            "/patterns": "patterns.html",
+            "/free-pattern": "free-pattern.html",
+            "/crochet": "crochet.html",
+            "/knitting": "knitting.html",
+            "/needlepoint": "needlepoint.html",
+            "/learn": "learn.html",
+            "/learn/cast-on": "learn-cast-on.html",
+            "/learn/picking-needles": "learn-picking-needles.html",
+            "/learn/reading-knitting-abbreviations": "learn-reading-knitting-abbreviations.html",
+            "/learn/which-pattern": "learn-which-pattern.html",
+            "/about": "about.html",
+            "/faq": "faq.html",
+            "/policies": "policies.html",
+            "/policies/privacy": "policy-privacy.html",
+            "/policies/terms": "policy-terms.html",
+            "/policies/digital-downloads-refunds": "policy-digital-downloads-refunds.html",
+            "/policies/cookies": "policy-cookies.html",
+            "/policies/affiliate-disclosure": "policy-affiliate-disclosure.html",
+            "/policies/contributor-terms": "policy-contributor-terms.html",
+            "/policies/copyright-takedown": "policy-copyright-takedown.html",
+            "/contact": "contact.html",
+            "/testimonials": "testimonials.html",
+            "/gallery": "gallery.html",
+            "/new-arrivals": "new-arrivals.html",
+            "/designer-patterns": "designer-patterns.html",
+        },
+    },
 }
 
+ER_PAGES = FACE_PAGES["everready"]["pages"]
+ST_PAGES = FACE_PAGES["stitchfolk"]["pages"]
 
-def _everready_page(filename):
+
+def _face_page(path):
     cfg, _products = _face()
-    if cfg["brand"]["id"] != "everready":
+    spec = FACE_PAGES.get(cfg["brand"]["id"])
+    if not spec or path not in spec["pages"]:
         return "Not found", 404
-    return send_from_directory(os.path.join(FRONTEND, "everready"), filename)
+    return send_from_directory(os.path.join(FRONTEND, spec["dir"]),
+                               spec["pages"][path])
 
 
-for _path, _file in ER_PAGES.items():
-    app.add_url_rule(_path, endpoint="everready" + _path.replace("/", "_"),
-                     view_func=lambda f=_file: _everready_page(f))
+for _path in sorted({p for _s in FACE_PAGES.values() for p in _s["pages"]}):
+    app.add_url_rule(_path, endpoint="face" + _path.replace("/", "_"),
+                     view_func=lambda p=_path: _face_page(p))
 
 
 # ---------- EverReady sitemap (face only) ----------
@@ -293,15 +340,38 @@ def sitemap_er_xml():
     return Response(xml, mimetype="application/xml")
 
 
+# ---------- Stitchfolk sitemap (face only) ----------
+@app.get("/sitemap-st.xml")
+def sitemap_st_xml():
+    # Same pattern as /sitemap-er.xml: the shared /sitemap.xml stays
+    # RE-scoped on every host; the Stitchfolk content pages and live
+    # pattern pages get their own sitemap for whoever submits the
+    # Stitchfolk domain.
+    cfg, products = _face()
+    if cfg["brand"]["id"] != "stitchfolk":
+        return "Not found", 404
+    base = request.host_url.rstrip("/")
+    paths = ["/"] + sorted(ST_PAGES) + [
+        f"/product/{p['sku']}" for p in products
+        if p.get("listed", True) and p["purchasable"]]
+    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           f"{urls}\n</urlset>\n")
+    return Response(xml, mimetype="application/xml")
+
+
 # ---------- storefront pages (static frontend) ----------
 @app.get("/")
 def index():
-    # EverReady face: the root serves the EverReady storefront home instead
-    # of the shared product-grid shell. Every other host keeps the grid.
+    # Host faces (EverReady, Stitchfolk): the root serves that
+    # storefront's home instead of the shared product-grid shell.
+    # Every other host keeps the grid.
     cfg, _products = _face()
-    if cfg["brand"]["id"] == "everready":
-        return send_from_directory(os.path.join(FRONTEND, "everready"),
-                                   "home.html")
+    spec = FACE_PAGES.get(cfg["brand"]["id"])
+    if spec:
+        return send_from_directory(os.path.join(FRONTEND, spec["dir"]),
+                                   spec["home"])
     return send_from_directory(FRONTEND, "index.html")
 
 

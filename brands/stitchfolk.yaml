@@ -1,0 +1,82 @@
+# Brand #6 — STITCHFOLK storefront (brand id: stitchfolk)
+# Handmade-pattern catalog: crochet, knitting, needlepoint, and sewing
+# PDFs. DIGITAL brand delivered like every other line: signed, expiring
+# download links emailed on payment, files served from the store disk
+# (checkout migration Lane 3, 2026-10-03). Same codebase as
+# pushrod/skillforge/everready; select with BRAND=stitchfolk. The
+# stitchfolkpatterns.com host face rides the shared store service; this
+# file supplies its name, tagline, and theme.
+brand:
+  id: stitchfolk
+  name: Stitchfolk
+  # DRAFTED 2026-10-04 (no canonical tagline found in sources read) —
+  # pending Bill's review or lift from live site copy.
+  tagline: "Patterns worth making, from Grandma's craft room to yours"
+  # SKU prefixes this brand store serves.
+  sku_prefixes:
+    - "ST-"
+  # Unified-catalog ownership: which brand owns each prefix (gateway routing).
+  ownership:
+    "PR-": pushrod
+    "RE-MC-": restorationessentials
+    "RE-CT-": restorationessentials
+    "RE-MP-": restorationessentials
+    "RE-GD-": restorationessentials
+    "ER-": everready
+    "IH-": ironhead
+    "ST-": stitchfolk
+    "SF-": skillforge
+
+theme:
+  bg: "#23150c"            # deep warm brown
+  bg2: "#2e1c10"
+  card: "#37250f"
+  accent: "#c2644a"        # terracotta — sourced from live stitchfolk site theme-color
+  accent2: "#d9a441"      # marigold (drafted)
+  text: "#f7ecd7"          # warm cream
+  muted: "#cdb193"
+  font_display: "'Georgia','Times New Roman',serif"
+  font_body: "'Helvetica Neue',Arial,sans-serif"
+
+# Catalog sources of truth (never edited by the store — read-only).
+# Relative paths resolve against the project root (see backend/app.py).
+# 96 rows: 95 listed and selling (Etsy-matched prices $2.99-$11.99);
+# ST-CLOUD-PHONE-CHARM-001 stays listed=0 (dark) BY DESIGN — it feeds
+# the free lead magnet and must never be flipped by a storefront build.
+catalog:
+  catalogs:
+    - csv: "data/stitchfolk-catalog.csv"
+      prices_json: "data/stitchfolk-prices.json"
+  image_base: "/img"
+
+# Pricing policy: prices are the patterns' live Etsy (StitchFolkCozy)
+# listing prices, carried over per-pattern — never invented, never
+# re-derived in a storefront build.
+pricing:
+  allow_draft_prices: true
+  draft_label: "Intro price"
+
+# Fulfillment: DIGITAL via the standard store token path. On
+# checkout.session.completed, backend/fulfillment/digital.py emails the
+# buyer signed, expiring download links and /download serves the bytes
+# from the store disk. Files are NEVER public. Printful is NOT used by
+# this brand; the printful fields below exist only for schema parity
+# and must never be wired to a live order for Stitchfolk.
+fulfillment:
+  mode: digital
+  delivery: "signed download link + email on payment (backend/fulfillment/digital.py)"
+
+store:
+  currency: usd
+  # Order idempotency prefix (per-brand).
+  order_prefix: "st"
+  # Schema parity only: the Stitchfolk face rides the shared store
+  # service, whose charges run on the process Stripe config — these
+  # per-brand env names are never read while this file is a host face.
+  stripe_secret_key_env: "STITCHFOLK_STRIPE_TEST_SECRET_KEY"
+  stripe_publishable_key_env: "STITCHFOLK_STRIPE_TEST_PUBLISHABLE_KEY"
+  stripe_webhook_secret_env: "STITCHFOLK_STRIPE_WEBHOOK_SECRET"
+  # UNUSED for this digital brand — schema parity only. Never fulfill a
+  # Stitchfolk order through Printful.
+  printful_api_key_env: "STITCHFOLK_PRINTFUL_API_TOKEN"
+  printful_dry_run: false

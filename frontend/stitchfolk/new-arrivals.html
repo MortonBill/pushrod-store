@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>New Arrivals — Stitchfolk | Stitchfolk</title>
+<meta name="description" content="The newest patterns on the Stitchfolk shelf — fresh crochet, knitting, needlepoint, and sewing PDFs.">
+<style>
+  :root{--bg:#23150c;--bg2:#2e1c10;--card:#37250f;--accent:#c2644a;--accent2:#d9a441;--text:#f7ecd7;--muted:#cdb193}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.6}
+  h1,h2,h3{font-family:Georgia,'Times New Roman',serif;line-height:1.25;margin:0 0 .6rem}
+  a{color:var(--accent2)} .wrap{max-width:960px;margin:0 auto;padding:0 1.25rem}
+  header.top{background:var(--bg2);border-bottom:1px solid #4d3418;position:sticky;top:0;z-index:5}
+  header.top .wrap{display:flex;align-items:center;gap:1.2rem;padding-top:.7rem;padding-bottom:.7rem;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:.7rem;font-family:Georgia,serif;font-size:1.3rem;color:var(--text);text-decoration:none}
+  .brand img{width:46px;height:46px;border-radius:.5rem;border:1px solid #4d3418}
+  .brand small{display:block;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.72rem;color:var(--muted);letter-spacing:.04em}
+  nav.main{margin-left:auto;display:flex;gap:1.05rem;flex-wrap:wrap}
+  nav.main a{color:var(--text);text-decoration:none;font-size:.95rem} nav.main a:hover{color:var(--accent2)}
+  main{padding:2.5rem 0 3rem}
+  .hero h1{font-size:2.3rem} .lede{font-size:1.12rem;color:var(--muted);max-width:44rem}
+  .btnrow{display:flex;gap:.8rem;flex-wrap:wrap;margin:1.4rem 0}
+  .btn{display:inline-block;background:var(--accent);color:#fff8ee;text-decoration:none;font-weight:600;padding:.7rem 1.3rem;border-radius:.5rem}
+  .btn.ghost{background:transparent;color:var(--accent2);border:1px solid var(--accent2)}
+  .card{background:var(--card);border:1px solid #4d3418;border-radius:.8rem;padding:1.4rem;margin:1.2rem 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin:1.2rem 0}
+  .pcard{background:var(--card);border:1px solid #4d3418;border-radius:.8rem;padding:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+  .pcard h3{font-size:1.05rem;margin:0}
+  .pcard p{margin:0;color:var(--muted);font-size:.92rem}
+  .tag{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--accent2)}
+  .price{color:var(--accent2);font-weight:700;font-size:1.15rem}
+  .meta{color:var(--muted);font-size:.9rem}
+  .founder{display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap}
+  .founder img{width:150px;height:auto;border-radius:.8rem;border:1px solid #4d3418}
+  details{background:var(--card);border:1px solid #4d3418;border-radius:.6rem;padding:1rem 1.2rem;margin:.7rem 0}
+  summary{cursor:pointer;font-weight:600;font-family:Georgia,serif}
+  blockquote{border-left:3px solid var(--accent);margin:1rem 0;padding:.4rem 1rem;font-family:Georgia,serif;font-size:1.12rem}
+  .chips{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}
+  .chip{background:transparent;color:var(--accent2);border:1px solid var(--accent2);border-radius:2rem;padding:.35rem .95rem;cursor:pointer;font-size:.9rem}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff8ee}
+  footer.page{border-top:1px solid #4d3418;background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2rem 0;margin-top:2rem}
+  footer.page a{color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/"><img src="/static/img/stitchfolk-logo.png" alt="Stitchfolk"><span>Stitchfolk<small>Patterns worth making, from Grandma's craft room to yours</small></span></a>
+  <nav class="main">
+    <a href="/patterns">Patterns</a>
+    <a href="/crochet">Crochet</a>
+    <a href="/knitting">Knitting</a>
+    <a href="/needlepoint">Needlepoint</a>
+    <a href="/learn">Learn</a>
+    <a href="/free-pattern">Free Pattern</a>
+    <a href="/about">About</a>
+    <a href="/faq">FAQ</a>
+  </nav>
+</div></header>
+<main><div class="wrap">
+  <h1>New arrivals</h1>
+  <p class="lede">Fresh from the pattern library &mdash; the latest makes to land on the Stitchfolk shelf.</p>
+
+  <p class="meta" id="count">Loading the pattern shelf&hellip;</p>
+  <div class="pgrid" id="grid"></div>
+  <div class="card">
+    <h2>How buying works</h2>
+    <p>Every pattern is a digital PDF. Choose one, check out securely, and your delivery email carries a signed download link the moment payment confirms &mdash; nothing ships, nothing waits. New to this? Start with the <a href="/free-pattern">free pattern</a>.</p>
+  </div>
+
+<script>
+const WANT = "all";
+const NEWEST = true;
+function craftOf(t){t=(t||'').toLowerCase();
+  if(t.indexOf('needlepoint')>-1) return 'Needlepoint';
+  if(t.indexOf('crochet')>-1) return 'Crochet';
+  if(t.indexOf('knit')>-1) return 'Knitting';
+  if(t.indexOf('sewing')>-1) return 'Sewing';
+  return 'Pattern';}
+function clean(t){return (t||'').replace(/^Stitchfolk\s+/,'');}
+let ALL=[];
+function draw(list){
+  const grid=document.getElementById('grid'); grid.textContent='';
+  document.getElementById('count').textContent = list.length + (list.length===1?' pattern':' patterns');
+  list.forEach(function(p){
+    const card=document.createElement('div'); card.className='pcard';
+    const tag=document.createElement('span'); tag.className='tag'; tag.textContent=craftOf(p.title);
+    const h=document.createElement('h3'); h.textContent=clean(p.title);
+    const d=document.createElement('p'); d.textContent=(p.description||'').slice(0,140);
+    const pr=document.createElement('span'); pr.className='price';
+    pr.textContent = p.price ? ('$'+Number(p.price.amount).toFixed(2)) : 'Price TBD';
+    card.appendChild(tag); card.appendChild(h); card.appendChild(d); card.appendChild(pr);
+    if(p.purchasable){
+      const a=document.createElement('a'); a.className='btn'; a.href='/product/'+p.sku; a.textContent='View pattern';
+      card.appendChild(a);
+    } else {
+      const n=document.createElement('span'); n.className='meta'; n.textContent='Not available'; card.appendChild(n);
+    }
+    grid.appendChild(card);
+  });
+}
+function apply(craft){
+  let list = ALL.slice();
+  if(NEWEST) list.reverse();
+  if(craft && craft!=='All') list = list.filter(function(p){return craftOf(p.title)===craft;});
+  draw(list);
+  document.querySelectorAll('.chip').forEach(function(c){
+    c.classList.toggle('on', c.getAttribute('data-craft')===(craft||'All')); });
+}
+fetch('/api/products').then(function(r){return r.json();}).then(function(ps){
+  ALL = ps;
+  apply(WANT==='all' ? 'All' : WANT);
+}).catch(function(){
+  document.getElementById('count').textContent='The pattern shelf could not be loaded just now \u2014 please refresh.'; });
+document.querySelectorAll('.chip').forEach(function(c){
+  c.addEventListener('click', function(){ apply(c.getAttribute('data-craft')); }); });
+</script>
+</div></main>
+<footer class="page"><div class="wrap">
+  <p><strong style="color:var(--text)">Stitchfolk</strong> &mdash; Patterns worth making, from Grandma's craft room to yours.</p>
+  <p>
+    <a href="/patterns">Patterns</a> &middot;
+    <a href="/new-arrivals">New arrivals</a> &middot;
+    <a href="/designer-patterns">Designer patterns</a> &middot;
+    <a href="/gallery">Gallery</a> &middot;
+    <a href="/testimonials">Testimonials</a> &middot;
+    <a href="/learn">Learn</a> &middot;
+    <a href="/free-pattern">Free pattern</a> &middot;
+    <a href="/about">About</a> &middot;
+    <a href="/contact">Contact</a> &middot;
+    <a href="/faq">FAQ</a> &middot;
+    <a href="/policies">Policies</a>
+  </p>
+  <p>Our family of brands: RestorationEssentials &mdash; classic American car restoration guides &middot; IronHead &mdash; vintage motorcycle restoration and riding guides &middot; Stitchfolk &mdash; knit and crochet patterns &middot; SportRoots &mdash; youth sports coaching and training &middot; SkillForge AI &mdash; practical AI playbooks for the trades &middot; EverReady Family &mdash; family emergency preparedness.</p>
+  <p>&copy; 2026 Stitchfolk&trade;</p>
+</div></footer>
+</body>
+</html>
