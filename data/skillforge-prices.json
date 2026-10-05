@@ -28,9 +28,21 @@
   },
   {
    "msrp": 49.0,
+   "price_source": "sibling parity: all five live SF-BND-* playbook+forms bundles sell at $49 ($37 playbook + $19 forms, Save $7) on the live store (verified 2026-10-05); both component PDFs sha256-verified on the store digital disk",
+   "sku": "SF-BND-HVAC-001",
+   "title": "HVAC Playbook + Forms Bundle"
+  },
+  {
+   "msrp": 49.0,
    "price_source": "live SkillForge checkout page meta 'The Pest Control AI Playbook ($37) and Forms Pack ($19) together for $49. Save $7.', raw HTML 2026-10-03",
    "sku": "SF-BND-PEST-001",
    "title": "Pest Control Playbook + Forms Bundle"
+  },
+  {
+   "msrp": 49.0,
+   "price_source": "sibling parity: all five live SF-BND-* playbook+forms bundles sell at $49 ($37 playbook + $19 forms, Save $7) on the live store (verified 2026-10-05); both component PDFs sha256-verified on the store digital disk",
+   "sku": "SF-BND-PLUM-001",
+   "title": "Plumber Playbook + Forms Bundle"
   },
   {
    "msrp": 59.0,
@@ -106,9 +118,21 @@
   },
   {
    "msrp": 19.0,
+   "price_source": "sibling parity: all six SF-FRM-* forms packs sell at $19 on the live store (skillforge-prices.json, verified 2026-10-05); pack built 2026-10-05 to the identical 8-form standard, file sha256-verified on the store digital disk",
+   "sku": "SF-FRM-HVAC-001",
+   "title": "HVAC Forms Pack"
+  },
+  {
+   "msrp": 19.0,
    "price_source": "live SkillForge checkout page meta 'Eight ready-to-use forms\u2026 Instant $19 PDF download' (trade forms packs) / live /pricing page 'Forms \u00b7 one-time $19 one-time \u2014 20 forms and 30 pages' (Contractor Forms Pack), raw HTML 2026-10-03",
    "sku": "SF-FRM-PEST-001",
    "title": "Pest Control Forms Pack"
+  },
+  {
+   "msrp": 19.0,
+   "price_source": "sibling parity: all six SF-FRM-* forms packs sell at $19 on the live store (skillforge-prices.json, verified 2026-10-05); pack built 2026-10-05 to the identical 8-form standard, file sha256-verified on the store digital disk",
+   "sku": "SF-FRM-PLUM-001",
+   "title": "Plumber Forms Pack"
   },
   {
    "msrp": 19.0,
