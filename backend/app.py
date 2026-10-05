@@ -997,6 +997,15 @@ def api_checkout():
             {"allowed_countries": ["US"]}
     if discounts:
         create_kwargs["discounts"] = discounts
+    else:
+        # Show the promotion-code field on Stripe Checkout (money-path
+        # probe fix, 2026-10-05): without this flag Stripe renders no
+        # promo entry point at all, so a code like FOUNDER100 can never
+        # be typed. Mutually exclusive with `discounts` (Stripe rejects
+        # a session carrying both), hence the else. A code only takes
+        # effect if a matching coupon + promotion code exists in the
+        # session-creating account; the flag alone grants no discount.
+        create_kwargs["allow_promotion_codes"] = True
     # Stripe Tax: calculate/collect automatically (live mode only — in test
     # mode the flag stays off so test checkout can never fail on Tax
     # activation state; the per-line tax_code above is harmless either way).
