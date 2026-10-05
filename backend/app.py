@@ -621,9 +621,9 @@ def sitemap_sf_xml():
 # carry their canonicals baked into their static files.
 FACE_HOME_HEAD = {
     "restorationessentials": (
-        "Restoration Essentials | American iron, restored right",
-        "Restoration Essentials — American iron, restored right. "
-        "Restoration guides for classic American cars and trucks, 1953–1973."),
+        "Restoration Essentials | Restoration guides for muscle cars & classic trucks",
+        "Restoration Essentials — Restoration guides for muscle cars "
+        "& classic trucks. 383 guides for 1953–1973 American classics."),
 }
 _TITLE_RE = re.compile(r"<title>.*?</title>", re.IGNORECASE | re.DOTALL)
 

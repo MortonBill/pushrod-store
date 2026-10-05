@@ -4,7 +4,7 @@
 brand:
   id: restorationessentials
   name: Restoration Essentials
-  tagline: "American iron, restored right"
+  tagline: "Restoration guides for muscle cars & classic trucks"
   # SKU prefixes this brand store serves. Gateway routes shoppers here when
   # the SKU starts with one of these.
   sku_prefixes:
