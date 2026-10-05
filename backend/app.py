@@ -90,7 +90,11 @@ store_cfg = brand["store"]
 # load is skipped with a warning — it must never take the store down.
 HOST_FACES = {}
 for _host, _brand_id in (("restoreessentials.com", "restorationessentials"),
-                         ("www.restoreessentials.com", "restorationessentials")):
+                         ("www.restoreessentials.com", "restorationessentials"),
+                         ("everreadyfamily.com", "everready"),
+                         ("www.everreadyfamily.com", "everready"),
+                         ("everreadyfamily.co", "everready"),
+                         ("www.everreadyfamily.co", "everready")):
     try:
         HOST_FACES[_host] = load_brand(_brand_id)
     except Exception as exc:
@@ -236,9 +240,68 @@ wholesale_mod.init(
 auctions_mod.init(app, brand_cfg=brand, root_dir=ROOT)
 
 
+# ---------- EverReady content pages (host-face only) ----------
+# Static content served only on the EverReady host face; every other host
+# keeps the exact pre-face behavior (these paths 404 there). The buy
+# buttons on these pages point at the shared /product/<SKU> routes.
+ER_PAGES = {
+    "/products": "products.html",
+    "/faq": "faq.html",
+    "/founder": "founder.html",
+    "/checklist": "checklist.html",
+    "/guides/executors-first-30-days": "guide-executors-first-30-days.html",
+    "/guides/five-conversations-before-you-need-them": "guide-five-conversations.html",
+    "/guides/paperwork-after-someone-dies": "guide-paperwork-after-someone-dies.html",
+    "/products/life-story-interview": "product-life-story.html",
+    "/products/family-command-center": "product-family-command-center.html",
+    "/products/executors-kit": "product-executors-kit.html",
+}
+
+
+def _everready_page(filename):
+    cfg, _products = _face()
+    if cfg["brand"]["id"] != "everready":
+        return "Not found", 404
+    return send_from_directory(os.path.join(FRONTEND, "everready"), filename)
+
+
+for _path, _file in ER_PAGES.items():
+    app.add_url_rule(_path, endpoint="everready" + _path.replace("/", "_"),
+                     view_func=lambda f=_file: _everready_page(f))
+
+
+# ---------- EverReady sitemap (face only) ----------
+@app.get("/sitemap-er.xml")
+def sitemap_er_xml():
+    # The shared /sitemap.xml stays RE-scoped on every host (pre-existing
+    # behavior, zero risk to the live RE face). The EverReady content
+    # pages get their own sitemap here for whoever ends up submitting
+    # the EverReady domain.
+    cfg, _products = _face()
+    if cfg["brand"]["id"] != "everready":
+        return "Not found", 404
+    base = request.host_url.rstrip("/")
+    paths = ["/"] + sorted(ER_PAGES) + ["/product/ER-FCC-001",
+                                        "/product/ER-EK-001",
+                                        "/product/ER-FRB-001",
+                                        "/product/ER-DAI-001",
+                                        "/product/ER-LSIK-001"]
+    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           f"{urls}\n</urlset>\n")
+    return Response(xml, mimetype="application/xml")
+
+
 # ---------- storefront pages (static frontend) ----------
 @app.get("/")
 def index():
+    # EverReady face: the root serves the EverReady storefront home instead
+    # of the shared product-grid shell. Every other host keeps the grid.
+    cfg, _products = _face()
+    if cfg["brand"]["id"] == "everready":
+        return send_from_directory(os.path.join(FRONTEND, "everready"),
+                                   "home.html")
     return send_from_directory(FRONTEND, "index.html")
 
 
