@@ -1,4 +1,5 @@
-"""Unified-catalog test: 642 SKUs loaded, zero collisions, every item
+"""Unified-catalog test: 642 SKUs loaded (640 served — PR-M016/PR-M017
+keychains dark since 2026-10-05), zero collisions, every item
 purchasable-or-honestly-unavailable, then the full checkout/fulfill loop via
 API integration. This file is the "test again" pass on the loaded 642.
 
@@ -74,10 +75,10 @@ def check(name, cond, extra=""):
         fails.append(name)
 
 
-# 1. unified catalog: 642, zero collisions, 7B- seven-brand line sorts last
-# (Bill 2026-09-30)
+# 1. unified catalog: 640 served (642 loaded, PR-M016/PR-M017 dark),
+# zero collisions, 7B- seven-brand line sorts last (Bill 2026-09-30)
 prods = client.get("/api/products").get_json()
-check("642 products served", len(prods) == 642, f"got {len(prods)}")
+check("640 products served", len(prods) == 640, f"got {len(prods)}")
 skus = [p["sku"] for p in prods]
 check("zero SKU collisions", len(set(skus)) == len(skus))
 non7b = [s for s in skus if not s.startswith("7B-")]
@@ -86,11 +87,12 @@ check("sorted by SKU, 7B- last",
       non7b == sorted(non7b) and is7b == sorted(is7b)
       and skus == non7b + is7b, f"got {len(skus)}")
 
-# 2. prefix partition: 160/line (PR- 156 after hat removal) + 6 seven-brand
+# 2. prefix partition: 160/line (PR- 154 after hat removal + 2 keychains
+# dark 2026-10-05) + 6 seven-brand
 from collections import Counter
 by_prefix = Counter(p["prefix"] for p in prods)
 check("prefix counts + 7B-", dict(by_prefix) == {
-    "PR-": 156, "RE-MC-": 160, "RE-CT-": 160, "RE-MP-": 160, "7B-": 6},
+    "PR-": 154, "RE-MC-": 160, "RE-CT-": 160, "RE-MP-": 160, "7B-": 6},
     str(dict(by_prefix)))
 check("owners correct",
       all(p["owner"] == ("restorationessentials" if p["prefix"].startswith("RE-")
