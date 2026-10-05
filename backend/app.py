@@ -482,116 +482,131 @@ for _path in sorted({p for _s in FACE_PAGES.values() for p in _s["pages"]}):
                      view_func=lambda p=_path: _face_page(p))
 
 
-# ---------- EverReady sitemap (face only) ----------
-@app.get("/sitemap-er.xml")
-def sitemap_er_xml():
-    # The shared /sitemap.xml stays RE-scoped on every host (pre-existing
-    # behavior, zero risk to the live RE face). The EverReady content
-    # pages get their own sitemap here for whoever ends up submitting
-    # the EverReady domain.
-    cfg, _products = _face()
-    if cfg["brand"]["id"] != "everready":
-        return "Not found", 404
+# ---------- brand sitemap builders ----------
+# Which sitemap file each face brand's host declares. The shared
+# /sitemap.xml dispatch and robots.txt below read this same map, so a
+# face host's declared sitemap is always the one that lists its own
+# brand's pages (the /sitemap-<brand>.xml routes keep serving the same
+# bodies: a GSC property submitted against either URL stays valid).
+BRAND_SITEMAP_FILES = {
+    "everready": "sitemap-er.xml",
+    "stitchfolk": "sitemap-st.xml",
+    "sportroots": "sitemap-sr.xml",
+    "ironhead": "sitemap-ih.xml",
+    "skillforge": "sitemap-sf.xml",
+}
+
+
+def _brand_sitemap_paths(bid, products):
+    """Sitemap path list for one face brand, or None when the brand has
+    no face sitemap (restorationessentials, gateway, pushrod: the
+    default /sitemap.xml below already lists exactly their products).
+    Pure builder: the face-only host guards stay in the routes."""
+    if bid == "everready":
+        return ["/"] + sorted(ER_PAGES) + ["/product/ER-FCC-001",
+                                           "/product/ER-EK-001",
+                                           "/product/ER-FRB-001",
+                                           "/product/ER-DAI-001",
+                                           "/product/ER-LSIK-001"]
+    if bid == "stitchfolk":
+        return ["/"] + sorted(ST_PAGES) + [
+            f"/product/{p['sku']}" for p in products
+            if p.get("listed", True) and p["purchasable"]]
+    if bid == "sportroots":
+        return ["/"] + sorted(SR_PAGES)
+    if bid == "ironhead":
+        return ["/"] + sorted(IH_PAGES) + [
+            f"/product/{p['sku']}" for p in products
+            if p.get("listed", True) and p["purchasable"]]
+    if bid == "skillforge":
+        return ["/"] + sorted(SF_PAGES) + [
+            f"/product/{p['sku']}" for p in products
+            if p.get("listed", True) and p["purchasable"]]
+    return None
+
+
+def _sitemap_response(paths):
     base = request.host_url.rstrip("/")
-    paths = ["/"] + sorted(ER_PAGES) + ["/product/ER-FCC-001",
-                                        "/product/ER-EK-001",
-                                        "/product/ER-FRB-001",
-                                        "/product/ER-DAI-001",
-                                        "/product/ER-LSIK-001"]
     urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
            f"{urls}\n</urlset>\n")
     return Response(xml, mimetype="application/xml")
+
+
+# ---------- EverReady sitemap (face only) ----------
+@app.get("/sitemap-er.xml")
+def sitemap_er_xml():
+    # The EverReady content pages get their own sitemap here for
+    # whoever ends up submitting the EverReady domain; on the EverReady
+    # host the shared /sitemap.xml serves this same body (see the
+    # dispatch below).
+    cfg, _products = _face()
+    if cfg["brand"]["id"] != "everready":
+        return "Not found", 404
+    return _sitemap_response(_brand_sitemap_paths("everready", _products))
 
 
 # ---------- Stitchfolk sitemap (face only) ----------
 @app.get("/sitemap-st.xml")
 def sitemap_st_xml():
-    # Same pattern as /sitemap-er.xml: the shared /sitemap.xml stays
-    # RE-scoped on every host; the Stitchfolk content pages and live
-    # pattern pages get their own sitemap for whoever submits the
-    # Stitchfolk domain.
+    # Same pattern as /sitemap-er.xml: the Stitchfolk content pages and
+    # live pattern pages get their own sitemap for whoever submits the
+    # Stitchfolk domain; on the Stitchfolk host the shared /sitemap.xml
+    # serves this same body (see the dispatch below).
     cfg, products = _face()
     if cfg["brand"]["id"] != "stitchfolk":
         return "Not found", 404
-    base = request.host_url.rstrip("/")
-    paths = ["/"] + sorted(ST_PAGES) + [
-        f"/product/{p['sku']}" for p in products
-        if p.get("listed", True) and p["purchasable"]]
-    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
-    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-           f"{urls}\n</urlset>\n")
-    return Response(xml, mimetype="application/xml")
+    return _sitemap_response(_brand_sitemap_paths("stitchfolk", products))
 
 
 # ---------- SportRoots sitemap (face only) ----------
 @app.get("/sitemap-sr.xml")
 def sitemap_sr_xml():
-    # Same pattern as /sitemap-er.xml and /sitemap-st.xml: the shared
-    # /sitemap.xml stays RE-scoped on every host; the SportRoots
-    # content pages (home, sports index, the drill library and its
-    # per-sport views, coaches, booking-request, pricing, faq) get
-    # their own sitemap for whoever submits the SportRoots domain.
-    # SR sells subscriptions, not SKUs: no /product/<SKU> URLs here.
+    # Same pattern as /sitemap-er.xml and /sitemap-st.xml: the
+    # SportRoots content pages (home, sports index, the drill library
+    # and its per-sport views, coaches, booking-request, pricing, faq)
+    # get their own sitemap for whoever submits the SportRoots domain;
+    # on the SportRoots host the shared /sitemap.xml serves this same
+    # body (see the dispatch below). SR sells subscriptions, not SKUs:
+    # no /product/<SKU> URLs here.
     cfg, _products = _face()
     if cfg["brand"]["id"] != "sportroots":
         return "Not found", 404
-    base = request.host_url.rstrip("/")
-    paths = ["/"] + sorted(SR_PAGES)
-    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
-    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-           f"{urls}\n</urlset>\n")
-    return Response(xml, mimetype="application/xml")
+    return _sitemap_response(_brand_sitemap_paths("sportroots", _products))
 
 
 # ---------- IronHead sitemap (face only) ----------
 @app.get("/sitemap-ih.xml")
 def sitemap_ih_xml():
     # Same pattern as /sitemap-er.xml, /sitemap-st.xml and
-    # /sitemap-sr.xml: the shared /sitemap.xml stays RE-scoped on every
-    # host; the IronHead content pages and live guide pages get their
-    # own sitemap for whoever submits the IronHead domain.
+    # /sitemap-sr.xml: the IronHead content pages and live guide pages
+    # get their own sitemap for whoever submits the IronHead domain;
+    # on the IronHead host the shared /sitemap.xml serves this same
+    # body (see the dispatch below).
     cfg, products = _face()
     if cfg["brand"]["id"] != "ironhead":
         return "Not found", 404
-    base = request.host_url.rstrip("/")
-    paths = ["/"] + sorted(IH_PAGES) + [
-        f"/product/{p['sku']}" for p in products
-        if p.get("listed", True) and p["purchasable"]]
-    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
-    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-           f"{urls}\n</urlset>\n")
-    return Response(xml, mimetype="application/xml")
+    return _sitemap_response(_brand_sitemap_paths("ironhead", products))
 
 
 # ---------- SkillForge sitemap (face only) ----------
 @app.get("/sitemap-sf.xml")
 def sitemap_sf_xml():
     # Same pattern as /sitemap-er.xml, /sitemap-st.xml, /sitemap-sr.xml
-    # and /sitemap-ih.xml: the shared /sitemap.xml stays RE-scoped on
-    # every host; the SkillForge content pages and live playbook pages
-    # get their own sitemap for whoever submits the SkillForge domain.
-    # This is the first sitemap anywhere that lists SF SKUs (the GSC
-    # plan's finding 4). SkillForge is also the process brand, so the
-    # host gate below is what keeps this face-only: the default
-    # onrender host 404s here like every other face sitemap.
+    # and /sitemap-ih.xml: the SkillForge content pages and live
+    # playbook pages get their own sitemap for whoever submits the
+    # SkillForge domain. This is the first sitemap anywhere that lists
+    # SF SKUs (the GSC plan's finding 4). SkillForge is also the
+    # process brand, so the host gate below is what keeps this
+    # face-only: the default onrender host 404s here like every other
+    # face sitemap. On the face hosts the shared /sitemap.xml serves
+    # this same body (see the dispatch below).
     cfg, products = _face()
     if (cfg["brand"]["id"] != "skillforge"
             or _request_host_key() not in SKILLFORGE_FACE_HOSTS):
         return "Not found", 404
-    base = request.host_url.rstrip("/")
-    paths = ["/"] + sorted(SF_PAGES) + [
-        f"/product/{p['sku']}" for p in products
-        if p.get("listed", True) and p["purchasable"]]
-    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
-    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-           f"{urls}\n</urlset>\n")
-    return Response(xml, mimetype="application/xml")
+    return _sitemap_response(_brand_sitemap_paths("skillforge", products))
 
 # ---------- face-host SEO head (server-side) ----------
 # The shared storefront shells (frontend/index.html, frontend/product.html)
@@ -617,12 +632,13 @@ def _request_host_key():
     return (request.host or "").split(":")[0].strip().lower()
 
 
-def _face_head(resp, title=None, description=None):
+def _face_head(resp, title=None, description=None, canonical=None):
     """Rewrite a shared-shell response's <head> for a face host (above).
-    The canonical always points at this request's own URL on the serving
-    host; title/description are applied only when supplied. Caller
-    guarantees the request host is in HOST_FACES."""
-    canonical = f"https://{_request_host_key()}{request.path}"
+    The canonical defaults to this request's own URL on the serving
+    host (pass canonical= to pin another host's URL, e.g. the PushRod
+    product pages below); title/description are applied only when
+    supplied. Caller guarantees the request host is in HOST_FACES."""
+    canonical = canonical or f"https://{_request_host_key()}{request.path}"
     resp.direct_passthrough = False  # send_from_directory streams; buffer it
     html_text = resp.get_data(as_text=True)
     if title:
@@ -640,6 +656,58 @@ def _face_head(resp, title=None, description=None):
     resp.set_data(html_text)
     resp.content_length = len(resp.get_data())
     resp.headers.pop("ETag", None)  # body changed; the file's ETag is stale
+    return resp
+
+
+# PushRod storefront hosts: pushrodshop.com (+ www) is the store's own
+# public domain -- the one GSC indexes for the unified catalog. It is
+# not a host face (the shared shell already speaks PushRod there); only
+# its product pages get the per-product head rewrite below.
+PUSHROD_STORE_HOSTS = {"pushrodshop.com", "www.pushrodshop.com"}
+
+
+def _inject_home_h1(resp, name):
+    """Seed the shared store shell with a server-rendered <h1>.
+
+    frontend/index.html ships no <h1> in its raw bytes, so a
+    non-rendering crawler reading the store home sees no heading at
+    all. The <h1> is a sibling of #doors/#grid inside <main>: store.js
+    fills only those two elements on hydration and never touches this
+    one, so the page keeps exactly one <h1> before and after boot.
+    """
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    if "<h1" in html_text or '<div class="doors" id="doors">' not in html_text:
+        return resp
+    html_text = html_text.replace(
+        '<div class="doors" id="doors">',
+        f'<h1 class="pagetitle">{_html_escape(name)}</h1>\n  '
+        '<div class="doors" id="doors">', 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
+    return resp
+
+
+def _inject_product_h1(resp, title):
+    """Seed #pdetail with a server-rendered <h1> (the product name).
+
+    frontend/product.html ships an empty #pdetail, so the raw bytes
+    carry no <h1> at all. store.js renderDetail() replaces #pdetail's
+    innerHTML wholesale on hydration, so the server <h1> is replaced
+    (never duplicated) after boot; it is the one a non-JS crawler sees.
+    """
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    anchor = '<div class="detail" id="pdetail"></div>'
+    if anchor in html_text:
+        html_text = html_text.replace(
+            anchor,
+            f'<div class="detail" id="pdetail">'
+            f'<h1>{_html_escape(title)}</h1></div>', 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
     return resp
 
 
@@ -674,6 +742,8 @@ def index():
             b["id"], (f"{b['name']} | {b['tagline']}",
                       f"{b['name']} — {b['tagline']}."))
         resp = _face_head(resp, title=title, description=desc)
+    # The shell ships no <h1>; seed one (the site name on this host).
+    resp = _inject_home_h1(resp, cfg["brand"]["name"])
     return resp
 
 
@@ -695,6 +765,20 @@ def product_page(sku):
             title=f"{p['title']} | {b['name']}",
             description=(p.get("description") or "").strip()
             or f"{p['title']} — {b['name']}.")
+    elif _request_host_key() in PUSHROD_STORE_HOSTS:
+        # PushRod storefront (pushrodshop.com): the raw bytes carried
+        # the bare PUSHROD title with no meta description and no
+        # canonical for every SKU in the catalog (GSC finding). Give
+        # each product page its own title, the product's description,
+        # and a self-canonical on pushrodshop.com.
+        resp = _face_head(
+            resp,
+            title=f"{p['title']} | PushRod",
+            description=(p.get("description") or "").strip()
+            or f"{p['title']} — PushRod.",
+            canonical=f"https://pushrodshop.com/product/{sku}")
+    # The shell ships an empty #pdetail; seed it with the product <h1>.
+    resp = _inject_product_h1(resp, p["title"])
     return resp
 
 
@@ -712,9 +796,22 @@ def cancel_page():
 @app.get("/sitemap.xml")
 def sitemap_xml():
     # Base URL from the request host (never hardcoded) so every host this
-    # service serves gets URLs on its own domain. RestorationEssentials-owned
-    # products only: restoreessentials.com is the RE storefront face, and
-    # other brands' SKUs belong on their own domains.
+    # service serves gets URLs on its own domain. On a face host this
+    # serves the face brand's own sitemap (the same body its
+    # /sitemap-<brand>.xml route serves): stitchfolkpatterns.com
+    # previously listed 383 RestorationEssentials guide URLs here and
+    # zero Stitchfolk patterns (GSC finding). Hosts with no face
+    # (pushrodshop.com, the default host) and the RestorationEssentials
+    # face keep the pre-existing RestorationEssentials-owned listing:
+    # restoreessentials.com is the RE storefront face, and other
+    # brands' SKUs belong on their own domains.
+    cfg, products = _face()
+    paths = _brand_sitemap_paths(cfg["brand"]["id"], products)
+    if cfg["brand"]["id"] == "skillforge" and \
+            _request_host_key() not in SKILLFORGE_FACE_HOSTS:
+        paths = None
+    if paths is not None:
+        return _sitemap_response(paths)
     base = request.host_url.rstrip("/")
     entries = [base + "/"]
     for p in PRODUCTS:
@@ -731,6 +828,18 @@ def sitemap_xml():
 @app.get("/robots.txt")
 def robots_txt():
     base = request.host_url.rstrip("/")
+    # Face hosts declare their own brand's sitemap file (the /sitemap.xml
+    # dispatch serves the same body there too); every other host keeps
+    # the shared /sitemap.xml.
+    cfg, _products = _face()
+    fname = BRAND_SITEMAP_FILES.get(cfg["brand"]["id"])
+    if cfg["brand"]["id"] == "skillforge" and \
+            _request_host_key() not in SKILLFORGE_FACE_HOSTS:
+        fname = None
+    if fname:
+        return Response(
+            f"User-agent: *\nAllow: /\nSitemap: {base}/{fname}\n",
+            mimetype="text/plain")
     return Response(f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n",
                     mimetype="text/plain")
 
