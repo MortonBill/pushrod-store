@@ -102,7 +102,11 @@ for _host, _brand_id in (("restoreessentials.com", "restorationessentials"),
                          ("sportroots.coach", "sportroots"),
                          ("www.sportroots.coach", "sportroots"),
                          ("ironheadguides.com", "ironhead"),
-                         ("www.ironheadguides.com", "ironhead")):
+                         ("www.ironheadguides.com", "ironhead"),
+                         ("skillforge.co", "skillforge"),
+                         ("www.skillforge.co", "skillforge"),
+                         ("skillforgeai.co", "skillforge"),
+                         ("www.skillforgeai.co", "skillforge")):
     try:
         HOST_FACES[_host] = load_brand(_brand_id)
     except Exception as exc:
@@ -373,12 +377,47 @@ FACE_PAGES = {
             "/community": "community.html",
         },
     },
+    "skillforge": {
+        "dir": "skillforge",
+        "home": "home.html",
+        "pages": {
+            "/playbooks": "playbooks.html",
+            "/about": "about.html",
+            "/faq": "faq.html",
+            "/contact": "contact.html",
+        },
+    },
 }
 
 ER_PAGES = FACE_PAGES["everready"]["pages"]
 ST_PAGES = FACE_PAGES["stitchfolk"]["pages"]
 SR_PAGES = FACE_PAGES["sportroots"]["pages"]
 IH_PAGES = FACE_PAGES["ironhead"]["pages"]
+SF_PAGES = FACE_PAGES["skillforge"]["pages"]
+SKILLFORGE_FACE_HOSTS = {"skillforge.co", "www.skillforge.co",
+                         "skillforgeai.co", "www.skillforgeai.co"}
+
+
+def _skillforge_self_canonical(resp):
+    """Point a SkillForge face page's canonical at the serving host.
+
+    The same static face serves both candidate domains (skillforge.co
+    and skillforgeai.co, inert until Bill picks one and it attaches);
+    the files carry a skillforge.co canonical placeholder and this
+    rewrite makes each host canonical to itself, per the SEO pattern.
+    Only SkillForge face responses pass through here.
+    """
+    host = _request_host_key()
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    html_text = re.sub(
+        r'(<link rel="canonical" href="https://)'
+        r'(?:skillforge\.co|skillforgeai\.co)',
+        lambda m: m.group(1) + host, html_text, count=1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
+    return resp
 
 
 def _face_page(path):
@@ -386,6 +425,15 @@ def _face_page(path):
     spec = FACE_PAGES.get(cfg["brand"]["id"])
     if not spec or path not in spec["pages"]:
         return "Not found", 404
+    if cfg["brand"]["id"] == "skillforge":
+        # SkillForge is also this process's own brand: without the host
+        # gate its face pages would leak onto the default onrender host
+        # and change long-standing routes there. Face hosts only.
+        if _request_host_key() not in SKILLFORGE_FACE_HOSTS:
+            return "Not found", 404
+        resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
+                                   spec["pages"][path])
+        return _skillforge_self_canonical(resp)
     return send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                spec["pages"][path])
 
@@ -480,6 +528,32 @@ def sitemap_ih_xml():
            f"{urls}\n</urlset>\n")
     return Response(xml, mimetype="application/xml")
 
+
+# ---------- SkillForge sitemap (face only) ----------
+@app.get("/sitemap-sf.xml")
+def sitemap_sf_xml():
+    # Same pattern as /sitemap-er.xml, /sitemap-st.xml, /sitemap-sr.xml
+    # and /sitemap-ih.xml: the shared /sitemap.xml stays RE-scoped on
+    # every host; the SkillForge content pages and live playbook pages
+    # get their own sitemap for whoever submits the SkillForge domain.
+    # This is the first sitemap anywhere that lists SF SKUs (the GSC
+    # plan's finding 4). SkillForge is also the process brand, so the
+    # host gate below is what keeps this face-only: the default
+    # onrender host 404s here like every other face sitemap.
+    cfg, products = _face()
+    if (cfg["brand"]["id"] != "skillforge"
+            or _request_host_key() not in SKILLFORGE_FACE_HOSTS):
+        return "Not found", 404
+    base = request.host_url.rstrip("/")
+    paths = ["/"] + sorted(SF_PAGES) + [
+        f"/product/{p['sku']}" for p in products
+        if p.get("listed", True) and p["purchasable"]]
+    urls = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in paths)
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           f"{urls}\n</urlset>\n")
+    return Response(xml, mimetype="application/xml")
+
 # ---------- face-host SEO head (server-side) ----------
 # The shared storefront shells (frontend/index.html, frontend/product.html)
 # carry PUSHROD titles, no meta description, and no canonical in their raw
@@ -539,8 +613,17 @@ def index():
     cfg, _products = _face()
     spec = FACE_PAGES.get(cfg["brand"]["id"])
     if spec:
-        return send_from_directory(os.path.join(FRONTEND, spec["dir"]),
-                                   spec["home"])
+        # SkillForge is the process brand too: its face home serves only
+        # on the candidate face hosts, never on the default host.
+        if (cfg["brand"]["id"] == "skillforge"
+                and _request_host_key() not in SKILLFORGE_FACE_HOSTS):
+            spec = None
+        else:
+            resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
+                                       spec["home"])
+            if cfg["brand"]["id"] == "skillforge":
+                resp = _skillforge_self_canonical(resp)
+            return resp
     resp = send_from_directory(FRONTEND, "index.html")
     if _request_host_key() in HOST_FACES:
         # Face host on the shared shell (RestorationEssentials): the raw
