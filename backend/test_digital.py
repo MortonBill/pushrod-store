@@ -566,6 +566,11 @@ check("upload work order: 382 files / 661,219,761 bytes / 1 gap",
 # SUBSCRIPTION on the live site until Bill ruled on the model
 # 2026-10-03: $59 one-time for both playbooks (SF-BND-QBO-JOB-001,
 # live below); the quarterly subscription is retired.
+# 2026-10-05: HVAC + Plumber forms packs built to the same 8-form standard
+# (SF-FRM-HVAC-001 / SF-FRM-PLUM-001, files sha256-verified on the store
+# digital disk) and their playbook+forms bundles (SF-BND-HVAC-001 /
+# SF-BND-PLUM-001 at $49 sibling parity) shipped LIVE with them — catalog
+# is now 38 rows (22 playbooks + 8 forms + 8 bundles).
 sf_prods = _load_catalog(os.path.join(REPO_ROOT, "data", "skillforge-catalog.csv"),
                          os.path.join(REPO_ROOT, "data", "skillforge-prices.json"),
                          sku_prefixes=["SF-"])
@@ -575,27 +580,31 @@ SF_FORMS = {"SF-FRM-AUTO-001": ("Auto Repair Forms Pack", 19.0),
             "SF-FRM-PEST-001": ("Pest Control Forms Pack", 19.0),
             "SF-FRM-ROOF-001": ("Roofing Forms Pack", 19.0),
             "SF-FRM-VET-001": ("Veterinary Practice Forms Pack", 19.0),
+            "SF-FRM-HVAC-001": ("HVAC Forms Pack", 19.0),
+            "SF-FRM-PLUM-001": ("Plumber Forms Pack", 19.0),
             "SF-FRM-CONT-001": ("Contractor Forms Pack", 19.0)}
 SF_BUNDLES = {"SF-BND-AUTO-001": ("SF-AUTO-001", "SF-FRM-AUTO-001"),
               "SF-BND-ELEC-001": ("SF-ELEC-001", "SF-FRM-ELEC-001"),
               "SF-BND-PEST-001": ("SF-PEST-001", "SF-FRM-PEST-001"),
               "SF-BND-ROOF-001": ("SF-ROOF-001", "SF-FRM-ROOF-001"),
-              "SF-BND-VET-001": ("SF-VET-001", "SF-FRM-VET-001")}
-check("SkillForge catalog loads 34 rows (22 playbooks + 6 forms + 6 bundles)",
-      len(sf_prods) == 34, len(sf_prods))
+              "SF-BND-VET-001": ("SF-VET-001", "SF-FRM-VET-001"),
+              "SF-BND-HVAC-001": ("SF-HVAC-001", "SF-FRM-HVAC-001"),
+              "SF-BND-PLUM-001": ("SF-PLUM-001", "SF-FRM-PLUM-001")}
+check("SkillForge catalog loads 38 rows (22 playbooks + 8 forms + 8 bundles)",
+      len(sf_prods) == 38, len(sf_prods))
 check("the 22 playbooks stay listed and purchasable at live prices ($37 x21, BLD $19)",
       sum(1 for p in sf_prods if p["type"] == "playbook") == 22
       and all(p["listed"] is True and p["purchasable"] is True
               and p["price"]["amount"] == (19.0 if p["sku"] == "SF-BLD-001" else 37.0)
               for p in sf_prods if p["type"] == "playbook"))
-check("all 6 forms packs are priced from live site copy and live (flipped 2026-10-03)",
+check("all 8 forms packs are priced from live site copy and live (flipped 2026-10-03; HVAC+Plumber added live 2026-10-05)",
       all(s in sf_by_sku and sf_by_sku[s]["title"] == t
           and sf_by_sku[s]["price"]["amount"] == amt
           and sf_by_sku[s]["listed"] is True
           and sf_by_sku[s]["purchasable"] is True
           and sf_by_sku[s]["digital_file"].endswith(".pdf")
           for s, (t, amt) in SF_FORMS.items()))
-check("all 5 bundles are priced $49, live (flipped 2026-10-03), components resolve to files",
+check("all 7 bundles are priced $49, live (flipped 2026-10-03; HVAC+Plumber added live 2026-10-05), components resolve to files",
       all(s in sf_by_sku and sf_by_sku[s]["price"]["amount"] == 49.0
           and sf_by_sku[s]["listed"] is True
           and sf_by_sku[s]["purchasable"] is True
