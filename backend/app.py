@@ -711,6 +711,153 @@ def _inject_product_h1(resp, title):
     return resp
 
 
+# ---------- merch cross-sell shelves (RestorationEssentials face) ----------
+# Curated lead designs from the PushRod merch catalog, linked (never
+# sold) from the RestorationEssentials face: pushrodshop.com is the
+# merch store and takes every merch checkout; the RE face only points
+# at the exact product pages. The cards are static on purpose: the
+# guide-store service serving the RE face does not load the merch
+# catalog at all, so there is nothing local to render from. Every SKU,
+# price, and image below was verified live against
+# pushrodshop.com/api/products at build time (2026-10-05); each card
+# links to a product page that 200s there today. If a design is ever
+# retired on PushRod, drop its row here in the same change.
+MERCH_SHOP_BASE = "https://pushrodshop.com"
+
+# (sku, display name, kind, price, image path on pushrodshop.com)
+RE_SHELF_MUSCLE = [
+    ("RE-MC-H001", "Big Block Badge hat", "Hat", "$24.00", "/img/muscle/hats/re-mc-h001-big-block-badge.webp"),
+    ("RE-MC-H008", "454 hat", "Hat", "$24.00", "/img/muscle/hats/re-mc-h008-454.webp"),
+    ("RE-MC-H005", "Four Speed hat", "Hat", "$24.00", "/img/muscle/hats/re-mc-h005-four-speed.webp"),
+    ("RE-MC-H002", "1320 hat", "Hat", "$24.00", "/img/muscle/hats/re-mc-h002-1320.webp"),
+    ("RE-MC-T016", "Big Block 454 tee", "Tee", "$26.00", "/img/muscle/tees/re-mc-t016-big-block-454.webp"),
+    ("RE-MC-T017", "440 tee", "Tee", "$26.00", "/img/muscle/tees/re-mc-t017-440.webp"),
+    ("RE-MC-T018", "428 tee", "Tee", "$26.00", "/img/muscle/tees/re-mc-t018-428.webp"),
+    ("RE-MC-T037", "Four Speed tee", "Tee", "$26.00", "/img/muscle/tees/re-mc-t037-four-speed.webp"),
+    ("RE-MC-T003", "Quarter Mile tee", "Tee", "$26.00", "/img/muscle/tees/re-mc-t003-quarter-mile.webp"),
+    ("RE-MC-T036", "Slicks tee", "Tee", "$26.00", "/img/muscle/tees/re-mc-t036-slicks.webp"),
+    ("RE-MC-S016", "Big Block 454 pullover", "Pullover", "$44.00", "/img/muscle/tees/re-mc-t016-big-block-454.webp"),
+    ("RE-MC-M001", "Big Block Coffee Mug", "Mug", "$15.00", "/img/muscle/misc/re-mc-m001-big-block-coffee-mug.webp"),
+]
+RE_SHELF_TRUCK = [
+    ("RE-CT-H001", "Patina & Pride hat", "Hat", "$24.00", "/img/truck/hats/re-ct-h001-patina-pride.webp"),
+    ("RE-CT-H007", "Shop Truck hat", "Hat", "$24.00", "/img/truck/hats/re-ct-h007-shop-truck.webp"),
+    ("RE-CT-H026", "Half-Ton Hero hat", "Hat", "$24.00", "/img/truck/hats/re-ct-h026-half-ton-hero.webp"),
+    ("RE-CT-H013", "Long Bed Legend hat", "Hat", "$24.00", "/img/truck/hats/re-ct-h013-long-bed-legend.webp"),
+    ("RE-CT-T001", "Patina & Pride tee", "Tee", "$26.00", "/img/truck/tees/re-ct-t001-patina-pride.webp"),
+    ("RE-CT-T007", "Shop Truck tee", "Tee", "$26.00", "/img/truck/tees/re-ct-t007-shop-truck.webp"),
+    ("RE-CT-T030", "Half-Ton Hero tee", "Tee", "$26.00", "/img/truck/tees/re-ct-t030-half-ton-hero.webp"),
+    ("RE-CT-T013", "Long Bed Legend tee", "Tee", "$26.00", "/img/truck/tees/re-ct-t013-long-bed-legend.webp"),
+    ("RE-CT-T022", "Rusted But Running tee", "Tee", "$26.00", "/img/truck/tees/re-ct-t022-rusted-but-running.webp"),
+    ("RE-CT-T008", "Barn Find tee", "Tee", "$26.00", "/img/truck/tees/re-ct-t008-barn-find.webp"),
+    ("RE-CT-S001", "Patina & Pride pullover", "Pullover", "$44.00", "/img/truck/tees/re-ct-t001-patina-pride.webp"),
+    ("RE-CT-M004", "Shop Truck Mug", "Mug", "$15.00", "/img/truck/misc/re-ct-m004-shop-truck-mug.webp"),
+]
+# The smaller strip carried on each truck guide page.
+RE_SHELF_TRUCK_STRIP = [
+    ("RE-CT-H001", "Patina & Pride hat", "Hat", "$24.00", "/img/truck/hats/re-ct-h001-patina-pride.webp"),
+    ("RE-CT-H007", "Shop Truck hat", "Hat", "$24.00", "/img/truck/hats/re-ct-h007-shop-truck.webp"),
+    ("RE-CT-H026", "Half-Ton Hero hat", "Hat", "$24.00", "/img/truck/hats/re-ct-h026-half-ton-hero.webp"),
+    ("RE-CT-T001", "Patina & Pride tee", "Tee", "$26.00", "/img/truck/tees/re-ct-t001-patina-pride.webp"),
+    ("RE-CT-T030", "Half-Ton Hero tee", "Tee", "$26.00", "/img/truck/tees/re-ct-t030-half-ton-hero.webp"),
+    ("RE-CT-M004", "Shop Truck Mug", "Mug", "$15.00", "/img/truck/misc/re-ct-m004-shop-truck-mug.webp"),
+]
+
+_MERCH_SHELF_STYLE = (
+    "<style>.merchshelf{margin:2.5rem 0 1rem}"
+    ".merchshelf h3{margin:1.6rem 0 .8rem}"
+    ".merchshelf a.card{text-decoration:none;color:var(--text)}</style>")
+
+
+def _merch_shelf_card(spec):
+    sku, name, kind, price, image_path = spec
+    return (f'<a class="card" href="{MERCH_SHOP_BASE}/product/{sku}">'
+            f'<img src="{MERCH_SHOP_BASE}{image_path}" '
+            f'alt="{_html_escape(name, quote=True)}" loading="lazy">'
+            f'<span class="body"><h3>{_html_escape(name)}</h3>'
+            f'<span class="meta">{_html_escape(kind)}</span>'
+            f'<span class="price">{price}</span></span></a>')
+
+
+def _merch_shelf_group(heading, items):
+    cards = "".join(_merch_shelf_card(spec) for spec in items)
+    if not cards:
+        return ""
+    return (f"<h3>{_html_escape(heading)}</h3>"
+            f'<div class="grid">{cards}</div>')
+
+
+def _merch_shelf_see_all():
+    return (f'<p style="margin-top:1.2rem"><a href="{MERCH_SHOP_BASE}">'
+            "See the whole shelf at PushrodShop →</a></p>")
+
+
+def _inject_re_home_shelf(resp):
+    """RestorationEssentials home: the 24-design merch shelf, server-
+    rendered into the shared shell after the guide showcase (the
+    #doors/#grid block) and before the footer — RE face host only."""
+    groups = (_merch_shelf_group("From the muscle-car shelf", RE_SHELF_MUSCLE)
+              + _merch_shelf_group("From the truck shelf", RE_SHELF_TRUCK))
+    if not groups:
+        return resp
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    if "merchshelf" in html_text or "</main>" not in html_text:
+        return resp
+    shelf = (_MERCH_SHELF_STYLE
+             + '<section class="merchshelf"><h2>Gear for the garage</h2>'
+             + "<p>Guides get the car back together. This is what you "
+               "wear while you do it — printed when you order it, "
+               "shipped from PushrodShop.</p>"
+             + groups + _merch_shelf_see_all() + "</section>")
+    html_text = html_text.replace("</main>", shelf + "\n</main>", 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
+    return resp
+
+
+def _re_guide_shelf_kind(sku):
+    """Which shelf strip an RE guide page carries: the truck guides
+    (C/K, Squarebody, K5 Blazer/Jimmy, Bronco, F-Series, El Camino)
+    get the truck strip; every other RE guide gets the muscle strip."""
+    if not sku.startswith("RE-GD-"):
+        return None
+    if ("-TRUCK-" in sku or "K5-BLAZER" in sku or "BRONCO" in sku
+            or "EL-CAMINO" in sku):
+        return "truck"
+    return "muscle"
+
+
+def _inject_re_guide_shelf(resp, sku):
+    """Guide pages on the RE face carry the matching merch strip
+    (truck guides -> truck shelf, other guides -> muscle-car shelf),
+    server-rendered below the guide detail. Links only — checkout
+    stays on pushrodshop.com."""
+    kind = _re_guide_shelf_kind(sku)
+    if kind is None:
+        return resp
+    if kind == "truck":
+        shelf = _merch_shelf_group("From the truck shelf",
+                                   RE_SHELF_TRUCK_STRIP)
+    else:
+        shelf = _merch_shelf_group("From the muscle-car shelf",
+                                   RE_SHELF_MUSCLE)
+    if not shelf:
+        return resp
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    if "merchshelf" in html_text or "</main>" not in html_text:
+        return resp
+    block = (_MERCH_SHELF_STYLE + '<section class="merchshelf">'
+             + shelf + _merch_shelf_see_all() + "</section>")
+    html_text = html_text.replace("</main>", block + "\n</main>", 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
+    return resp
+
+
 # ---------- storefront pages (static frontend) ----------
 @app.get("/")
 def index():
@@ -744,6 +891,9 @@ def index():
         resp = _face_head(resp, title=title, description=desc)
     # The shell ships no <h1>; seed one (the site name on this host).
     resp = _inject_home_h1(resp, cfg["brand"]["name"])
+    if cfg["brand"]["id"] == "restorationessentials":
+        # Merch cross-sell shelf (links to pushrodshop.com only).
+        resp = _inject_re_home_shelf(resp)
     return resp
 
 
@@ -779,6 +929,11 @@ def product_page(sku):
             canonical=f"https://pushrodshop.com/product/{sku}")
     # The shell ships an empty #pdetail; seed it with the product <h1>.
     resp = _inject_product_h1(resp, p["title"])
+    if _request_host_key() in HOST_FACES:
+        # RE guide pages carry the matching merch shelf strip.
+        face_cfg, _face_products = _face()
+        if face_cfg["brand"]["id"] == "restorationessentials":
+            resp = _inject_re_guide_shelf(resp, sku)
     return resp
 
 
