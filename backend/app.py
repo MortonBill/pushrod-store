@@ -97,6 +97,8 @@ for _host, _brand_id in (("restoreessentials.com", "restorationessentials"),
                          ("www.everreadyfamily.com", "everready"),
                          ("everreadyfamily.co", "everready"),
                          ("www.everreadyfamily.co", "everready"),
+                         ("everready-family.com", "everready"),
+                         ("www.everready-family.com", "everready"),
                          ("stitchfolkpatterns.com", "stitchfolk"),
                          ("www.stitchfolkpatterns.com", "stitchfolk"),
                          ("sportroots.coach", "sportroots"),
@@ -420,6 +422,30 @@ def _skillforge_self_canonical(resp):
     return resp
 
 
+def _everready_self_canonical(resp):
+    """Point an EverReady face page's canonical at the serving host.
+
+    The same static face serves everreadyfamily.co and everready-family.com
+    (the hyphenated .com is the domain Bill is registering; the .co stays
+    routed); the files carry an everreadyfamily.co canonical placeholder
+    and this rewrite makes each host canonical to itself, mirroring the
+    SkillForge dual-host pattern above. Only EverReady face responses
+    pass through here.
+    """
+    host = _request_host_key()
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    html_text = re.sub(
+        r'(<link rel="canonical" href="https://)'
+        r'(?:everreadyfamily\.com|everready-family\.com|everreadyfamily\.co)'
+        r'(?=[/"])',
+        lambda m: m.group(1) + host, html_text, count=1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
+    return resp
+
+
 def _face_page(path):
     cfg, _products = _face()
     spec = FACE_PAGES.get(cfg["brand"]["id"])
@@ -434,6 +460,12 @@ def _face_page(path):
         resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                    spec["pages"][path])
         return _skillforge_self_canonical(resp)
+    if cfg["brand"]["id"] == "everready":
+        # One static face, two routed hosts (everreadyfamily.co and
+        # everready-family.com): each host canonical to itself.
+        resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
+                                   spec["pages"][path])
+        return _everready_self_canonical(resp)
     return send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                spec["pages"][path])
 
@@ -623,6 +655,8 @@ def index():
                                        spec["home"])
             if cfg["brand"]["id"] == "skillforge":
                 resp = _skillforge_self_canonical(resp)
+            elif cfg["brand"]["id"] == "everready":
+                resp = _everready_self_canonical(resp)
             return resp
     resp = send_from_directory(FRONTEND, "index.html")
     if _request_host_key() in HOST_FACES:
