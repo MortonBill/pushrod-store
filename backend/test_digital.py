@@ -705,10 +705,10 @@ CANONICAL_PRICES = {
     "ER-FCC-001": 37.0, "ER-EK-001": 37.0, "ER-FRB-001": 49.0,
     "ER-AUTO-001": 49.0, "ER-EAP-001": 49.0, "ER-DAI-001": 19.95,
     "ER-LSIK-001": 37.0, "ER-FPA-001": 49.0, "ER-CSO-001": 49.0,
-    "ER-FBK-001": 37.0,
+    "ER-FBK-001": 37.0, "ER-FRC-001": 37.0,
 }
-check("EverReady catalog loads the 10 priced products "
-      "(9 canonical + Family Bidding Kit)",
+check("EverReady catalog loads the 11 priced products "
+      "(9 canonical + Family Bidding Kit + Family Recipe Cookbook)",
       set(er_by_sku) == set(CANONICAL_PRICES), str(sorted(er_by_sku)))
 check("EverReady prices match the pinned lineup and are confirmed",
       all(er_by_sku[s]["price"]["amount"] == amt
@@ -768,6 +768,32 @@ check("dark Family Bidding Kit is rejected at checkout (400)",
 check("unlisted Family Bidding Kit 404s on the public API",
       client.get("/api/products/ER-FBK-001").status_code == 404)
 del store_app.BY_SKU["ER-FBK-001"]
+
+# Family Recipe Cookbook (2026-10-06): the guided build — per-
+# contributor card-photo intake, never-guess transcription, confirm-
+# and-lock, 8.5x11 photo-left/text-right assembly (backend/
+# cookbook.py; the lane itself is covered by test_cookbook.py).
+# Bill-confirmed prices: digital build/PDF $37 (this row's checkout
+# price), bound printed copy $49 incl. the build, extra bound copies
+# $29.95 (print lane). Staged listed=0 until the EverReady checkout
+# gate + listing go, exactly like ER-FBK-001.
+_frc = er_by_sku["ER-FRC-001"]
+check("Family Recipe Cookbook carries its disk deliverable",
+      _frc["digital_file"] == "family-recipe-cookbook.pdf",
+      _frc["digital_file"])
+check("Family Recipe Cookbook staged dark (listed=0, not purchasable) "
+      "at the Bill-confirmed $37 until the EverReady listing go",
+      _frc["listed"] is False and _frc["purchasable"] is False
+      and _frc["price"]["amount"] == 37.0)
+store_app.BY_SKU["ER-FRC-001"] = _frc
+rf = client.post("/api/checkout", json={"items": [{"sku": "ER-FRC-001",
+                                                    "qty": 1}]})
+check("dark Family Recipe Cookbook is rejected at checkout (400)",
+      rf.status_code == 400 and "cannot be sold" in
+      (rf.get_json() or {}).get("error", ""), rf.status_code)
+check("unlisted Family Recipe Cookbook 404s on the public API",
+      client.get("/api/products/ER-FRC-001").status_code == 404)
+del store_app.BY_SKU["ER-FRC-001"]
 
 with open(os.path.join(REPO_ROOT, "brands", "everready.yaml")) as f:
     _er_brand = _yaml.safe_load(f)

@@ -1,6 +1,6 @@
 {
  "brand": "EVERREADY FAMILY",
- "pricing_status": "CANONICAL 2026-10-02: every amount below is copied verbatim from ~/workspace/your_files/everready-family/product-lineup-canonical-2026-09-24.md (settled with Bill 2026-09-23/24) — never re-derived. All rows load UNLISTED (data/everready-catalog.csv listed=0) and NOT purchasable until the EverReady checkout gate (charge -> tax -> signed download link verified in the buyer's hands -> refund). The free Five Conversations workbook is intentionally absent: it is the free lead magnet delivered through Kit, not a paid checkout product (a $0 Stripe checkout is impossible). The Community Sell-Off '~$149 Boost' upsell is not loaded: only the firm $49 base price is canonical. EXCEPTION (2026-10-05): ER-FBK-001 Family Bidding Kit ($37) is not in the canonical lineup file; its price is anchored to the canonical manual-kit tier and its row is staged listed=0 pending the same checkout gate.",
+ "pricing_status": "CANONICAL 2026-10-02: every amount below is copied verbatim from ~/workspace/your_files/everready-family/product-lineup-canonical-2026-09-24.md (settled with Bill 2026-09-23/24) — never re-derived. All rows load UNLISTED (data/everready-catalog.csv listed=0) and NOT purchasable until the EverReady checkout gate (charge -> tax -> signed download link verified in the buyer's hands -> refund). The free Five Conversations workbook is intentionally absent: it is the free lead magnet delivered through Kit, not a paid checkout product (a $0 Stripe checkout is impossible). The Community Sell-Off '~$149 Boost' upsell is not loaded: only the firm $49 base price is canonical. EXCEPTION (2026-10-05): ER-FBK-001 Family Bidding Kit ($37) is not in the canonical lineup file; its price is anchored to the canonical manual-kit tier and its row is staged listed=0 pending the same checkout gate. ER-FRC-001 Family Recipe Cookbook added 2026-10-06 at Bill-confirmed prices: digital build/PDF $37 (flagship tier — this row's checkout price), bound printed copy $49 incl. the digital build (premium tier), extra bound copies $29.95 each (print lane at launch); row staged listed=0 until the EverReady checkout gate + listing go.",
  "products": [
   {
    "msrp": 37.0,
@@ -61,6 +61,12 @@
    "price_source": "Family Bidding Kit, added 2026-10-05: NOT named in the canonical lineup file — priced $37 on the canonical manual-kit tier (Executor's Kit $37 manual; the automated equivalent ER-AUTO-001 is $49) under Bill's 2026-10-05 call to recreate the kit open-bidding-only. Staged listed=0 like every other EverReady row until the checkout gate passes.",
    "sku": "ER-FBK-001",
    "title": "Family Bidding Kit"
+  },
+  {
+   "msrp": 37.0,
+   "price_source": "Family Recipe Cookbook, Bill-confirmed 2026-10-06: digital build/PDF $37 — flagship tier (Family Command Center / Executor's Kit / Life Story Interview Kit); bound printed copy $49 incl. the digital build (premium tier, Family Photo Archive band); extra bound copies $29.95 each through the print lane. The $37 below is this row's checkout price. Third leg of the Family Heritage trio; row staged listed=0 until the EverReady checkout gate + listing go.",
+   "sku": "ER-FRC-001",
+   "title": "Family Recipe Cookbook"
   }
  ]
 }

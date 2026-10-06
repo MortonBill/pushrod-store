@@ -46,6 +46,7 @@ from fulfillment.printful_client import PrintfulConfigError, PrintfulAPIError
 import wholesale as wholesale_mod
 import auctions as auctions_mod
 import subscriptions as sr_mod
+import cookbook as cookbook_mod
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("pushrod")
@@ -1517,6 +1518,18 @@ def _public_base_url():
 # refunded, which no-op when disabled.
 sr_mod.init(app, stripe_ready=STRIPE_READY, stripe_mode=STRIPE_MODE,
             stripe_acct=_stripe_acct, public_base_url=_public_base_url)
+
+
+# ---------- Family Recipe Cookbook lane (EverReady ER-FRC-001, 2026-10-06) ----------
+# Per-contributor card-photo intake -> never-guess vision transcription
+# ([?] flags, contributor confirm-and-lock) -> 8.5x11 photo-left/text-
+# right book assembly (backend/cookbook.py). Token-gated throughout.
+# Registered defensively: a cookbook fault must never take the store
+# down (same rule as the host faces above).
+try:
+    cookbook_mod.init(app, public_base_url=_public_base_url)
+except Exception:  # noqa: BLE001
+    log.exception("cookbook lane failed to register — store continues")
 
 
 def _is_digital(sku):

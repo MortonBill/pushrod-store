@@ -4,3 +4,7 @@ requests==2.34.2
 stripe==15.6.1
 gunicorn==23.0.0
 psycopg[binary]==3.3.6
+# Family Recipe Cookbook lane (backend/cookbook.py): photo intake
+# validation/normalization (Pillow) and 8.5x11 book assembly (reportlab).
+Pillow>=10.2
+reportlab>=4.2
