@@ -69,6 +69,46 @@ check("no vision provider: draft is an honest unread, not an invention",
       and any("[?]" in fl for fl in meta3["flags"])
       and meta3["unread"], str(meta3))
 
+# ---------- 2c. vision honesty backstop (2026-10-06 QA failures) ----------
+# The live vision QA against the production prompt returned a bare
+# "tsp soda" (the unread quantity vanished, unflagged) and dropped a
+# partially obscured buttermilk line from the draft entirely. The
+# prompt contract now demands better AND the deterministic backstop
+# guarantees it on every stored draft. Proven here with canned model
+# output in exactly the QA's failure shape — no model call needed.
+qa_fields = {"title": "Grandma's Cornbread Dressing",
+             "ingredients": ["2 cups cornmeal", "tsp soda", "2 eggs"],
+             "steps": ["Mix dry. Add wet."],
+             "servings": "", "time": "", "temp": "",
+             "notes_verbatim": ""}
+qa_card_lines = ["Grandma's Cornbread Dressing", "2 cups cornmeal",
+                 "tsp soda", "2 eggs", "[?] cup buttermilk",
+                 "Mix dry. Add wet."]
+fixed, qa_unread = cb.enforce_transcription_honesty(
+    qa_fields, [], qa_card_lines)
+check("bare unit gains its [?] — never ships as a confident guess",
+      fixed["ingredients"][1] == "[?] tsp soda", str(fixed))
+check("obscured line survives verbatim, [?] mark intact",
+      "buttermilk" in fixed["notes_verbatim"]
+      and "[?]" in fixed["notes_verbatim"], fixed["notes_verbatim"])
+check("both failures are named in plain language for the contributor",
+      any("tsp soda" in u for u in qa_unread)
+      and any("buttermilk" in u for u in qa_unread), str(qa_unread))
+check("the surviving [?] still blocks the confirm gate",
+      "ingredient 2" in cb.find_unresolved(fixed)
+      and "notes_verbatim" in cb.find_unresolved(fixed),
+      str(cb.find_unresolved(fixed)))
+check("the backstop never mutates the caller's draft",
+      qa_fields["ingredients"][1] == "tsp soda")
+
+clean_draft = {"title": "Dressing", "ingredients": ["1 tsp soda"],
+               "steps": ["Mix"], "servings": "", "time": "", "temp": "",
+               "notes_verbatim": ""}
+same, no_unread = cb.enforce_transcription_honesty(
+    clean_draft, [], ["Dressing", "1 tsp soda", "Mix"])
+check("a fully placed draft passes through untouched",
+      same == clean_draft and no_unread == [], str(same))
+
 # ---------- 3. the Flask surface ----------
 client = store_app.app.test_client()
 

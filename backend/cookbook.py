@@ -165,15 +165,29 @@ VISION_PROMPT = """You transcribe ONE photographed handwritten family recipe car
 
 Return ONLY a JSON object, no prose, with exactly these keys:
 {"title": str, "ingredients": [str], "steps": [str], "servings": str,
- "time": str, "temp": str, "notes_verbatim": str, "unread": [str]}
+ "time": str, "temp": str, "notes_verbatim": str, "unread": [str],
+ "card_lines": [str]}
 
-Rules — NEVER GUESS:
+"card_lines" is a VERBATIM, line-by-line transcription of the WHOLE
+card, top to bottom, in the card's own order — the title line, every
+ingredient line, every instruction line, every margin note — made
+BEFORE you structure anything. Put a "[?]" on every word or number in
+a card line that you cannot read with confidence.
+
+Rules — NEVER GUESS, NEVER DROP:
+- COMPLETENESS IS THE FIRST LAW: every line of handwriting on the
+  card must appear in "card_lines", and every card line must then be
+  represented in the structured fields or in "notes_verbatim". Count
+  the card's lines, then count yours — they must match. A
+  transcription that drops a line is a FAILED transcription, worse
+  than any "[?]": the family may never see that card again.
 - Every word or number you cannot read with confidence goes in the text
   as "[?]" exactly where it belongs (e.g. "1 [?] tsp soda"), and is also
   listed in "unread" in plain language ("the quantity before 'tsp soda'").
   A missing quantity is written "[?] tsp soda" — never a bare unit, and
   a partially obscured line is NEVER dropped silently: it appears with
-  its "[?]" and an "unread" entry.
+  its "[?]" and an "unread" entry. If a whole line is unreadable its
+  card line is just "[?]", so the contributor learns it exists.
 - Numbers are guilty until proven innocent: quantities, temperatures,
   times and pan sizes flag at ANY doubt (1 vs 7, 1/4 vs 1/2 in cursive).
 - No title on the card -> title is "[Untitled — contributor to name]".
@@ -203,6 +217,90 @@ def _fallback_draft():
     }
 
 
+# ---------- deterministic honesty backstop ----------
+# The prompt above carries the honesty contract, but a prompt is a
+# request, not a guarantee: the 2026-10-06 live vision QA returned a
+# bare "tsp soda" (the unread quantity simply vanished) and dropped a
+# partially obscured buttermilk line from the draft entirely. These
+# pure functions are the backstop that runs on EVERY model draft
+# before it is stored. They never invent a character: a bare unit
+# gains its "[?]" flag, and any verbatim card line the structured
+# fields failed to carry is rescued into notes_verbatim exactly as
+# read, "[?]" marks intact, where find_unresolved() will hold the
+# confirm gate until the contributor resolves it.
+
+_BARE_UNIT_RE = re.compile(
+    r"^\s*(tsp\.?|teaspoons?|tbsp\.?|tablespoons?|cups?|oz\.?|ounces?|"
+    r"lbs?\.?|pounds?|cans?|pkg\.?|packages?|cloves?|sticks?)\b", re.I)
+_TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+
+def _line_tokens(text):
+    return set(_TOKEN_RE.findall((text or "").lower().replace("[?]", " ")))
+
+
+def enforce_transcription_honesty(fields, unread, card_lines=None):
+    """Repair the two observed model failure modes WITHOUT inventing
+    a character (brief §6: flag, never guess):
+      1. a bare unit ("tsp soda" — quantity unread, never flagged)
+         gains its "[?]" and an "unread" entry;
+      2. a card line present in the verbatim "card_lines" pass but
+         carried by no structured field is rescued into
+         notes_verbatim word-for-word, "[?]" marks intact, with an
+         "unread" entry — a partially obscured line survives for its
+         contributor instead of vanishing.
+    Pure and deterministic: unit-testable without a model call.
+    Returns (fields, unread); the caller's objects are not mutated."""
+    fields = {k: (list(v) if isinstance(v, list) else v)
+              for k, v in fields.items()}
+    unread = [str(u) for u in (unread or [])]
+
+    def note_unread(entry):
+        if entry not in unread:
+            unread.append(entry)
+
+    # 1. bare units: a measurement with no quantity and no flag.
+    fixed = []
+    for line in fields.get("ingredients", []):
+        if "[?]" not in (line or "") and _BARE_UNIT_RE.match(line or ""):
+            note_unread("the quantity before "
+                        f"'{line.strip()}'")
+            line = "[?] " + line.lstrip()
+        fixed.append(line)
+    fields["ingredients"] = fixed
+
+    # 2. rescue card lines the structured fields dropped. A line counts
+    # as carried when most of its readable words appear across the
+    # fields; a fully unreadable line ("[?]" alone) has no words to
+    # match and is always rescued, so the contributor learns it exists.
+    if card_lines:
+        covered = set()
+        for key in ("title", "servings", "time", "temp", "notes_verbatim"):
+            covered |= _line_tokens(fields.get(key, ""))
+        for line in fields.get("ingredients", []) + fields.get("steps", []):
+            covered |= _line_tokens(line)
+        rescued = []
+        for raw in card_lines:
+            line = clean_text(raw)
+            if not line:
+                continue
+            tokens = _line_tokens(line)
+            if tokens and len(tokens & covered) / len(tokens) >= 0.6:
+                continue
+            rescued.append(line)
+            covered |= tokens
+        if rescued:
+            existing = fields.get("notes_verbatim", "")
+            fields["notes_verbatim"] = (
+                "; ".join([existing] + rescued) if existing
+                else "; ".join(rescued))
+            for line in rescued:
+                note_unread("one line on the card we couldn't place — "
+                            "it's kept word-for-word in the notes for "
+                            f"you to check: '{line[:60]}'")
+    return fields, unread
+
+
 def _anthropic_draft(image_bytes, media_type):
     """Vision transcription via the Anthropic Messages API. The key
     comes from the ANTHROPIC_API_KEY environment variable only — it is
@@ -217,7 +315,7 @@ def _anthropic_draft(image_bytes, media_type):
         headers={"x-api-key": os.environ["ANTHROPIC_API_KEY"],
                  "anthropic-version": "2023-06-01",
                  "content-type": "application/json"},
-        json={"model": model, "max_tokens": 2000,
+        json={"model": model, "max_tokens": 3000,
               "messages": [{"role": "user", "content": [
                   {"type": "image", "source": {
                       "type": "base64", "media_type": media_type,
@@ -235,11 +333,14 @@ def _anthropic_draft(image_bytes, media_type):
               "steps": raw.get("steps", []), "servings": raw.get("servings", ""),
               "time": raw.get("time", ""), "temp": raw.get("temp", ""),
               "notes_verbatim": raw.get("notes_verbatim", "")}
+    # The prompt asks; this guarantees. Every stored draft passes the
+    # deterministic honesty backstop (see enforce_transcription_honesty).
+    fields, unread = enforce_transcription_honesty(
+        fields, raw.get("unread", []), raw.get("card_lines"))
     blob = json.dumps(fields)
     flags = sorted(set(re.findall(r"[^\"]*?\[\?\]", blob)))
     return fields, {"status": "transcribed", "provider": "anthropic",
-                    "flags": flags,
-                    "unread": [str(u) for u in raw.get("unread", [])]}
+                    "flags": flags, "unread": unread}
 
 
 def transcribe(image_bytes, media_type="image/jpeg"):

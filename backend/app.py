@@ -279,6 +279,7 @@ FACE_PAGES = {
             "/guides/five-conversations-before-you-need-them": "guide-five-conversations.html",
             "/guides/paperwork-after-someone-dies": "guide-paperwork-after-someone-dies.html",
             "/products/life-story-interview": "product-life-story.html",
+            "/products/family-recipe-cookbook": "product-family-recipe-cookbook.html",
             "/products/family-command-center": "product-family-command-center.html",
             "/products/executors-kit": "product-executors-kit.html",
         },
@@ -508,7 +509,8 @@ def _brand_sitemap_paths(bid, products):
                                            "/product/ER-EK-001",
                                            "/product/ER-FRB-001",
                                            "/product/ER-DAI-001",
-                                           "/product/ER-LSIK-001"]
+                                           "/product/ER-LSIK-001",
+                                           "/product/ER-FRC-001"]
     if bid == "stitchfolk":
         return ["/"] + sorted(ST_PAGES) + [
             f"/product/{p['sku']}" for p in products
