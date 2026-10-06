@@ -171,6 +171,9 @@ Rules — NEVER GUESS:
 - Every word or number you cannot read with confidence goes in the text
   as "[?]" exactly where it belongs (e.g. "1 [?] tsp soda"), and is also
   listed in "unread" in plain language ("the quantity before 'tsp soda'").
+  A missing quantity is written "[?] tsp soda" — never a bare unit, and
+  a partially obscured line is NEVER dropped silently: it appears with
+  its "[?]" and an "unread" entry.
 - Numbers are guilty until proven innocent: quantities, temperatures,
   times and pan sizes flag at ANY doubt (1 vs 7, 1/4 vs 1/2 in cursive).
 - No title on the card -> title is "[Untitled — contributor to name]".
