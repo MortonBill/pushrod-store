@@ -520,7 +520,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 re_prods = _load_catalog(os.path.join(REPO_ROOT, "data", "re-catalog.csv"),
                          os.path.join(REPO_ROOT, "data", "re-prices.json"),
                          sku_prefixes=["RE-GD-"])
-check("RE guide catalog loads 383 rows", len(re_prods) == 383, len(re_prods))
+check("RE guide catalog loads 385 rows", len(re_prods) == 385, len(re_prods))
 _GATE_SKU = "RE-GD-CHEVROLET-BEL-AIR-1955"  # Lane 1 test-purchase gate (opened 2026-10-02, passed $32.05)
 check("every RE guide row WITH a deliverable is listed and purchasable",
       all(p["listed"] is True and p["purchasable"] is True
@@ -537,24 +537,24 @@ check("RE guide prices are draft (never confirmed) placeholders",
 _amounts = {}
 for p in re_prods:
     _amounts[p["price"]["amount"]] = _amounts.get(p["price"]["amount"], 0) + 1
-check("RE guide prices match the live index ($29.95 x382, $19.95 x1)",
-      _amounts == {29.95: 382, 19.95: 1}, str(_amounts))
+check("RE guide prices match the live index ($29.95 x384, $19.95 x1)",
+      _amounts == {29.95: 384, 19.95: 1}, str(_amounts))
 _with_file = [p for p in re_prods if p["digital_file"]]
-check("382 RE guides carry a deliverable; 1 awaits a source PDF",
-      len(_with_file) == 382
+check("385 RE guides carry a deliverable; 0 await a source PDF",
+      len(_with_file) == 385
       and all(p["digital_file"].endswith(".pdf") for p in _with_file)
-      and len(re_prods) - len(_with_file) == 1)
+      and len(re_prods) - len(_with_file) == 0)
 _duster = next(p for p in re_prods if p["sku"] == "RE-GD-1970-PLYMOUTH-DUSTER")
 check("the manifest's $19.95 guide keeps its index price (Duster)",
       _duster["price"]["amount"] == 19.95)
 
 with open(os.path.join(REPO_ROOT, "data", "re-digital-sources.json")) as f:
     _sources = json.load(f)
-check("upload work order: 382 files / 661,219,761 bytes / 1 gap",
-      _sources["storage"]["total_files"] == 382
-      and _sources["storage"]["total_bytes"] == 661219761
-      and sum(e["bytes"] for e in _sources["files"]) == 661219761
-      and len(_sources["missing_source_skus"]) == 1
+check("upload work order: 385 files / 675,077,706 bytes / 0 gaps",
+      _sources["storage"]["total_files"] == 385
+      and _sources["storage"]["total_bytes"] == 675077706
+      and sum(e["bytes"] for e in _sources["files"]) == 675077706
+      and len(_sources["missing_source_skus"]) == 0
       and all(e["size_verified_against_manifest"] for e in _sources["files"]))
 
 # ---------- 6b. SkillForge forms packs + bundles (checkout migration 2026-10-03) ----------

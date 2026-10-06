@@ -623,7 +623,7 @@ FACE_HOME_HEAD = {
     "restorationessentials": (
         "Restoration Essentials | Restoration guides for muscle cars & classic trucks",
         "Restoration Essentials — Restoration guides for muscle cars "
-        "& classic trucks. 383 guides for 1953–1973 American classics."),
+        "& classic trucks. 385 guides for 1947–1973 American classics."),
 }
 _TITLE_RE = re.compile(r"<title>.*?</title>", re.IGNORECASE | re.DOTALL)
 

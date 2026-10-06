@@ -1533,6 +1533,14 @@
     {
       "sku": "RE-GD-THIRD-GEN-FIREBIRD-1982-1992-TRANS-AM-GTA-FORMULA",
       "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-ADVANCE-DESIGN-3100-TRUCK-RESTORATION-GUIDE-1947-1953",
+      "draft_msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-FORD-F-1-TRUCK-RESTORATION-GUIDE-1948-1952",
+      "draft_msrp": 29.95
     }
   ]
 }

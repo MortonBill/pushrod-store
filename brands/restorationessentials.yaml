@@ -47,7 +47,7 @@ catalog:
       prices_json: "/home/hatch/workspace/your_files/re-merch/modern-performance/wholesale-catalog.json"
     - csv: "/home/hatch/workspace/your_files/re-merch/classic-trucks/catalog-index.csv"
       prices_json: "/home/hatch/workspace/your_files/re-merch/classic-trucks/wholesale-catalog.json"
-    # Lane 1 guide catalog (2026-10-02): 383 staged guide rows, all
+    # Lane 1 guide catalog (2026-10-02): 385 guide rows, all
     # listed=0 (dark). Deliverables live in private object storage, NOT in
     # git — see data/re-digital-sources.json (upload work order) and
     # backend/fulfillment/storage.py.

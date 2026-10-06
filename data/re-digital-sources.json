@@ -4,8 +4,8 @@
   "storage": {
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
-    "total_files": 383,
-    "total_bytes": 665835738
+    "total_files": 385,
+    "total_bytes": 675077706
   },
   "files": [
     {
@@ -2687,6 +2687,20 @@
       "source": "/home/hatch/workspace/your_files/business/re-gap-fix-staging/RE_1970-buick-gran-sport-40th-anniversary.pdf",
       "bytes": 4615977,
       "key": "RE_1970-buick-gran-sport-40th-anniversary.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-CHEVROLET-ADVANCE-DESIGN-3100-TRUCK-RESTORATION-GUIDE-1947-1953",
+      "source": "/home/hatch/workspace/your_files/business/re-pre53-truck-guides-2026-10-05/RE_chevrolet-advance-design-3100-truck-restoration-guide-1947-1953.pdf",
+      "bytes": 4621690,
+      "key": "RE_chevrolet-advance-design-3100-truck-restoration-guide-1947-1953.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-FORD-F-1-TRUCK-RESTORATION-GUIDE-1948-1952",
+      "source": "/home/hatch/workspace/your_files/business/re-pre53-truck-guides-2026-10-05/RE_ford-f-1-truck-restoration-guide-1948-1952.pdf",
+      "bytes": 4620278,
+      "key": "RE_ford-f-1-truck-restoration-guide-1948-1952.pdf",
       "size_verified_against_manifest": true
     }
   ],
