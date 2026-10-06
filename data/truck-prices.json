@@ -1308,6 +1308,38 @@
       "base_color": "brown",
       "design_file": "tees/re-ct-t040-gravel-road.webp",
       "msrp": 44.0
+    },
+    {
+      "sku": "RE-CT-H041",
+      "type": "hat",
+      "title": "Advance Design 3100 Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h041-advance-design-3100.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-T061",
+      "type": "tee",
+      "title": "Advance Design 3100",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t061-advance-design-3100.webp",
+      "msrp": 26.0
+    },
+    {
+      "sku": "RE-CT-H042",
+      "type": "hat",
+      "title": "F-1 Flathead Patch",
+      "base_color": "Black",
+      "design_file": "hats/re-ct-h042-ford-f-1.webp",
+      "msrp": 24.0
+    },
+    {
+      "sku": "RE-CT-T062",
+      "type": "tee",
+      "title": "F-1 Flathead",
+      "base_color": "black",
+      "design_file": "tees/re-ct-t062-ford-f-1.webp",
+      "msrp": 26.0
     }
   ]
 }

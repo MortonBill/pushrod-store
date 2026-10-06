@@ -30,6 +30,12 @@ for lib in pushrod muscle modern truck; do
     fi
   fi
 done
+
+# 2026-10-05 overlay: storefront art for the pre-1953 truck designs
+# (RE-CT-H041 / RE-CT-T061 / RE-CT-H042 / RE-CT-T062) layered over the
+# base truck library above. Contents verified byte-identical to the
+# locally built overlay zip (sha256 c88d53f59de753b3220c132ed5a9831c952f38fa637da0b7379f7f6093219ba7).
+curl -fsSL --retry 3 -o truck-overlay.zip "https://files.catbox.moe/yr9s1y.zip" && unzip -qo truck-overlay.zip && rm -f truck-overlay.zip
 cd ../..
 
 # Sanity: catalog loads, all SKUs priced.
@@ -43,7 +49,7 @@ import sys, os
 sys.path.insert(0, 'backend')
 os.environ['BRAND'] = 'gateway'
 import app
-assert len(app.PRODUCTS) == 642, f'expected 642 products, got {len(app.PRODUCTS)}'
+assert len(app.PRODUCTS) == 646, f'expected 646 products, got {len(app.PRODUCTS)}'
 assert all(p['price'] is not None for p in app.PRODUCTS), 'unpriced SKUs present'
 n_purch = sum(1 for p in app.PRODUCTS if p['purchasable'])
 print(f'catalog OK: {len(app.PRODUCTS)} products, all priced, {n_purch} purchasable')

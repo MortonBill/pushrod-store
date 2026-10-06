@@ -2,8 +2,8 @@
   "_meta": {
     "generated": "2026-10-05T21:05:20.909731+00:00",
     "generator": "backend/fulfillment/build_mapping.py",
-    "key_count": 2618,
-    "sku_count": 608,
+    "key_count": 2632,
+    "sku_count": 612,
     "unmapped_count": 34,
     "blanks": {
       "tee": {
@@ -12383,6 +12383,38 @@
         ]
       }
     },
+    "RE-CT-H041": {
+      "catalog_variant_id": 8747,
+      "placement": "embroidery_front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/hat/re-ct-h041-advance-design-3100.png",
+      "technique": "embroidery",
+      "_fill": {
+        "blank_product": "Yupoong 6606 Retro Trucker",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/hat/re-ct-h041-advance-design-3100.png",
+        "print_file_profile": "hat",
+        "print_file_exists": true,
+        "color": "Black",
+        "color_candidates": [
+          "Black"
+        ]
+      }
+    },
+    "RE-CT-H042": {
+      "catalog_variant_id": 8747,
+      "placement": "embroidery_front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/hat/re-ct-h042-ford-f-1.png",
+      "technique": "embroidery",
+      "_fill": {
+        "blank_product": "Yupoong 6606 Retro Trucker",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/hat/re-ct-h042-ford-f-1.png",
+        "print_file_profile": "hat",
+        "print_file_exists": true,
+        "color": "Black",
+        "color_candidates": [
+          "Black"
+        ]
+      }
+    },
     "RE-CT-M001": {
       "catalog_variant_id": 9323,
       "placement": "default",
@@ -23494,6 +23526,210 @@
       "_fill": {
         "blank_product": "Comfort Colors 1717",
         "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t060-heritage-crest.png",
+        "print_file_profile": "apparel",
+        "print_file_exists": true,
+        "color": "black",
+        "color_candidates": [
+          "Black"
+        ],
+        "size": "3XL"
+      }
+    },
+    "RE-CT-T061:S": {
+      "catalog_variant_id": 15114,
+      "placement": "front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/apparel/re-ct-t061-advance-design-3100.png",
+      "technique": "dtg",
+      "_fill": {
+        "blank_product": "Comfort Colors 1717",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t061-advance-design-3100.png",
+        "print_file_profile": "apparel",
+        "print_file_exists": true,
+        "color": "black",
+        "color_candidates": [
+          "Black"
+        ],
+        "size": "S"
+      }
+    },
+    "RE-CT-T061:M": {
+      "catalog_variant_id": 15115,
+      "placement": "front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/apparel/re-ct-t061-advance-design-3100.png",
+      "technique": "dtg",
+      "_fill": {
+        "blank_product": "Comfort Colors 1717",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t061-advance-design-3100.png",
+        "print_file_profile": "apparel",
+        "print_file_exists": true,
+        "color": "black",
+        "color_candidates": [
+          "Black"
+        ],
+        "size": "M"
+      }
+    },
+    "RE-CT-T061:L": {
+      "catalog_variant_id": 15116,
+      "placement": "front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/apparel/re-ct-t061-advance-design-3100.png",
+      "technique": "dtg",
+      "_fill": {
+        "blank_product": "Comfort Colors 1717",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t061-advance-design-3100.png",
+        "print_file_profile": "apparel",
+        "print_file_exists": true,
+        "color": "black",
+        "color_candidates": [
+          "Black"
+        ],
+        "size": "L"
+      }
+    },
+    "RE-CT-T061:XL": {
+      "catalog_variant_id": 15117,
+      "placement": "front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/apparel/re-ct-t061-advance-design-3100.png",
+      "technique": "dtg",
+      "_fill": {
+        "blank_product": "Comfort Colors 1717",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t061-advance-design-3100.png",
+        "print_file_profile": "apparel",
+        "print_file_exists": true,
+        "color": "black",
+        "color_candidates": [
+          "Black"
+        ],
+        "size": "XL"
+      }
+    },
+    "RE-CT-T061:2XL": {
+      "catalog_variant_id": 15118,
+      "placement": "front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/apparel/re-ct-t061-advance-design-3100.png",
+      "technique": "dtg",
+      "_fill": {
+        "blank_product": "Comfort Colors 1717",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t061-advance-design-3100.png",
+        "print_file_profile": "apparel",
+        "print_file_exists": true,
+        "color": "black",
+        "color_candidates": [
+          "Black"
+        ],
+        "size": "2XL"
+      }
+    },
+    "RE-CT-T061:3XL": {
+      "catalog_variant_id": 16326,
+      "placement": "front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/apparel/re-ct-t061-advance-design-3100.png",
+      "technique": "dtg",
+      "_fill": {
+        "blank_product": "Comfort Colors 1717",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t061-advance-design-3100.png",
+        "print_file_profile": "apparel",
+        "print_file_exists": true,
+        "color": "black",
+        "color_candidates": [
+          "Black"
+        ],
+        "size": "3XL"
+      }
+    },
+    "RE-CT-T062:S": {
+      "catalog_variant_id": 15114,
+      "placement": "front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/apparel/re-ct-t062-ford-f-1.png",
+      "technique": "dtg",
+      "_fill": {
+        "blank_product": "Comfort Colors 1717",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t062-ford-f-1.png",
+        "print_file_profile": "apparel",
+        "print_file_exists": true,
+        "color": "black",
+        "color_candidates": [
+          "Black"
+        ],
+        "size": "S"
+      }
+    },
+    "RE-CT-T062:M": {
+      "catalog_variant_id": 15115,
+      "placement": "front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/apparel/re-ct-t062-ford-f-1.png",
+      "technique": "dtg",
+      "_fill": {
+        "blank_product": "Comfort Colors 1717",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t062-ford-f-1.png",
+        "print_file_profile": "apparel",
+        "print_file_exists": true,
+        "color": "black",
+        "color_candidates": [
+          "Black"
+        ],
+        "size": "M"
+      }
+    },
+    "RE-CT-T062:L": {
+      "catalog_variant_id": 15116,
+      "placement": "front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/apparel/re-ct-t062-ford-f-1.png",
+      "technique": "dtg",
+      "_fill": {
+        "blank_product": "Comfort Colors 1717",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t062-ford-f-1.png",
+        "print_file_profile": "apparel",
+        "print_file_exists": true,
+        "color": "black",
+        "color_candidates": [
+          "Black"
+        ],
+        "size": "L"
+      }
+    },
+    "RE-CT-T062:XL": {
+      "catalog_variant_id": 15117,
+      "placement": "front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/apparel/re-ct-t062-ford-f-1.png",
+      "technique": "dtg",
+      "_fill": {
+        "blank_product": "Comfort Colors 1717",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t062-ford-f-1.png",
+        "print_file_profile": "apparel",
+        "print_file_exists": true,
+        "color": "black",
+        "color_candidates": [
+          "Black"
+        ],
+        "size": "XL"
+      }
+    },
+    "RE-CT-T062:2XL": {
+      "catalog_variant_id": 15118,
+      "placement": "front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/apparel/re-ct-t062-ford-f-1.png",
+      "technique": "dtg",
+      "_fill": {
+        "blank_product": "Comfort Colors 1717",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t062-ford-f-1.png",
+        "print_file_profile": "apparel",
+        "print_file_exists": true,
+        "color": "black",
+        "color_candidates": [
+          "Black"
+        ],
+        "size": "2XL"
+      }
+    },
+    "RE-CT-T062:3XL": {
+      "catalog_variant_id": 16326,
+      "placement": "front",
+      "print_file_url": "https://raw.githubusercontent.com/MortonBill/pushrod-print-files/main/truck/apparel/re-ct-t062-ford-f-1.png",
+      "technique": "dtg",
+      "_fill": {
+        "blank_product": "Comfort Colors 1717",
+        "print_file_local": "/home/hatch/workspace/pushrod-print-files/truck/apparel/re-ct-t062-ford-f-1.png",
         "print_file_profile": "apparel",
         "print_file_exists": true,
         "color": "black",

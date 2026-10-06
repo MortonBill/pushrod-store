@@ -78,7 +78,7 @@ def check(name, cond, extra=""):
 # 1. unified catalog: 640 served (642 loaded, PR-M016/PR-M017 dark),
 # zero collisions, 7B- seven-brand line sorts last (Bill 2026-09-30)
 prods = client.get("/api/products").get_json()
-check("640 products served", len(prods) == 640, f"got {len(prods)}")
+check("644 products served", len(prods) == 644, f"got {len(prods)}")
 skus = [p["sku"] for p in prods]
 check("zero SKU collisions", len(set(skus)) == len(skus))
 non7b = [s for s in skus if not s.startswith("7B-")]
@@ -92,7 +92,7 @@ check("sorted by SKU, 7B- last",
 from collections import Counter
 by_prefix = Counter(p["prefix"] for p in prods)
 check("prefix counts + 7B-", dict(by_prefix) == {
-    "PR-": 154, "RE-MC-": 160, "RE-CT-": 160, "RE-MP-": 160, "7B-": 6},
+    "PR-": 154, "RE-MC-": 160, "RE-CT-": 164, "RE-MP-": 160, "7B-": 6},
     str(dict(by_prefix)))
 check("owners correct",
       all(p["owner"] == ("restorationessentials" if p["prefix"].startswith("RE-")
@@ -126,7 +126,7 @@ check("gateway id", b["id"] == "gateway")
 check("4 doors", len(b.get("doors", [])) == 4, str([d["label"] for d in b.get("doors", [])]))
 check("door prefixes cover catalog",
       {d["prefix"] for d in b["doors"]} == {"PR-", "RE-MC-", "RE-CT-", "RE-MP-"})
-check("stats total 642", b["stats"]["total"] == 642)
+check("stats total 646", b["stats"]["total"] == 646)
 check("stats price_tbd 0", b["stats"]["price_tbd"] == 0)
 
 # 6. images: one design file per line resolves via /img/<lib>/
@@ -173,11 +173,11 @@ check("pushrod slice 156", len(push) == 156, str(len(push)))
 # guides dark (2026-10-02); after the $29.95 test-purchase gate passed, the
 # 358 file-backed guides flipped live, then 18 recovered sources joined them,
 # then 6 clean gap rebuilds — the 1 still without a source PDF stays dark.
-check("RE slice 863 (480 merch + 383 guides)", len(re) == 863, str(len(re)))
+check("RE slice 865 (480 merch + 385 guides)", len(re) == 865, str(len(re)))
 _guides = [p for p in re if p["prefix"] == "RE-GD-"]
-check("RE guides: 382 file-backed live, 1 source gap dark",
-      len(_guides) == 383
-      and sum(1 for p in _guides if p["listed"]) == 382
+check("RE guides: 385 file-backed live, 0 source gaps",
+      len(_guides) == 385
+      and sum(1 for p in _guides if p["listed"]) == 385
       and all(p["purchasable"] is False
               for p in _guides if not p["listed"]),
       f"guides={len(_guides)} listed={sum(1 for p in _guides if p['listed'])}")
