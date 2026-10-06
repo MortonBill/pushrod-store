@@ -181,10 +181,10 @@ STRIPE_MODE = os.environ.get("STRIPE_MODE", "test").strip().lower()
 if STRIPE_MODE == "live":
     stripe_key = os.environ.get("STRIPE_LIVE_SECRET_KEY", "")
     PUBLISHABLE_KEY = os.environ.get("STRIPE_LIVE_PUBLISHABLE_KEY", "")
-    if not stripe_key.startswith("sk_live_"):
+    if not stripe_key.startswith(("sk_live_", "rk_live_")):
         raise RuntimeError(
             "REFUSED: STRIPE_MODE=live but STRIPE_LIVE_SECRET_KEY is missing "
-            "or not a live key (must start with sk_live_).")
+            "or not a live key (must start with sk_live_ or rk_live_).")
 else:
     stripe_key = os.environ.get(store_cfg["stripe_secret_key_env"], "")
     PUBLISHABLE_KEY = os.environ.get(
