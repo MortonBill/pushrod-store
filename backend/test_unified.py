@@ -1,5 +1,6 @@
 """Unified-catalog test: 642 SKUs loaded (640 served — PR-M016/PR-M017
-keychains dark since 2026-10-05), zero collisions, every item
+keychains dark since 2026-10-05; PR-H027/PR-H038 and RE-CT-H041/RE-CT-H042
+deleted 2026-10-06), zero collisions, every item
 purchasable-or-honestly-unavailable, then the full checkout/fulfill loop via
 API integration. This file is the "test again" pass on the loaded 642.
 
@@ -78,7 +79,7 @@ def check(name, cond, extra=""):
 # 1. unified catalog: 640 served (642 loaded, PR-M016/PR-M017 dark),
 # zero collisions, 7B- seven-brand line sorts last (Bill 2026-09-30)
 prods = client.get("/api/products").get_json()
-check("644 products served", len(prods) == 644, f"got {len(prods)}")
+check("640 products served", len(prods) == 640, f"got {len(prods)}")
 skus = [p["sku"] for p in prods]
 check("zero SKU collisions", len(set(skus)) == len(skus))
 non7b = [s for s in skus if not s.startswith("7B-")]
@@ -92,7 +93,7 @@ check("sorted by SKU, 7B- last",
 from collections import Counter
 by_prefix = Counter(p["prefix"] for p in prods)
 check("prefix counts + 7B-", dict(by_prefix) == {
-    "PR-": 154, "RE-MC-": 160, "RE-CT-": 164, "RE-MP-": 160, "7B-": 6},
+    "PR-": 152, "RE-MC-": 160, "RE-CT-": 162, "RE-MP-": 160, "7B-": 6},
     str(dict(by_prefix)))
 check("owners correct",
       all(p["owner"] == ("restorationessentials" if p["prefix"].startswith("RE-")
@@ -126,7 +127,7 @@ check("gateway id", b["id"] == "gateway")
 check("4 doors", len(b.get("doors", [])) == 4, str([d["label"] for d in b.get("doors", [])]))
 check("door prefixes cover catalog",
       {d["prefix"] for d in b["doors"]} == {"PR-", "RE-MC-", "RE-CT-", "RE-MP-"})
-check("stats total 646", b["stats"]["total"] == 646)
+check("stats total 642", b["stats"]["total"] == 642)
 check("stats price_tbd 0", b["stats"]["price_tbd"] == 0)
 
 # 6. images: one design file per line resolves via /img/<lib>/
