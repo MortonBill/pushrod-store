@@ -50,6 +50,40 @@ DEFAULT_SENDER_EMAIL = "bill@aitoolsfortoday.com"
 DEFAULT_SENDER_NAME = "AI Tools for Today"
 DEFAULT_TTL_DAYS = 7
 
+# Brand id (catalog OWNERSHIP value) -> customer-facing display name, kept
+# in sync with brands/<id>.yaml `brand.name`. The shared store service
+# boots under ONE brand, so a delivery email branded from the boot brand
+# alone lands in every buyer's inbox as that one brand ("Your download
+# from SkillForge AI" on a RestorationEssentials purchase). The delivery
+# brand therefore resolves from the purchased products' owners below;
+# the caller-supplied store name is only the fallback for carts whose
+# owners are unknown or mixed.
+BRAND_DISPLAY_NAMES = {
+    "restorationessentials": "Restoration Essentials",
+    "ironhead": "IronHead",
+    "skillforge": "SkillForge AI",
+    "stitchfolk": "Stitchfolk",
+    "everready": "EverReady Family",
+    "sportroots": "SportRoots",
+    "pushrod": "PUSHROD\u2122",
+    "gateway": "PUSHROD\u2122",
+}
+
+
+def delivery_brand_name(digital_lines, products_by_sku, fallback=""):
+    """Display brand for a delivery email: the single owning brand of the
+    digital lines being delivered. Mixed-brand carts and unknown owners
+    fall back to `fallback` (the caller's store name, today's behavior).
+    """
+    owners = []
+    for line in digital_lines:
+        owner = (products_by_sku.get(line["sku"]) or {}).get("owner")
+        if owner and owner not in owners:
+            owners.append(owner)
+    if len(owners) == 1 and owners[0] in BRAND_DISPLAY_NAMES:
+        return BRAND_DISPLAY_NAMES[owners[0]]
+    return fallback
+
 
 class DigitalConfigError(RuntimeError):
     """Digital fulfillment is misconfigured (e.g. no signing secret)."""
@@ -313,6 +347,12 @@ def fulfill_digital_lines(stripe_session_id, customer_email, digital_lines,
                                 ttl_seconds=ttl_seconds)
             items.append((title, f"{base}/download/{token}"))
 
+    # The delivery brand follows the purchased products, not the service's
+    # boot brand (see BRAND_DISPLAY_NAMES): a RestorationEssentials buyer's
+    # email says "Restoration Essentials" even though the shared service
+    # boots as another brand. store_name stays the fallback.
+    store_name = delivery_brand_name(digital_lines, products_by_sku,
+                                     store_name)
     ttl_days = int(os.environ.get("DIGITAL_LINK_TTL_DAYS", DEFAULT_TTL_DAYS))
     subject = (f"Your download from {store_name}" if store_name
                else "Your download links")

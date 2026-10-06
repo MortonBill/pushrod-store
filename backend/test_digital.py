@@ -187,6 +187,42 @@ check("one delivery email sent", len(sender.sent) == 1, len(sender.sent))
 check("email addressed to buyer with brand subject",
       sender.sent and sender.sent[0]["to"] == "buyer@example.com"
       and "SkillForge AI" in sender.sent[0]["subject"])
+
+# Delivery brand follows the PURCHASED product, not the service boot
+# brand: the shared service boots as SkillForge AI, but a
+# RestorationEssentials guide buyer's email must say Restoration
+# Essentials (regression: every delivery arrived "from SkillForge AI").
+BY_SKU_RE_OWNED = {
+    "RE-GD-1": {"sku": "RE-GD-1", "title": "1970 Chevelle Guide",
+                "fulfillment_type": "digital",
+                "digital_file": "chevelle.pdf",
+                "owner": "restorationessentials"},
+    "IH-GD-1": {"sku": "IH-GD-1", "title": "CB750 Buyer's Guide",
+                "fulfillment_type": "digital",
+                "digital_file": "cb750.pdf", "owner": "ironhead"},
+}
+re_sender = StubSender()
+dmod.fulfill_digital_lines(
+    "cs_test_brand_re", "buyer@example.com",
+    [{"sku": "RE-GD-1", "qty": 1}], BY_SKU_RE_OWNED,
+    "https://shop.example", store_name="SkillForge AI",
+    signer=signer, sender=re_sender, kit_tagger=StubKit(),
+    ledger=dmod.DigitalLedger(LEDGER))
+check("delivery brand follows purchased product owner",
+      re_sender.sent
+      and re_sender.sent[0]["subject"] == "Your download from "
+      "Restoration Essentials", re_sender.sent)
+mixed_sender = StubSender()
+dmod.fulfill_digital_lines(
+    "cs_test_brand_mixed", "buyer@example.com",
+    [{"sku": "RE-GD-1", "qty": 1}, {"sku": "IH-GD-1", "qty": 1}],
+    BY_SKU_RE_OWNED, "https://shop.example", store_name="SkillForge AI",
+    signer=signer, sender=mixed_sender, kit_tagger=StubKit(),
+    ledger=dmod.DigitalLedger(LEDGER))
+check("mixed-brand cart falls back to caller store name",
+      mixed_sender.sent
+      and mixed_sender.sent[0]["subject"] == "Your download from "
+      "SkillForge AI", mixed_sender.sent)
 link = res["links"][0] if res.get("links") else ""
 check("link points at /download/", "/download/" in link, link)
 emailed_token = link.rsplit("/download/", 1)[-1]
@@ -749,24 +785,28 @@ check("the free Five Conversations magnet is NOT a checkout product",
 
 # Family Bidding Kit (2026-10-05): open-bidding-only paper kit, recreated
 # after the prior sealed-bid edition was banned by Bill's standing rule.
-# Staged listed=0 like every EverReady row until the ER checkout gate;
-# its deliverable ships in the repo at data/digital/family-bidding-kit.pdf.
+# Staged listed=0 until the EverReady checkout gate; flipped LIVE
+# 2026-10-06 with the five-SKU shelf (gap census F1/F2 fake-hold verdict:
+# the gate passed 2026-10-02 and the current-account re-proof runs on
+# this row's sibling ER-DAI-001). Deliverable ships in the repo at
+# data/digital/family-bidding-kit.pdf.
 _fbk = er_by_sku["ER-FBK-001"]
 check("Family Bidding Kit carries its disk deliverable",
       _fbk["digital_file"] == "family-bidding-kit.pdf",
       _fbk["digital_file"])
-check("Family Bidding Kit staged dark (listed=0, not purchasable) "
-      "until the EverReady checkout gate",
-      _fbk["listed"] is False and _fbk["purchasable"] is False
+check("Family Bidding Kit live (listed, purchasable) after the "
+      "2026-10-06 shelf flip",
+      _fbk["listed"] is True and _fbk["purchasable"] is True
       and _fbk["price"]["amount"] == 37.0)
 store_app.BY_SKU["ER-FBK-001"] = _fbk
 rf = client.post("/api/checkout", json={"items": [{"sku": "ER-FBK-001",
                                                     "qty": 1}]})
-check("dark Family Bidding Kit is rejected at checkout (400)",
-      rf.status_code == 400 and "cannot be sold" in
+check("live Family Bidding Kit is accepted at checkout (session or "
+      "Stripe-key error, never 'cannot be sold')",
+      rf.status_code != 400 and "cannot be sold" not in
       (rf.get_json() or {}).get("error", ""), rf.status_code)
-check("unlisted Family Bidding Kit 404s on the public API",
-      client.get("/api/products/ER-FBK-001").status_code == 404)
+check("listed Family Bidding Kit serves on the public API",
+      client.get("/api/products/ER-FBK-001").status_code == 200)
 del store_app.BY_SKU["ER-FBK-001"]
 
 # Family Recipe Cookbook (2026-10-06): the guided build — per-
