@@ -3121,11 +3121,24 @@ def _page(title, body, brand=None):
     home = BRAND_HOME_URLS.get(brand, BRAND_HOME_URLS["RE"])
     home_name = BRAND_NAMES.get(brand, BRAND_NAMES["RE"])
     logo = BRAND_LOGOS.get(brand, BRAND_LOGOS["RE"])
+    canonical = request.url.split("?", 1)[0]
+    description = (
+        f"Live and upcoming {name} auctions, consignor intake, and "
+        "account pages. No auctions are live unless a lot is listed here.")
+    og_image = request.host_url.rstrip("/") + logo
+    page_title = f"{title} · {name} Auctions"
     return (
         "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
         "<meta name=\"viewport\" content=\"width=device-width,"
         "initial-scale=1\">"
-        f"<title>{_esc(title)} · {_esc(name)} Auctions</title>"
+        f"<title>{_esc(page_title)}</title>"
+        f"<meta name=\"description\" content=\"{_esc(description)}\">"
+        f"<link rel=\"canonical\" href=\"{_esc(canonical)}\">"
+        f"<meta property=\"og:type\" content=\"website\">"
+        f"<meta property=\"og:title\" content=\"{_esc(page_title)}\">"
+        f"<meta property=\"og:description\" content=\"{_esc(description)}\">"
+        f"<meta property=\"og:url\" content=\"{_esc(canonical)}\">"
+        f"<meta property=\"og:image\" content=\"{_esc(og_image)}\">"
         f"<style>:root{{--accent:{accent}}}{_PAGE_CSS}</style></head>"
         f"<body><main><p><a href=\"{home}\"><img class=\"brand-logo\" "
         f"src=\"{logo}\" alt=\"{_esc(home_name)}\">&larr; Back to "

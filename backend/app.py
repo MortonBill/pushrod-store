@@ -694,7 +694,7 @@ FACE_HOME_HEAD = {
     "restorationessentials": (
         "Restoration Essentials | Restoration guides for muscle cars & classic trucks",
         "Restoration Essentials — Restoration guides for muscle cars "
-        "& classic trucks. 385 guides for 1947–1973 American classics."),
+        "& classic trucks. 171 guides for 1947–1993 American classics."),
 }
 _TITLE_RE = re.compile(r"<title>.*?</title>", re.IGNORECASE | re.DOTALL)
 
@@ -727,6 +727,82 @@ def _face_head(resp, title=None, description=None, canonical=None):
     resp.set_data(html_text)
     resp.content_length = len(resp.get_data())
     resp.headers.pop("ETag", None)  # body changed; the file's ETag is stale
+    return resp
+
+
+_PRODUCT_LOGO_BY_OWNER = {
+    "restorationessentials": "/static/img/restoration-essentials-logo.png",
+    "ironhead": "/static/img/ironhead-logo.png",
+    "everready": "/static/img/everready-family-logo.png",
+    "stitchfolk": "/static/img/stitchfolk-logo.png",
+    "sportroots": "/static/img/sportroots-logo.jpg",
+    "pushrod": "/static/img/pushrod-logo.png",
+    "skillforge": "/static/img/skillforge-ai-logo.png",
+}
+_RASTER_IMAGE_RE = re.compile(r"\.(?:webp|png|jpe?g|gif|svg)(?:\?.*)?$", re.I)
+
+
+def _inject_product_seo(resp, p, brand_name, canonical):
+    """Add OG/Twitter + Product JSON-LD to a shared-shell product page.
+
+    The shell already gets a product title, meta description, canonical,
+    and <h1> server-side (see product_page), but crawlers and social
+    shares had no Open Graph card and search engines had no Product
+    offer to read. Digital products point image_url at the deliverable
+    PDF, so only raster image paths are advertised as images; PDFs fall
+    back to the owning brand's logo rather than a broken cover image.
+    """
+    if 'property="og:title"' in resp.get_data(as_text=True):
+        return resp
+    title = f"{p['title']} | {brand_name}"
+    description = (p.get("description") or "").strip() or f"{p['title']} — {brand_name}."
+    base = canonical.split("/product/")[0]
+    image_url = (p.get("image_url") or "").strip()
+    if image_url and _RASTER_IMAGE_RE.search(image_url):
+        og_image = image_url if image_url.startswith("http") else base + image_url
+    else:
+        og_image = base + _PRODUCT_LOGO_BY_OWNER.get(
+            p.get("owner") or "", "/static/img/pushrod-logo.png")
+    product_ld = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": p["title"],
+        "description": description,
+        "sku": p["sku"],
+        "url": canonical,
+        "brand": {"@type": "Brand", "name": brand_name},
+        "image": og_image,
+    }
+    price = p.get("price") or {}
+    amount = price.get("amount")
+    if amount is not None:
+        product_ld["offers"] = {
+            "@type": "Offer",
+            "url": canonical,
+            "priceCurrency": "USD",
+            "price": f"{float(amount):.2f}",
+            "availability": ("https://schema.org/InStock" if p.get("purchasable")
+                             else "https://schema.org/OutOfStock"),
+            "itemCondition": "https://schema.org/NewCondition",
+        }
+    json_ld = json.dumps(product_ld, separators=(",", ":")).replace("</", "<\\/")
+    head_extra = (
+        '\n<meta property="og:type" content="product">'
+        f'\n<meta property="og:title" content="{_html_escape(title, quote=True)}">'
+        f'\n<meta property="og:description" content="{_html_escape(description, quote=True)}">'
+        f'\n<meta property="og:url" content="{_html_escape(canonical, quote=True)}">'
+        f'\n<meta property="og:image" content="{_html_escape(og_image, quote=True)}">'
+        '\n<meta name="twitter:card" content="summary">'
+        f'\n<meta name="twitter:title" content="{_html_escape(title, quote=True)}">'
+        f'\n<meta name="twitter:description" content="{_html_escape(description, quote=True)}">'
+        f'\n<script type="application/ld+json">{json_ld}</script>')
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    if 'property="og:title"' not in html_text:
+        html_text = html_text.replace("</head>", head_extra + "\n</head>", 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
     return resp
 
 
@@ -1129,6 +1205,8 @@ def product_page(sku):
         if p.get("owner") != face_cfg["brand"]["id"]:
             return "Not found", 404
     resp = send_from_directory(FRONTEND, "product.html")
+    seo_brand_name = None
+    seo_canonical = None
     if _request_host_key() in HOST_FACES:
         # Face host (RestorationEssentials/EverReady/Stitchfolk): the raw
         # bytes carry the product and the face brand, not the shared
@@ -1143,6 +1221,8 @@ def product_page(sku):
         # Header/footer chrome too: the shared shell's small-print,
         # back link, and footer are PUSHROD's until JS swaps the name.
         resp = _face_product_chrome(resp, cfg)
+        seo_brand_name = b["name"]
+        seo_canonical = f"https://{_request_host_key()}{request.path}"
     elif _request_host_key() in PUSHROD_STORE_HOSTS:
         # PushRod storefront (pushrodshop.com): the raw bytes carried
         # the bare PUSHROD title with no meta description and no
@@ -1155,8 +1235,12 @@ def product_page(sku):
             description=(p.get("description") or "").strip()
             or f"{p['title']} — PushRod.",
             canonical=f"https://pushrodshop.com/product/{sku}")
+        seo_brand_name = "PushRod"
+        seo_canonical = f"https://pushrodshop.com/product/{sku}"
     # The shell ships an empty #pdetail; seed it with the product <h1>.
     resp = _inject_product_h1(resp, p["title"])
+    if seo_brand_name and seo_canonical:
+        resp = _inject_product_seo(resp, p, seo_brand_name, seo_canonical)
     if _request_host_key() in HOST_FACES:
         # RE guide pages carry the matching merch shelf strip.
         face_cfg, _face_products = _face()
@@ -1173,6 +1257,19 @@ def success_page():
 @app.get("/checkout/cancel")
 def cancel_page():
     return send_from_directory(FRONTEND, "cancel.html")
+
+
+@app.get("/cart")
+@app.get("/checkout")
+def cart_entry():
+    """The cart lives in the drawer on the storefront shells.
+
+    A typed or legacy /cart (or /checkout) URL used to dead-end on a
+    bare Flask 404. Send the shopper back to the storefront on the same
+    host, where the cart drawer and checkout button live; this is a
+    navigation route only and never starts a payment.
+    """
+    return Response(status=302, headers={"Location": "/"})
 
 
 # ---------- SEO discovery (sitemap / robots) ----------

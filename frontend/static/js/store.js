@@ -2,6 +2,13 @@
    Cart persists in localStorage; the server re-validates everything at checkout. */
 const $ = s => document.querySelector(s);
 const money = c => '$' + (c / 100).toFixed(2);
+const RASTER_IMAGE = /\.(?:webp|png|jpe?g|gif|svg)(?:\?.*)?$/i;
+function productImage(p, attrs = '') {
+  // Digital products carry the deliverable PDF as image_url; never
+  // render that path as an <img> (it is a broken cover image, not art).
+  if (!p || !RASTER_IMAGE.test(p.image_url || '')) return '';
+  return `<img ${attrs} src="${p.image_url}" alt="${p.title}">`;
+}
 
 let BRAND = null, PRODUCTS = [], BY_SKU = {};
 let DOOR = 'all';   // gateway door filter: 'all' or a SKU prefix
@@ -119,7 +126,7 @@ function renderGrid() {
       const el = document.createElement('div');
       el.className = 'card';
       el.innerHTML = `
-        <a href="/product/${p.sku}"><img loading="lazy" src="${p.image_url}" alt="${p.title}"></a>
+        ${productImage(p, 'loading="lazy"') ? `<a href="/product/${p.sku}">${productImage(p, 'loading="lazy"')}</a>` : ''}
         <div class="body">
           <div class="meta">${p.type} · ${p.base_color}</div>
           <h3><a href="/product/${p.sku}">${p.title}</a></h3>
@@ -145,7 +152,7 @@ function renderDetail() {
   const p = BY_SKU[sku];
   if (!p) { $('#pdetail').innerHTML = '<p>Product not found.</p>'; return; }
   $('#pdetail').innerHTML = `
-    <div><img src="${p.image_url}" alt="${p.title}"></div>
+    <div>${productImage(p)}</div>
     <div>
       <div class="meta">${p.type} · ${p.base_color} · ${p.sku}</div>
       <h1>${p.title}</h1>
@@ -213,7 +220,7 @@ function renderCart() {
     const el = document.createElement('div');
     el.className = 'citem';
     el.innerHTML = `
-      <img src="${p.image_url}" alt="">
+      ${productImage(p)}
       <div class="grow">
         <div class="row"><strong>${p.title}</strong>
           <a href="#" data-rm style="color:var(--muted)">✕</a></div>
