@@ -816,23 +816,26 @@ del store_app.BY_SKU["ER-FBK-001"]
 # Bill-confirmed prices: digital build/PDF $37 (this row's checkout
 # price), bound printed copy $49 incl. the build, extra bound copies
 # $29.95 (print lane). Staged listed=0 until the EverReady checkout
-# gate + listing go, exactly like ER-FBK-001.
+# gate; flipped LIVE 2026-10-06 on Bill's go, exactly like
+# ER-FBK-001 earlier that day. The $49/$29.95 bound copies are not a
+# checkout SKU — they stay dark until the Lulu paid proof passes.
 _frc = er_by_sku["ER-FRC-001"]
 check("Family Recipe Cookbook carries its disk deliverable",
       _frc["digital_file"] == "family-recipe-cookbook.pdf",
       _frc["digital_file"])
-check("Family Recipe Cookbook staged dark (listed=0, not purchasable) "
-      "at the Bill-confirmed $37 until the EverReady listing go",
-      _frc["listed"] is False and _frc["purchasable"] is False
+check("Family Recipe Cookbook live (listed, purchasable) at the "
+      "Bill-confirmed $37 after the 2026-10-06 listing go",
+      _frc["listed"] is True and _frc["purchasable"] is True
       and _frc["price"]["amount"] == 37.0)
 store_app.BY_SKU["ER-FRC-001"] = _frc
 rf = client.post("/api/checkout", json={"items": [{"sku": "ER-FRC-001",
                                                     "qty": 1}]})
-check("dark Family Recipe Cookbook is rejected at checkout (400)",
-      rf.status_code == 400 and "cannot be sold" in
+check("live Family Recipe Cookbook is accepted at checkout (session or "
+      "Stripe-key error, never 'cannot be sold')",
+      rf.status_code != 400 and "cannot be sold" not in
       (rf.get_json() or {}).get("error", ""), rf.status_code)
-check("unlisted Family Recipe Cookbook 404s on the public API",
-      client.get("/api/products/ER-FRC-001").status_code == 404)
+check("listed Family Recipe Cookbook serves on the public API",
+      client.get("/api/products/ER-FRC-001").status_code == 200)
 del store_app.BY_SKU["ER-FRC-001"]
 
 with open(os.path.join(REPO_ROOT, "brands", "everready.yaml")) as f:
