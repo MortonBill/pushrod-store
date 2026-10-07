@@ -35,7 +35,7 @@ import stripe
 import yaml
 from flask import Flask, Response, jsonify, request, send_from_directory, stream_with_context
 
-from catalog import load_unified_catalog, catalog_stats, APPAREL_SIZES, mapping_keys_for, mapping_complete
+from catalog import load_unified_catalog, catalog_stats, APPAREL_SIZES, mapping_keys_for, mapping_complete, OWNERSHIP
 from fulfillment.fulfill import (
     fulfill_paid_order, load_mapping, mapping_key, build_order_items,
     split_cart_lines,
@@ -83,6 +83,31 @@ brand = load_brand(BRAND_ID)
 theme = brand["theme"]
 catalog_cfg = brand["catalog"]
 store_cfg = brand["store"]
+
+# Per-brand display names for Stripe Checkout line items (2026-10-07 fix):
+# this process serves the unified catalog behind every brand face, so a
+# line item's seller name must come from the PRODUCT's owning brand
+# (catalog.OWNERSHIP, carried on each product as p["owner"]) — never from
+# this process's own BRAND_ID. Before this fix every line rendered as
+# "<serving process brand> — <title>", so on the SkillForge process all
+# RestorationEssentials/IronHead/Stitchfolk/EverReady products checked
+# out as "SkillForge AI — …" (2026-10-06 buy-button audit: 730/1,370
+# products misattributed). The account-level merchant display name is
+# account configuration and is deliberately not touched here.
+BRAND_DISPLAY_NAMES = {}
+for _owner_id in sorted(set(OWNERSHIP.values())):
+    try:
+        BRAND_DISPLAY_NAMES[_owner_id] = \
+            load_brand(_owner_id)["brand"]["name"]
+    except Exception as exc:  # a bad brand file must never take the store down
+        log.warning("brand display name %s not loaded: %s", _owner_id, exc)
+BRAND_DISPLAY_NAMES.setdefault(brand["brand"]["id"], brand["brand"]["name"])
+
+
+def _checkout_brand_name(line):
+    """Checkout display name of the brand that owns a validated cart line."""
+    return BRAND_DISPLAY_NAMES.get(line.get("owner")) \
+        or brand["brand"]["name"]
 
 # Host-mapped storefront faces (2026-10-04): restoreessentials.com is
 # attached to this service, but its customers must see the Restoration
@@ -1141,7 +1166,8 @@ def _validate_cart(items, price_fn=None):
         else:
             unit_cents = int(round(p["price"]["amount"] * 100))
         lines.append({"sku": sku, "title": p["title"], "size": size,
-                      "qty": qty, "unit_cents": unit_cents})
+                      "qty": qty, "unit_cents": unit_cents,
+                      "owner": p["owner"]})
         total_cents += unit_cents * qty
     return lines, total_cents, errors
 
@@ -1235,7 +1261,7 @@ def api_checkout():
         "price_data": {
             "currency": store_cfg["currency"],
             "unit_amount": l["unit_cents"],
-            "product_data": {"name": f"{brand['brand']['name']} — {l['title']}"
+            "product_data": {"name": f"{_checkout_brand_name(l)} — {l['title']}"
                                      + (f" ({l['size']})" if l["size"] else ""),
                              "tax_code": DIGITAL_TAX_CODE if _is_digital(l["sku"])
                              else PHYSICAL_TAX_CODE},
