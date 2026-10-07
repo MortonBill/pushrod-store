@@ -769,8 +769,19 @@ def build_book_pdf(book, out_path):
 # ---------- intake page (link-based, no accounts) ----------
 
 INTAKE_HTML = """<!doctype html>
+<head>
+<meta charset="utf-8">
 <title>Family Recipe Cookbook — submit your cards</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://everready-family.com/cookbook">
+<meta name="description" content="Contributors' page for the EverReady Family Recipe Cookbook: photograph your handwritten recipe cards (front and back), get a never-guess transcription back, and confirm it for the family book.">
+<meta property="og:title" content="Family Recipe Cookbook — submit your cards">
+<meta property="og:description" content="Photograph your handwritten recipe cards (front and back), get a never-guess transcription back, and confirm it for the family book.">
+<meta property="og:image" content="https://everready-family.com/static/img/everready-family-logo.png">
+<meta property="og:url" content="https://everready-family.com/cookbook">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+</head>
 <style>
  body{font-family:Georgia,serif;background:#141210;color:#f3ede2;margin:2em auto;max-width:640px;padding:0 1em}
  h1{font-size:1.4em} .card{background:#221e19;border:1px solid #c9a24b55;border-radius:8px;padding:1em;margin:1em 0}
@@ -779,6 +790,11 @@ INTAKE_HTML = """<!doctype html>
  .flag{color:#e8b34b} img{max-width:100%;border:1px solid #c9a24b}
 </style>
 <h1>Family Recipe Cookbook</h1>
+<p><b>New here?</b> The cookbook starts with the <b>$37 digital build</b>:
+<a href="/product/ER-FRC-001">Buy the digital cookbook — $37</a>, then have
+a contributor link for every relative. Bound printed copies ($49) aren't
+open yet — they follow when the print lane goes live. Full details:
+<a href="/products/family-recipe-cookbook">how the cookbook works</a>.</p>
 <p><i>Remember, settle, and save what matters.</i> Photograph a recipe
 card — flat, straight-on, good light, one card at a time. Many cards
 are written on <b>both sides</b>: if yours is, add the back below —

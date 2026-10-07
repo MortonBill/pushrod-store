@@ -572,7 +572,7 @@ def _brand_sitemap_paths(bid, products):
     default /sitemap.xml below already lists exactly their products).
     Pure builder: the face-only host guards stay in the routes."""
     if bid == "everready":
-        return ["/"] + sorted(ER_PAGES) + ["/product/ER-FCC-001",
+        return ["/", "/cookbook"] + sorted(ER_PAGES) + ["/product/ER-FCC-001",
                                            "/product/ER-EK-001",
                                            "/product/ER-FBK-001",
                                            "/product/ER-FRB-001",
