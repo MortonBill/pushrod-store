@@ -1406,7 +1406,7 @@ check("IronHead prices are the canonical confirmed prices",
       and _ih_prices.get("IH-CB750-SOHC") == 29.95
       and _ih_prices.get("IH-KZ1000") == 29.95
       and _ih_prices.get("IH-DUCATI-BEVEL") == 29.95
-      and _ih_prices.get("IH-SHOVELHEAD-BUYERS-GUIDE") == 19.95
+      and _ih_prices.get("IH-SHOVELHEAD-BUYERS-GUIDE") == 29.95
       and _ih_prices.get("IH-HONDA-SOHC-6PACK") == 129.0
       and _ih_prices.get("IH-FULL-CATALOG-PASS") == 449.0)
 check("no duplicate IronHead SKUs",
