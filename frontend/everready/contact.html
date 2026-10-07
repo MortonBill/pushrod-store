@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Family Command Center · EverReady Family</title>
-<link rel="canonical" href="https://everready-family.com/products/family-command-center">
-<meta name="description" content="A private home for household records, contacts, accounts, and final wishes, so the people you trust can find what matters.">
+<title>Contact · EverReady Family</title>
+<link rel="canonical" href="https://everready-family.com/contact">
+<meta name="description" content="Talk to EverReady Family: product questions, order help, and getting your family's records ready — every note reaches the operator's inbox.">
 <style>
-  :root{--bg:#141210;--bg2:#1a1713;--card:#221e19;--accent:#c9a24b;--accent2:#7a9b5a;--text:#f3ede2;--muted:#a89e8d}
+  :root{--bg:#141210;--bg2:#1a1713;--card:#221e19;--accent:#c9a24b;--accent2:#7a9b5a;--text:#f3ede2;--muted:#a89e8d;--line:#2c2721}
   *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.6}
   h1,h2,h3{font-family:Georgia,'Times New Roman',serif;line-height:1.25;margin:0 0 .6rem}
   a{color:var(--accent)} .wrap{max-width:960px;margin:0 auto;padding:0 1.25rem}
@@ -21,11 +21,12 @@
   nav.main a{color:var(--text);text-decoration:none;font-size:.95rem} nav.main a:hover{color:var(--accent)}
   main{padding:2.5rem 0 3rem}
   .lede{font-size:1.12rem;color:var(--muted);max-width:44rem}
-  article{max-width:46rem}
-  .card{background:var(--card);border:1px solid #2c2721;border-radius:.8rem;padding:1.4rem;margin:1.2rem 0}
-  .price{color:var(--accent);font-weight:700;font-size:1.3rem}
-  .btn{display:inline-block;background:var(--accent);color:#1a1503;text-decoration:none;font-weight:600;padding:.65rem 1.25rem;border-radius:.5rem}
   .btnrow{display:flex;gap:.8rem;flex-wrap:wrap;margin:1rem 0}
+  .btn{display:inline-block;background:var(--accent);color:#1a1503;text-decoration:none;font-weight:600;padding:.6rem 1.15rem;border-radius:.5rem;border:0;cursor:pointer;font-size:1rem}
+  .card{background:var(--card);border:1px solid #2c2721;border-radius:.8rem;padding:1.4rem;margin:1.2rem 0}
+  .meta{color:var(--muted);font-size:.9rem}
+  label{display:block;margin:.8rem 0 .3rem;font-weight:600}
+  input.f,textarea.f{width:100%;padding:.6rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg2);color:var(--text)}
   footer.page{border-top:1px solid #2c2721;background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2rem 0;margin-top:2rem}
   footer.page a{color:var(--muted)}
   @media (max-width:640px){.brand img{width:46px;height:46px}.brand{font-size:1.12rem}}
@@ -43,30 +44,32 @@
   </nav>
 </div></header>
 <main><div class="wrap">
-<article>
-
-  <h1>Family Command Center</h1>
-  <p class="lede">A private home for household records, contacts, accounts, and final wishes, so the people you trust can find what matters.</p>
-  <p class="price">$37</p>
-  <div class="btnrow"><a class="btn" href="/product/ER-FCC-001">Buy the Family Command Center — $37</a></div>
-
+  <section class="hero">
+    <h1>Talk to EverReady Family.</h1>
+    <p class="lede">Questions about a product, help with an order, or not sure where your family should start? Send a note and it lands directly in the operator's inbox — no triage layer, no shared mailbox intermediate.</p>
+  </section>
   <div class="card">
-    <h2>What's inside</h2>
-    <ul>
-      <li><strong>Household records</strong> — the documents and details your family should not have to hunt for.</li>
-      <li><strong>Contacts</strong> — the people to call, in one place.</li>
-      <li><strong>Accounts</strong> — everyone's info and accounts, organized.</li>
-      <li><strong>Final wishes</strong> — written down while they can still be asked about.</li>
-    </ul>
-    <p>For the people you trust. The Family Command Center is a digital planner — delivered as a download, ready to print or fill in on a screen.</p>
+    <h2>Send a message</h2>
+    <p class="meta">Only name, email, and message are required. We read every note that lands in the inbox.</p>
+    <form id="cform">
+      <label for="n">Name</label><input class="f" id="n" autocomplete="name">
+      <label for="e">Email</label><input class="f" id="e" type="email" autocomplete="email">
+      <label for="m">Message</label><textarea class="f" id="m" rows="7"></textarea>
+      <div class="btnrow"><button class="btn" type="submit">Send the note</button></div>
+    </form>
+    <p class="meta">For everything that isn't a free-form message — order questions, download access issues — your purchase email is the fastest thread to reply to.</p>
   </div>
-
-  <p>Make the important things findable before they become urgent. Gather the household records, contacts, account details, and wishes your family should not have to hunt for — and turn what is in your head into plain instructions that someone else can follow without guessing.</p>
-
-  <div class="btnrow"><a class="btn" href="/checklist">Start with the free family checklist</a></div>
-  <p>It pairs with the <a href="/products/executors-kit">Executor's Kit</a>: the Command Center holds the records; the Kit walks the process.</p>
-
-</article>
+<script>
+document.getElementById('cform').addEventListener('submit', function(ev){
+  ev.preventDefault();
+  var n = document.getElementById('n').value, e = document.getElementById('e').value,
+      m = document.getElementById('m').value;
+  var subj = 'EverReady Family contact — ' + (n || 'a reader');
+  var body = m + '\n\n— ' + n + (e ? ' <' + e + '>' : '');
+  window.location.href = 'mailto:bill@aitoolsfortoday.com?subject=' +
+    encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
+});
+</script>
 </div></main>
 <footer class="page"><div class="wrap">
   <p><strong style="color:var(--text)">EverReady Family</strong> — Keep peace with family.</p>

@@ -307,6 +307,7 @@ FACE_PAGES = {
             "/products/family-recipe-cookbook": "product-family-recipe-cookbook.html",
             "/products/family-command-center": "product-family-command-center.html",
             "/products/executors-kit": "product-executors-kit.html",
+            "/contact": "contact.html",
         },
     },
     "stitchfolk": {
@@ -550,6 +551,7 @@ def _brand_sitemap_paths(bid, products):
     if bid == "everready":
         return ["/"] + sorted(ER_PAGES) + ["/product/ER-FCC-001",
                                            "/product/ER-EK-001",
+                                           "/product/ER-FBK-001",
                                            "/product/ER-FRB-001",
                                            "/product/ER-DAI-001",
                                            "/product/ER-LSIK-001",
