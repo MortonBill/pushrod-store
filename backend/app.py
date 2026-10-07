@@ -757,6 +757,44 @@ def _inject_product_h1(resp, title):
     return resp
 
 
+def _face_product_chrome(resp, cfg):
+    """Server-render the face brand's chrome on a product page.
+
+    frontend/product.html is the shared shell: its header small-print
+    ("GARAGE GEAR"), back link ("← Back to the garage"), and footer
+    ("— garage-built gear.") are PUSHROD's. store.js swaps only the
+    .brandname text after load, so the raw bytes (crawler / first
+    paint) read PUSHROD on every face domain. On face hosts, rewrite
+    those three strings to the face brand's name/tagline so the
+    server-rendered page is the host brand on its own. Other hosts
+    (incl. pushrodshop.com, where PUSHROD chrome is correct) are
+    returned untouched. Caller guarantees the request host is in
+    HOST_FACES.
+    """
+    b = cfg["brand"]
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    # The name spans too (header + footer): store.js would swap them
+    # to the same value after load, but the raw bytes must not claim
+    # PUSHROD on another brand's domain even before JS runs.
+    html_text = html_text.replace(
+        '<span class="brandname">PUSHROD</span>',
+        f'<span class="brandname">{_html_escape(b["name"])}</span>')
+    html_text = html_text.replace(
+        "<small>GARAGE GEAR</small>",
+        f"<small>{_html_escape(b['tagline'])}</small>", 1)
+    html_text = html_text.replace(
+        "← Back to the garage",
+        f"← Back to {_html_escape(b['name'])}", 1)
+    html_text = html_text.replace(
+        " — garage-built gear.",
+        f" — {_html_escape(b['tagline'])}.", 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
+    return resp
+
+
 # ---------- merch cross-sell shelves (RestorationEssentials face) ----------
 # Curated lead designs from the PushRod merch catalog, linked (never
 # sold) from the RestorationEssentials face: pushrodshop.com is the
@@ -949,6 +987,15 @@ def product_page(sku):
     # Dark-staged rows (listed=0) have no public product page.
     if not p or not p.get("listed", True):
         return "Not found", 404
+    if _request_host_key() in HOST_FACES:
+        # A brand face sells only its own products (same rule as
+        # /api/products): a foreign brand's SKU must not render under
+        # this host's brand — 404, never a misbranded page. Non-face
+        # hosts (incl. pushrodshop.com, which sells the unified merch
+        # catalog by design) are unchanged.
+        face_cfg, _face_products = _face()
+        if p.get("owner") != face_cfg["brand"]["id"]:
+            return "Not found", 404
     resp = send_from_directory(FRONTEND, "product.html")
     if _request_host_key() in HOST_FACES:
         # Face host (RestorationEssentials/EverReady/Stitchfolk): the raw
@@ -961,6 +1008,9 @@ def product_page(sku):
             title=f"{p['title']} | {b['name']}",
             description=(p.get("description") or "").strip()
             or f"{p['title']} — {b['name']}.")
+        # Header/footer chrome too: the shared shell's small-print,
+        # back link, and footer are PUSHROD's until JS swaps the name.
+        resp = _face_product_chrome(resp, cfg)
     elif _request_host_key() in PUSHROD_STORE_HOSTS:
         # PushRod storefront (pushrodshop.com): the raw bytes carried
         # the bare PUSHROD title with no meta description and no

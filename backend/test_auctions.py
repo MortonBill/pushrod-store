@@ -1342,7 +1342,7 @@ check("RE auction index links to IronHead auctions",
 r = anon.get("/auctions?brand=IH")
 check("IH auction index links to the RE auctions",
       r.status_code == 200 and "/auctions?brand=RE" in r.get_data(as_text=True)
-      and "RestorationEssentials auctions" in r.get_data(as_text=True))
+      and "Restoration Essentials auctions" in r.get_data(as_text=True))
 r = anon.get("/auctions/lot/" + api_lot["id"])
 check("RE lot page carries the motorcycle cross-link to IronHead",
       r.status_code == 200 and "/auctions?brand=IH" in r.get_data(as_text=True))

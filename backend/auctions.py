@@ -119,7 +119,7 @@ log = logging.getLogger("pushrod.auctions")
 bp = Blueprint("auctions", __name__)
 
 BRANDS = ("RE", "IH")
-BRAND_NAMES = {"RE": "RestorationEssentials", "IH": "IronHead"}
+BRAND_NAMES = {"RE": "Restoration Essentials", "IH": "IronHead"}
 # Each brand's home site — the auctions page header links back here (a
 # visitor who arrived from the brand site gets a working way back).
 BRAND_HOME_URLS = {"RE": "https://restorationessentials.polsia.app/",
@@ -3195,7 +3195,7 @@ def _cross_brand_card(target):
 # (the seller intake: account creation with the "I plan to sell" flag).
 _CONSIGN_COPY = {
     "RE": ("Have a classic to sell?",
-           "RestorationEssentials auctions is now accepting consignments "
+           "Restoration Essentials auctions is now accepting consignments "
            "for our first sales — 1953–1973 American classics: muscle "
            "cars, trucks, and modern performance. Create a seller "
            "account and tell us about your car."),
