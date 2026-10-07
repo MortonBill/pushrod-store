@@ -54,6 +54,23 @@ MAX_PHOTO_BYTES = 15 * 1024 * 1024
 PAGE_W, PAGE_H = 612.0, 792.0          # 8.5x11in at 72dpi
 MIN_BOOK_PAGES = 32                    # perfect-bound print floor (brief §8)
 
+# Contributor permission-to-publish release (2026-10-07, Bill: "keep it
+# simple"). Applies ONLY to outside-family contributors the organizer
+# invites (contributor flag outside_family=True); the Morton-family
+# pilot is never gated. Acceptance is stored once per contributor
+# (name, timestamp, wording version) and stamped on each recipe.
+RELEASE_VERSION = "2026-10-07-v1"
+RELEASE_TEXT = (
+    "I confirm I have the right to share these recipe photos. I give "
+    "EverReady Family permission to transcribe them and to publish the "
+    "photos and the recipes, credited to my name, in this Family Recipe "
+    "Cookbook in print and digital form, including copies of the book "
+    "that are printed or sold. I understand I will not be paid for "
+    "contributing. If I ask in writing before the book is printed, "
+    "EverReady Family will leave my recipes out; after printing, they "
+    "can be removed from future editions."
+)
+
 _lock = threading.Lock()
 _public_base_url = None
 
@@ -416,6 +433,26 @@ def _contributor_for(book):
     return None
 
 
+def _release_required(contributor):
+    """True when an outside-family contributor has not yet accepted the
+    current release wording. Family contributors (the default) and the
+    Morton pilot are never required. Acceptance is once per contributor
+    per wording version — it is stored, not re-asked on every card."""
+    if not contributor or not contributor.get("outside_family"):
+        return False
+    acc = contributor.get("release_acceptance") or {}
+    return acc.get("version") != RELEASE_VERSION
+
+
+def _release_accepted_in_request():
+    val = ""
+    if request.form:
+        val = request.form.get("release_accepted") or ""
+    if not val:
+        val = request.args.get("release_accepted") or ""
+    return str(val).strip().lower() in ("1", "true", "yes", "on")
+
+
 def _recipe_view(book, recipe):
     contributor = next((c for c in book["contributors"]
                         if c["id"] == recipe["contributor_id"]), None)
@@ -432,6 +469,7 @@ def _recipe_view(book, recipe):
         "photo_url": f"{base}/api/cookbook/recipes/{recipe['id']}/photo",
         "submitted_at": recipe["submitted_at"],
         "confirmed_at": recipe.get("confirmed_at"),
+        "release_version": recipe.get("release_version"),
     }
 
 
@@ -648,6 +686,15 @@ Nothing locks until you confirm it.</p>
  <button onclick="send()">Submit card</button>
  <div id="out"></div>
 </div>
+<div class="card" id="release" style="display:none">
+ <p><b>One quick permission note</b> — because you're contributing
+ from outside the family, please read this before your first card
+ goes in:</p>
+ <p id="reltext"></p>
+ <label><input id="relok" type="checkbox" style="width:auto">
+ I agree — you may publish my recipe photos and recipes as described
+ above.</label>
+</div>
 <script>
 let B=new URLSearchParams(location.search).get('book')||'';
 async function send(){
@@ -655,7 +702,20 @@ async function send(){
  const f=document.getElementById('photo').files[0];
  const out=document.getElementById('out');
  if(!t||!f){out.textContent='Add your token and a photo first.';return;}
+ // Outside-family contributors see (and must accept) the
+ // permission-to-publish release before a first upload. The server
+ // enforces this too — this check is only so you see it up front.
+ const st=await fetch('/api/cookbook/books/'+B+'/contributor?token='+encodeURIComponent(t));
+ if(st.ok){const sj=await st.json();
+  if(sj.release_required){
+   const box=document.getElementById('release');
+   box.style.display='block';
+   document.getElementById('reltext').textContent=sj.release_text;
+   if(!document.getElementById('relok').checked){
+    out.textContent='Please read the permission note below and tick the box, then submit again.';
+    return;}}}
  const fd=new FormData(); fd.append('photo',f); fd.append('token',t);
+ if(document.getElementById('relok').checked)fd.append('release_accepted','true');
  const r=await fetch('/api/cookbook/books/'+B+'/photos',{method:'POST',body:fd});
  const j=await r.json();
  if(!r.ok){out.textContent=j.error||'Something went wrong.';return;}
@@ -720,8 +780,16 @@ def init(app, public_base_url=None):
             return jsonify({"error": "not found"}), 404
         return jsonify({
             "book_id": book["id"], "family_name": book["family_name"],
-            "contributors": [{"id": c["id"], "name": c["name"]}
-                             for c in book["contributors"]],
+            "contributors": [{
+                "id": c["id"], "name": c["name"],
+                "outside_family": bool(c.get("outside_family")),
+                "release_accepted":
+                    bool(c.get("release_acceptance")),
+                "release_version":
+                    (c.get("release_acceptance") or {}).get("version"),
+                "release_accepted_at":
+                    (c.get("release_acceptance") or {}).get("accepted_at"),
+            } for c in book["contributors"]],
             "recipes": [_recipe_view(book, r) for r in book["recipes"]],
             "confirmed": sum(1 for r in book["recipes"]
                              if r["status"] == "confirmed"),
@@ -736,16 +804,52 @@ def init(app, public_base_url=None):
         name = clean_text(data.get("name", ""))
         if not name:
             return jsonify({"error": "name is required"}), 400
+        # Organizers mark invited non-family contributors with
+        # outside_family=true; only they see (and must accept) the
+        # permission-to-publish release before uploading. Family
+        # contributors — including the Morton pilot — are never gated.
+        raw_outside = data.get("outside_family")
+        outside_family = raw_outside is True or (
+            isinstance(raw_outside, str)
+            and raw_outside.strip().lower() in ("1", "true", "yes"))
         token = secrets.token_urlsafe(24)
         contributor = {"id": _new_id("ct"), "name": name,
                        "token_hash": _hash(token),
-                       "created_at": int(time.time())}
+                       "created_at": int(time.time()),
+                       "outside_family": outside_family,
+                       "release_acceptance": None}
         with _lock:
             book["contributors"].append(contributor)
             _save_book(book)
         return jsonify({"contributor_id": contributor["id"], "name": name,
                         "submit_token": token,
-                        "submit_path": f"/cookbook?book={book_id}"}), 201
+                        "submit_path": f"/cookbook?book={book_id}",
+                        "outside_family": outside_family,
+                        "release_required":
+                            _release_required(contributor)}), 201
+
+    @app.get("/api/cookbook/books/<book_id>/contributor")
+    def cookbook_contributor_status(book_id):
+        """Token-gated self-status so the intake page can show the
+        release (and only to contributors who actually need it) before
+        they try to upload."""
+        book = _load_book(book_id)
+        if not book:
+            return jsonify({"error": "not found"}), 404
+        contributor = _contributor_for(book)
+        if not contributor:
+            return jsonify({"error": "a valid contributor token is "
+                                     "required"}), 401
+        required = _release_required(contributor)
+        return jsonify({
+            "name": contributor["name"],
+            "outside_family": bool(contributor.get("outside_family")),
+            "release_required": required,
+            "release_version": RELEASE_VERSION,
+            "release_text": RELEASE_TEXT if required else "",
+            "release_accepted": not required
+            and bool(contributor.get("release_acceptance")),
+        })
 
     @app.post("/api/cookbook/books/<book_id>/photos")
     def cookbook_submit_photo(book_id):
@@ -756,6 +860,29 @@ def init(app, public_base_url=None):
         if not contributor:
             return jsonify({"error": "a valid contributor token is "
                                      "required"}), 401
+        # Permission-to-publish gate (outside-family contributors only).
+        # Enforced HERE, server-side, before any photo is read, stored,
+        # or transcribed — a bypassed checkbox cannot sneak a card in.
+        if _release_required(contributor):
+            if not _release_accepted_in_request():
+                return jsonify({
+                    "error": "Before you upload, please read the "
+                             "permission-to-publish note and tick the "
+                             "box to agree.",
+                    "release_required": True,
+                    "release_version": RELEASE_VERSION,
+                    "release_text": RELEASE_TEXT}), 403
+            with _lock:
+                contributor["release_acceptance"] = {
+                    "version": RELEASE_VERSION,
+                    "accepted_at": int(time.time()),
+                    "contributor_id": contributor["id"],
+                    "contributor_name": contributor["name"],
+                }
+                _save_book(book)
+            log.info("cookbook: release %s accepted by contributor %s "
+                     "for book %s", RELEASE_VERSION, contributor["id"],
+                     book_id)
         upload = request.files.get("photo")
         if not upload:
             return jsonify({"error": "photo file is required"}), 400
@@ -779,6 +906,13 @@ def init(app, public_base_url=None):
                   "contributor_id": contributor["id"],
                   "status": "draft", "submitted_at": int(time.time()),
                   "confirmed_at": None}
+        _acc = contributor.get("release_acceptance") or {}
+        if _acc:
+            # Stamp the acceptance on the recipe itself so every card
+            # in the finished book traces to who agreed, when, and to
+            # which wording.
+            recipe["release_version"] = _acc.get("version")
+            recipe["release_accepted_at"] = _acc.get("accepted_at")
         fields, meta = transcribe(jpeg, "image/jpeg")
         recipe.update({"fields": fields,
                        "transcription_status": meta["status"],

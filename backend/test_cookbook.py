@@ -168,6 +168,76 @@ r = client.post(f"/api/cookbook/books/{bid}/photos",
 check("upload without a contributor token is refused",
       r.status_code == 401, r.status_code)
 
+# ---------- 3b. outside-family contributor release gate (2026-10-07) --
+# Bill: permission-to-publish is baked into the upload for anyone
+# outside the family; the Morton-family pilot is never gated.
+check("intake page carries the release box (shown only when needed)",
+      b'id="relok"' in client.get("/cookbook").data)
+
+book3 = client.post("/api/cookbook/books",
+                    json={"family_name": "Neighbor"}).get_json()
+o3 = book3["organizer_token"]
+r = client.post(f"/api/cookbook/books/{book3['book_id']}/contributors",
+                headers={"X-Cookbook-Token": o3},
+                json={"name": "Pat Neighbor", "outside_family": True})
+check("outside-family invite is flagged release-required",
+      r.status_code == 201 and r.get_json()["release_required"] is True,
+      r.status_code)
+ctok_out = r.get_json()["submit_token"]
+
+r = client.get(f"/api/cookbook/books/{book3['book_id']}/contributor"
+               f"?token={ctok_out}")
+check("outside contributor status shows the release up front",
+      r.status_code == 200 and r.get_json()["release_required"] is True
+      and "permission" in r.get_json()["release_text"].lower(),
+      r.status_code)
+
+r = client.post(f"/api/cookbook/books/{book3['book_id']}/photos",
+                data={"photo": (io.BytesIO(card), "card.jpg"),
+                      "token": ctok_out},
+                content_type="multipart/form-data")
+check("outside upload WITHOUT acceptance is refused (403, release named)",
+      r.status_code == 403
+      and (r.get_json() or {}).get("release_required") is True
+      and (r.get_json() or {}).get("release_version")
+      == cb.RELEASE_VERSION, r.status_code)
+
+r = client.post(f"/api/cookbook/books/{book3['book_id']}/photos",
+                data={"photo": (io.BytesIO(card), "card.jpg"),
+                      "token": ctok_out, "release_accepted": "true"},
+                content_type="multipart/form-data")
+check("outside upload WITH acceptance goes through, version stamped",
+      r.status_code == 201
+      and r.get_json().get("release_version") == cb.RELEASE_VERSION,
+      r.status_code)
+
+r = client.get(f"/api/cookbook/books/{book3['book_id']}",
+               headers={"X-Cookbook-Token": o3})
+_pat = (r.get_json() or {}).get("contributors", [{}])[0]
+check("acceptance is stored on the contributor (who/when/version)",
+      _pat.get("release_accepted") is True
+      and _pat.get("release_version") == cb.RELEASE_VERSION
+      and _pat.get("release_accepted_at"), str(_pat))
+
+r = client.post(f"/api/cookbook/books/{book3['book_id']}/photos",
+                data={"photo": (io.BytesIO(card), "card2.jpg"),
+                      "token": ctok_out},
+                content_type="multipart/form-data")
+check("stored acceptance covers later cards (not re-asked every upload)",
+      r.status_code == 201, r.status_code)
+
+r = client.post(f"/api/cookbook/books/{book3['book_id']}/contributors",
+                headers={"X-Cookbook-Token": o3},
+                json={"name": "Cousin Jo"})
+ctok_fam = r.get_json()["submit_token"]
+r = client.post(f"/api/cookbook/books/{book3['book_id']}/photos",
+                data={"photo": (io.BytesIO(card), "card.jpg"),
+                      "token": ctok_fam},
+                content_type="multipart/form-data")
+check("family contributor uploads with NO release gate (pilot unburdened)",
+      r.status_code == 201
+      and r.get_json().get("release_version") is None, r.status_code)
+
 r = client.get(f"/api/cookbook/recipes/{rid}/photo?token={ctok}")
 check("contributor can see their own card photo",
       r.status_code == 200 and r.mimetype == "image/jpeg", r.status_code)
