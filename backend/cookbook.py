@@ -3,8 +3,12 @@ Family Recipe Cookbook — intake + assembly (EverReady ER-FRC-001).
 
 The cookbook lane of the store app. A family organizer opens a book,
 invites contributors, and each contributor photographs handwritten
-recipe cards. Every photo runs through a vision transcription that
-emits a standardized recipe draft — and NEVER guesses: any uncertain
+recipe cards. Many cards are written on BOTH sides, so one recipe
+carries an ordered set of card photos (front, back, and any further
+views) that are transcribed together into ONE draft — two photos of
+one card are one recipe, never two. Every photo runs through a
+vision transcription that emits a standardized recipe draft — and
+NEVER guesses: any uncertain
 word or number is returned inline as "[?]" for the contributor who
 submitted the card to resolve. Nothing enters the finished book until
 its contributor has reviewed the draft against their photo and locked
@@ -114,6 +118,34 @@ def _save_book(book):
 
 def _photo_path(book_id, recipe_id):
     return os.path.join(_dir(), "uploads", book_id, f"{recipe_id}.jpg")
+
+
+def _photo_file(book_id, recipe_id, index):
+    """File for one photo of a recipe (1-based, front first). Photo 1
+    lives at the legacy single-photo path so books created before
+    multi-photo recipes need no migration; later sides sit beside it:
+    <recipe>_2.jpg (the back), <recipe>_3.jpg, and so on."""
+    if index <= 1:
+        return _photo_path(book_id, recipe_id)
+    return os.path.join(_dir(), "uploads", book_id,
+                        f"{recipe_id}_{index}.jpg")
+
+
+def _photo_label(index):
+    return "front" if index == 1 else (
+        "back" if index == 2 else f"photo {index}")
+
+
+def _recipe_photos(book, recipe):
+    """Ordered photo descriptors for a recipe: [{"index", "label",
+    "path"}...]. New recipes store photo_count; recipes submitted
+    before multi-photo support carry exactly the one legacy file."""
+    count = int(recipe.get("photo_count") or 0)
+    if count < 1:
+        count = 1
+    return [{"index": i, "label": _photo_label(i),
+             "path": _photo_file(book["id"], recipe["id"], i)}
+            for i in range(1, count + 1)]
 
 
 # ---------- text hygiene ----------
@@ -318,14 +350,46 @@ def enforce_transcription_honesty(fields, unread, card_lines=None):
     return fields, unread
 
 
-def _anthropic_draft(image_bytes, media_type):
-    """Vision transcription via the Anthropic Messages API. The key
+def _vision_prompt(photo_count):
+    """The transcription contract for a recipe. A single-photo card
+    uses the standing prompt verbatim; a two-sided (or multi-view)
+    card gets the same contract re-aimed at ALL its photos read as
+    one card, front first — the merged draft is one recipe."""
+    if photo_count <= 1:
+        return VISION_PROMPT
+    intro = (
+        f"You transcribe ONE handwritten family recipe card "
+        f"photographed in {photo_count} photos, given in order: "
+        "photo 1 is the FRONT of the card and photo 2 is the BACK "
+        "(any later photos are further views of the same card). Read "
+        "all the photos together as ONE card — a recipe commonly "
+        "starts on the front and continues on the back.")
+    return VISION_PROMPT.replace(
+        "You transcribe ONE photographed handwritten family recipe "
+        "card.", intro)
+
+
+def _anthropic_draft(images):
+    """Vision transcription via the Anthropic Messages API. `images`
+    is an ordered list of (image_bytes, media_type), front first —
+    every photo of the card goes into ONE transcription. The key
     comes from the ANTHROPIC_API_KEY environment variable only — it is
     never stored in code, catalog data, or this repo."""
     import base64
 
     import requests
 
+    content = []
+    total = len(images)
+    for i, (image_bytes, media_type) in enumerate(images, 1):
+        if total > 1:
+            content.append({"type": "text", "text":
+                            f"Photo {i} of {total} — the "
+                            f"{_photo_label(i)} of the card:"})
+        content.append({"type": "image", "source": {
+            "type": "base64", "media_type": media_type,
+            "data": base64.b64encode(image_bytes).decode()}})
+    content.append({"type": "text", "text": _vision_prompt(total)})
     model = os.environ.get("COOKBOOK_VISION_MODEL", "claude-sonnet-4-5")
     resp = requests.post(
         "https://api.anthropic.com/v1/messages",
@@ -333,11 +397,7 @@ def _anthropic_draft(image_bytes, media_type):
                  "anthropic-version": "2023-06-01",
                  "content-type": "application/json"},
         json={"model": model, "max_tokens": 3000,
-              "messages": [{"role": "user", "content": [
-                  {"type": "image", "source": {
-                      "type": "base64", "media_type": media_type,
-                      "data": base64.b64encode(image_bytes).decode()}},
-                  {"type": "text", "text": VISION_PROMPT}]}]},
+              "messages": [{"role": "user", "content": content}]},
         timeout=90)
     resp.raise_for_status()
     text = "".join(b.get("text", "") for b in
@@ -360,13 +420,34 @@ def _anthropic_draft(image_bytes, media_type):
                     "flags": flags, "unread": unread}
 
 
-def transcribe(image_bytes, media_type="image/jpeg"):
-    """Photo -> recipe draft. Returns (fields, meta). The honesty
-    contract: with no provider configured, the draft says so and flags
-    everything — it never invents a character."""
-    if os.environ.get("ANTHROPIC_API_KEY"):
+def _as_image_list(images, media_type="image/jpeg"):
+    """Normalize transcription input to an ordered list of
+    (bytes, media_type), front first. Accepts a single bytes payload
+    (the original one-photo call), a list of bytes, or a list of
+    (bytes, media_type) pairs."""
+    if isinstance(images, (bytes, bytearray)):
+        return [(bytes(images), media_type)]
+    out = []
+    for item in images or []:
+        if isinstance(item, (bytes, bytearray)):
+            out.append((bytes(item), media_type))
+        else:
+            data, mt = item
+            out.append((bytes(data), mt or media_type))
+    return out
+
+
+def transcribe(images, media_type="image/jpeg"):
+    """Card photos -> recipe draft. `images` is one photo (bytes) or
+    an ordered list of the card's photos (front first); all of them
+    are read as ONE card and merged into a single draft. Returns
+    (fields, meta). The honesty contract: with no provider
+    configured, the draft says so and flags everything — it never
+    invents a character."""
+    image_list = _as_image_list(images, media_type)
+    if os.environ.get("ANTHROPIC_API_KEY") and image_list:
         try:
-            fields, meta = _anthropic_draft(image_bytes, media_type)
+            fields, meta = _anthropic_draft(image_list)
         except Exception as e:  # provider down: honest unread, no guess
             log.warning("cookbook vision transcription failed: %r", e)
             fields, meta = _fallback_draft()
@@ -457,8 +538,13 @@ def _recipe_view(book, recipe):
     contributor = next((c for c in book["contributors"]
                         if c["id"] == recipe["contributor_id"]), None)
     base = _public_base_url() if _public_base_url else ""
+    rid = recipe["id"]
+    photos = [{"index": p["index"], "label": p["label"],
+               "photo_url": f"{base}/api/cookbook/recipes/{rid}"
+                            f"/photo/{p['index']}"}
+              for p in _recipe_photos(book, recipe)]
     return {
-        "id": recipe["id"], "book_id": book["id"],
+        "id": rid, "book_id": book["id"],
         "contributor": contributor["name"] if contributor else "",
         "contributor_id": recipe["contributor_id"],
         "status": recipe["status"],
@@ -466,7 +552,12 @@ def _recipe_view(book, recipe):
         "fields": recipe["fields"], "flags": recipe["flags"],
         "unread": recipe["unread"],
         "editor_notes": recipe["editor_notes"],
-        "photo_url": f"{base}/api/cookbook/recipes/{recipe['id']}/photo",
+        # Every photo of the card, in order (front, back, ...). The
+        # singular photo_url stays for the original one-photo clients:
+        # it serves the front of the card.
+        "photos": photos,
+        "photo_count": len(photos),
+        "photo_url": f"{base}/api/cookbook/recipes/{rid}/photo",
         "submitted_at": recipe["submitted_at"],
         "confirmed_at": recipe.get("confirmed_at"),
         "release_version": recipe.get("release_version"),
@@ -476,10 +567,12 @@ def _recipe_view(book, recipe):
 # ---------- PDF assembly ----------
 
 def build_book_pdf(book, out_path):
-    """Render the print-ready book: 8.5x11, photo left page / clean
-    text right page, sections by contributor, front/back matter, notes
-    pages to the 32-page perfect-bound floor. Returns (pages, recipes).
-    Only CONFIRMED recipes are ever included (brief §5 hard gate)."""
+    """Render the print-ready book: 8.5x11, a recipe's card photo
+    page(s) — front, then back for two-sided cards — ahead of its
+    clean-text page, sections by contributor, front/back matter, notes
+    pages to the 32-page perfect-bound floor. Returns
+    (pages, recipes). Only CONFIRMED recipes are ever included
+    (brief §5 hard gate)."""
     from reportlab.lib.utils import ImageReader, simpleSplit
     from reportlab.pdfgen import canvas
 
@@ -549,9 +642,10 @@ def build_book_pdf(book, out_path):
         "confirmed by the family member who submitted the card. "
         "Nothing was guessed.",
         "",
-        "The original card appears on the left page exactly as it was "
-        "submitted. Her handwriting on the left; the recipe, readable, "
-        "on the right.",
+        "The original card appears on the page just before its "
+        "recipe, exactly as it was submitted — front and back when "
+        "the card is two-sided. Her handwriting on the left; the "
+        "recipe, readable, on the right.",
         "",
         "These recipes are reproduced as family history. For canning "
         "and preserving, follow current USDA guidance.",
@@ -579,20 +673,32 @@ def build_book_pdf(book, out_path):
         for r in mine:
             f = r["fields"]
             index.append((f["title"], name))
-            # LEFT page: the original card photo, exactly as submitted.
-            photo = _photo_path(book["id"], r["id"])
-            if os.path.isfile(photo):
-                c.setStrokeColorRGB(0.55, 0.42, 0.16)
-                c.rect(54, 54, PAGE_W - 108, PAGE_H - 108,
-                       stroke=1, fill=0)
-                c.setStrokeColorRGB(0, 0, 0)
-                c.drawImage(ImageReader(photo), 63, 63, PAGE_W - 126,
-                            PAGE_H - 126, preserveAspectRatio=True,
-                            anchor="c", mask="auto")
-            c.setFont("Times-Italic", 10)
-            c.drawCentredString(PAGE_W / 2, 40,
-                                f"Original card — submitted by {name}")
-            new_page()
+            # LEFT page(s): the original card photos, exactly as
+            # submitted, front first. A two-sided card prints BOTH
+            # sides — one photo page each — ahead of its text page, so
+            # the finished spread reads photos -> recipe.
+            card_photos = [p for p in _recipe_photos(book, r)
+                           if os.path.isfile(p["path"])]
+            if not card_photos:
+                card_photos = [{"label": None, "path": None}]
+            for p in card_photos:
+                if p["path"]:
+                    c.setStrokeColorRGB(0.55, 0.42, 0.16)
+                    c.rect(54, 54, PAGE_W - 108, PAGE_H - 108,
+                           stroke=1, fill=0)
+                    c.setStrokeColorRGB(0, 0, 0)
+                    c.drawImage(ImageReader(p["path"]), 63, 63,
+                                PAGE_W - 126, PAGE_H - 126,
+                                preserveAspectRatio=True, anchor="c",
+                                mask="auto")
+                caption = ("Original card — submitted by "
+                           f"{name}" if p["label"] is None
+                           or len(card_photos) == 1 else
+                           f"Original card ({p['label']}) — "
+                           f"submitted by {name}")
+                c.setFont("Times-Italic", 10)
+                c.drawCentredString(PAGE_W / 2, 40, caption)
+                new_page()
             # RIGHT page: the clean transcription.
             y = 720
             c.setFont("Times-Bold", 20)
@@ -674,15 +780,21 @@ INTAKE_HTML = """<!doctype html>
 </style>
 <h1>Family Recipe Cookbook</h1>
 <p><i>Remember, settle, and save what matters.</i> Photograph a recipe
-card — flat, straight-on, good light, front <i>and</i> back, one card per
-photo. We transcribe it; anything we can't read for certain comes back
-flagged <span class="flag">[?]</span> for you to fix. We never guess.
-Nothing locks until you confirm it.</p>
+card — flat, straight-on, good light, one card at a time. Many cards
+are written on <b>both sides</b>: if yours is, add the back below —
+the front and the back are <b>one recipe</b>, and we read both sides
+together. We transcribe it; anything we can't read for certain comes
+back flagged <span class="flag">[?]</span> for you to fix. We never
+guess. Nothing locks until you confirm it.</p>
 <div class="card">
  <label>Your contributor link token</label>
  <input id="tok" placeholder="paste the token from your invitation">
- <label>Photograph of the card</label>
- <input id="photo" type="file" accept="image/*">
+ <div id="sides">
+  <label>Front of the card</label>
+  <input class="sidephoto" type="file" accept="image/*">
+ </div>
+ <button type="button" id="addback" onclick="addSide('back')">This card has a back side — add it</button>
+ <button type="button" onclick="addSide('extra')">Add another photo</button>
  <button onclick="send()">Submit card</button>
  <div id="out"></div>
 </div>
@@ -697,11 +809,43 @@ Nothing locks until you confirm it.</p>
 </div>
 <script>
 let B=new URLSearchParams(location.search).get('book')||'';
+function addSide(kind){
+ // One card, one recipe: the back (or an extra view) joins the SAME
+ // submission below — it never becomes a second recipe.
+ const wrap=document.getElementById('sides');
+ const lab=document.createElement('label');
+ lab.textContent=(kind==='back')?'Back of the card':'Another photo of the card';
+ const inp=document.createElement('input');
+ inp.type='file'; inp.accept='image/*'; inp.className='sidephoto';
+ wrap.appendChild(lab); wrap.appendChild(inp);
+ if(kind==='back'){const b=document.getElementById('addback'); if(b)b.style.display='none';}
+}
+function cardFiles(){
+ const files=[];
+ document.querySelectorAll('.sidephoto').forEach(function(inp){
+  if(inp.files&&inp.files[0])files.push(inp.files[0]);});
+ return files;
+}
+function renderDraft(j,out){
+ const t=window._tok;
+ const shots=(j.photos&&j.photos.length)?j.photos:[{photo_url:j.photo_url,label:'front'}];
+ let html=shots.map(function(p){
+  return '<img src="'+p.photo_url+'?token='+encodeURIComponent(t)+'">'
+   +(shots.length>1?'<p><i>Card — '+p.label+'</i></p>':'');}).join('');
+ html+='<p>Draft below — fix anything flagged <span class="flag">[?]</span>, then confirm.</p>'
+  +'<textarea id="d" rows="14">'+JSON.stringify(j.fields,null,1)+'</textarea>'
+  +(j.unread.length?'<p class="flag">Please check: '+j.unread.join('; ')+'</p>':'')
+  +'<label>Another side or photo of this card?</label>'
+  +'<input class="addphoto" type="file" accept="image/*">'
+  +'<button type="button" onclick="addPhoto(\\''+j.id+'\\')">Add another photo of this card</button>'
+  +'<button onclick="confirmR(\\''+j.id+'\\')">Confirm this recipe</button><div id="c"></div>';
+ out.innerHTML=html;
+}
 async function send(){
  const t=document.getElementById('tok').value.trim();
- const f=document.getElementById('photo').files[0];
+ const files=cardFiles();
  const out=document.getElementById('out');
- if(!t||!f){out.textContent='Add your token and a photo first.';return;}
+ if(!t||!files.length){out.textContent='Add your token and at least the front of the card first.';return;}
  // Outside-family contributors see (and must accept) the
  // permission-to-publish release before a first upload. The server
  // enforces this too — this check is only so you see it up front.
@@ -714,17 +858,27 @@ async function send(){
    if(!document.getElementById('relok').checked){
     out.textContent='Please read the permission note below and tick the box, then submit again.';
     return;}}}
- const fd=new FormData(); fd.append('photo',f); fd.append('token',t);
+ window._tok=t;
+ const fd=new FormData();
+ files.forEach(function(f){fd.append('photo',f);});
+ fd.append('token',t);
  if(document.getElementById('relok').checked)fd.append('release_accepted','true');
  const r=await fetch('/api/cookbook/books/'+B+'/photos',{method:'POST',body:fd});
  const j=await r.json();
  if(!r.ok){out.textContent=j.error||'Something went wrong.';return;}
- out.innerHTML='<img src="'+j.photo_url+'?token='+encodeURIComponent(t)+'">'
-  +'<p>Draft below — fix anything flagged <span class="flag">[?]</span>, then confirm.</p>'
-  +'<textarea id="d" rows="14">'+JSON.stringify(j.fields,null,1)+'</textarea>'
-  +(j.unread.length?'<p class="flag">Please check: '+j.unread.join('; ')+'</p>':'')
-  +'<button onclick="confirmR(\\''+j.id+'\\')">Confirm this recipe</button><div id="c"></div>';
- window._tok=t;
+ renderDraft(j,out);
+}
+async function addPhoto(id){
+ const out=document.getElementById('out');
+ const inp=out.querySelector('.addphoto');
+ if(!inp||!inp.files||!inp.files[0]){return;}
+ const fd=new FormData(); fd.append('photo',inp.files[0]);
+ fd.append('token',window._tok);
+ if(document.getElementById('relok').checked)fd.append('release_accepted','true');
+ const r=await fetch('/api/cookbook/recipes/'+id+'/photos',{method:'POST',body:fd});
+ const j=await r.json();
+ if(!r.ok){out.insertAdjacentHTML('beforeend','<p>'+(j.error||'Something went wrong.')+'</p>');return;}
+ renderDraft(j,out);
 }
 async function confirmR(id){
  const c=document.getElementById('c');
@@ -738,6 +892,88 @@ async function confirmR(id){
 }
 </script>
 """
+
+
+# ---------- upload helpers ----------
+
+def _request_photos():
+    """All photos a contributor sent with this request, in the order
+    given (front first). The one-card flow posts them all under the
+    'photo' field; 'photos' is accepted too. Returns a list of
+    FileStorage (possibly empty)."""
+    out = []
+    for field in ("photo", "photos"):
+        for fs in request.files.getlist(field):
+            if fs is not None and getattr(fs, "filename", ""):
+                out.append(fs)
+    return out
+
+
+def _photo_to_jpeg(raw):
+    """Validate one uploaded photo and normalize it to stored JPEG
+    bytes. Returns (jpeg_bytes, None) or (None, error_message) — the
+    messages are the contributor-facing ones the lane has always
+    used."""
+    if not raw or len(raw) > MAX_PHOTO_BYTES:
+        return None, "photo is empty or over 15MB"
+    try:
+        from PIL import Image
+        img = Image.open(io.BytesIO(raw))
+        img.load()
+        if img.format not in ("JPEG", "PNG", "WEBP"):
+            return None, "photo must be JPEG, PNG, or WebP"
+        buf = io.BytesIO()
+        img.convert("RGB").save(buf, "JPEG", quality=88)
+        return buf.getvalue(), None
+    except Exception:
+        return None, "that file is not a readable photo"
+
+
+def _release_gate(book, contributor):
+    """The permission-to-publish gate, shared by a card's first upload
+    and any later added photos. Returns a Flask response to stop the
+    request, or None when the upload may proceed. Acceptance, when
+    given, is recorded BEFORE photos are read or stored, and a whole
+    multi-photo card is one upload event for release purposes."""
+    if not _release_required(contributor):
+        return None
+    if not _release_accepted_in_request():
+        return jsonify({
+            "error": "Before you upload, please read the "
+                     "permission-to-publish note and tick the "
+                     "box to agree.",
+            "release_required": True,
+            "release_version": RELEASE_VERSION,
+            "release_text": RELEASE_TEXT}), 403
+    with _lock:
+        contributor["release_acceptance"] = {
+            "version": RELEASE_VERSION,
+            "accepted_at": int(time.time()),
+            "contributor_id": contributor["id"],
+            "contributor_name": contributor["name"],
+        }
+        _save_book(book)
+    log.info("cookbook: release %s accepted by contributor %s "
+             "for book %s", RELEASE_VERSION, contributor["id"],
+             book["id"])
+    return None
+
+
+def _transcribe_recipe_photos(book, recipe):
+    """(Re)run the merged transcription over ALL of a recipe's photos
+    in order and refresh the draft in place. One card, one draft: the
+    front and the back are read together."""
+    images = []
+    for p in _recipe_photos(book, recipe):
+        if os.path.isfile(p["path"]):
+            with open(p["path"], "rb") as f:
+                images.append(f.read())
+    fields, meta = transcribe(images, "image/jpeg")
+    recipe.update({"fields": fields,
+                   "transcription_status": meta["status"],
+                   "flags": meta["flags"], "unread": meta["unread"],
+                   "editor_notes": meta["editor_notes"]})
+    return meta
 
 
 # ---------- routes ----------
@@ -863,49 +1099,27 @@ def init(app, public_base_url=None):
         # Permission-to-publish gate (outside-family contributors only).
         # Enforced HERE, server-side, before any photo is read, stored,
         # or transcribed — a bypassed checkbox cannot sneak a card in.
-        if _release_required(contributor):
-            if not _release_accepted_in_request():
-                return jsonify({
-                    "error": "Before you upload, please read the "
-                             "permission-to-publish note and tick the "
-                             "box to agree.",
-                    "release_required": True,
-                    "release_version": RELEASE_VERSION,
-                    "release_text": RELEASE_TEXT}), 403
-            with _lock:
-                contributor["release_acceptance"] = {
-                    "version": RELEASE_VERSION,
-                    "accepted_at": int(time.time()),
-                    "contributor_id": contributor["id"],
-                    "contributor_name": contributor["name"],
-                }
-                _save_book(book)
-            log.info("cookbook: release %s accepted by contributor %s "
-                     "for book %s", RELEASE_VERSION, contributor["id"],
-                     book_id)
-        upload = request.files.get("photo")
-        if not upload:
+        # A whole card (front + back together) is ONE upload event.
+        gate = _release_gate(book, contributor)
+        if gate is not None:
+            return gate
+        # One card, one recipe: every photo sent with this submission
+        # (front, back, any further views, in order) belongs to the
+        # same recipe and is transcribed as one merged draft.
+        uploads = _request_photos()
+        if not uploads:
             return jsonify({"error": "photo file is required"}), 400
-        raw = upload.read()
-        if not raw or len(raw) > MAX_PHOTO_BYTES:
-            return jsonify({"error": "photo is empty or over 15MB"}), 400
-        try:
-            from PIL import Image
-            img = Image.open(io.BytesIO(raw))
-            img.load()
-            if img.format not in ("JPEG", "PNG", "WEBP"):
-                return jsonify({"error": "photo must be JPEG, PNG, or "
-                                         "WebP"}), 400
-            buf = io.BytesIO()
-            img.convert("RGB").save(buf, "JPEG", quality=88)
-            jpeg = buf.getvalue()
-        except Exception:
-            return jsonify({"error": "that file is not a readable "
-                                     "photo"}), 400
+        jpegs = []
+        for upload in uploads:
+            jpeg, err = _photo_to_jpeg(upload.read())
+            if err:
+                return jsonify({"error": err}), 400
+            jpegs.append(jpeg)
         recipe = {"id": _new_id("rc"),
                   "contributor_id": contributor["id"],
                   "status": "draft", "submitted_at": int(time.time()),
-                  "confirmed_at": None}
+                  "confirmed_at": None,
+                  "photo_count": len(jpegs)}
         _acc = contributor.get("release_acceptance") or {}
         if _acc:
             # Stamp the acceptance on the recipe itself so every card
@@ -913,21 +1127,70 @@ def init(app, public_base_url=None):
             # which wording.
             recipe["release_version"] = _acc.get("version")
             recipe["release_accepted_at"] = _acc.get("accepted_at")
-        fields, meta = transcribe(jpeg, "image/jpeg")
+        fields, meta = transcribe(jpegs, "image/jpeg")
         recipe.update({"fields": fields,
                        "transcription_status": meta["status"],
                        "flags": meta["flags"], "unread": meta["unread"],
                        "editor_notes": meta["editor_notes"]})
         with _lock:
-            os.makedirs(os.path.dirname(
-                _photo_path(book_id, recipe["id"])), exist_ok=True)
-            with open(_photo_path(book_id, recipe["id"]), "wb") as f:
-                f.write(jpeg)
+            for i, jpeg in enumerate(jpegs, 1):
+                path = _photo_file(book_id, recipe["id"], i)
+                os.makedirs(os.path.dirname(path), exist_ok=True)
+                with open(path, "wb") as f:
+                    f.write(jpeg)
             book["recipes"].append(recipe)
             _save_book(book)
-        log.info("cookbook: recipe %s submitted to book %s (%s)",
-                 recipe["id"], book_id, meta["status"])
+        log.info("cookbook: recipe %s submitted to book %s (%s, %d "
+                 "photo(s))", recipe["id"], book_id, meta["status"],
+                 len(jpegs))
         return jsonify(_recipe_view(book, recipe)), 201
+
+    @app.post("/api/cookbook/recipes/<recipe_id>/photos")
+    def cookbook_add_recipe_photos(recipe_id):
+        """Add photo(s) to a recipe the contributor is still working
+        on — the back of the card they photographed after the front,
+        or an extra view. The recipe stays ONE recipe: the merged
+        transcription re-runs over all its photos, front first."""
+        book, recipe = _find_recipe(recipe_id)
+        if not book:
+            return jsonify({"error": "not found"}), 404
+        contributor = _contributor_for(book)
+        if (not contributor
+                or contributor["id"] != recipe["contributor_id"]):
+            return jsonify({"error": "only the contributor who "
+                                     "submitted this card can add "
+                                     "photos to it"}), 403
+        if recipe["status"] == "confirmed":
+            return jsonify({"error": "this recipe is confirmed and "
+                                     "locked — its photos can't "
+                                     "change"}), 409
+        gate = _release_gate(book, contributor)
+        if gate is not None:
+            return gate
+        uploads = _request_photos()
+        if not uploads:
+            return jsonify({"error": "photo file is required"}), 400
+        jpegs = []
+        for upload in uploads:
+            jpeg, err = _photo_to_jpeg(upload.read())
+            if err:
+                return jsonify({"error": err}), 400
+            jpegs.append(jpeg)
+        with _lock:
+            start = int(recipe.get("photo_count") or 0)
+            if start < 1:
+                start = 1
+            for n, jpeg in enumerate(jpegs, 1):
+                path = _photo_file(book["id"], recipe["id"], start + n)
+                os.makedirs(os.path.dirname(path), exist_ok=True)
+                with open(path, "wb") as f:
+                    f.write(jpeg)
+            recipe["photo_count"] = start + len(jpegs)
+            meta = _transcribe_recipe_photos(book, recipe)
+            _save_book(book)
+        log.info("cookbook: recipe %s now has %d photo(s) (%s)",
+                 recipe_id, recipe["photo_count"], meta["status"])
+        return jsonify(_recipe_view(book, recipe)), 200
 
     def _find_recipe(recipe_id):
         # Recipe ids are unique across books; scan the books dir. MVP
@@ -952,17 +1215,26 @@ def init(app, public_base_url=None):
             return jsonify({"error": "not found"}), 404
         return jsonify(_recipe_view(book, recipe))
 
-    @app.get("/api/cookbook/recipes/<recipe_id>/photo")
-    def cookbook_recipe_photo(recipe_id):
+    def _serve_recipe_photo(recipe_id, index):
         book, recipe = _find_recipe(recipe_id)
         if not book:
             return jsonify({"error": "not found"}), 404
         if not (_organizer_ok(book) or _contributor_for(book)):
             return jsonify({"error": "not found"}), 404
-        path = _photo_path(book["id"], recipe_id)
+        path = _photo_file(book["id"], recipe_id, index)
         if not os.path.isfile(path):
             return jsonify({"error": "photo missing"}), 404
         return send_file(path, mimetype="image/jpeg")
+
+    @app.get("/api/cookbook/recipes/<recipe_id>/photo")
+    def cookbook_recipe_photo(recipe_id):
+        # The front of the card (the original one-photo route).
+        return _serve_recipe_photo(recipe_id, 1)
+
+    @app.get("/api/cookbook/recipes/<recipe_id>/photo/<int:index>")
+    def cookbook_recipe_photo_index(recipe_id, index):
+        # One photo of the card by position: 1 = front, 2 = back, ...
+        return _serve_recipe_photo(recipe_id, max(1, index))
 
     @app.post("/api/cookbook/recipes/<recipe_id>/confirm")
     def cookbook_confirm_recipe(recipe_id):

@@ -238,6 +238,219 @@ check("family contributor uploads with NO release gate (pilot unburdened)",
       r.status_code == 201
       and r.get_json().get("release_version") is None, r.status_code)
 
+# ---------- 3c. two-sided cards: one recipe, many photos (2026-10-07) --
+# Bill: many recipe cards are TWO-SIDED note cards and need two photos
+# to capture the whole recipe. "It has to be easy and part of the
+# process." One card = one recipe = one merged transcription, front
+# first; the back is never a second recipe or a workaround.
+_page = client.get("/cookbook").data
+check("intake page makes front+back one obvious flow",
+      b"Front of the card" in _page
+      and b"This card has a back side" in _page
+      and b"Add another photo of this card" in _page)
+check("multi-photo prompt reads every photo as ONE card, front first",
+      cb._vision_prompt(1) is cb.VISION_PROMPT
+      and "FRONT" in cb._vision_prompt(2)
+      and "BACK" in cb._vision_prompt(2))
+
+# The back of the card: a visibly different card (pale blue), so the
+# stored-photo order is provable from the pixels themselves.
+img_b = Image.new("RGB", (1200, 900), (208, 224, 246))
+db = ImageDraw.Draw(img_b)
+for yy in range(140, 880, 60):
+    db.line([(60, yy), (1140, yy)], fill=(170, 180, 200), width=2)
+yy = 90
+for ln in ["Cornbread Dressing (back)", "Cool a little.",
+           "Crumble and serve warm."]:
+    db.text((80, yy), ln, fill=(40, 45, 90))
+    yy += 60
+buf_b = io.BytesIO()
+img_b.save(buf_b, "JPEG", quality=90)
+card_back = buf_b.getvalue()
+
+
+def _mean_red(bts):
+    px = Image.open(io.BytesIO(bts)).convert("RGB").resize((8, 8))
+    return sum(p[0] for p in px.getdata()) / 64.0
+
+
+seen_calls = []
+
+
+def _stub_transcribe(images, media_type="image/jpeg"):
+    """Stands in for the vision model: records the photos it was
+    handed (mean red, in order) and returns one merged draft."""
+    imgs = cb._as_image_list(images, media_type)
+    seen_calls.append([_mean_red(b) for b, _mt in imgs])
+    stub_fields = {"title": "Two-Sided Stub Loaf",
+                   "ingredients": ["2 cups flour (from the front)"],
+                   "steps": ["Mix.",
+                             "From the back: rest 10 minutes."],
+                   "servings": "", "time": "", "temp": "",
+                   "notes_verbatim": ""}
+    return stub_fields, {"status": "transcribed", "provider": "stub",
+                         "flags": [], "unread": [], "editor_notes": []}
+
+
+mp = client.post("/api/cookbook/books",
+                 json={"family_name": "TwoSided"}).get_json()
+mp_bid, omp = mp["book_id"], mp["organizer_token"]
+ctok_mp = client.post(
+    f"/api/cookbook/books/{mp_bid}/contributors",
+    headers={"X-Cookbook-Token": omp},
+    json={"name": "Sam Sides"}).get_json()["submit_token"]
+
+_real_transcribe = cb.transcribe
+cb.transcribe = _stub_transcribe
+try:
+    r = client.post(f"/api/cookbook/books/{mp_bid}/photos",
+                    data={"photo": [(io.BytesIO(card), "front.jpg"),
+                                    (io.BytesIO(card_back), "back.jpg")],
+                          "token": ctok_mp},
+                    content_type="multipart/form-data")
+finally:
+    cb.transcribe = _real_transcribe
+check("front+back in one submission is accepted as ONE recipe",
+      r.status_code == 201, r.status_code)
+twoside = r.get_json()
+rid_mp = twoside["id"]
+check("two photos recorded in order: front, then back",
+      twoside["photo_count"] == 2
+      and [p["label"] for p in twoside["photos"]] == ["front", "back"]
+      and twoside["photos"][0]["photo_url"].endswith("/photo/1")
+      and twoside["photos"][1]["photo_url"].endswith("/photo/2"),
+      str(twoside.get("photos")))
+check("ONE merged transcription saw both photos, front first",
+      len(seen_calls) == 1 and len(seen_calls[0]) == 2
+      and seen_calls[0][0] > seen_calls[0][1] + 15, str(seen_calls))
+check("merged draft carries front and back in a single recipe",
+      twoside["fields"]["ingredients"]
+      == ["2 cups flour (from the front)"]
+      and any("From the back" in s for s in twoside["fields"]["steps"]),
+      str(twoside["fields"]))
+
+r = client.get(f"/api/cookbook/books/{mp_bid}",
+               headers={"X-Cookbook-Token": omp})
+check("the book holds ONE recipe for the two-sided card, not two",
+      len(r.get_json()["recipes"]) == 1, str(r.get_json())[:200])
+
+front_r = client.get(f"{twoside['photos'][0]['photo_url']}?token={ctok_mp}")
+back_r = client.get(f"{twoside['photos'][1]['photo_url']}?token={ctok_mp}")
+check("both card photos serve, in order, token-gated",
+      front_r.status_code == 200 and back_r.status_code == 200
+      and front_r.mimetype == "image/jpeg"
+      and _mean_red(front_r.data) > _mean_red(back_r.data) + 15
+      and client.get(twoside["photos"][1]["photo_url"]).status_code == 404)
+
+stub_clean = {"title": "Two-Sided Stub Loaf",
+              "ingredients": ["2 cups flour (from the front)"],
+              "steps": ["Mix.", "From the back: rest 10 minutes."],
+              "servings": "", "time": "", "temp": "",
+              "notes_verbatim": "", "editor_notes": []}
+r = client.post(f"/api/cookbook/recipes/{rid_mp}/confirm",
+                headers={"X-Cookbook-Token": ctok_mp}, json=stub_clean)
+check("two-photo recipe confirms like any other", r.status_code == 200,
+      r.status_code)
+r = client.post(f"/api/cookbook/recipes/{rid_mp}/photos",
+                data={"photo": (io.BytesIO(card_back), "back.jpg"),
+                      "token": ctok_mp},
+                content_type="multipart/form-data")
+check("a locked recipe's photos can't change (409)",
+      r.status_code == 409, r.status_code)
+
+# The add-it-after flow: front submitted, THEN the back joins the
+# same recipe and the merged transcription re-runs over both.
+cb.transcribe = _stub_transcribe
+try:
+    r = client.post(f"/api/cookbook/books/{mp_bid}/photos",
+                    data={"photo": (io.BytesIO(card), "front.jpg"),
+                          "token": ctok_mp},
+                    content_type="multipart/form-data")
+    rid_late = r.get_json()["id"]
+    check("front alone starts the recipe (photo_count 1)",
+          r.status_code == 201 and r.get_json()["photo_count"] == 1)
+    r = client.post(f"/api/cookbook/recipes/{rid_late}/photos",
+                    data={"photo": (io.BytesIO(card_back), "back.jpg"),
+                          "token": ctok_mp},
+                    content_type="multipart/form-data")
+finally:
+    cb.transcribe = _real_transcribe
+check("adding the back afterwards keeps ONE recipe, now 2 photos",
+      r.status_code == 200 and r.get_json()["photo_count"] == 2
+      and [p["label"] for p in r.get_json()["photos"]] == ["front", "back"],
+      r.status_code)
+check("the re-transcription merged both photos, front first",
+      len(seen_calls[-1]) == 2
+      and seen_calls[-1][0] > seen_calls[-1][1] + 15, str(seen_calls[-1]))
+r = client.get(f"/api/cookbook/books/{mp_bid}",
+               headers={"X-Cookbook-Token": omp})
+check("book now holds exactly the two recipes (no back-side duplicates)",
+      len(r.get_json()["recipes"]) == 2)
+
+ctok_other = client.post(
+    f"/api/cookbook/books/{mp_bid}/contributors",
+    headers={"X-Cookbook-Token": omp},
+    json={"name": "Pat Other"}).get_json()["submit_token"]
+r = client.post(f"/api/cookbook/recipes/{rid_late}/photos",
+                data={"photo": (io.BytesIO(card_back), "back.jpg"),
+                      "token": ctok_other},
+                content_type="multipart/form-data")
+check("only the card's own contributor can add its photos (403)",
+      r.status_code == 403, r.status_code)
+
+# Release gate treats a front+back card as ONE upload event.
+book5 = client.post("/api/cookbook/books",
+                    json={"family_name": "GateTwoSides"}).get_json()
+o5 = book5["organizer_token"]
+ctok5 = client.post(
+    f"/api/cookbook/books/{book5['book_id']}/contributors",
+    headers={"X-Cookbook-Token": o5},
+    json={"name": "Nina Neighbor", "outside_family": True}
+).get_json()["submit_token"]
+r = client.post(f"/api/cookbook/books/{book5['book_id']}/photos",
+                data={"photo": [(io.BytesIO(card), "front.jpg"),
+                                (io.BytesIO(card_back), "back.jpg")],
+                      "token": ctok5},
+                content_type="multipart/form-data")
+check("multi-photo upload WITHOUT release acceptance is refused (403)",
+      r.status_code == 403
+      and (r.get_json() or {}).get("release_required") is True,
+      r.status_code)
+r = client.get(f"/api/cookbook/books/{book5['book_id']}",
+               headers={"X-Cookbook-Token": o5})
+check("nothing was stored behind the refused multi-photo upload",
+      len(r.get_json()["recipes"]) == 0)
+r = client.post(f"/api/cookbook/books/{book5['book_id']}/photos",
+                data={"photo": [(io.BytesIO(card), "front.jpg"),
+                                (io.BytesIO(card_back), "back.jpg")],
+                      "token": ctok5, "release_accepted": "true"},
+                content_type="multipart/form-data")
+check("multi-photo WITH acceptance: one event, both photos, stamped",
+      r.status_code == 201 and r.get_json()["photo_count"] == 2
+      and r.get_json().get("release_version") == cb.RELEASE_VERSION,
+      r.status_code)
+
+# The printed book shows BOTH sides of the two-sided card.
+r = client.post(f"/api/cookbook/books/{mp_bid}/assemble",
+                headers={"X-Cookbook-Token": omp})
+check("organizer assembles the two-sided book", r.status_code == 200,
+      r.status_code)
+check("assembly counts the confirmed two-sided recipe once",
+      r.get_json()["recipes"] == 1, str(r.get_json()))
+r = client.get(f"/api/cookbook/books/{mp_bid}/book.pdf?token={omp}")
+try:
+    from pypdf import PdfReader
+    _txt = "".join(p.extract_text() or ""
+                   for p in PdfReader(io.BytesIO(r.data)).pages)
+    check("book prints the front AND back pages ahead of the recipe",
+          "Original card (front)" in _txt
+          and "Original card (back)" in _txt
+          and "Two-Sided Stub Loaf" in _txt)
+except ImportError:
+    check("book prints the front AND back pages ahead of the recipe",
+          b"Original card (front)" in r.data
+          and b"Original card (back)" in r.data)
+
 r = client.get(f"/api/cookbook/recipes/{rid}/photo?token={ctok}")
 check("contributor can see their own card photo",
       r.status_code == 200 and r.mimetype == "image/jpeg", r.status_code)
