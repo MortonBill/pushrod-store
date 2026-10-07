@@ -122,8 +122,12 @@ BRANDS = ("RE", "IH")
 BRAND_NAMES = {"RE": "Restoration Essentials", "IH": "IronHead"}
 # Each brand's home site — the auctions page header links back here (a
 # visitor who arrived from the brand site gets a working way back).
-BRAND_HOME_URLS = {"RE": "https://restorationessentials.polsia.app/",
-                   "IH": "https://ironhead.polsia.app/"}
+BRAND_HOME_URLS = {"RE": "https://restoreessentials.com/",
+                   "IH": "https://ironheadguides.com/"}
+# Canonical brand logos (frontend/static/img/) shown in the auctions
+# page header, same mark each brand's face carries.
+BRAND_LOGOS = {"RE": "/static/img/restoration-essentials-logo.png",
+               "IH": "/static/img/ironhead-logo.png"}
 BRAND_ACCENTS = {"RE": "#e8a020", "IH": "#c8402a"}
 SESSION_KEY = "auctions_account_id"
 EXTENSION_CAP_MINUTES = 120  # spec §1.6 chk_extension_cap
@@ -3106,6 +3110,8 @@ border:1px solid #cbbd97;border-radius:8px;margin:6px 0}
 .seller-badge{background:#1b2a41;color:#fff;border-radius:6px;
 padding:1px 7px;font-size:.75rem;margin-left:6px}
 img.lot-photo{max-width:100%;border-radius:8px;margin:8px 0}
+img.brand-logo{width:46px;height:46px;border-radius:8px;
+vertical-align:middle;margin-right:.5rem}
 """
 
 
@@ -3114,13 +3120,15 @@ def _page(title, body, brand=None):
     name = BRAND_NAMES.get(brand, "Auctions")
     home = BRAND_HOME_URLS.get(brand, BRAND_HOME_URLS["RE"])
     home_name = BRAND_NAMES.get(brand, BRAND_NAMES["RE"])
+    logo = BRAND_LOGOS.get(brand, BRAND_LOGOS["RE"])
     return (
         "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
         "<meta name=\"viewport\" content=\"width=device-width,"
         "initial-scale=1\">"
         f"<title>{_esc(title)} · {_esc(name)} Auctions</title>"
         f"<style>:root{{--accent:{accent}}}{_PAGE_CSS}</style></head>"
-        f"<body><main><p><a href=\"{home}\">&larr; Back to "
+        f"<body><main><p><a href=\"{home}\"><img class=\"brand-logo\" "
+        f"src=\"{logo}\" alt=\"{_esc(home_name)}\">&larr; Back to "
         f"{_esc(home_name)}</a></p>"
         f"<h1>{_esc(title)}</h1>{body}</main></body></html>")
 
