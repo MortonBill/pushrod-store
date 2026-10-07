@@ -11,9 +11,11 @@
   *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.6}
   h1,h2,h3{font-family:Georgia,'Times New Roman',serif;line-height:1.25;margin:0 0 .6rem}
   a{color:var(--accent)} .wrap{max-width:960px;margin:0 auto;padding:0 1.25rem}
-  header.top{background:var(--bg2);border-bottom:1px solid #2c2721;position:sticky;top:0}
+  header.top{background:var(--bg2);border-bottom:2px solid var(--accent2);position:sticky;top:0}
   header.top .wrap{display:flex;align-items:center;gap:1.5rem;padding-top:.8rem;padding-bottom:.8rem;flex-wrap:wrap}
-  .brand{font-family:Georgia,serif;font-size:1.3rem;color:var(--text);text-decoration:none}
+  .brand{display:flex;align-items:center;gap:.7rem;font-family:Georgia,serif;font-size:1.3rem;color:var(--text);text-decoration:none}
+  .brand img{flex:0 0 auto;width:56px;height:56px;object-fit:contain;border-radius:.5rem;border:1px solid var(--accent);background:var(--text)}
+  .brand span{min-width:0}
   .brand small{display:block;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.72rem;color:var(--muted);letter-spacing:.04em}
   nav.main{margin-left:auto;display:flex;gap:1.1rem;flex-wrap:wrap}
   nav.main a{color:var(--text);text-decoration:none;font-size:.95rem} nav.main a:hover{color:var(--accent)}
@@ -26,11 +28,12 @@
   .btnrow{display:flex;gap:.8rem;flex-wrap:wrap;margin:1rem 0}
   footer.page{border-top:1px solid #2c2721;background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2rem 0;margin-top:2rem}
   footer.page a{color:var(--muted)}
+  @media (max-width:640px){.brand img{width:46px;height:46px}.brand{font-size:1.12rem}}
 </style>
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="brand" href="/">EverReady Family<small>Everything your family needs, ready before it's needed</small></a>
+  <a class="brand" href="/"><img src="/static/img/everready-family-logo.png" alt="EverReady Family"><span>EverReady Family<small>Everything your family needs, ready before it's needed</small></span></a>
   <nav class="main">
     <a href="/products">Products</a>
     <a href="/checklist">Free Checklist</a>
