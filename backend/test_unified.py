@@ -127,7 +127,11 @@ check("gateway id", b["id"] == "gateway")
 check("4 doors", len(b.get("doors", [])) == 4, str([d["label"] for d in b.get("doors", [])]))
 check("door prefixes cover catalog",
       {d["prefix"] for d in b["doors"]} == {"PR-", "RE-MC-", "RE-CT-", "RE-MP-"})
-check("stats total 642", b["stats"]["total"] == 642)
+check("stats total = served catalog", b["stats"]["total"] == len(prods),
+      str(b["stats"]["total"]))
+check("stats by_owner = served catalog",
+      b["stats"]["by_owner"] == dict(Counter(p["owner"] for p in prods)),
+      str(b["stats"]["by_owner"]))
 check("stats price_tbd 0", b["stats"]["price_tbd"] == 0)
 
 # 6. images: one design file per line resolves via /img/<lib>/

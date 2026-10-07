@@ -441,6 +441,17 @@ FACE_PAGES = {
     },
 }
 
+# PushRod storefront trust pages (pushrodshop.com). The gateway shell
+# serves / and the /product/<SKU> pages; /about, /faq and /contact are
+# static pages under frontend/pushrod/, dispatched by _face_page only
+# on hosts with no face of their own (the process brand's own hosts).
+# Every host-mapped face keeps its own pages and never lands here.
+PUSHROD_PAGES = {
+    "/about": "about.html",
+    "/faq": "faq.html",
+    "/contact": "contact.html",
+}
+
 ER_PAGES = FACE_PAGES["everready"]["pages"]
 ST_PAGES = FACE_PAGES["stitchfolk"]["pages"]
 SR_PAGES = FACE_PAGES["sportroots"]["pages"]
@@ -503,6 +514,14 @@ def _face_page(path):
     cfg, _products = _face()
     spec = FACE_PAGES.get(cfg["brand"]["id"])
     if not spec or path not in spec["pages"]:
+        # No face page for this path on this host: the PushRod
+        # storefront's own hosts (process brand, no host face) serve
+        # the static trust pages; face hosts keep their 404.
+        if (cfg["brand"]["id"] == BRAND_ID
+                and _request_host_key() not in HOST_FACES
+                and path in PUSHROD_PAGES):
+            return send_from_directory(os.path.join(FRONTEND, "pushrod"),
+                                       PUSHROD_PAGES[path])
         return "Not found", 404
     if cfg["brand"]["id"] == "skillforge":
         # SkillForge is also this process's own brand: without the host
@@ -731,6 +750,105 @@ def _inject_home_h1(resp, name):
         '<div class="doors" id="doors">',
         f'<h1 class="pagetitle">{_html_escape(name)}</h1>\n  '
         '<div class="doors" id="doors">', 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
+    return resp
+
+
+# ---------- PushRod home SEO (pushrodshop.com only) ----------
+# The shared shell's raw bytes are <title>PUSHROD™</title> with no meta
+# description, no canonical, no OG tags, a bare-brand <h1>, and zero
+# crawlable product links (the grid is JS-rendered into #doors/#grid).
+# Face hosts never see this code (their homes are their own static
+# files); on the PushRod store hosts the home gets the full head, a
+# descriptive <h1>, and a server-rendered catalog index below the grid.
+PUSHROD_HOME_TITLE = "PushRod™ Garage Gear — Hats, Tees & Shop Signs"
+PUSHROD_HOME_DESCRIPTION = (
+    "PushRod garage gear — hats, tees, sweatshirts, shop signs, mugs "
+    "and decals for people who work on their own cars. Garage-built "
+    "designs, printed when you order, secure checkout at PushRodShop.")
+
+
+def _pushrod_home_head(resp):
+    """PushRod home <head>: descriptive title, meta description,
+    self-canonical on the apex, and Open Graph tags in the raw bytes."""
+    canonical = "https://pushrodshop.com/"
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    html_text = _TITLE_RE.sub(
+        lambda _m: f"<title>{_html_escape(PUSHROD_HOME_TITLE)}</title>",
+        html_text, count=1)
+    if 'name="description"' not in html_text:
+        head_extra = (
+            '\n<meta name="description" '
+            f'content="{_html_escape(PUSHROD_HOME_DESCRIPTION, quote=True)}">'
+            f'\n<link rel="canonical" href="{canonical}">'
+            '\n<meta property="og:type" content="website">'
+            '\n<meta property="og:title" '
+            f'content="{_html_escape(PUSHROD_HOME_TITLE, quote=True)}">'
+            '\n<meta property="og:description" '
+            f'content="{_html_escape(PUSHROD_HOME_DESCRIPTION, quote=True)}">'
+            f'\n<meta property="og:url" content="{canonical}">'
+            '\n<meta property="og:image" '
+            'content="https://pushrodshop.com/static/img/pushrod-logo.png">'
+            '\n<meta name="twitter:card" content="summary">')
+        html_text = html_text.replace("</title>", "</title>" + head_extra, 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)  # body changed; the file's ETag is stale
+    return resp
+
+
+_CRAWL_SLUG_RE = re.compile(r"[^a-z0-9]+")
+
+
+def _inject_pushrod_catalog_index(resp, products, doors):
+    """Server-rendered crawl links for the PushRod home.
+
+    The raw shell carries no product links at all (store.js renders the
+    grid client-side), so a non-JS crawler reaches no product page from
+    the home. This index — door links plus every listed product grouped
+    by door (SKU prefix) — is a sibling of #grid inside <main>: store.js
+    fills only #doors/#grid and never touches it, so the links survive
+    hydration untouched. Product links carry the catalog type so the
+    list doubles as the shop's category index."""
+    listed = [p for p in products if p.get("listed", True)]
+    if not listed:
+        return resp
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    if "catalog-index" in html_text or "</main>" not in html_text:
+        return resp
+    groups, seen = [], set()
+    for d in doors or []:
+        items = [p for p in listed if p.get("prefix") == d.get("prefix")]
+        if items:
+            groups.append((d.get("label") or d.get("prefix") or "Gear",
+                           d.get("blurb") or "", items))
+            seen.update(p["sku"] for p in items)
+    rest = [p for p in listed if p["sku"] not in seen]
+    if rest:
+        groups.append(("More garage gear", "", rest))
+    door_links, sections = [], []
+    for label, blurb, items in groups:
+        slug = _CRAWL_SLUG_RE.sub("-", label.lower()).strip("-")
+        blurb_html = (f" — {_html_escape(blurb)}" if blurb else "")
+        door_links.append(
+            f'<li><a href="#door-{slug}">{_html_escape(label)}</a>'
+            f"{blurb_html} ({len(items)})</li>")
+        lis = "".join(
+            f'<li><a href="/product/{_html_escape(p["sku"], quote=True)}">'
+            f'{_html_escape(p["title"])} · {_html_escape(p["type"])}</a></li>'
+            for p in items)
+        sections.append(
+            f'<h3 id="door-{slug}">{_html_escape(label)}</h3>'
+            f"<ul>{lis}</ul>")
+    section = (
+        '<section class="catalog-index"><h2>Shop the whole garage</h2>'
+        f'<ul class="door-index">{"".join(door_links)}</ul>'
+        + "".join(sections) + "</section>")
+    html_text = html_text.replace("</main>", section + "\n</main>", 1)
     resp.set_data(html_text)
     resp.content_length = len(resp.get_data())
     resp.headers.pop("ETag", None)
@@ -975,6 +1093,14 @@ def index():
             b["id"], (f"{b['name']} | {b['tagline']}",
                       f"{b['name']} — {b['tagline']}."))
         resp = _face_head(resp, title=title, description=desc)
+    if _request_host_key() in PUSHROD_STORE_HOSTS:
+        # PushRod's own storefront: full SEO head, a descriptive <h1>,
+        # and the crawlable catalog index (the raw shell ships none).
+        resp = _pushrod_home_head(resp)
+        resp = _inject_home_h1(resp, PUSHROD_HOME_TITLE)
+        resp = _inject_pushrod_catalog_index(
+            resp, _products, cfg["brand"].get("doors", []))
+        return resp
     # The shell ships no <h1>; seed one (the site name on this host).
     resp = _inject_home_h1(resp, cfg["brand"]["name"])
     if cfg["brand"]["id"] == "restorationessentials":
@@ -1065,6 +1191,20 @@ def sitemap_xml():
         paths = None
     if paths is not None:
         return _sitemap_response(paths)
+    if _request_host_key() in PUSHROD_STORE_HOSTS:
+        # pushrodshop.com sells the unified catalog — the same list
+        # /api/products serves on this host — so its sitemap is the
+        # home plus every listed product (dark-staged rows excluded,
+        # exactly as in /api/products).
+        base = request.host_url.rstrip("/")
+        entries = [base + "/"] + [
+            f"{base}/product/{p['sku']}"
+            for p in products if p.get("listed", True)]
+        urls = "\n".join(f"  <url><loc>{u}</loc></url>" for u in entries)
+        xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+               f"{urls}\n</urlset>\n")
+        return Response(xml, mimetype="application/xml")
     base = request.host_url.rstrip("/")
     entries = [base + "/"]
     for p in PRODUCTS:
@@ -1176,10 +1316,17 @@ def _face():
 def api_brand():
     cfg, products = _face()
     b = cfg["brand"]
+    # Stats describe the same listed catalog /api/products serves on
+    # this face: dark-staged rows (listed=0) are loaded but never
+    # listed, so they no longer inflate total/by_owner/by_type — they
+    # are reported only in the `unlisted` count.
+    listed = [p for p in products if p.get("listed", True)]
+    stats = catalog_stats(listed)
+    stats["unlisted"] = len(products) - len(listed)
     return jsonify({
         "id": b["id"], "name": b["name"], "tagline": b["tagline"],
         "doors": b.get("doors", []),
-        "theme": cfg["theme"], "stats": catalog_stats(products),
+        "theme": cfg["theme"], "stats": stats,
         "sizes": APPAREL_SIZES,
         "stripe_ready": STRIPE_READY,
         "stripe_mode": STRIPE_MODE,
