@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guide Catalog | Restoration Essentials</title>
+<link rel="canonical" href="https://restoreessentials.com/guides">
+<meta name="description" content="The full Restoration Essentials catalog: 385 restoration guides for muscle cars & classic trucks — one guide for the exact year and model, delivered as a PDF at checkout.">
+<style>
+  :root{--bg:#101418;--bg2:#161c22;--card:#1c242d;--accent:#e8a020;--accent2:#b33030;--text:#f0e9d8;--muted:#9aa3ab;--line:#2b333c}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.6}
+  h1,h2,h3{font-family:'Arial Black','Helvetica Neue',sans-serif;line-height:1.25;margin:0 0 .6rem}
+  a{color:var(--accent)} .wrap{max-width:960px;margin:0 auto;padding:0 1.25rem}
+  header.top{background:var(--bg2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  header.top .wrap{display:flex;align-items:center;gap:1.2rem;padding-top:.7rem;padding-bottom:.7rem;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:.7rem;font-size:1.25rem;font-weight:800;color:var(--text);text-decoration:none}
+  .brand small{display:block;font-weight:400;font-size:.72rem;color:var(--muted);letter-spacing:.04em}
+  nav.main{margin-left:auto;display:flex;gap:1.05rem;flex-wrap:wrap}
+  nav.main a{color:var(--text);text-decoration:none;font-size:.95rem} nav.main a:hover{color:var(--accent)}
+  main{padding:2.5rem 0 3rem}
+  .hero h1{font-size:2.3rem} .lede{font-size:1.12rem;color:var(--muted);max-width:44rem}
+  .btnrow{display:flex;gap:.8rem;flex-wrap:wrap;margin:1.4rem 0}
+  .btn{display:inline-block;background:var(--accent);color:#181206;text-decoration:none;font-weight:700;padding:.7rem 1.3rem;border-radius:.5rem}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:.8rem;padding:1.4rem;margin:1.2rem 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin:1.2rem 0}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:.8rem;padding:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+  .pcard h3{font-size:1.05rem;margin:0;font-family:'Helvetica Neue',Arial,sans-serif}
+  .pcard p{margin:0;color:var(--muted);font-size:.92rem}
+  .tag{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+  .price{color:var(--accent);font-weight:700;font-size:1.15rem}
+  .meta{color:var(--muted);font-size:.9rem}
+  footer.page{border-top:1px solid var(--line);background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2rem 0;margin-top:2rem}
+  footer.page a{color:var(--muted)}
+  input.search{width:100%;padding:.7rem 1rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:1rem}
+  .banner{background:var(--card);border:1px solid var(--accent);border-radius:.8rem;padding:1rem 1.4rem;margin:1.2rem 0}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/"><span>Restoration Essentials<small>Restoration guides for muscle cars &amp; classic trucks</small></span></a>
+  <nav class="main">
+    <a href="/guides">Guides</a>
+    <a href="/auctions">Auctions</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+  </nav>
+</div></header>
+<main><div class="wrap">
+<section class="hero">
+    <h1>The guide catalog</h1>
+    <p class="lede"><span id="count">385</span> guides live today, grouped by make. Pick your year and model — every guide is a PDF delivered at checkout.</p>
+  </section>
+  <input class="search" id="q" type="search" placeholder="Search by year, make, or model — try “1969 Chevelle”">
+  <div id="groups"><p class="meta">Loading the catalog…</p></div>
+  <p class="meta">Looking for a car or truck that isn't here yet? The library grows model by model; <a href="/contact">tell us what you're restoring</a>.</p>
+
+<script>
+function price(p){ return p && p.price ? '$' + Number(p.price.amount).toFixed(2) : ''; }
+var MAKES = {Chevrolet:1, Ford:1, Buick:1, Plymouth:1, Dodge:1, Pontiac:1,
+             Oldsmobile:1, Mercury:1, AMC:1, Shelby:1, Studebaker:1,
+             Cadillac:1, Chrysler:1};
+var ALIAS = {Amc:'AMC', Gm:'Chevrolet', K5:'Chevrolet', Fox:'Ford', Third:'Pontiac'};
+function makeOf(title){
+  var s = title.replace(/^\d{4}(\s*[–—-]\s*\d{2,4})?\s+/, '');
+  var w = (s.split(' ')[0] || '').replace(/[^A-Za-z]/g, '');
+  w = w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+  if (MAKES[w]) return w;
+  if (ALIAS[w]) return ALIAS[w];
+  return 'More American classics';
+}
+var ALL = [];
+function card(p, groupLabel){
+  var c = document.createElement('div'); c.className='pcard';
+  c.setAttribute('data-title', (p.title + ' ' + p.sku).toLowerCase());
+  var t = document.createElement('span'); t.className='tag'; t.textContent = groupLabel;
+  var h = document.createElement('h3'); h.textContent = p.title;
+  var d = document.createElement('p'); d.textContent = (p.description||'').slice(0,150);
+  var pr = document.createElement('span'); pr.className='price'; pr.textContent = price(p.price);
+  var a = document.createElement('a'); a.className='btn'; a.href='/product/'+p.sku; a.textContent='View guide';
+  c.appendChild(t); c.appendChild(h); c.appendChild(d); c.appendChild(pr); c.appendChild(a);
+  return c;
+}
+function render(ps){
+  var groups = {};
+  ps.forEach(function(p){
+    var g = makeOf(p.title);
+    (groups[g] = groups[g] || []).push(p);
+  });
+  var names = Object.keys(groups).sort(function(a,b){
+    if (a === 'More American classics') return 1;
+    if (b === 'More American classics') return -1;
+    return groups[b].length - groups[a].length || (a < b ? -1 : 1);
+  });
+  var box = document.getElementById('groups');
+  box.innerHTML = '';
+  names.forEach(function(name){
+    var list = groups[name].slice().sort(function(a,b){ return a.sku < b.sku ? -1 : 1; });
+    var h = document.createElement('h2');
+    h.innerHTML = name + ' <span class="meta">(' + list.length + ' guides)</span>';
+    h.setAttribute('data-group', name);
+    var grid = document.createElement('div'); grid.className='pgrid';
+    grid.setAttribute('data-group', name);
+    list.forEach(function(p){ grid.appendChild(card(p, name)); });
+    box.appendChild(h); box.appendChild(grid);
+  });
+  var n = document.getElementById('count');
+  if(n) n.textContent = ps.length;
+}
+document.getElementById('q').addEventListener('input', function(){
+  var q = this.value.trim().toLowerCase();
+  document.querySelectorAll('.pcard').forEach(function(c){
+    c.style.display = (!q || c.getAttribute('data-title').indexOf(q) !== -1) ? '' : 'none';
+  });
+  document.querySelectorAll('[data-group]').forEach(function(el){
+    if (el.className === 'pgrid') {
+      var any = Array.prototype.some.call(el.children, function(c){ return c.style.display !== 'none'; });
+      el.style.display = any ? '' : 'none';
+    } else {
+      var grid = el.nextElementSibling;
+      el.style.display = (grid && grid.style.display !== 'none') ? '' : 'none';
+    }
+  });
+});
+fetch('/api/products').then(function(r){return r.json();}).then(function(ps){
+  ALL = ps.filter(function(p){ return p.sku.indexOf('RE-GD-')===0 && p.purchasable; });
+  render(ALL);
+}).catch(function(){
+  document.getElementById('groups').innerHTML =
+    '<p class="meta">The catalog is loading — if it does not appear, refresh the page.</p>';
+});
+</script>
+
+</div></main>
+<footer class="page"><div class="wrap">
+  <p><strong>Restoration Essentials</strong> — restoration guides for muscle cars &amp; classic trucks, plus classic-car auctions.<br>
+  Restoration Essentials gear and shop merch live at <a href="https://pushrodshop.com">pushrodshop.com</a>; guides are sold and delivered right here.</p>
+  <p><a href="/guides">Guides</a> · <a href="/auctions">Auctions</a> · <a href="/about">About</a> · <a href="/contact">Contact</a></p>
+  <p>© 2026 Restoration Essentials. All rights reserved.</p>
+</div></footer>
+</body>
+</html>

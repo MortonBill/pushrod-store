@@ -420,6 +420,24 @@ FACE_PAGES = {
             "/contact": "contact.html",
         },
     },
+    # RestorationEssentials face (2026-10-07 — Bill: restoreessentials
+    # .com must land on the GUIDE landing page, not the shared PushRod
+    # merch shop shell + merch shelf the host used to fall back to):
+    # the face home is guides-first (hero + guide showcase fed by the
+    # face-filtered /api/products), the auctions blueprint carries
+    # /auctions, and the PushRod merch stays a secondary cross-sell
+    # section on the home that links out to pushrodshop.com — the same
+    # links-only treatment the guide pages already get via
+    # _inject_re_guide_shelf.
+    "restorationessentials": {
+        "dir": "restorationessentials",
+        "home": "home.html",
+        "pages": {
+            "/guides": "guides.html",
+            "/about": "about.html",
+            "/contact": "contact.html",
+        },
+    },
 }
 
 ER_PAGES = FACE_PAGES["everready"]["pages"]
