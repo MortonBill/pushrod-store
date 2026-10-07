@@ -369,6 +369,10 @@ FACE_PAGES = {
             "/book": "book.html",
             "/pricing": "pricing.html",
             "/faq": "faq.html",
+            "/about": "about.html",
+            "/contact": "contact.html",
+            "/privacy": "privacy.html",
+            "/terms": "terms.html",
         },
     },
     "ironhead": {
