@@ -46,13 +46,25 @@
   label{display:block;margin:.8rem 0 .3rem;font-weight:600}
   input.f,textarea.f{width:100%;padding:.6rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg2);color:var(--text)}
   .banner{background:var(--card);border:1px solid var(--accent);border-radius:.8rem;padding:1rem 1.4rem;margin:1.2rem 0}
+
+  .navdd{position:relative;display:inline-block}
+  .navdd-btn{background:none;border:0;color:var(--text);cursor:pointer;font-size:.8rem;padding:.1rem .25rem}
+  .navdd-btn:hover{color:var(--accent2)}
+  .navdd-menu{display:none;position:absolute;top:100%;left:0;background:var(--bg2);border:1px solid var(--line);border-radius:.5rem;padding:.5rem 0;min-width:13.5rem;z-index:50;box-shadow:0 .6rem 1.4rem rgba(0,0,0,.45)}
+  .navdd-menu a{display:block;padding:.42rem 1rem;color:var(--text);text-decoration:none;font-size:.92rem;white-space:nowrap}
+  .navdd-menu a:hover{color:var(--accent2);background:var(--card)}
+  .navdd:hover .navdd-menu,.navdd:focus-within .navdd-menu,.navdd.open .navdd-menu{display:block}
+
+  .filterbar{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:.8rem;padding:1rem 1.2rem;margin:1.2rem 0}
+  .filterbar label{margin:0;font-weight:700}
+  .filterbar select{padding:.55rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:1rem}
 </style>
 </head>
 <body>
 <header class="top"><div class="wrap">
   <a class="brand" href="/"><img src="/static/img/ironhead-logo.png" alt="IronHead"><span>IronHead<small>Restore · Preserve · Ride</small></span></a>
   <nav class="main">
-    <a href="/guides">Guides</a>
+    <span class="navdd"><a href="/guides">Guides</a><button class="navdd-btn" type="button" aria-label="Guides by manufacturer" aria-expanded="false">&#9662;</button><span class="navdd-menu" data-ih-makes><a href="/guides">All manufacturers</a><a href="/guides?make=bmw">BMW</a><a href="/guides?make=bsa">BSA</a><a href="/guides?make=ducati">Ducati</a><a href="/guides?make=harley-davidson">Harley-Davidson</a><a href="/guides?make=honda">Honda</a><a href="/guides?make=indian">Indian</a><a href="/guides?make=kawasaki">Kawasaki</a><a href="/guides?make=triumph">Triumph</a><a href="/guides?make=yamaha">Yamaha</a></span></span>
     <a href="/pricing">Pricing</a>
     <a href="/blog">Journal</a>
     <a href="/workshop">Workshop</a>
@@ -66,7 +78,14 @@
     <h1>The guide catalog</h1>
     <p class="lede"><span id="count">244</span> guides live today, grouped by the machine they cover. Pick your model and year — every guide is a PDF delivered at checkout.</p>
   </section>
-  <div class="grid">
+<div class="filterbar">
+    <label for="makeSel">Manufacturer</label>
+    <select id="makeSel"><option value="">All manufacturers</option></select>
+    <span class="meta" id="shownCount"></span>
+  </div>
+  <h2 id="makeTitle" hidden></h2>
+  <div id="makeResults"></div>
+    <div class="grid">
     <div class="card"><h3>Harley-Davidson Sportster</h3><p>1957–1985</p><a class="btn ghost" href="/guides/harley-sportster">Browse the shelf</a></div>
     <div class="card"><h3>Harley-Davidson Shovelhead</h3><p>1966–1984</p><a class="btn ghost" href="/guides/harley-shovelhead">Browse the shelf</a></div>
     <div class="card"><h3>Harley-Davidson Panhead</h3><p>1948–1965</p><a class="btn ghost" href="/guides/harley-panhead">Browse the shelf</a></div>
@@ -80,27 +99,27 @@
     <div class="card"><h3>Yamaha XS650</h3><p>1970–1983</p><a class="btn ghost" href="/guides/yamaha-xs650">Browse the shelf</a></div>
     <div class="card"><h3>All-years restoration guides</h3><p>Full teardown-to-assembly books, $29.95</p><a class="btn ghost" href="/guides/restoration-bundles">Restoration shelf</a></div>
   </div>
-  <h2>Harley-Davidson Sportster <span class="meta">(1957–1985)</span></h2>
+  <h2 class="fam-h">Harley-Davidson Sportster <span class="meta">(1957–1985)</span></h2>
   <div class="pgrid-slot" id="fam-sportster"></div>
-  <h2>Harley-Davidson Shovelhead <span class="meta">(1966–1984)</span></h2>
+  <h2 class="fam-h">Harley-Davidson Shovelhead <span class="meta">(1966–1984)</span></h2>
   <div class="pgrid-slot" id="fam-shovelhead"></div>
-  <h2>Harley-Davidson Panhead <span class="meta">(1948–1965)</span></h2>
+  <h2 class="fam-h">Harley-Davidson Panhead <span class="meta">(1948–1965)</span></h2>
   <div class="pgrid-slot" id="fam-panhead"></div>
-  <h2>Indian Chief <span class="meta">(1922–1953)</span></h2>
+  <h2 class="fam-h">Indian Chief <span class="meta">(1922–1953)</span></h2>
   <div class="pgrid-slot" id="fam-chief"></div>
-  <h2>Indian Scout <span class="meta">(1920–1942)</span></h2>
+  <h2 class="fam-h">Indian Scout <span class="meta">(1920–1942)</span></h2>
   <div class="pgrid-slot" id="fam-scout"></div>
-  <h2>Triumph Bonneville <span class="meta">(1963–1983)</span></h2>
+  <h2 class="fam-h">Triumph Bonneville <span class="meta">(1963–1983)</span></h2>
   <div class="pgrid-slot" id="fam-bonneville"></div>
-  <h2>Triumph Pre-Unit <span class="meta">(1946–1962)</span></h2>
+  <h2 class="fam-h">Triumph Pre-Unit <span class="meta">(1946–1962)</span></h2>
   <div class="pgrid-slot" id="fam-preunit"></div>
-  <h2>BMW /7 <span class="meta">(1977–1995)</span></h2>
+  <h2 class="fam-h">BMW /7 <span class="meta">(1977–1995)</span></h2>
   <div class="pgrid-slot" id="fam-bmw"></div>
-  <h2>BSA B-Series & Gold Star <span class="meta">(1945–1963)</span></h2>
+  <h2 class="fam-h">BSA B-Series & Gold Star <span class="meta">(1945–1963)</span></h2>
   <div class="pgrid-slot" id="fam-bsa"></div>
-  <h2>Honda CB450 & CB750 <span class="meta">(1965–1978)</span></h2>
+  <h2 class="fam-h">Honda CB450 & CB750 <span class="meta">(1965–1978)</span></h2>
   <div class="pgrid-slot" id="fam-honda"></div>
-  <h2>Yamaha XS650 <span class="meta">(1970–1983)</span></h2>
+  <h2 class="fam-h">Yamaha XS650 <span class="meta">(1970–1983)</span></h2>
   <div class="pgrid-slot" id="fam-yamaha"></div>
   <p class="meta">Looking for a marque that isn't here yet — Suzuki, Norton, Moto Guzzi? The library grows model by model; <a href="/contact">tell us what you're restoring</a>.</p>
 
@@ -129,8 +148,63 @@ function render(ps){
   var n = document.getElementById('count');
   if(n) n.textContent = ps.length;
 }
+function makeCard(p, tag){
+  var c = document.createElement('div'); c.className='pcard';
+  var tg = document.createElement('span'); tg.className='tag'; tg.textContent = tag;
+  var h = document.createElement('h3'); h.textContent = p.title;
+  var d = document.createElement('p'); d.textContent = (p.description||'').slice(0,150);
+  var pr = document.createElement('span'); pr.className='price'; pr.textContent = price(p.price);
+  var a = document.createElement('a'); a.className='btn'; a.href='/product/'+p.sku; a.textContent='View guide';
+  c.appendChild(tg); c.appendChild(h); c.appendChild(d); c.appendChild(pr); c.appendChild(a);
+  return c;
+}
+var ALL_PS = [];
+function applyMake(slug){
+  var sel = document.getElementById('makeSel');
+  var title = document.getElementById('makeTitle');
+  var box = document.getElementById('makeResults');
+  var note = document.getElementById('shownCount');
+  var fam = document.querySelectorAll('.fam-h, .pgrid-slot');
+  if(!slug || !window.IHMakes || !window.IHMakes.BY_SLUG[slug]){
+    fam.forEach(function(e){ e.style.display=''; });
+    title.hidden = true; box.innerHTML='';
+    if(note) note.textContent = 'Showing all ' + ALL_PS.length + ' guides';
+    return;
+  }
+  var make = window.IHMakes.BY_SLUG[slug];
+  var list = ALL_PS.filter(function(p){ return window.IHMakes.deriveMake(p) === slug; });
+  list.sort(function(a,b){ return a.sku < b.sku ? -1 : 1; });
+  fam.forEach(function(e){ e.style.display='none'; });
+  title.hidden = false; title.textContent = make.name + ' guides';
+  box.innerHTML = '';
+  var grid = document.createElement('div'); grid.className='pgrid';
+  list.forEach(function(p){ grid.appendChild(makeCard(p, make.name)); });
+  box.appendChild(grid);
+  if(note) note.textContent = 'Showing ' + list.length + ' of ' + ALL_PS.length + ' guides';
+  if(sel) sel.value = slug;
+}
+function setupFilter(ps){
+  ALL_PS = ps;
+  var sel = document.getElementById('makeSel');
+  if(!sel || !window.IHMakes) return;
+  window.IHMakes.summarize(ps).forEach(function(m){
+    var o = document.createElement('option');
+    o.value = m.slug; o.textContent = m.name + ' (' + m.count + ')';
+    sel.appendChild(o);
+  });
+  var want = new URLSearchParams(window.location.search).get('make') || '';
+  applyMake(want);
+  sel.addEventListener('change', function(){
+    applyMake(sel.value);
+    var q = sel.value ? '?make=' + encodeURIComponent(sel.value) : window.location.pathname;
+    window.history.replaceState(null, '', q);
+  });
+}
 fetch('/api/products').then(function(r){return r.json();}).then(function(ps){
-  render(ps.filter(function(p){ return p.purchasable; }));
+  var live = ps.filter(function(p){ return p.purchasable; });
+  render(live);
+  if(window.IHMakes){ setupFilter(live); }
+  else { document.addEventListener('DOMContentLoaded', function(){ setupFilter(live); }); }
 }).catch(function(){
   document.querySelectorAll('.pgrid-slot').forEach(function(e){
     e.innerHTML = '<p class="meta">The catalog is loading — if it does not appear, refresh the page.</p>';
@@ -145,5 +219,6 @@ fetch('/api/products').then(function(r){return r.json();}).then(function(ps){
   <p><a href="/legal/disclosure-summary">Disclosure summary</a> · <a href="/legal/terms">Terms</a> · <a href="/legal/auction-rules">Auction rules</a> · <a href="/legal/seller-agreement">Seller agreement</a> · <a href="/legal/buyer-disclosures">Buyer disclosures</a> · <a href="/legal/refunds-cancellations">Refunds &amp; cancellations</a> · <a href="/legal/dispute-resolution">Dispute resolution</a> · <a href="/legal/guides-disclaimer">Guides disclaimer</a> · <a href="/privacy">Privacy</a></p>
   <p>© 2026 IronHead. All rights reserved.</p>
 </div></footer>
+<script src="/static/js/ih-makes.js" defer></script>
 </body>
 </html>
