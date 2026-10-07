@@ -13,7 +13,8 @@
   a{color:var(--accent)} .wrap{max-width:960px;margin:0 auto;padding:0 1.25rem}
   header.top{background:var(--bg2);border-bottom:1px solid #1e3a28;position:sticky;top:0;z-index:5}
   header.top .wrap{display:flex;align-items:center;gap:1.5rem;padding-top:.8rem;padding-bottom:.8rem;flex-wrap:wrap}
-  .brand{font-size:1.3rem;font-weight:800;color:var(--text);text-decoration:none}
+  .brand{display:flex;align-items:center;gap:.7rem;font-size:1.3rem;font-weight:800;color:var(--text);text-decoration:none}
+  .brand img{width:46px;height:46px;border-radius:.5rem;border:1px solid #1e3a28}
   .brand small{display:block;font-weight:400;font-size:.72rem;color:var(--muted);letter-spacing:.04em}
   nav.main{margin-left:auto;display:flex;gap:1.1rem;flex-wrap:wrap}
   nav.main a{color:var(--text);text-decoration:none;font-size:.95rem} nav.main a:hover{color:var(--accent)}
@@ -41,7 +42,7 @@
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="brand" href="/">SportRoots<small>Youth sports coaching and training</small></a>
+  <a class="brand" href="/"><img src="/static/img/sportroots-logo.jpg" alt="SportRoots"><span>SportRoots<small>Youth sports coaching and training</small></span></a>
   <nav class="main">
     <a href="/sports">Sports</a>
     <a href="/drills">Drill Library</a>
