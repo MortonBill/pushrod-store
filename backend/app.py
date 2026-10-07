@@ -806,6 +806,83 @@ def _inject_product_seo(resp, p, brand_name, canonical):
     return resp
 
 
+# Per-face Kit banners for generic product pages (EOD audit 2026-10-07,
+# G4). Each face's home/catalog pages already carry that brand's own Kit
+# banner, but the shared product shell (frontend/product.html) carried
+# none, so every /product/<SKU> page on a face host had no email capture.
+# Brand id -> (own Kit href, banner text, link label); copy mirrors the
+# banner each brand already runs. A face carries ONLY its own brand's
+# Kit link — never another brand's. PushRod has no Kit link assigned,
+# so pushrodshop.com product pages get none.
+_FACE_KIT_BANNERS = {
+    "restorationessentials": (
+        "https://bill-morton.kit.com/612f5dffc5",
+        "<strong>Restoring an American classic?</strong> Become a beta "
+        "tester — read a guide free for your honest feedback. ",
+        "Claim your free guide →"),
+    "ironhead": (
+        "https://bill-morton.kit.com/3b635485d5",
+        "<strong>Want a free vintage bike buyer's guide?</strong> Become "
+        "a beta tester — free for your honest feedback. ",
+        "Claim your free guide →"),
+    "everready": (
+        "https://bill-morton.kit.com/57816ee3d5",
+        "<strong>Get the free checklists by email.</strong> Join the "
+        "EverReady Family list — we'll email you the free Executor's "
+        "First 30 Days checklist and the other free family guides as "
+        "they're ready. ",
+        "Join the list →"),
+    "stitchfolk": (
+        "https://bill-morton.kit.com/2f09d9fd9a",
+        "<strong>Want a free pattern to try?</strong> Become a pattern "
+        "tester — stitch it up free for your honest feedback. ",
+        "Claim your free pattern →"),
+    "sportroots": (
+        "https://bill-morton.kit.com/8188473ffb",
+        "<strong>Parents — want 5 free drills to try tonight?</strong> "
+        "Become a SportRoots beta tester: run the drills with your "
+        "player, then leave an honest review — real parent feedback is "
+        "how we build this right. ",
+        "Get the free drills →"),
+    "skillforge": (
+        "https://bill-morton.kit.com/5b33261b97",
+        "<strong>New playbooks for trade businesses.</strong> Join the "
+        "SkillForge AI list — new releases and practical AI tips for "
+        "your shop. ",
+        "Join the list →"),
+}
+
+
+def _inject_face_kit_banner(resp, brand_id):
+    """Server-render the face brand's own Kit banner on a product page.
+
+    Inserted just before </main>, outside #pdetail (which store.js
+    re-renders on hydration), so the banner is in the raw bytes for
+    crawlers and first paint and survives hydration. Idempotent: a
+    page already carrying the brand's Kit href is returned untouched.
+    Caller guarantees the request host is in HOST_FACES (where foreign
+    SKUs already 404, so the face brand is the product's brand).
+    """
+    entry = _FACE_KIT_BANNERS.get(brand_id)
+    if not entry:
+        return resp
+    href, text, label = entry
+    resp.direct_passthrough = False  # send_from_directory streams; buffer it
+    html_text = resp.get_data(as_text=True)
+    if href in html_text or "</main>" not in html_text:
+        return resp
+    banner = (
+        '<div class="kit-banner" style="border:1px solid;'
+        'border-radius:.8rem;padding:1rem 1.4rem;margin:1.2rem 0">'
+        + text
+        + f'<a href="{href}">{label}</a></div>')
+    html_text = html_text.replace("</main>", banner + "\n</main>", 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)  # body changed; the file's ETag is stale
+    return resp
+
+
 # PushRod storefront hosts: pushrodshop.com (+ www) is the store's own
 # public domain -- the one GSC indexes for the unified catalog. It is
 # not a host face (the shared shell already speaks PushRod there); only
@@ -1221,6 +1298,9 @@ def product_page(sku):
         # Header/footer chrome too: the shared shell's small-print,
         # back link, and footer are PUSHROD's until JS swaps the name.
         resp = _face_product_chrome(resp, cfg)
+        # The face brand's own Kit banner (G4): home/catalog pages carry
+        # it; the shared product shell did not.
+        resp = _inject_face_kit_banner(resp, b["id"])
         seo_brand_name = b["name"]
         seo_canonical = f"https://{_request_host_key()}{request.path}"
     elif _request_host_key() in PUSHROD_STORE_HOSTS:
