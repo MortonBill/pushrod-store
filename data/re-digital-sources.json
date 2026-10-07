@@ -5,7 +5,7 @@
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
     "total_files": 385,
-    "total_bytes": 675077706
+    "total_bytes": 675077630
   },
   "files": [
     {
@@ -661,8 +661,8 @@
     },
     {
       "sku": "RE-GD-1970-PLYMOUTH-DUSTER",
-      "source": "/home/hatch/workspace/guide-manuscripts/re/1970-plymouth-duster-buyer.pdf",
-      "bytes": 43219,
+      "source": "/home/hatch/workspace/goals/paid-pdf-rewrite-queue-512-across-four-brands/files/re-wave/rebuilt/RE_1970-plymouth-duster.pdf",
+      "bytes": 43143,
       "key": "RE_1970-plymouth-duster.pdf",
       "size_verified_against_manifest": true
     },

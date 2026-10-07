@@ -558,9 +558,24 @@ re_prods = _load_catalog(os.path.join(REPO_ROOT, "data", "re-catalog.csv"),
                          sku_prefixes=["RE-GD-"])
 check("RE guide catalog loads 385 rows", len(re_prods) == 385, len(re_prods))
 _GATE_SKU = "RE-GD-CHEVROLET-BEL-AIR-1955"  # Lane 1 test-purchase gate (opened 2026-10-02, passed $32.05)
-check("every RE guide row WITH a deliverable is listed and purchasable",
-      all(p["listed"] is True and p["purchasable"] is True
-          for p in re_prods if p["digital_file"]))
+# 2026-10-07 (Bill: "if something is broken fix it"): 9 duplicate titles
+# carried 10 redundant rows (incl. the 1970 Olds 442 W30/W45 pair). The
+# weaker copy of each pair stays LOADED with its deliverable but is
+# unlisted and never sellable; the record/file are never deleted.
+_RETIRED_20261007 = {
+    "RE-GD-FORD-MUSTANG-1965", "RE-GD-CHEVROLET-CAMARO-1967",
+    "RE-GD-1967-MUSTANG", "RE-GD-OLDSMOBILE-442-1968-W45",
+    "RE-GD-FORD-MUSTANG-BOSS-1969", "RE-GD-OLDSMOBILE-442-1969-W45",
+    "RE-GD-CHEVROLET-CHEVELLE-1970", "RE-GD-OLDSMOBILE-442-1970-W30",
+    "RE-GD-OLDSMOBILE-442-1970-W45", "RE-GD-PLYMOUTH-BARRACUDA-1970"}
+check("RE guide rows are listed+purchasable, except the 10 duplicate-retired "
+      "rows (2026-10-07) which stay loaded, unlisted, never sellable",
+      _RETIRED_20261007 <= {p["sku"] for p in re_prods}
+      and sum(1 for p in re_prods if p["sku"] in _RETIRED_20261007) == 10
+      and all((p["listed"] is False and p["purchasable"] is False)
+              if p["sku"] in _RETIRED_20261007
+              else (p["listed"] is True and p["purchasable"] is True)
+              for p in re_prods if p["digital_file"]))
 check("every RE guide row WITHOUT a deliverable stays dark, never sellable",
       all(p["listed"] is False and p["purchasable"] is False
           for p in re_prods if not p["digital_file"]))
@@ -568,28 +583,38 @@ _gate = next(p for p in re_prods if p["sku"] == _GATE_SKU)
 check("RE gate SKU is listed and purchasable at $29.95",
       _gate["listed"] is True and _gate["purchasable"] is True
       and _gate["price"]["amount"] == 29.95)
-check("RE guide prices are draft (never confirmed) placeholders",
-      all(p["price"] and p["price"]["status"] == "draft" for p in re_prods))
+# 2026-10-07: Lane 1 is live, so the draft staging flag is retired —
+# prices confirmed, amounts UNCHANGED (the flip kills the "intro price"
+# badge in store.js, which renders it only for status == "draft").
+check("RE guide prices are confirmed (2026-10-07 draft->confirmed flip)",
+      all(p["price"] and p["price"]["status"] == "confirmed" for p in re_prods))
 _amounts = {}
 for p in re_prods:
     _amounts[p["price"]["amount"]] = _amounts.get(p["price"]["amount"], 0) + 1
-check("RE guide prices match the live index ($29.95 x384, $19.95 x1)",
-      _amounts == {29.95: 384, 19.95: 1}, str(_amounts))
+check("RE guide prices: all guides $29.95 (Bill's standing rule, x385)",
+      _amounts == {29.95: 385}, str(_amounts))
 _with_file = [p for p in re_prods if p["digital_file"]]
 check("385 RE guides carry a deliverable; 0 await a source PDF",
       len(_with_file) == 385
       and all(p["digital_file"].endswith(".pdf") for p in _with_file)
       and len(re_prods) - len(_with_file) == 0)
 _duster = next(p for p in re_prods if p["sku"] == "RE-GD-1970-PLYMOUTH-DUSTER")
-check("the manifest's $19.95 guide keeps its index price (Duster)",
-      _duster["price"]["amount"] == 19.95)
+# 2026-10-07: the Duster's probe-era $19.95 was a defect against Bill's
+# all-guides-$29.95 rule; the record is finished (file placed in the
+# re-wave/rebuilt store, delivery path + manifest entry repaired).
+check("the Duster guide sells at the standard $29.95 guide price "
+      "(2026-10-07 record finish)",
+      _duster["price"]["amount"] == 29.95
+      and _duster["price"]["status"] == "confirmed"
+      and _duster["listed"] is True and _duster["purchasable"] is True
+      and _duster["digital_file"] == "RE_1970-plymouth-duster.pdf")
 
 with open(os.path.join(REPO_ROOT, "data", "re-digital-sources.json")) as f:
     _sources = json.load(f)
-check("upload work order: 385 files / 675,077,706 bytes / 0 gaps",
+check("upload work order: 385 files / 675,077,630 bytes / 0 gaps",
       _sources["storage"]["total_files"] == 385
-      and _sources["storage"]["total_bytes"] == 675077706
-      and sum(e["bytes"] for e in _sources["files"]) == 675077706
+      and _sources["storage"]["total_bytes"] == 675077630
+      and sum(e["bytes"] for e in _sources["files"]) == 675077630
       and len(_sources["missing_source_skus"]) == 0
       and all(e["size_verified_against_manifest"] for e in _sources["files"]))
 
