@@ -14,6 +14,7 @@
   header.top{background:var(--bg2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
   header.top .wrap{display:flex;align-items:center;gap:1.2rem;padding-top:.7rem;padding-bottom:.7rem;flex-wrap:wrap}
   .brand{display:flex;align-items:center;gap:.7rem;font-size:1.25rem;font-weight:800;color:var(--text);text-decoration:none}
+  .brand img{width:46px;height:46px;border-radius:.5rem;border:1px solid var(--line)}
   .brand small{display:block;font-weight:400;font-size:.72rem;color:var(--muted);letter-spacing:.04em}
   nav.main{margin-left:auto;display:flex;gap:1.05rem;flex-wrap:wrap}
   nav.main a{color:var(--text);text-decoration:none;font-size:.95rem} nav.main a:hover{color:var(--accent)}
@@ -35,13 +36,24 @@
   footer.page a{color:var(--muted)}
   input.search{width:100%;padding:.7rem 1rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:1rem}
   .banner{background:var(--card);border:1px solid var(--accent);border-radius:.8rem;padding:1rem 1.4rem;margin:1.2rem 0}
+
+  .navdd{position:relative;display:inline-block}
+  .navdd-btn{background:none;border:0;color:var(--text);cursor:pointer;font-size:.8rem;padding:.1rem .25rem}
+  .navdd-btn:hover{color:var(--accent)}
+  .navdd-menu{display:none;position:absolute;top:100%;left:0;background:var(--bg2);border:1px solid var(--line);border-radius:.5rem;padding:.5rem 0;min-width:13.5rem;z-index:50;box-shadow:0 .6rem 1.4rem rgba(0,0,0,.45)}
+  .navdd-menu a{display:block;padding:.42rem 1rem;color:var(--text);text-decoration:none;font-size:.92rem;white-space:nowrap}
+  .navdd-menu a:hover{color:var(--accent);background:var(--card)}
+  .navdd:hover .navdd-menu,.navdd:focus-within .navdd-menu,.navdd.open .navdd-menu{display:block}
+  .filterbar{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:.8rem;padding:1rem 1.2rem;margin:1.2rem 0}
+  .filterbar label{margin:0;font-weight:700}
+  .filterbar select{padding:.55rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:1rem}
 </style>
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="brand" href="/"><span>Restoration Essentials<small>Restoration guides for muscle cars &amp; classic trucks</small></span></a>
+  <a class="brand" href="/"><img src="/static/img/restoration-essentials-logo.png" alt="Restoration Essentials"><span>Restoration Essentials<small>Restoration guides for muscle cars &amp; classic trucks</small></span></a>
   <nav class="main">
-    <a href="/guides">Guides</a>
+    <span class="navdd"><a href="/guides">Guides</a><button class="navdd-btn" type="button" aria-label="Guides by manufacturer" aria-expanded="false">&#9662;</button><span class="navdd-menu" data-re-makes><a href="/guides">All manufacturers</a><a href="/guides?make=amc">AMC</a><a href="/guides?make=buick">Buick</a><a href="/guides?make=cadillac">Cadillac</a><a href="/guides?make=chevrolet">Chevrolet</a><a href="/guides?make=chrysler">Chrysler</a><a href="/guides?make=dodge">Dodge</a><a href="/guides?make=ford">Ford</a><a href="/guides?make=mercury">Mercury</a><a href="/guides?make=oldsmobile">Oldsmobile</a><a href="/guides?make=plymouth">Plymouth</a><a href="/guides?make=pontiac">Pontiac</a><a href="/guides?make=shelby">Shelby</a><a href="/guides?make=studebaker">Studebaker</a></span></span>
     <a href="/auctions">Auctions</a>
     <a href="/about">About</a>
     <a href="/contact">Contact</a>
@@ -52,6 +64,13 @@
     <h1>The guide catalog</h1>
     <p class="lede"><span id="count">385</span> guides live today, grouped by make. Pick your year and model — every guide is a PDF delivered at checkout.</p>
   </section>
+  <div class="filterbar">
+    <label for="makeSel">Manufacturer</label>
+    <select id="makeSel"><option value="">All manufacturers</option></select>
+    <span class="meta" id="shownCount"></span>
+  </div>
+  <h2 id="makeTitle" hidden></h2>
+  <div id="makeResults"></div>
   <input class="search" id="q" type="search" placeholder="Search by year, make, or model — try “1969 Chevelle”">
   <div id="groups"><p class="meta">Loading the catalog…</p></div>
   <p class="meta">Looking for a car or truck that isn't here yet? The library grows model by model; <a href="/contact">tell us what you're restoring</a>.</p>
@@ -108,11 +127,59 @@ function render(ps){
   var n = document.getElementById('count');
   if(n) n.textContent = ps.length;
 }
+var CURRENT_MAKE = '';
+function applyMake(slug){
+  var sel = document.getElementById('makeSel');
+  var title = document.getElementById('makeTitle');
+  var box = document.getElementById('makeResults');
+  var note = document.getElementById('shownCount');
+  var groups = document.querySelectorAll('[data-group]');
+  var q = document.getElementById('q');
+  if(q) q.value = '';
+  if(!slug || !window.REMakes || !window.REMakes.BY_SLUG[slug]){
+    CURRENT_MAKE = '';
+    groups.forEach(function(e){ e.style.display=''; });
+    title.hidden = true; box.innerHTML='';
+    if(note) note.textContent = 'Showing all ' + ALL.length + ' guides';
+    if(sel) sel.value = '';
+    return;
+  }
+  CURRENT_MAKE = slug;
+  var make = window.REMakes.BY_SLUG[slug];
+  var list = ALL.filter(function(p){ return window.REMakes.deriveMake(p) === slug; });
+  list.sort(function(a,b){ return a.sku < b.sku ? -1 : 1; });
+  groups.forEach(function(e){ e.style.display='none'; });
+  title.hidden = false; title.textContent = make.name + ' guides';
+  box.innerHTML = '';
+  var grid = document.createElement('div'); grid.className='pgrid';
+  list.forEach(function(p){ grid.appendChild(card(p, make.name)); });
+  box.appendChild(grid);
+  if(note) note.textContent = 'Showing ' + list.length + ' of ' + ALL.length + ' guides';
+  if(sel) sel.value = slug;
+}
+function setupFilter(ps){
+  var sel = document.getElementById('makeSel');
+  if(!sel || !window.REMakes) return;
+  window.REMakes.summarize(ps).forEach(function(m){
+    var o = document.createElement('option');
+    o.value = m.slug; o.textContent = m.name + ' (' + m.count + ')';
+    sel.appendChild(o);
+  });
+  var want = new URLSearchParams(window.location.search).get('make') || '';
+  applyMake(want);
+  sel.addEventListener('change', function(){
+    applyMake(sel.value);
+    var q = sel.value ? '?make=' + encodeURIComponent(sel.value) : window.location.pathname;
+    window.history.replaceState(null, '', q);
+  });
+}
 document.getElementById('q').addEventListener('input', function(){
   var q = this.value.trim().toLowerCase();
-  document.querySelectorAll('.pcard').forEach(function(c){
+  var scope = CURRENT_MAKE ? document.getElementById('makeResults') : document;
+  scope.querySelectorAll('.pcard').forEach(function(c){
     c.style.display = (!q || c.getAttribute('data-title').indexOf(q) !== -1) ? '' : 'none';
   });
+  if (CURRENT_MAKE) return;
   document.querySelectorAll('[data-group]').forEach(function(el){
     if (el.className === 'pgrid') {
       var any = Array.prototype.some.call(el.children, function(c){ return c.style.display !== 'none'; });
@@ -126,6 +193,8 @@ document.getElementById('q').addEventListener('input', function(){
 fetch('/api/products').then(function(r){return r.json();}).then(function(ps){
   ALL = ps.filter(function(p){ return p.sku.indexOf('RE-GD-')===0 && p.purchasable; });
   render(ALL);
+  if(window.REMakes){ setupFilter(ALL); }
+  else { document.addEventListener('DOMContentLoaded', function(){ setupFilter(ALL); }); }
 }).catch(function(){
   document.getElementById('groups').innerHTML =
     '<p class="meta">The catalog is loading — if it does not appear, refresh the page.</p>';
@@ -139,5 +208,6 @@ fetch('/api/products').then(function(r){return r.json();}).then(function(ps){
   <p><a href="/guides">Guides</a> · <a href="/auctions">Auctions</a> · <a href="/about">About</a> · <a href="/contact">Contact</a></p>
   <p>© 2026 Restoration Essentials. All rights reserved.</p>
 </div></footer>
+<script src="/static/js/re-makes.js" defer></script>
 </body>
 </html>
