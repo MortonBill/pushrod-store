@@ -157,6 +157,7 @@ function renderDetail() {
       ${p.purchasable ? `
       <div class="qtyrow"><label>Qty</label><input id="qty" type="number" value="1" min="1" max="99"></div>
       <button class="btn" id="addbtn">Add to cart</button>` :
+      p.price ? `<div class="notice">This item isn't currently for sale.</div>` :
       `<div class="notice">Price coming soon — this item isn't for sale yet.</div>`}
     </div>`;
   document.querySelectorAll('.size').forEach(b => b.onclick = () => {
