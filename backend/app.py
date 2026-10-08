@@ -307,6 +307,7 @@ FACE_PAGES = {
             "/products/family-recipe-cookbook": "product-family-recipe-cookbook.html",
             "/products/family-command-center": "product-family-command-center.html",
             "/products/executors-kit": "product-executors-kit.html",
+            "/products/family-readiness-bundle": "product-family-readiness-bundle.html",
             "/contact": "contact.html",
         },
     },
