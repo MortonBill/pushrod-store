@@ -45,6 +45,7 @@ from fulfillment import storage as storage_mod
 from fulfillment.printful_client import PrintfulConfigError, PrintfulAPIError
 import wholesale as wholesale_mod
 import leads as leads_mod
+import beta_delivery as beta_mod
 import auctions as auctions_mod
 import subscriptions as sr_mod
 import cookbook as cookbook_mod
@@ -284,6 +285,16 @@ wholesale_mod.init(
 # ---------- native lead capture (2026-10-08: PushRod signup + SportRoots
 # coach waitlist; see leads.py) ----------
 leads_mod.init(app, root_dir=ROOT)
+
+# ---------- automatic beta-guide delivery (2026-10-08: Kit tag -> signed
+# download email, zero hand delivery; see beta_delivery.py) ----------
+beta_mod.init(
+    app,
+    root_dir=ROOT,
+    products_by_sku=BY_SKU,
+    public_base_url=lambda: _public_base_url(),
+    digital_files_dir=lambda: _digital_files_dir(),
+)
 
 # ---------- auction engine (RE/IH; opt-in per brand yaml / AUCTIONS_ENABLED) ----------
 auctions_mod.init(app, brand_cfg=brand, root_dir=ROOT)
@@ -2009,7 +2020,13 @@ def download_file(token):
         return jsonify({"error": f"download link {reason}"}), status
     sku = payload.get("sku", "")
     product = BY_SKU.get(sku)
-    if (not product or not _is_digital(sku)
+    if not product and sku == beta_mod.FALLBACK_SKU:
+        # Uncatalogued RE beta fallback (Master Checklist): mintable only
+        # by beta_delivery, servable here like any digital product.
+        product = beta_mod.fallback_product()
+    if (not product
+            or (product.get("fulfillment_type") or "print").strip().lower()
+            != "digital"
             or not product.get("digital_file")):
         return jsonify({"error": "not found"}), 404
     # Byte source behind the token check (fulfillment/storage.py): local
@@ -2025,6 +2042,13 @@ def download_file(token):
     filename = os.path.basename(product["digital_file"])
     if backend.is_local:
         files_dir = os.path.realpath(_digital_files_dir())
+        # Small deliverables also ship bundled in the deploy
+        # (data/digital); serve the bundled copy when the configured
+        # files dir doesn't carry the file.
+        if not os.path.isfile(os.path.join(files_dir, filename)):
+            bundled = os.path.realpath(os.path.join(ROOT, "data", "digital"))
+            if os.path.isfile(os.path.join(bundled, filename)):
+                files_dir = bundled
         # The resolved path must sit directly in the files dir.
         if os.path.dirname(os.path.realpath(
                 os.path.join(files_dir, filename))) != files_dir \
