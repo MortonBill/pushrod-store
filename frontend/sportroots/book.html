@@ -78,13 +78,15 @@
       <select class="f" id="sport"><option value="baseball">Baseball</option><option value="basketball">Basketball</option><option value="cheerleading">Cheerleading</option><option value="football">Football</option><option value="golf">Golf</option><option value="gymnastics">Gymnastics</option><option value="hockey">Hockey</option><option value="lacrosse">Lacrosse</option><option value="martial-arts">Martial Arts</option><option value="skiing">Skiing</option><option value="soccer">Soccer</option><option value="softball">Softball</option><option value="swimming">Swimming</option><option value="tennis">Tennis</option><option value="track">Track & Field</option><option value="volleyball">Volleyball</option><option value="weight-training">Weight Training</option><option value="wrestling">Wrestling</option></select>
       <label for="age">Athlete age band</label>
       <select class="f" id="age"><option>U6–U8</option><option>U10–U12</option><option>U14–U16</option><option>U18</option></select>
+      <label for="rec">Recommending a coach? (optional)</label>
+      <input class="f" id="rec" placeholder="Coach's name — if they sign up, your first week of Plus is on us">
       <label for="msg">What are you working on?</label>
       <textarea class="f" id="msg" rows="4" placeholder="Goals, and anything you’re looking for in a coach"></textarea>
       <div class="btnrow"><button class="btn" type="submit" style="border:0;cursor:pointer">Join the waitlist</button></div>
       <p style="color:var(--muted);font-size:.9rem">Sending opens your email app with your waitlist note addressed to SportRoots — no payment is taken here, ever.</p>
     </form>
   </div>
-  <p style="color:var(--muted)">Know a good coach in your area? We’re looking for good coaches right now — please let them know about us.</p>
+  <p style="color:var(--muted)">Know a good coach in your area? We’re looking for good coaches right now — please let them know about us. If a coach you recommend signs up as a verified founding coach, your first week of SportRoots Plus is on us when enrollment opens.</p>
   <script>
     var p=new URLSearchParams(location.search);
     if(p.get('sport'))document.getElementById('sport').value=p.get('sport');
@@ -93,7 +95,7 @@
       var g=function(id){return document.getElementById(id).value;};
       var subj='SportRoots coach waitlist — '+g('sport');
       var body='Parent: '+g('parent')+'\nEmail: '+g('email')+'\nSport: '+g('sport')+
-               '\nAge band: '+g('age')+
+               '\nRecommended coach: '+(g('rec')||'(none)')+'\nAge band: '+g('age')+
                '\n\n'+g('msg');
       location.href='mailto:bill@aitoolsfortoday.com?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
     });
