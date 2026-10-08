@@ -3,22 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Book a Coach — free booking requests | SportRoots</title>
+<title>Coach waitlist | SportRoots</title>
 <link rel="canonical" href="https://sportrootsdrills.com/book">
 <link rel="icon" type="image/jpeg" href="/static/img/sportroots-logo.jpg">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="SportRoots">
-<meta property="og:title" content="Book a Coach — free booking requests | SportRoots">
-<meta property="og:description" content="Request a SportRoots coaching session. Booking requests are free, never require a paid plan, and no payment is taken on this page.">
+<meta property="og:title" content="Coach waitlist | SportRoots">
+<meta property="og:description" content="Join the SportRoots coach waitlist. Coach booking isn’t open yet — we’ll email you when verified founding coaches open in your sport. No payment is taken on this page.">
 <meta property="og:url" content="https://sportrootsdrills.com/book">
 <meta property="og:image" content="https://sportrootsdrills.com/static/img/sportroots-logo.jpg">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Book a Coach — free booking requests | SportRoots">
-<meta name="twitter:description" content="Request a SportRoots coaching session. Booking requests are free, never require a paid plan, and no payment is taken on this page.">
+<meta name="twitter:title" content="Coach waitlist | SportRoots">
+<meta name="twitter:description" content="Join the SportRoots coach waitlist. Coach booking isn’t open yet — we’ll email you when verified founding coaches open in your sport. No payment is taken on this page.">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"SportRoots","url":"https://sportrootsdrills.com/","logo":"https://sportrootsdrills.com/static/img/sportroots-logo.jpg","description":"Youth sports coaching and training: a structured drill library across 18 sports for athletes ages 6-18, plus a founding-coach directory.","sameAs":["https://www.instagram.com/sport.roots/"]}
+{"@context":"https://schema.org","@type":"Organization","name":"SportRoots","url":"https://sportrootsdrills.com/","logo":"https://sportrootsdrills.com/static/img/sportroots-logo.jpg","description":"Youth sports coaching and training: a structured drill library across 18 sports for athletes ages 6-18, plus a founding coaching cohort forming now.","sameAs":["https://www.instagram.com/sport.roots/"]}
 </script>
-<meta name="description" content="Request a SportRoots coaching session. Booking requests are free, never require a paid plan, and no payment is taken on this page.">
+<meta name="description" content="Join the SportRoots coach waitlist. Coach booking isn’t open yet — we’ll email you when verified founding coaches open in your sport. No payment is taken on this page.">
 <style>
   :root{--bg:#0c1a12;--bg2:#10231a;--card:#14301f;--accent:#8bd450;--accent2:#f2b138;--text:#eef7ee;--muted:#a7bfa9}
   *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.6}
@@ -59,15 +59,15 @@
     <a href="/sports">Sports</a>
     <a href="/drills">Drill Library</a>
     <a href="/coaches">Coaches</a>
-    <a href="/book">Book a Coach</a>
+    <a href="/book">Coach Waitlist</a>
     <a href="/pricing">Pricing</a>
     <a href="/faq">FAQ</a>
   </nav>
 </div></header>
 <main><div class="wrap">
 
-  <h1>Request a coaching session</h1>
-  <p class="lede">Booking requests are free — no paid plan required, and no payment is taken on this page. Tell us what your athlete needs and we will confirm coach availability by email.</p>
+  <h1>Join the coach waitlist</h1>
+  <p class="lede">Coach booking isn’t open yet — our founding coaches are being verified now. Join the waitlist: tell us the sport, the age band, and what your athlete is working on, and we’ll email you the day verified coaches open in that sport. Joining is free, and no payment is taken on this page.</p>
   <div class="card">
     <form id="bookform">
       <label for="parent">Parent name</label>
@@ -76,26 +76,23 @@
       <input class="f" id="email" type="email" required>
       <label for="sport">Sport</label>
       <select class="f" id="sport"><option value="baseball">Baseball</option><option value="basketball">Basketball</option><option value="cheerleading">Cheerleading</option><option value="football">Football</option><option value="golf">Golf</option><option value="gymnastics">Gymnastics</option><option value="hockey">Hockey</option><option value="lacrosse">Lacrosse</option><option value="martial-arts">Martial Arts</option><option value="skiing">Skiing</option><option value="soccer">Soccer</option><option value="softball">Softball</option><option value="swimming">Swimming</option><option value="tennis">Tennis</option><option value="track">Track & Field</option><option value="volleyball">Volleyball</option><option value="weight-training">Weight Training</option><option value="wrestling">Wrestling</option></select>
-      <label for="coach">Coach (optional)</label>
-      <input class="f" id="coach" placeholder="Coach name, if you have one in mind">
       <label for="age">Athlete age band</label>
       <select class="f" id="age"><option>U6–U8</option><option>U10–U12</option><option>U14–U16</option><option>U18</option></select>
       <label for="msg">What are you working on?</label>
-      <textarea class="f" id="msg" rows="4" placeholder="Goals, schedule, anything the coach should know"></textarea>
-      <div class="btnrow"><button class="btn" type="submit" style="border:0;cursor:pointer">Send booking request</button></div>
-      <p style="color:var(--muted);font-size:.9rem">Sending opens your email app with the request addressed to SportRoots — no payment is taken here, ever.</p>
+      <textarea class="f" id="msg" rows="4" placeholder="Goals, and anything you’re looking for in a coach"></textarea>
+      <div class="btnrow"><button class="btn" type="submit" style="border:0;cursor:pointer">Join the waitlist</button></div>
+      <p style="color:var(--muted);font-size:.9rem">Sending opens your email app with your waitlist note addressed to SportRoots — no payment is taken here, ever.</p>
     </form>
   </div>
   <script>
     var p=new URLSearchParams(location.search);
     if(p.get('sport'))document.getElementById('sport').value=p.get('sport');
-    if(p.get('coach'))document.getElementById('coach').value=p.get('coach').replace(/-/g,' ');
     document.getElementById('bookform').addEventListener('submit',function(e){
       e.preventDefault();
       var g=function(id){return document.getElementById(id).value;};
-      var subj='SportRoots booking request — '+g('sport');
+      var subj='SportRoots coach waitlist — '+g('sport');
       var body='Parent: '+g('parent')+'\nEmail: '+g('email')+'\nSport: '+g('sport')+
-               '\nCoach: '+(g('coach')||'(no preference)')+'\nAge band: '+g('age')+
+               '\nAge band: '+g('age')+
                '\n\n'+g('msg');
       location.href='mailto:bill@aitoolsfortoday.com?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
     });
@@ -108,7 +105,7 @@
     <a href="/sports">Sports</a> ·
     <a href="/drills">Drill library</a> ·
     <a href="/coaches">Coaches</a> ·
-    <a href="/book">Book a coach</a> ·
+    <a href="/book">Coach waitlist</a> ·
     <a href="/pricing">Pricing</a> ·
     <a href="/faq">FAQ</a> ·
     <a href="/about">About</a> ·
