@@ -83,7 +83,7 @@
       <label for="msg">What are you working on?</label>
       <textarea class="f" id="msg" rows="4" placeholder="Goals, and anything you’re looking for in a coach"></textarea>
       <div class="btnrow"><button class="btn" type="submit" style="border:0;cursor:pointer">Join the waitlist</button></div>
-      <p style="color:var(--muted);font-size:.9rem">Sending opens your email app with your waitlist note addressed to SportRoots — no payment is taken here, ever.</p>
+      <p id="bookmsg" role="status" style="color:var(--muted);font-size:.9rem">Free to join — no payment is taken here, ever. We’ll email you the day verified coaches open in your sport.</p>
     </form>
   </div>
   <p style="color:var(--muted)">Know a good coach in your area? We’re looking for good coaches right now — please let them know about us. If a coach you recommend signs up as a verified founding coach, your first week of SportRoots Plus is on us when enrollment opens.</p>
@@ -93,11 +93,17 @@
     document.getElementById('bookform').addEventListener('submit',function(e){
       e.preventDefault();
       var g=function(id){return document.getElementById(id).value;};
-      var subj='SportRoots coach waitlist — '+g('sport');
-      var body='Parent: '+g('parent')+'\nEmail: '+g('email')+'\nSport: '+g('sport')+
-               '\nRecommended coach: '+(g('rec')||'(none)')+'\nAge band: '+g('age')+
-               '\n\n'+g('msg');
-      location.href='mailto:bill@aitoolsfortoday.com?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
+      var msg=document.getElementById('bookmsg');
+      var btn=e.target.querySelector('button');
+      btn.disabled=true; msg.textContent='Joining…';
+      fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        brand:'sportroots',kind:'coach-waitlist',name:g('parent'),email:g('email'),
+        fields:{sport:g('sport'),age:g('age'),coach_rec:g('rec'),goals:g('msg')}
+      })}).then(function(r){return r.json().catch(function(){return{};});}).then(function(d){
+        if(d&&d.ok){
+          document.getElementById('bookform').innerHTML='<p><strong>You\u2019re on the waitlist for '+g('sport')+'.</strong></p><p style="color:var(--muted)">We\u2019ll email you the day verified coaches open in that sport. No payment is taken on this page, ever.</p>';
+        }else{btn.disabled=false;msg.textContent='That didn\u2019t go through — please try again, or email us at bill@aitoolsfortoday.com.';}
+      }).catch(function(){btn.disabled=false;msg.textContent='That didn\u2019t go through — please try again, or email us at bill@aitoolsfortoday.com.';});
     });
   </script>
 
@@ -117,7 +123,7 @@
   <p>
     <a href="/privacy">Privacy</a> ·
     <a href="/terms">Terms</a> ·
-    <a href="https://bill-morton.kit.com/8188473ffb">Join the beta — get 5 free drills</a>
+    <a href="/free-drills">Join the beta — get 5 free drills</a>
   </p>
   <p>Follow SportRoots on Instagram: <a href="https://www.instagram.com/sport.roots/">@sport.roots</a></p>
   <p>Our family of brands: RestorationEssentials — classic American car restoration guides · IronHead — vintage motorcycle restoration and riding guides · Stitchfolk — knit and crochet patterns · SportRoots — youth sports coaching and training · SkillForge AI — practical AI playbooks for the trades · EverReady Family — family emergency preparedness.</p>

@@ -44,6 +44,7 @@ from fulfillment import digital as digital_mod
 from fulfillment import storage as storage_mod
 from fulfillment.printful_client import PrintfulConfigError, PrintfulAPIError
 import wholesale as wholesale_mod
+import leads as leads_mod
 import auctions as auctions_mod
 import subscriptions as sr_mod
 import cookbook as cookbook_mod
@@ -280,6 +281,10 @@ wholesale_mod.init(
     root_dir=ROOT,
 )
 
+# ---------- native lead capture (2026-10-08: PushRod signup + SportRoots
+# coach waitlist; see leads.py) ----------
+leads_mod.init(app, root_dir=ROOT)
+
 # ---------- auction engine (RE/IH; opt-in per brand yaml / AUCTIONS_ENABLED) ----------
 auctions_mod.init(app, brand_cfg=brand, root_dir=ROOT)
 
@@ -300,6 +305,7 @@ FACE_PAGES = {
             "/faq": "faq.html",
             "/founder": "founder.html",
             "/checklist": "checklist.html",
+            "/checklist-download": "checklist-download.html",
             "/guides/executors-first-30-days": "guide-executors-first-30-days.html",
             "/guides/five-conversations-before-you-need-them": "guide-five-conversations.html",
             "/guides/paperwork-after-someone-dies": "guide-paperwork-after-someone-dies.html",
@@ -368,6 +374,8 @@ FACE_PAGES = {
             "/drills/wrestling": "drills-wrestling.html",
             "/coaches": "coaches.html",
             "/book": "book.html",
+            "/free-drills": "free-drills.html",
+            "/free-drills-download": "free-drills-download.html",
             "/pricing": "pricing.html",
             "/faq": "faq.html",
             "/about": "about.html",

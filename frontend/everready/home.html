@@ -238,10 +238,19 @@
 
 <section class="band"><div class="wrap">
   <div class="card elevated brass">
-    <h2>Get the free checklists by email</h2>
-    <p>Join the EverReady Family list and we'll email you the free Executor's First 30 Days checklist — what to do in the first month after you're named executor, and what not to do this week — plus the other free family guides as they're ready. Plainspoken and occasional. Unsubscribe anytime.</p>
-    <script async data-uid="57816ee3d5" src="https://bill-morton.kit.com/57816ee3d5/index.js"></script>
-    <p><small>Form not loading? <a href="https://bill-morton.kit.com/57816ee3d5">Open the signup page instead</a>.</small></p>
+    <h2>Get the free checklist</h2>
+    <p>Join the EverReady Family list and the free Executor's First 30 Days checklist is yours on the next screen — what to do in the first month after you're named executor, and what not to do this week. We'll also send the other free family guides as they're ready. Plainspoken and occasional. Unsubscribe anytime.</p>
+    <form class="leadform" data-kit-form="9992757" data-success="/checklist-download" style="display:flex;gap:.7rem;flex-wrap:wrap;align-items:flex-end;margin:.6rem 0 .2rem">
+      <label style="flex:1;min-width:220px">Email address
+        <input type="email" required autocomplete="email" placeholder="you@example.com" style="display:block;width:100%;margin-top:.35rem;padding:.75rem .9rem;border-radius:.6rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:1rem">
+      </label>
+      <button class="btn" type="submit">Get the free checklist</button>
+      <p class="leadform-msg" role="status" style="flex-basis:100%;margin:.3rem 0 0;color:var(--muted);font-size:.95rem"></p>
+    </form>
+    <script>
+    (function(){var f=document.currentScript.previousElementSibling;f.addEventListener('submit',function(e){e.preventDefault();var em=f.querySelector('input[type=email]');var msg=f.querySelector('.leadform-msg');var btn=f.querySelector('button');btn.disabled=true;msg.textContent='One moment…';var body=new URLSearchParams();body.set('email_address',em.value);body.set('utf8','✓');fetch('https://app.kit.com/forms/'+f.getAttribute('data-kit-form')+'/subscriptions',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-Requested-With':'XMLHttpRequest','Accept':'application/json'},body:body.toString()}).then(function(r){return r.json().catch(function(){return{};});}).then(function(d){if(d&&d.status==='success'){window.location.href=f.getAttribute('data-success');}else{btn.disabled=false;msg.textContent='That didn\u2019t go through — please check the email address and try again.';}}).catch(function(){btn.disabled=false;msg.textContent='That didn\u2019t go through — please check your connection and try again.';});});})();
+    </script>
+    <p><small>Form not loading? <a href="/checklist">Get the checklist here</a>.</small></p>
   </div>
 </div></section>
 </main>

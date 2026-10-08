@@ -32,6 +32,20 @@
     <button class="btn" id="cobtn" style="width:100%">Checkout</button>
   </footer>
 </div>
+<section id="shopnotes" style="max-width:960px;margin:2rem auto;padding:1.4rem 1.25rem;border:1px solid #333;border-radius:.8rem;background:#1a1a1a;color:#f5f0e6">
+  <h2 style="margin:0 0 .5rem;font-family:'Arial Black','Helvetica Neue',sans-serif">PushRod Shop Notes</h2>
+  <p style="color:#a8a29e;margin:0 0 .9rem">New design drops, restocks, and garage-only offers — by email, plainspoken and occasional. No spam, unsubscribe anytime.</p>
+  <form id="pr-leadform" style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end">
+    <label style="flex:1;min-width:220px">Email address
+      <input type="email" required autocomplete="email" placeholder="you@example.com" style="display:block;width:100%;margin-top:.35rem;padding:.65rem .8rem;border-radius:.5rem;border:1px solid #333;background:#121212;color:#f5f0e6;font-size:1rem">
+    </label>
+    <button type="submit" style="background:#f59e0b;color:#1a1206;font-weight:700;border:0;padding:.7rem 1.3rem;border-radius:.5rem;cursor:pointer">Sign me up</button>
+    <p id="pr-leadmsg" role="status" style="flex-basis:100%;margin:.3rem 0 0;color:#a8a29e;font-size:.9rem"></p>
+  </form>
+  <script>
+  (function(){var f=document.getElementById('pr-leadform');f.addEventListener('submit',function(e){e.preventDefault();var em=f.querySelector('input[type=email]');var msg=document.getElementById('pr-leadmsg');var btn=f.querySelector('button');btn.disabled=true;msg.textContent='One moment…';fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({brand:'pushrod',kind:'newsletter',email:em.value})}).then(function(r){return r.json().catch(function(){return{};});}).then(function(d){if(d&&d.ok){msg.textContent='You\u2019re in — watch your inbox for the next shop note.';f.querySelector('input').value='';}else{btn.disabled=false;msg.textContent='That didn\u2019t go through — please check the email address and try again.';}}).catch(function(){btn.disabled=false;msg.textContent='That didn\u2019t go through — please check your connection and try again.';});});})();
+  </script>
+</section>
 <footer class="page"><span class="brandname">PUSHROD™</span> — garage-built gear. Secure checkout.<br><nav class="footnav"><a href="/about">About</a> · <a href="/faq">FAQ</a> · <a href="/contact">Contact</a></nav><span class="sister">Sister brands: <a href="https://restoreessentials.com">RestorationEssentials</a> · <a href="https://ironheadguides.com">IronHead</a></span></footer>
 <script src="/static/js/store.js"></script>
 </body>
