@@ -33,7 +33,7 @@ from html import escape as _html_escape
 
 import stripe
 import yaml
-from flask import Flask, Response, jsonify, request, send_from_directory, stream_with_context
+from flask import Flask, Response, jsonify, redirect, request, send_from_directory, stream_with_context
 
 from catalog import load_unified_catalog, catalog_stats, APPAREL_SIZES, mapping_keys_for, mapping_complete, OWNERSHIP
 from fulfillment.fulfill import (
@@ -545,6 +545,25 @@ def _face_page(path):
         return _everready_self_canonical(resp)
     return send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                spec["pages"][path])
+
+
+_ALL_FACE_PATHS = {p for _s in FACE_PAGES.values() for p in _s["pages"]}
+
+
+@app.before_request
+def _trim_trailing_slash():
+    # Face pages and product pages are registered without trailing
+    # slashes, so a customer landing on /drills/ or /product/<sku>/
+    # (shared link, typed URL) hit a hard 404 while the canonical page
+    # served fine. Redirect the slash variant to the canonical URL.
+    if request.method in ("GET", "HEAD"):
+        _p = request.path
+        if len(_p) > 1 and _p.endswith("/"):
+            _t = _p.rstrip("/")
+            if _t in _ALL_FACE_PATHS or _t.startswith("/product/"):
+                _qs = request.query_string.decode("utf-8", "ignore")
+                return redirect(_t + ("?" + _qs if _qs else ""), code=301)
+    return None
 
 
 for _path in sorted({p for _s in FACE_PAGES.values() for p in _s["pages"]}):
