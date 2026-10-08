@@ -317,6 +317,7 @@ FACE_PAGES = {
             "/founder": "founder.html",
             "/checklist": "checklist.html",
             "/checklist-download": "checklist-download.html",
+            "/pet-tribute": "pet-tribute.html",
             "/guides/executors-first-30-days": "guide-executors-first-30-days.html",
             "/guides/five-conversations-before-you-need-them": "guide-five-conversations.html",
             "/guides/paperwork-after-someone-dies": "guide-paperwork-after-someone-dies.html",
