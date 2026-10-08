@@ -1414,12 +1414,21 @@ check("no duplicate IronHead SKUs",
 _ih_products = {p["sku"]: p for p in _load_catalog(_ih_csv, _ih_json)}
 check("catalog loader keeps every IronHead row (IH- prefix registered)",
       len(_ih_products) == len(_ih_rows), str(sorted(_ih_products)))
-check("guides are priced, digital; only the gate-flipped guide purchasable",
+check("guides are priced, digital; purchasable tracks listed+file-backed "
+      "(2026-10-08 relist flipped the 10 hash-verified placed IronHead "
+      "guides live; held rows stay dark)",
       all(p["price"] is not None and p["fulfillment_type"] == "digital"
           for p in _ih_products.values())
+      and all(p["purchasable"] is True
+              for sku in ("IH-BMW-SLASH5-1970", "IH-BMW-SLASH5-1971",
+                          "IH-BMW-SLASH5-1972", "IH-BMW-SLASH5-1973",
+                          "IH-BSA-A65-1971", "IH-HARLEY-SPORTSTER-1983",
+                          "IH-HONDA-CB650-1981", "IH-HONDA-CB900F-1982",
+                          "IH-INDIAN-SPORT-SCOUT-1942",
+                          "IH-KAWASAKI-KZ1000-1980")
+              for p in [_ih_products[sku]])
       and all(p["purchasable"] is False
-              for sku, p in _ih_products.items()
-              if sku != "IH-SHOVELHEAD-BUYERS-GUIDE")
+              for p in _ih_products.values() if not p["listed"])
       and _ih_products["IH-SHOVELHEAD-BUYERS-GUIDE"]["purchasable"] is True)
 
 # ---------------------------------------------------------------------------

@@ -568,12 +568,36 @@ _RETIRED_20261007 = {
     "RE-GD-FORD-MUSTANG-BOSS-1969", "RE-GD-OLDSMOBILE-442-1969-W45",
     "RE-GD-CHEVROLET-CHEVELLE-1970", "RE-GD-OLDSMOBILE-442-1970-W30",
     "RE-GD-OLDSMOBILE-442-1970-W45", "RE-GD-PLYMOUTH-BARRACUDA-1970"}
-check("RE guide rows are listed+purchasable, except the 10 duplicate-retired "
-      "rows (2026-10-07) which stay loaded, unlisted, never sellable",
-      _RETIRED_20261007 <= {p["sku"] for p in re_prods}
-      and sum(1 for p in re_prods if p["sku"] in _RETIRED_20261007) == 10
+# 2026-10-08 guide relist: the hash-verified rebuilt guides were placed
+# into the delivery store and their rows flipped listed. The shelf is now
+# 345 listed of 385; the 40 dark rows below NEVER sell: the 10
+# duplicate-retired rows, the 24 rebuilt-but-held Oldsmobile rows (20 here
+# plus the 4 retired W30/W45 variants), the 3 Buick Nailhead 401/425 rows
+# (banner hold), and 7 rows whose corrected files were never placed.
+_DARK_AFTER_RELIST_20261008 = _RETIRED_20261007 | {
+    "RE-GD-OLDSMOBILE-442-1964", "RE-GD-OLDSMOBILE-442-1965",
+    "RE-GD-OLDSMOBILE-442-1966", "RE-GD-OLDSMOBILE-442-1967",
+    "RE-GD-OLDSMOBILE-442-1968", "RE-GD-OLDSMOBILE-442-1969",
+    "RE-GD-OLDSMOBILE-442-1970", "RE-GD-OLDSMOBILE-442-1971",
+    "RE-GD-OLDSMOBILE-442-1972", "RE-GD-OLDSMOBILE-442-1973",
+    "RE-GD-OLDSMOBILE-CUTLASS-1964", "RE-GD-OLDSMOBILE-CUTLASS-1965",
+    "RE-GD-OLDSMOBILE-CUTLASS-1966", "RE-GD-OLDSMOBILE-CUTLASS-1967",
+    "RE-GD-OLDSMOBILE-CUTLASS-1968", "RE-GD-OLDSMOBILE-CUTLASS-1969",
+    "RE-GD-OLDSMOBILE-CUTLASS-1970", "RE-GD-OLDSMOBILE-CUTLASS-1971",
+    "RE-GD-OLDSMOBILE-CUTLASS-1972", "RE-GD-OLDSMOBILE-CUTLASS-1973",
+    "RE-GD-1965-BUICK-GRAN-SPORT-401-425", "RE-GD-1965-BUICK-RIVIERA-GS-401",
+    "RE-GD-1966-BUICK-GRAN-SPORT-401-425",
+    "RE-GD-CHEVROLET-IMPALA-1972", "RE-GD-FORD-FALCON-SPRINT-1963-HALF",
+    "RE-GD-FORD-FALCON-SPRINT-1964", "RE-GD-FORD-FALCON-SPRINT-1965",
+    "RE-GD-FORD-MUSTANG-BOSS-429-1969", "RE-GD-FORD-MUSTANG-BOSS-429-1970",
+    "RE-GD-MERCURY-CYCLONE-1971"}
+check("RE guide rows: 345 listed+purchasable after the 2026-10-08 relist; "
+      "the 40 held rows (10 duplicate-retired, 24 Oldsmobile, 3 Nailhead, "
+      "7 never-placed) stay loaded, unlisted, never sellable",
+      _DARK_AFTER_RELIST_20261008 <= {p["sku"] for p in re_prods}
+      and sum(1 for p in re_prods if p["listed"]) == 345
       and all((p["listed"] is False and p["purchasable"] is False)
-              if p["sku"] in _RETIRED_20261007
+              if p["sku"] in _DARK_AFTER_RELIST_20261008
               else (p["listed"] is True and p["purchasable"] is True)
               for p in re_prods if p["digital_file"]))
 check("every RE guide row WITHOUT a deliverable stays dark, never sellable",

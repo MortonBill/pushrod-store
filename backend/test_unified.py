@@ -174,15 +174,18 @@ re = load_unified_catalog(
     [(c["csv"], c.get("prices_json")) for c in re_conf["catalog"]["catalogs"]],
     sku_prefixes=re_conf["brand"]["sku_prefixes"])
 check("pushrod slice 156", len(push) == 156, str(len(push)))
-# RE slice: 480 merch + 383 guide rows. Checkout-migration Lane 1 staged the
-# guides dark (2026-10-02); after the $29.95 test-purchase gate passed, the
-# 358 file-backed guides flipped live, then 18 recovered sources joined them,
-# then 6 clean gap rebuilds — the 1 still without a source PDF stays dark.
+# RE slice: 480 merch + 385 guide rows. Checkout-migration Lane 1 staged the
+# guides dark (2026-10-02); the flagged guides were later pulled back dark
+# while rebuilt, and the 2026-10-08 relist flipped the 174 hash-verified
+# placed guides live alongside the 171 never-pulled rows — 345 listed of
+# 385. The 40 still dark: 10 duplicate-retired, 24 Oldsmobile rebuild
+# holds, 3 Buick Nailhead holds, 7 never placed.
 check("RE slice 865 (480 merch + 385 guides)", len(re) == 865, str(len(re)))
 _guides = [p for p in re if p["prefix"] == "RE-GD-"]
-check("RE guides: 385 file-backed live, 0 source gaps",
+check("RE guides: 385 file-backed, 345 listed after the 2026-10-08 relist, "
+      "0 source gaps",
       len(_guides) == 385
-      and sum(1 for p in _guides if p["listed"]) == 385
+      and sum(1 for p in _guides if p["listed"]) == 345
       and all(p["purchasable"] is False
               for p in _guides if not p["listed"]),
       f"guides={len(_guides)} listed={sum(1 for p in _guides if p['listed'])}")
