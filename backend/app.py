@@ -561,6 +561,13 @@ FACE_PAGES = {
             "/blog/ls-swap-a-body-primer": "blog-ls-swap-a-body-primer.html",
             "/about": "about.html",
             "/contact": "contact.html",
+            # Refund policy (2026-10-09): the RE face had no live legal
+            # page while its sister faces carry one (IronHead
+            # /legal/refunds-cancellations, Stitchfolk
+            # /policies/digital-downloads-refunds). Honest digital-PDF
+            # terms only: instant email delivery, replacement-or-refund
+            # on failed/defective downloads, duplicate refunds.
+            "/refund-policy": "refund-policy.html",
             # Cross-face route (2026-10-09): the EverReady Pet Tribute
             # Book is promoted to RestorationEssentials visitors (the
             # Executor's Kit / estate audience overlaps pet loss), so
