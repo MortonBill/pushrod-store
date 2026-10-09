@@ -462,6 +462,17 @@ FACE_PAGES = {
             "/guides": "guides.html",
             "/about": "about.html",
             "/contact": "contact.html",
+            # Cross-face route (2026-10-09): the EverReady Pet Tribute
+            # Book is promoted to RestorationEssentials visitors (the
+            # Executor's Kit / estate audience overlaps pet loss), so
+            # /pet-tribute must answer on this face too. _face_page
+            # serves EverReady's own pet-tribute.html for this path on
+            # any face that registers it without its own template (the
+            # file's canonical already points at everready-family.com;
+            # no canonical rewrite runs on this face). Registered after
+            # restoreessentials.com/pet-tribute was caught 404ing while
+            # carrying live off-site references.
+            "/pet-tribute": "pet-tribute.html",
         },
     },
 }
@@ -606,6 +617,15 @@ def _face_page(path):
         resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                    spec["pages"][path])
         return _skillforge_self_canonical(resp)
+    if path == "/pet-tribute" and cfg["brand"]["id"] != "everready":
+        # Cross-face (2026-10-09): faces that register /pet-tribute
+        # without their own template (RestorationEssentials) serve
+        # EverReady's pet-tribute.html verbatim — its canonical already
+        # points at everready-family.com, so no self-canonical rewrite
+        # runs here. The everready face keeps its branch below.
+        resp = send_from_directory(os.path.join(FRONTEND, "everready"),
+                                   ER_PAGES[path])
+        return resp
     if cfg["brand"]["id"] == "everready":
         # One static face, two routed hosts (everreadyfamily.co and
         # everready-family.com): each host canonical to itself.
