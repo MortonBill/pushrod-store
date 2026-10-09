@@ -4,8 +4,8 @@
   "storage": {
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
-    "total_files": 394,
-    "total_bytes": 685601233
+    "total_files": 395,
+    "total_bytes": 686769609
   },
   "files": [
     {
@@ -2764,6 +2764,13 @@
       "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_1979-chevrolet-camaro-z28.pdf",
       "bytes": 1167208,
       "key": "RE_1979-chevrolet-camaro-z28.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1976-JEEP-CJ-7",
+      "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_1976-1986-jeep-cj-7.pdf",
+      "bytes": 1168376,
+      "key": "RE_1976-1986-jeep-cj-7.pdf",
       "size_verified_against_manifest": true
     }
   ],
