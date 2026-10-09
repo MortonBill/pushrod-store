@@ -76,6 +76,17 @@ if MODE == "off":
     # Existing surface untouched.
     r = client.get("/api/products")
     check("flag off: /api/products still serves", r.status_code == 200)
+    # /pricing stays honest opening-soon while billing is dark: no
+    # purchase UI is served, no live-block bytes leak.
+    r = client.get("/pricing", headers={"Host": "sportrootsdrills.com"})
+    body = r.get_data(as_text=True)
+    check("flag off: /pricing serves on SR host", r.status_code == 200,
+          str(r.status_code))
+    check("flag off: /pricing reads opening-soon", "OPENING SOON" in body)
+    check("flag off: /pricing has no purchase CTAs",
+          "data-sr-subscribe" not in body and "sr-portal-btn" not in body)
+    check("flag off: /pricing leaks no live-block markers",
+          "SR-LIVE-BEGIN" not in body and "SR-DARK-BEGIN" not in body)
 
 else:
     check("flag on: module reports enabled", sr_mod.is_enabled())
@@ -193,6 +204,23 @@ else:
           r.get_data(as_text=True))
     r = client.post("/api/sr/portal", json={"email": "ghost@example.com"})
     check("portal unknown email -> 404", r.status_code == 404)
+
+    # --- /pricing serves live purchase CTAs when billing is enabled ---
+    r = client.get("/pricing", headers={"Host": "sportrootsdrills.com"})
+    body = r.get_data(as_text=True)
+    check("flag on: /pricing serves on SR host", r.status_code == 200,
+          str(r.status_code))
+    for plan in ("monthly", "annual", "club", "lifetime"):
+        check(f"flag on: /pricing subscribe CTA for {plan}",
+              f'data-sr-subscribe="{plan}"' in body)
+    check("flag on: /pricing has portal/manage entry",
+          "sr-portal-btn" in body)
+    check("flag on: /pricing posts to the SR API",
+          '"/api/sr/checkout"' in body and '"/api/sr/portal"' in body)
+    check("flag on: /pricing has no dark copy",
+          "OPENING SOON" not in body and "planned price" not in body)
+    check("flag on: /pricing leaks no dark-block markers",
+          "SR-DARK-BEGIN" not in body and "SR-LIVE-BEGIN" not in body)
 
     # --- one-time checkout untouched by all of this ---
     r = client.get("/api/products")

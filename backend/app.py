@@ -535,6 +535,55 @@ def _everready_self_canonical(resp):
     return resp
 
 
+_SR_TITLE_DARK = "Pricing | SportRoots — paid plans opening soon"
+_SR_TITLE_LIVE = ("Pricing | SportRoots — Plus $4.99/mo, $39/yr, "
+                  "Lifetime $99, Club $99/yr")
+_SR_DESC_DARK = ("SportRoots paid plans are opening soon — nothing is sold "
+                 "or billed today. Planned founding pricing: Plus $4.99/mo "
+                 "or $39/yr, Lifetime $99, Club $99/yr. The library is free "
+                 "to browse.")
+_SR_DESC_LIVE = ("SportRoots Plus is $4.99/mo or $39/yr with a 30-day free "
+                 "trial and no card required. Lifetime is $99 one-time "
+                 "and Club is $99/yr for up to 5 coaches. The drill "
+                 "library is free to browse.")
+
+
+def _sr_pricing_billing_gate(resp):
+    """Serve SportRoots /pricing in its dark or billing-enabled state.
+
+    Face pages are static files, so the SR_BILLING_ENABLED flag (read
+    once by subscriptions.init) never reached the template. pricing.html
+    carries both copy states between SR-DARK-BEGIN/END and
+    SR-LIVE-BEGIN/END marker comments; this transform keeps exactly one:
+    flag off -> the opening-soon page byte-for-byte (the purchase UI is
+    stripped from the response wholesale, never shipped dark); flag on
+    -> plan purchase CTAs, the portal/manage entry and present-tense
+    copy, with the opening-soon blocks stripped. Mirrors the canonical
+    rewrites above (buffered response, ETag dropped). Only SportRoots
+    /pricing passes through here.
+    """
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    if sr_mod.is_enabled():
+        html_text = re.sub(r"(?m)^[ \t]*<!--SR-DARK-BEGIN-->.*?"
+                           r"<!--SR-DARK-END-->[ \t]*\n", "",
+                           html_text, flags=re.S)
+        html_text = re.sub(r"(?m)^[ \t]*<!--SR-LIVE-(?:BEGIN|END)-->"
+                           r"[ \t]*\n", "", html_text)
+        html_text = html_text.replace(_SR_TITLE_DARK, _SR_TITLE_LIVE)
+        html_text = html_text.replace(_SR_DESC_DARK, _SR_DESC_LIVE)
+    else:
+        html_text = re.sub(r"(?m)^[ \t]*<!--SR-LIVE-BEGIN-->.*?"
+                           r"<!--SR-LIVE-END-->[ \t]*\n", "",
+                           html_text, flags=re.S)
+        html_text = re.sub(r"(?m)^[ \t]*<!--SR-DARK-(?:BEGIN|END)-->"
+                           r"[ \t]*\n", "", html_text)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
+    return resp
+
+
 def _face_page(path):
     cfg, _products = _face()
     spec = FACE_PAGES.get(cfg["brand"]["id"])
@@ -563,6 +612,12 @@ def _face_page(path):
         resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                    spec["pages"][path])
         return _everready_self_canonical(resp)
+    if cfg["brand"]["id"] == "sportroots" and path == "/pricing":
+        # /pricing carries both the dark (opening-soon) and the
+        # billing-enabled copy; serve exactly one per SR_BILLING_ENABLED.
+        resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
+                                   spec["pages"][path])
+        return _sr_pricing_billing_gate(resp)
     return send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                spec["pages"][path])
 

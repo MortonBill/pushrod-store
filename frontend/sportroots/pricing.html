@@ -74,11 +74,20 @@
        free trial, no card required") on the plan cards and FAQ answers,
        and the present-tense subscription/refund policy text. -->
 
+  <!--SR-DARK-BEGIN-->
   <p style="color:var(--accent2);font-weight:700;letter-spacing:.08em">PRICING — OPENING SOON</p>
   <h1>Paid plans are opening soon.</h1>
   <p class="lede">Paid enrollment is not open yet, and nothing is sold or billed today. The prices below are the planned founding prices: when enrollment opens, Annual will be the best value, Monthly the flexible option, and Lifetime a single payment. Coaching teams will be able to choose Club for up to 5 coaches. Until then, the whole drill library is free to browse and the coach waitlist is free to join.</p>
 
   <h2>Planned founding plans</h2>
+  <!--SR-DARK-END-->
+  <!--SR-LIVE-BEGIN-->
+  <p style="color:var(--accent2);font-weight:700;letter-spacing:.08em">PRICING</p>
+  <h1>One time. Or one month at a time.</h1>
+  <p class="lede">Pick Annual for the best value with a 30-day free trial and no card required, choose Monthly for flexibility, or pay once with Lifetime. Coaching teams can choose Club for up to 5 coaches. Every plan covers ages 6–18, every sport, and every new program we publish — and the drill library stays free to browse.</p>
+
+  <h2>Plans</h2>
+  <!--SR-LIVE-END-->
   <div class="grid">
     <div class="card" style="margin:0">
       <h3>Free</h3>
@@ -89,32 +98,77 @@
     <div class="card" style="margin:0">
       <h3>Plus Monthly</h3>
       <p class="price">$4.99<span style="font-size:1rem;color:var(--muted)">/month</span></p>
+      <!--SR-DARK-BEGIN-->
       <p><span class="tag">Opening soon — planned price</span></p>
       <p>Full library access. When enrollment opens, Plus will start with a 30-day free trial, no card required, cancel anytime.</p>
+      <!--SR-DARK-END-->
+      <!--SR-LIVE-BEGIN-->
+      <p>Full library access, starting with a 30-day free trial, no card required, cancel anytime.</p>
+      <label for="sr-email-monthly">Email for your plan</label>
+      <input class="f" id="sr-email-monthly" type="email" autocomplete="email" placeholder="you@example.com">
+      <div class="btnrow"><button type="button" class="btn" data-sr-subscribe="monthly">Start 30-day free trial</button></div>
+      <p id="sr-msg-monthly" role="status" style="color:var(--muted);min-height:1.4em"></p>
+      <p style="color:var(--muted);font-size:.9rem">Then $4.99/month, auto-renews until you cancel.</p>
+      <!--SR-LIVE-END-->
     </div>
     <div class="card" style="margin:0">
       <h3>Plus Annual</h3>
       <p class="price">$39<span style="font-size:1rem;color:var(--muted)">/year</span></p>
+      <!--SR-DARK-BEGIN-->
       <p><span class="tag">Opening soon — planned price</span></p>
       <p>The planned best value: $3.25/month, saving $20.88 compared with twelve monthly payments. When enrollment opens it will start with a 30-day free trial, no card required.</p>
+      <!--SR-DARK-END-->
+      <!--SR-LIVE-BEGIN-->
+      <p>The best value: $3.25/month, saving $20.88 compared with twelve monthly payments. Starts with a 30-day free trial, no card required.</p>
+      <label for="sr-email-annual">Email for your plan</label>
+      <input class="f" id="sr-email-annual" type="email" autocomplete="email" placeholder="you@example.com">
+      <div class="btnrow"><button type="button" class="btn" data-sr-subscribe="annual">Start 30-day free trial</button></div>
+      <p id="sr-msg-annual" role="status" style="color:var(--muted);min-height:1.4em"></p>
+      <p style="color:var(--muted);font-size:.9rem">Then $39/year, auto-renews until you cancel.</p>
+      <!--SR-LIVE-END-->
     </div>
     <div class="card" style="margin:0">
       <h3>Lifetime</h3>
       <p class="price">$99 <span style="font-size:1rem;color:var(--muted)">one-time</span></p>
+      <!--SR-DARK-BEGIN-->
       <p><span class="tag">Opening soon — planned price</span></p>
       <p>Planned founding price — will rise to $149. The same full library, no renewal, ever.</p>
+      <!--SR-DARK-END-->
+      <!--SR-LIVE-BEGIN-->
+      <p>Founding price — rises to $149. The same full library, no renewal, ever.</p>
+      <label for="sr-email-lifetime">Email for your plan</label>
+      <input class="f" id="sr-email-lifetime" type="email" autocomplete="email" placeholder="you@example.com">
+      <div class="btnrow"><button type="button" class="btn" data-sr-subscribe="lifetime">Buy Lifetime — $99 one-time</button></div>
+      <p id="sr-msg-lifetime" role="status" style="color:var(--muted);min-height:1.4em"></p>
+      <p style="color:var(--muted);font-size:.9rem">One-time payment. No renewal, ever.</p>
+      <!--SR-LIVE-END-->
     </div>
     <div class="card" style="margin:0">
       <h3>Club</h3>
       <p class="price">$99<span style="font-size:1rem;color:var(--muted)">/year</span></p>
+      <!--SR-DARK-BEGIN-->
       <p><span class="tag">Opening soon — planned price</span></p>
       <p>For coaching teams: up to 5 coaches on one shared plan, with the full SportRoots library.</p>
+      <!--SR-DARK-END-->
+      <!--SR-LIVE-BEGIN-->
+      <p>For coaching teams: up to 5 coaches on one shared plan, with the full SportRoots library.</p>
+      <label for="sr-email-club">Email for your plan</label>
+      <input class="f" id="sr-email-club" type="email" autocomplete="email" placeholder="you@example.com">
+      <div class="btnrow"><button type="button" class="btn" data-sr-subscribe="club">Join Club — $99/year</button></div>
+      <p id="sr-msg-club" role="status" style="color:var(--muted);min-height:1.4em"></p>
+      <p style="color:var(--muted);font-size:.9rem">Charged $99 today, then $99/year until you cancel. Club has no free trial.</p>
+      <!--SR-LIVE-END-->
     </div>
   </div>
 
   <section class="card">
     <h2>Start free today</h2>
+    <!--SR-DARK-BEGIN-->
     <p>SportRoots is opening on its new home. Paid enrollment opens here shortly at exactly the founding prices above — until then, the whole library is free to browse, and joining the coach waitlist is free.</p>
+    <!--SR-DARK-END-->
+    <!--SR-LIVE-BEGIN-->
+    <p>The whole library is free to browse, and joining the coach waitlist is free. Paid plans are how SportRoots keeps publishing new programs for every sport and age band.</p>
+    <!--SR-LIVE-END-->
     <div class="btnrow">
       <a class="btn" href="/drills">Browse the free library</a>
       <a class="btn ghost" href="/book">Join the coach waitlist</a>
@@ -122,18 +176,46 @@
   </section>
 
   <section class="card">
+    <!--SR-DARK-BEGIN-->
     <h2>How paid plans will work</h2>
     <p>Nothing is sold or billed today — this policy takes effect when paid enrollment opens. Planned terms: SportRoots Plus Monthly will be $4.99/month and Annual $39/year; both will include a 30-day free trial with no card required and will auto-renew until cancelled from the account page. Lifetime will be a $99 one-time founding payment and Club $99/year for up to 5 coaches. Private coaching sessions booked through SportRoots will be paid up-front once coach booking opens; joining the coach waitlist today is free and no payment is taken.</p>
+    <!--SR-DARK-END-->
+    <!--SR-LIVE-BEGIN-->
+    <h2>Subscription &amp; refund policy</h2>
+    <p>SportRoots Plus Monthly is $4.99/month and Annual is $39/year; both include a 30-day free trial with no card required and auto-renew until you cancel in the Manage section below. Lifetime is a $99 one-time founding payment and Club is $99/year for up to 5 coaches, charged at signup. Private coaching sessions booked through SportRoots are paid up-front once coach booking opens; joining the coach waitlist is free.</p>
+    <!--SR-LIVE-END-->
   </section>
+  <!--SR-LIVE-BEGIN-->
+  <section class="card" id="sr-manage">
+    <h2>Already subscribed? Manage or cancel</h2>
+    <p>Enter the email on your subscription and we will open your SportRoots billing page — hosted securely by Stripe — where you can update a card, pause, or cancel in a couple of clicks. No phone calls, no retention emails.</p>
+    <label for="sr-portal-email">Subscription email</label>
+    <input class="f" id="sr-portal-email" type="email" autocomplete="email" placeholder="you@example.com">
+    <div class="btnrow"><button type="button" class="btn" id="sr-portal-btn">Open my billing page</button></div>
+    <p id="sr-portal-msg" role="status" style="color:var(--muted);min-height:1.4em"></p>
+  </section>
+  <!--SR-LIVE-END-->
 
   <section class="card">
     <h2>What parents ask before signing up</h2>
     <details class="faq"><summary>Which age band should my athlete start in?</summary>
       <p>Start with the drill library band that matches your athlete’s age: U6–U8 (ages 6–8) starts at fundamentals and movement skills, U10–U12 (ages 10–12) layers in sport-specific sequencing, U14–U16 (ages 14–16) adds tactical reads and showcase prep, and U18 (ages 17–18) continues through elite-track conditioning. Your athlete can move up once they finish a band.</p></details>
     <details class="faq"><summary>Can a whole team, coach, or program buy access?</summary>
-      <p>Not yet — paid enrollment is opening soon. When it opens, coaches and program directors will be able to choose Club at a planned $99/year for up to 5 coaches on one shared plan. Club is for the coaching team allowance described here; it does not create athlete roster profiles or repurpose the legacy bulk-order workflow.</p></details>
+      <!--SR-DARK-BEGIN-->
+      <p>Not yet — paid enrollment is opening soon. When it opens, coaches and program directors will be able to choose Club at a planned $99/year for up to 5 coaches on one shared plan. Club is for the coaching team allowance described here; it does not create athlete roster profiles or repurpose the legacy bulk-order workflow.</p>
+      <!--SR-DARK-END-->
+      <!--SR-LIVE-BEGIN-->
+      <p>Yes — coaches and program directors can choose Club for $99/year and up to 5 coaches on one shared plan. Club is for the coaching team allowance described here; it does not create athlete roster profiles or repurpose the legacy bulk-order workflow.</p>
+      <!--SR-LIVE-END-->
+      </details>
     <details class="faq"><summary>Can I cancel anytime?</summary>
-      <p>Once paid plans open, yes — you will be able to cancel from your account in two clicks, no phone calls and no retention emails. Plus Monthly and Plus Annual will start with a 30-day free trial — no card collected at sign-up — and will renew automatically after the trial unless cancelled. Nothing can be charged today because enrollment is not open.</p></details>
+      <!--SR-DARK-BEGIN-->
+      <p>Once paid plans open, yes — you will be able to cancel from your account in two clicks, no phone calls and no retention emails. Plus Monthly and Plus Annual will start with a 30-day free trial — no card collected at sign-up — and will renew automatically after the trial unless cancelled. Nothing can be charged today because enrollment is not open.</p>
+      <!--SR-DARK-END-->
+      <!--SR-LIVE-BEGIN-->
+      <p>Yes — cancel anytime from the Manage section on this page (your secure Stripe billing page), no phone calls and no retention emails. Plus Monthly and Plus Annual start with a 30-day free trial — no card collected at sign-up — and renew automatically after the trial unless you cancel. Club charges at signup and has no trial.</p>
+      <!--SR-LIVE-END-->
+      </details>
     <p><a href="/faq">Visit the full parent FAQ →</a></p>
   </section>
 
@@ -159,5 +241,74 @@
   <p>Our family of brands: RestorationEssentials — classic American car restoration guides · IronHead — vintage motorcycle restoration and riding guides · Stitchfolk — knit and crochet patterns · SportRoots — youth sports coaching and training · SkillForge AI — practical AI playbooks for the trades · EverReady Family — family emergency preparedness.</p>
   <p>© 2026 SportRoots</p>
 </div></footer>
+<!--SR-LIVE-BEGIN-->
+<script>
+(function () {
+  function post(path, payload) {
+    return fetch(path, {method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)}).then(function (r) {
+        return r.json().then(function (j) { return {ok: r.ok, body: j}; },
+          function () { return {ok: false, body: {}}; });
+      });
+  }
+  function emailVal(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : "";
+  }
+  function validEmail(e) { return !!e && e.indexOf("@") > 0; }
+  document.querySelectorAll("[data-sr-subscribe]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var plan = btn.getAttribute("data-sr-subscribe");
+      var email = emailVal("sr-email-" + plan);
+      var msg = document.getElementById("sr-msg-" + plan);
+      if (!validEmail(email)) {
+        msg.textContent = "Enter the email the plan should attach to.";
+        return;
+      }
+      btn.disabled = true;
+      msg.textContent = "Taking you to secure checkout\u2026";
+      post("/api/sr/checkout", {plan: plan, email: email}).then(function (res) {
+        if (res.ok && res.body.checkout_url) {
+          window.location.href = res.body.checkout_url;
+        } else {
+          btn.disabled = false;
+          msg.textContent = (res.body && res.body.error) ||
+            "Checkout could not start — please try again.";
+        }
+      }).catch(function () {
+        btn.disabled = false;
+        msg.textContent = "Checkout could not start — please try again.";
+      });
+    });
+  });
+  var pbtn = document.getElementById("sr-portal-btn");
+  if (pbtn) {
+    pbtn.addEventListener("click", function () {
+      var email = emailVal("sr-portal-email");
+      var msg = document.getElementById("sr-portal-msg");
+      if (!validEmail(email)) {
+        msg.textContent = "Enter the email used at signup.";
+        return;
+      }
+      pbtn.disabled = true;
+      msg.textContent = "Opening your billing page\u2026";
+      post("/api/sr/portal", {email: email}).then(function (res) {
+        if (res.ok && res.body.portal_url) {
+          window.location.href = res.body.portal_url;
+        } else {
+          pbtn.disabled = false;
+          msg.textContent = (res.body && res.body.error) ||
+            "We could not find that subscription — check the email and try again.";
+        }
+      }).catch(function () {
+        pbtn.disabled = false;
+        msg.textContent = "That did not go through — please try again.";
+      });
+    });
+  }
+})();
+</script>
+<!--SR-LIVE-END-->
 </body>
 </html>
