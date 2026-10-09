@@ -54,3 +54,31 @@ assert all(p['price'] is not None for p in app.PRODUCTS), 'unpriced SKUs present
 n_purch = sum(1 for p in app.PRODUCTS if p['purchasable'])
 print(f'catalog OK: {len(app.PRODUCTS)} products, all priced, {n_purch} purchasable')
 "
+# Digital-catalog gate (added 2026-10-09): the gateway load above never
+# reads data/re-catalog.csv / ironhead-catalog.csv et al. — that blind
+# spot is what let commit df886f4 strand 12 deploys (it bumped an exact
+# count, 642->643, on a load that guide rows cannot move; RE-GD-* rows
+# load only under the skillforge/restorationessentials brand configs).
+# The live store runs BRAND=skillforge, so the digital catalog gets its
+# own build-time check: a shrinkage floor plus explicit presence/price
+# asserts for the SKUs the current publishing waves ship. Floors were
+# verified by loader runs at the fix head — recount at the head before
+# ever raising one; never guess a count.
+BRAND=skillforge python3 -c "
+import sys, os
+sys.path.insert(0, 'backend')
+os.environ['BRAND'] = 'skillforge'
+import app
+assert len(app.PRODUCTS) >= 967, f'digital catalog shrank below 967-product baseline, got {len(app.PRODUCTS)}'
+assert all(p['price'] is not None for p in app.PRODUCTS), 'unpriced SKUs present'
+_by_sku = {p['sku']: p for p in app.PRODUCTS}
+for _sku in ('RE-GD-1970-OLDSMOBILE-442',
+             'IH-NORTON-COMMANDO',
+             'IH-NORTON-COMMANDO-BUYERS-GUIDE'):
+    _p = _by_sku.get(_sku)
+    assert _p is not None, f'wave SKU missing from catalog: {_sku}'
+    assert _p['listed'] and _p['purchasable'], f'wave SKU not live: {_sku} listed={_p[\"listed\"]} purchasable={_p[\"purchasable\"]}'
+    assert _p['price']['amount'] == 29.95, f'wave SKU mispriced: {_sku} {_p[\"price\"]}'
+n_purch = sum(1 for p in app.PRODUCTS if p['purchasable'])
+print(f'digital catalog OK: {len(app.PRODUCTS)} products, all priced, {n_purch} purchasable, wave SKUs live')
+"
