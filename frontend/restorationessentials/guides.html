@@ -200,6 +200,23 @@ document.getElementById('q').addEventListener('input', function(){
 fetch('/api/products').then(function(r){return r.json();}).then(function(ps){
   ALL = ps.filter(function(p){ return p.sku.indexOf('RE-GD-')===0 && p.purchasable; });
   render(ALL);
+  var qs = new URLSearchParams(window.location.search);
+  if (qs.get('year') || qs.get('model')) {
+    /* Shop by Vehicle: the server-rendered #vehResults block below
+       #makeResults is the result view. Keep the unfiltered catalog
+       hidden and leave the make filter populated but inert. */
+    document.getElementById('groups').hidden = true;
+    document.getElementById('static-catalog').hidden = true;
+    if(window.REMakes){
+      var sel = document.getElementById('makeSel');
+      window.REMakes.summarize(ALL).forEach(function(m){
+        var o = document.createElement('option');
+        o.value = m.slug; o.textContent = m.name + ' (' + m.count + ')';
+        sel.appendChild(o);
+      });
+    }
+    return;
+  }
   if(window.REMakes){ setupFilter(ALL); }
   else { document.addEventListener('DOMContentLoaded', function(){ setupFilter(ALL); }); }
 }).catch(function(){

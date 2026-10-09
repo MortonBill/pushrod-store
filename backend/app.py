@@ -638,6 +638,12 @@ def _face_page(path):
         resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                    spec["pages"][path])
         return _sr_pricing_billing_gate(resp)
+    if (cfg["brand"]["id"] == "restorationessentials" and path == "/guides"):
+        # Shop by Vehicle: ?year=&make=&model= lands here with the
+        # server-rendered vehicle results block inline (matched guides
+        # + honest empty state); without vehicle params the page is
+        # served unchanged.
+        return _re_guides_vehicle_page()
     return send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                spec["pages"][path])
 
@@ -1648,6 +1654,270 @@ def api_product(sku):
     if not p or not p.get("listed", True):
         return jsonify({"error": "not found"}), 404
     return jsonify(p)
+
+
+# ---------- vehicle facets: Shop by Vehicle + catalog search ----------
+# Front-door standard (2026-10-09, modeling Summit Racing / OPGI /
+# Classic Industries): vehicle-first navigation driven by the live
+# catalog, never a stale index. The catalog carries no structured
+# year/make/model columns — SKUs do (e.g. RE-GD-1956-STUDEBAKER-HAWK,
+# RE-GD-CHEVROLET-CHEVELLE-1969). These helpers derive vehicle data
+# from the CURRENT in-memory catalog on every call, so filters and
+# counts always track the data the face is actually selling.
+
+FRONTDOOR_VEHICLE_FACES = {"restorationessentials"}
+
+_VEH_YEAR_RE = re.compile(r"^(19|20)\d\d$")
+_VEH_YEAR_LEAD_RE = re.compile(r"^\d{4}(\s*[\u2013\u2014-]\s*\d{2,4})?\s+")
+_VEH_MAKE_BY_SLUG = {
+    "amc": "AMC", "buick": "Buick", "cadillac": "Cadillac",
+    "chevrolet": "Chevrolet", "chrysler": "Chrysler", "dodge": "Dodge",
+    "ford": "Ford", "mercury": "Mercury", "oldsmobile": "Oldsmobile",
+    "plymouth": "Plymouth", "pontiac": "Pontiac", "shelby": "Shelby",
+    "studebaker": "Studebaker",
+}
+_VEH_MAKE_WORDS = {v.lower(): k for k, v in _VEH_MAKE_BY_SLUG.items()}
+_VEH_MAKE_WORDS["chevy"] = "chevrolet"
+# Body-sequence nicknames: model-name families whose SKU body starts
+# with the family, not the marque. Factual nameplate mappings only.
+_VEH_NICKNAMES = {
+    "GM-SQUAREBODY": ("chevrolet", "GM Squarebody Truck"),
+    "FOX-BODY-MUSTANG": ("ford", "Fox Body Mustang"),
+    "K5-BLAZER-JIMMY": ("chevrolet", "K5 Blazer Jimmy"),
+    "THIRD-GEN-CAMARO": ("chevrolet", "Camaro"),
+    "THIRD-GEN-FIREBIRD": ("pontiac", "Firebird"),
+}
+# Title needles (mirror of re-makes.js TITLE_MAKE): used only when the
+# SKU carries no make word and the title's first word is a model.
+_VEH_TITLE_MAKE = [
+    ("camaro", "chevrolet"), ("blazer", "chevrolet"),
+    ("firebird", "pontiac"), ("trans am", "pontiac"),
+    ("mustang", "ford"),
+]
+
+
+def _veh_parse(p):
+    """(year_start, year_end, make_slug, model) for one product,
+    derived from its SKU/title. None where the data carries no value —
+    never guessed."""
+    sku = (p.get("sku") or "").strip()
+    title = (p.get("title") or "").strip()
+    toks = [t for t in sku.split("-") if t]
+    years = [int(t) for t in toks if _VEH_YEAR_RE.match(t)]
+    year_start = min(years) if years else None
+    year_end = max(years) if years else None
+    body_key = "-".join(toks[2:])
+    make_slug = model = None
+    for prefix, (ms, mdl) in _VEH_NICKNAMES.items():
+        if body_key == prefix or body_key.startswith(prefix + "-"):
+            make_slug, model = ms, mdl
+            break
+    if make_slug is None:
+        slugs = {_VEH_MAKE_WORDS.get(t.lower()) for t in toks}
+        slugs.discard(None)
+        if len(slugs) == 1:
+            (make_slug,) = slugs
+    if make_slug is None:
+        stripped = _VEH_YEAR_LEAD_RE.sub("", title)
+        words = stripped.split(" ")
+        first = re.sub(r"[^A-Za-z]", "", words[0] if words else "").lower()
+        make_slug = _VEH_MAKE_WORDS.get(first)
+    if make_slug is None:
+        low = title.lower()
+        for needle, slug in _VEH_TITLE_MAKE:
+            if needle in low:
+                make_slug = slug
+                break
+    if model is None:
+        model = _VEH_YEAR_LEAD_RE.sub("", title)
+        words = model.split(" ")
+        if (make_slug and words
+                and re.sub(r"[^A-Za-z]", "", words[0]).lower()
+                == _VEH_MAKE_BY_SLUG.get(make_slug, "").lower()):
+            model = " ".join(words[1:])
+        model = re.sub(
+            r"(\s+Restoration Guide|\s+Restoration|\s+Restoration Guide\s+.*)$",
+            "", model).strip()
+        model = re.sub(
+            r"\s+\d{4}(\s+\d{4})?(.*)$",
+            lambda m: ((" " + m.group(2).strip())
+                       if m.group(2) and not m.group(2).strip().isdigit()
+                       else ""),
+            model).strip()
+        model = model or title
+    return year_start, year_end, make_slug, model
+
+
+def _face_products_for(owner_id):
+    if owner_id:
+        return [p for p in PRODUCTS if p.get("owner") == owner_id]
+    return list(PRODUCTS)
+
+
+def _vehicle_inventory(owner_id):
+    """Fresh vehicle rows for one owner's listed, purchasable catalog
+    (the same set /api/products serves on that face)."""
+    rows = []
+    for p in _face_products_for(owner_id):
+        if not p.get("listed", True) or not p.get("purchasable"):
+            continue
+        year_start, year_end, make_slug, model = _veh_parse(p)
+        rows.append({
+            "sku": p.get("sku") or "",
+            "title": p.get("title") or "",
+            "description": p.get("description") or "",
+            "price": p.get("price"),
+            "type": p.get("type") or "",
+            "make_slug": make_slug,
+            "make": _VEH_MAKE_BY_SLUG.get(make_slug),
+            "model": model,
+            "year_start": year_start,
+            "year_end": year_end,
+        })
+    return rows
+
+
+def _vehicle_facets(owner_id):
+    rows = _vehicle_inventory(owner_id)
+    years = {}
+    for r in rows:
+        if r["year_start"] is None:
+            continue
+        for y in range(r["year_start"], r["year_end"] + 1):
+            years[y] = years.get(y, 0) + 1
+    makes = {}
+    for r in rows:
+        if r["make_slug"]:
+            makes[r["make_slug"]] = makes.get(r["make_slug"], 0) + 1
+    models = {}
+    for r in rows:
+        key = (r["make_slug"], r["model"])
+        models[key] = models.get(key, 0) + 1
+    return {
+        "years": [{"year": y, "count": c} for y, c in sorted(years.items())],
+        "makes": [
+            {"slug": s, "name": _VEH_MAKE_BY_SLUG.get(s, s), "count": c}
+            for s, c in sorted(makes.items(),
+                               key=lambda kv: _VEH_MAKE_BY_SLUG.get(kv[0], kv[0]))
+        ],
+        "models": [
+            {"make_slug": k[0], "model": k[1], "count": c}
+            for k, c in sorted(models.items(), key=lambda kv: (kv[0][0] or "", kv[0][1] or ""))
+        ],
+        "vehicles": rows,
+    }
+
+
+def _resolve_vehicle(rows, year=None, make=None, model=None):
+    out = []
+    for r in rows:
+        if year:
+            if (r["year_start"] is None
+                    or not (r["year_start"] <= year <= r["year_end"])):
+                continue
+        if make and r["make_slug"] != make:
+            continue
+        if model and (r["model"] or "").lower() != model:
+            continue
+        out.append(r)
+    return out
+
+
+def _price_str(price):
+    if isinstance(price, dict) and price.get("amount") is not None:
+        try:
+            return "$" + f"{float(price['amount']):.2f}"
+        except (TypeError, ValueError):
+            pass
+    return ""
+
+
+def _re_card_html(r):
+    desc = (r.get("description") or "")[:150]
+    hay = (r.get("title", "") + " " + r.get("sku", "")).lower()
+    return (
+        f'<div class="pcard" data-title="{_html_escape(hay, quote=True)}">'
+        '<span class="tag">Restoration guide</span>'
+        f'<h3>{_html_escape(r.get("title", ""))}</h3>'
+        f'<p>{_html_escape(desc)}</p>'
+        f'<span class="price">{_price_str(r.get("price"))}</span>'
+        f'<a class="btn" href="/product/{_html_escape(r.get("sku", ""), quote=True)}">View guide</a></div>')
+
+
+def _re_vehicle_block_html(rows, year, make, model):
+    """Server-rendered vehicle results block for /guides (RE face):
+    the matching guides with an honest count, or an honest
+    no-guides-yet state — never a claim the catalog can't back."""
+    label = " ".join(x for x in [
+        str(year) if year else "",
+        _VEH_MAKE_BY_SLUG.get(make, "") if make else "",
+        model or "",
+    ] if x)
+    head = f"Guides for {label}" if label else "Shop by vehicle"
+    lines = ['<section id="vehResults">', f"<h2>{_html_escape(head)}</h2>"]
+    if label:
+        n = len(rows)
+        lines.append(
+            '<p class="meta">{} matching guide{} · '
+            '<a href="/guides">clear vehicle filter</a></p>'.format(
+                n, "s" if n != 1 else ""))
+    if rows:
+        lines.append('<div class="pgrid">')
+        for r in rows:
+            lines.append(_re_card_html(r))
+        lines.append("</div>")
+    elif label:
+        lines.append(
+            "<p>No guide in the library yet covers "
+            + _html_escape(label)
+            + ' — the library grows model by model; '
+            '<a href="/contact">tell us what you are restoring</a>.</p>')
+    lines.append("</section>")
+    return "\n".join(lines)
+
+
+@app.get("/api/vehicles")
+def api_vehicles():
+    cfg, _products = _face()
+    face_id = cfg["brand"]["id"]
+    if face_id not in FRONTDOOR_VEHICLE_FACES:
+        return jsonify({"error": "not a vehicle-finder face"}), 404
+    facets = _vehicle_facets(face_id)
+    facets["face"] = face_id
+    facets["catalog_total"] = len(facets["vehicles"])
+    return jsonify(facets)
+
+
+def _re_guides_vehicle_page():
+    """RE /guides with a vehicle filter (year/make/model query params):
+    serve the guides page with the server-rendered vehicle results
+    block inline and the unfiltered catalog hidden, so the filtered
+    view is real before any JS runs. No params = the plain guides
+    page, byte-for-byte the pre-facet behavior."""
+    year = request.args.get("year", type=int)
+    make = (request.args.get("make") or "").strip().lower() or None
+    model = (request.args.get("model") or "").strip().lower() or None
+    spec = FACE_PAGES["restorationessentials"]
+    resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
+                               spec["pages"]["/guides"])
+    if not (year or model):
+        return resp
+    rows = _resolve_vehicle(_vehicle_inventory("restorationessentials"),
+                            year=year, make=make, model=model)
+    block = _re_vehicle_block_html(rows, year, make, model)
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    anchor = '<div id="makeResults"></div>'
+    if anchor in html_text and 'id="vehResults"' not in html_text:
+        html_text = html_text.replace(anchor, anchor + "\n" + block, 1)
+    html_text = html_text.replace('<div id="groups">',
+                                  '<div id="groups" hidden>', 1)
+    html_text = html_text.replace('<section id="static-catalog">',
+                                  '<section id="static-catalog" hidden>', 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
+    return resp
 
 
 def _validate_cart(items, price_fn=None):
