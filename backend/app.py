@@ -2048,6 +2048,10 @@ def _re_card_html(r):
     elif r.get("owner_id") == "everready":
         tag = {"kit": "Kit", "workbook": "Workbook", "bundle": "Bundle",
                "cookbook": "Cookbook", "planner": "Planner"}.get(r.get("type") or "", "Tool")
+    elif r.get("owner_id") == "pushrod":
+        tag = {"tee": "Tee", "hat": "Hat", "sweatshirt": "Sweatshirt",
+               "metal sign": "Shop sign", "decal": "Decal", "mug": "Mug",
+               "banner": "Banner", "patch": "Patch"}.get(r.get("type") or "", "Gear")
     elif "buyer" in (r.get("title") or "").lower():
         tag = "Buyer's guide"
     else:
@@ -2260,9 +2264,30 @@ def _sr_card_html(r):
 def site_search():
     cfg, _products = _face()
     face_id = cfg["brand"]["id"]
+    host = (request.host or "").split(":")[0].strip().lower()
+    q = (request.args.get("q") or "").strip()
+    if host in PUSHROD_STORE_HOSTS:
+        # pushrodshop.com shares this app (the process brand's own
+        # store surface): server search over the real merch catalog
+        # it sells — pushrod-owned, listed, purchasable rows only.
+        rows = _vehicle_inventory("pushrod")
+        results = _search_products(rows, q) if q else []
+        body = _search_body_html(q, results, len(rows),
+                                 ("product", "products"))
+        resp = send_from_directory(os.path.join(FRONTEND, "pushrod"),
+                                   "search.html")
+        resp.direct_passthrough = False
+        html_text = resp.get_data(as_text=True)
+        html_text = html_text.replace("<!--SEARCH-RESULTS-->", body, 1)
+        if q:
+            html_text = html_text.replace(
+                'value=""', 'value="' + _html_escape(q, quote=True) + '"', 1)
+        resp.set_data(html_text)
+        resp.content_length = len(resp.get_data())
+        resp.headers.pop("ETag", None)
+        return resp
     if face_id not in FRONTDOOR_SEARCH_FACES:
         return "Not found", 404
-    q = (request.args.get("q") or "").strip()
     rows = _vehicle_inventory(face_id)
     if face_id == "sportroots" and not rows:
         # Content-first face (drill library, billing dark): search the
