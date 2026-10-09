@@ -568,6 +568,16 @@ FACE_PAGES = {
             # terms only: instant email delivery, replacement-or-refund
             # on failed/defective downloads, duplicate refunds.
             "/refund-policy": "refund-policy.html",
+            # Free checklist (2026-10-09): /checklist had been a live
+            # 404 while the Master Restoration Checklist PDF sat
+            # undelivered. The page captures email through the same RE
+            # Kit beta form the hosted signup uses (beta_delivery then
+            # emails the store's expiring, email-bound download token
+            # for the checklist — never a naked public link, per the
+            # paid-file rule). /checklist-download is the post-signup
+            # confirmation (mirrors EverReady's pair of routes).
+            "/checklist": "checklist.html",
+            "/checklist-download": "checklist-download.html",
             # Cross-face route (2026-10-09): the EverReady Pet Tribute
             # Book is promoted to RestorationEssentials visitors (the
             # Executor's Kit / estate audience overlaps pet loss), so
