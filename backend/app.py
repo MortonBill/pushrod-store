@@ -343,6 +343,7 @@ FACE_PAGES = {
             "/learn/picking-needles": "learn-picking-needles.html",
             "/learn/reading-knitting-abbreviations": "learn-reading-knitting-abbreviations.html",
             "/learn/which-pattern": "learn-which-pattern.html",
+            "/learn/gauge-swatch": "learn-gauge-swatch.html",
             "/about": "about.html",
             "/faq": "faq.html",
             "/policies": "policies.html",
