@@ -4,8 +4,8 @@
   "storage": {
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
-    "total_files": 396,
-    "total_bytes": 687937231
+    "total_files": 397,
+    "total_bytes": 689116931
   },
   "files": [
     {
@@ -2778,6 +2778,13 @@
       "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_1984-1991-jeep-grand-wagoneer.pdf",
       "bytes": 1167622,
       "key": "RE_1984-1991-jeep-grand-wagoneer.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-SWAP-LSLT-ABODY",
+      "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_swap-lslt-abody.pdf",
+      "bytes": 1179700,
+      "key": "RE_swap-lslt-abody.pdf",
       "size_verified_against_manifest": true
     }
   ],

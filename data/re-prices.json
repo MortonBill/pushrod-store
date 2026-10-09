@@ -1585,6 +1585,10 @@
     {
       "sku": "RE-GD-1984-JEEP-GRAND-WAGONEER",
       "msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-SWAP-LSLT-ABODY",
+      "msrp": 29.95
     }
   ]
 }
