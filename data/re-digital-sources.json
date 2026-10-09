@@ -4,8 +4,8 @@
   "storage": {
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
-    "total_files": 398,
-    "total_bytes": 690293230
+    "total_files": 399,
+    "total_bytes": 691469104
   },
   "files": [
     {
@@ -2792,6 +2792,13 @@
       "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_swap-lslt-squarebody.pdf",
       "bytes": 1176299,
       "key": "RE_swap-lslt-squarebody.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-SWAP-LSLT-C10",
+      "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_swap-lslt-c10.pdf",
+      "bytes": 1175874,
+      "key": "RE_swap-lslt-c10.pdf",
       "size_verified_against_manifest": true
     }
   ],
