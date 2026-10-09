@@ -1972,6 +1972,7 @@ def _vehicle_inventory(owner_id):
             "description": p.get("description") or "",
             "price": p.get("price"),
             "type": p.get("type") or "",
+            "owner_id": owner_id,
             "make_slug": make_slug,
             "make": make_map.get(make_slug),
             "model": model,
@@ -2039,7 +2040,12 @@ def _price_str(price):
 def _re_card_html(r):
     desc = (r.get("description") or "")[:150]
     hay = (r.get("title", "") + " " + r.get("sku", "")).lower()
-    tag = "Buyer's guide" if "buyer" in (r.get("title") or "").lower() else "Restoration guide"
+    if r.get("owner_id") == "stitchfolk":
+        tag = "Pattern"
+    elif "buyer" in (r.get("title") or "").lower():
+        tag = "Buyer's guide"
+    else:
+        tag = "Restoration guide"
     return (
         f'<div class="pcard" data-title="{_html_escape(hay, quote=True)}">'
         f'<span class="tag">{tag}</span>'
@@ -2082,7 +2088,7 @@ def _re_vehicle_block_html(rows, year, make, model, owner_id="restorationessenti
     return "\n".join(lines)
 
 
-FRONTDOOR_SEARCH_FACES = {"restorationessentials", "ironhead"}
+FRONTDOOR_SEARCH_FACES = {"restorationessentials", "ironhead", "stitchfolk"}
 
 
 def _search_norm(s):
@@ -2164,6 +2170,7 @@ def _search_body_html(q, results, total_catalog, noun=("guide", "guides")):
 _SEARCH_NOUNS = {
     "restorationessentials": ("guide", "guides"),
     "ironhead": ("guide", "guides"),
+    "stitchfolk": ("pattern", "patterns"),
 }
 
 
