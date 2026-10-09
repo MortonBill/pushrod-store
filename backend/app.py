@@ -443,6 +443,8 @@ FACE_PAGES = {
         "home": "home.html",
         "pages": {
             "/playbooks": "playbooks.html",
+            "/blog": "blog.html",
+            "/blog/speed-to-answer": "blog-speed-to-answer.html",
             "/about": "about.html",
             "/faq": "faq.html",
             "/contact": "contact.html",
