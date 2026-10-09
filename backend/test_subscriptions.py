@@ -205,6 +205,55 @@ else:
     r = client.post("/api/sr/portal", json={"email": "ghost@example.com"})
     check("portal unknown email -> 404", r.status_code == 404)
 
+    # --- regression (2026-10-09 go-live proof): multi-worker store ---
+    # gunicorn runs --workers 2 (render.yaml): the webhook write lands in
+    # one worker's EntitlementStore, the buyer's /api/sr/portal lookup in
+    # the other's. The store used to load once at init and never re-read,
+    # so worker B answered "no SportRoots subscription found" forever.
+    _workers_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 "sr_entitlements_workers_test.json")
+    if os.path.exists(_workers_path):
+        os.remove(_workers_path)
+    worker_a = sr_mod.EntitlementStore(_workers_path)
+    worker_b = sr_mod.EntitlementStore(_workers_path)
+    worker_a.upsert("two@example.com", customer_id="cus_2",
+                    subscription_id="sub_2", status="trialing",
+                    plan="monthly")
+    seen = worker_b.get_by_email("two@example.com")
+    check("regression: second worker sees first worker's write",
+          bool(seen) and seen.get("customer_id") == "cus_2", str(seen))
+    if os.path.exists(_workers_path):
+        os.remove(_workers_path)
+
+    # --- regression (2026-10-09 go-live proof): buyer return path ---
+    # success.html calls GET /api/fulfill?session_id=... for EVERY
+    # checkout, subscriptions included. The old handler ran the one-time
+    # fulfillment on the session's empty cart: fulfill_paid_order
+    # returned None and result.get() raised outside the caught set, so
+    # the buyer got an HTML 500 ("Unexpected token '<' ... is not valid
+    # JSON") and NO synchronous entitlement was ever recorded. The SR
+    # branch must record from the returned session and answer JSON, so
+    # Manage/portal works the moment the buyer lands.
+    store_app.stripe.checkout.Session.retrieve = staticmethod(
+        lambda sid, **kw: FakeObj(
+            id=sid, payment_status="paid", mode="subscription",
+            status="complete", customer="cus_1", subscription="sub_1",
+            customer_details={"email": "sync@example.com"},
+            metadata={"kind": "sr_sub", "plan": "monthly"}))
+    try:
+        r = client.get("/api/fulfill?session_id=cs_test_sr_return")
+        ok_json = (r.status_code == 200
+                   and r.content_type.startswith("application/json")
+                   and bool((r.get_json() or {}).get("sportroots")))
+        fulfill_extra = f"{r.status_code} {r.content_type}"
+    except Exception as e:  # old code: uncaught AttributeError
+        ok_json, fulfill_extra = False, f"raised {e!r}"
+    check("regression: /api/fulfill SR session answers JSON, records sync",
+          ok_json, fulfill_extra)
+    r = client.post("/api/sr/portal", json={"email": "sync@example.com"})
+    check("regression: portal finds buyer right after success return",
+          r.status_code == 200, r.get_data(as_text=True))
+
     # --- /pricing serves live purchase CTAs when billing is enabled ---
     r = client.get("/pricing", headers={"Host": "sportrootsdrills.com"})
     body = r.get_data(as_text=True)

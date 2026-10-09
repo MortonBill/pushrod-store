@@ -34,7 +34,12 @@ if (sid) {
   fetch('/api/fulfill?session_id=' + encodeURIComponent(sid))
     .then(r => r.json().then(j => ({ok: r.ok, j})))
     .then(({ok, j}) => {
-      if (ok && j.digital) {
+      if (ok && j.sportroots && j.sportroots.status) {
+        lead.textContent = 'Your payment went through.';
+        status.textContent = j.sportroots.status === 'trialing'
+          ? 'Your 30-day free trial has started. Manage or cancel anytime from the pricing page.'
+          : 'Your SportRoots plan is active. Manage or cancel anytime from the pricing page.';
+      } else if (ok && j.digital) {
         lead.textContent = 'Your payment went through.';
         status.textContent = 'Your download is on its way — we emailed your secure download link just now. It stays valid for 7 days, so check your inbox (and spam folder, just in case).';
       } else if (ok) {

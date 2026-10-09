@@ -1835,6 +1835,26 @@ def api_fulfill():
         session = stripe.checkout.Session.retrieve(session_id, **_stripe_acct())
     except Exception as e:
         return jsonify({"error": f"cannot retrieve session: {e}"}), 400
+    # SportRoots subscription/trial returns land here too — success.html
+    # calls this endpoint for EVERY checkout. A subscription session has
+    # no cart to fulfill: record the entitlement synchronously (the
+    # webhook remains the lifecycle writer) and answer JSON. Running
+    # the one-time fulfillment below on it processes an empty cart,
+    # fulfill_paid_order returns None, and result.get() crashed as an
+    # HTML 500 (2026-10-09 go-live proof: buyer saw "Unexpected token
+    # '<' ... is not valid JSON" and no entitlement was recorded).
+    _meta0 = _sget(session, "metadata", {}) or {}
+    if _sget(_meta0, "kind") == "sr_sub":
+        sr = None
+        if sr_mod.is_enabled():
+            try:
+                sr = sr_mod.sync_from_checkout_session(
+                    _sget(session, "id", "") or session_id, _sget)
+            except Exception:  # noqa: BLE001 — never break the success page
+                log.exception("sportroots success-page sync failed for %s",
+                              session_id)
+        return jsonify({"sportroots": sr or {"recorded": False},
+                        "session_id": _sget(session, "id", "")})
     if session.payment_status != "paid":
         return jsonify({"error": f"session not paid (status={session.payment_status})"}), 402
     # stripe-python 15.x: session fields are StripeObjects, not dicts —

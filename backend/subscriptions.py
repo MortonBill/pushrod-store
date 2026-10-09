@@ -88,10 +88,17 @@ def is_enabled():
 # ---------- entitlement store ----------
 
 def default_store_path():
-    return os.environ.get(
-        "SR_ENTITLEMENTS_PATH",
-        os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                     "sr_entitlements.json"))
+    override = os.environ.get("SR_ENTITLEMENTS_PATH", "")
+    if override:
+        return override
+    # Deployed service: entitlements are billing truth and must survive
+    # redeploys, so prefer the persistent disk when one is mounted
+    # (Render mounts it at /var/data — same pattern as app._img_lib_dir).
+    # Next to this module is the fallback for local runs/tests.
+    if os.path.isdir("/var/data"):
+        return "/var/data/sr_entitlements.json"
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "sr_entitlements.json")
 
 
 class EntitlementStore:
@@ -108,13 +115,25 @@ class EntitlementStore:
     def __init__(self, path=None):
         self.path = path or default_store_path()
         self._data = {"by_email": {}, "by_customer": {}}
+        self._load()
+
+    def _load(self):
+        """(Re)read the store file. The deployed service runs multiple
+        gunicorn workers, each holding its own EntitlementStore: a
+        webhook write in one worker MUST be visible to a portal or
+        entitlement read in another, so reads/writes always start from
+        what's on disk, never from a boot-time snapshot. (2026-10-09
+        go-live proof: worker B answered "no SportRoots subscription
+        found" forever because it never re-read worker A's write.)"""
         if os.path.exists(self.path):
             try:
                 with open(self.path) as f:
                     loaded = json.load(f)
                 if isinstance(loaded, dict):
-                    self._data["by_email"] = loaded.get("by_email", {})
-                    self._data["by_customer"] = loaded.get("by_customer", {})
+                    self._data = {
+                        "by_email": loaded.get("by_email", {}),
+                        "by_customer": loaded.get("by_customer", {}),
+                    }
             except (ValueError, OSError):
                 log.warning("SR entitlement store unreadable at %s — "
                             "starting empty (subscribers will re-record "
@@ -129,9 +148,11 @@ class EntitlementStore:
     def get_by_email(self, email):
         if not email:
             return None
+        self._load()
         return self._data["by_email"].get(email.strip().lower())
 
     def get_by_customer(self, customer_id):
+        self._load()
         email = self._data["by_customer"].get(customer_id or "")
         return self.get_by_email(email) if email else None
 
@@ -141,6 +162,7 @@ class EntitlementStore:
         email = (email or "").strip().lower()
         if not email:
             return None
+        self._load()
         rec = dict(self._data["by_email"].get(email) or {"email": email})
         rec.update({k: v for k, v in fields.items() if v is not None})
         rec["email"] = email
@@ -202,6 +224,73 @@ def _email_for_customer(customer_id, sget):
         return ""
 
 
+def record_checkout_session(obj, sget):
+    """Record the entitlement from a completed Checkout Session object —
+    one rule whether the object arrived as a webhook payload or was
+    re-retrieved on the buyer's success return. Returns the summary
+    dict, or None when the session is not a SportRoots one (or billing
+    is dark)."""
+    if not _enabled or _store is None:
+        return None
+    meta = sget(obj, "metadata", {}) or {}
+    if sget(meta, "kind") != "sr_sub":
+        return None
+    email = sget(sget(obj, "customer_details", {}) or {}, "email", "") \
+        or sget(obj, "customer_email", "") or ""
+    plan = sget(meta, "plan", "") or ""
+    if sget(obj, "mode") == "payment":
+        # Lifetime: one-time payment, entitled forever, no period.
+        rec = _store.upsert(
+            email, customer_id=sget(obj, "customer"),
+            subscription_id=None, plan=plan or "lifetime",
+            status="lifetime", current_period_end=None,
+            source="checkout.session.completed")
+        # Lifetime bypasses the status rule above (there is no
+        # subscription status to derive from).
+        rec["entitled"] = True
+        _store._save()
+        return {"plan": plan, "status": "lifetime"}
+    # Recurring: the session names the subscription; read its real
+    # status (trialing right after a trial signup) from Stripe.
+    fields = {"plan": plan, "source": "checkout.session.completed"}
+    sub_id = sget(obj, "subscription")
+    try:
+        sub = stripe.Subscription.retrieve(sub_id, **_stripe_acct())
+        fields.update(_subscription_fields(sub, sget))
+    except Exception:  # noqa: BLE001 — invoice.paid will land next and fix it
+        log.warning("SR: subscription %s unreadable at checkout "
+                    "completion — invoice.paid will record it", sub_id)
+        fields.update({"subscription_id": sub_id,
+                       "customer_id": sget(obj, "customer"),
+                       "status": "unknown"})
+    rec = _store.upsert(email, **fields)
+    return {"plan": plan, "status": (rec or {}).get("status")}
+
+
+def sync_from_checkout_session(session_id, sget):
+    """Synchronous twin of the webhook's checkout.session.completed
+    path, driven by the buyer's return to /checkout/success: retrieve
+    the session and record the entitlement NOW, so Manage/portal and
+    entitlement reads work the moment the buyer lands — not whenever
+    the webhook happens to arrive (and whichever worker it lands on).
+    The webhook stays the lifecycle writer (renewals, cancels, refunds);
+    this only front-runs the same record for the signup itself.
+    Returns the summary dict, or None when dark/not ours/unreadable."""
+    if not _enabled or _store is None or not session_id:
+        return None
+    try:
+        session = stripe.checkout.Session.retrieve(session_id,
+                                                   **_stripe_acct())
+    except Exception:  # noqa: BLE001 — success page must never crash on it
+        log.warning("SR: could not retrieve checkout session %s for "
+                    "success-page sync", session_id)
+        return None
+    status = sget(session, "status", "") or ""
+    if status and status != "complete":
+        return None
+    return record_checkout_session(session, sget)
+
+
 def handle_event(event, sget):
     """Route one verified webhook event. Returns a summary dict when the
     event belongs to SportRoots billing, None to let the caller fall
@@ -219,36 +308,7 @@ def handle_event(event, sget):
         meta = sget(obj, "metadata", {}) or {}
         if sget(meta, "kind") != "sr_sub":
             return None
-        email = sget(sget(obj, "customer_details", {}) or {}, "email", "") \
-            or sget(obj, "customer_email", "") or ""
-        plan = sget(meta, "plan", "") or ""
-        if sget(obj, "mode") == "payment":
-            # Lifetime: one-time payment, entitled forever, no period.
-            rec = _store.upsert(
-                email, customer_id=sget(obj, "customer"),
-                subscription_id=None, plan=plan or "lifetime",
-                status="lifetime", current_period_end=None,
-                source="checkout.session.completed")
-            # Lifetime bypasses the status rule above (there is no
-            # subscription status to derive from).
-            rec["entitled"] = True
-            _store._save()
-            return {"plan": plan, "status": "lifetime"}
-        # Recurring: the session names the subscription; read its real
-        # status (trialing right after a trial signup) from Stripe.
-        fields = {"plan": plan, "source": "checkout.session.completed"}
-        sub_id = sget(obj, "subscription")
-        try:
-            sub = stripe.Subscription.retrieve(sub_id, **_stripe_acct())
-            fields.update(_subscription_fields(sub, sget))
-        except Exception:  # noqa: BLE001 — invoice.paid will land next and fix it
-            log.warning("SR: subscription %s unreadable at checkout "
-                        "completion — invoice.paid will record it", sub_id)
-            fields.update({"subscription_id": sub_id,
-                           "customer_id": sget(obj, "customer"),
-                           "status": "unknown"})
-        rec = _store.upsert(email, **fields)
-        return {"plan": plan, "status": (rec or {}).get("status")}
+        return record_checkout_session(obj, sget)
 
     if etype == "invoice.paid":
         customer_id = sget(obj, "customer")
