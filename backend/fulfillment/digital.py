@@ -220,6 +220,9 @@ BRAND_EMAIL_STYLES = {
         "accent": "#e8a020", "on_accent": "#1a1206",
         "dark": "#101418", "on_dark": "#f0e9d8",
         "domain": "restoreessentials.com",
+        "logo_url": "https://restoreessentials.com/static/img/"
+                    "restoration-essentials-logo.png",
+        "logo_w": 110,
     },
     "ironhead": {
         "display": "IronHead",
@@ -227,6 +230,8 @@ BRAND_EMAIL_STYLES = {
         "accent": "#c8402a", "on_accent": "#ffffff",
         "dark": "#14100d", "on_dark": "#f0e9d8",
         "domain": "ironheadguides.com",
+        "logo_url": "https://ironheadguides.com/static/img/ironhead-logo.png",
+        "logo_w": 110,
     },
     "skillforgeai": {
         "display": "SkillForge AI",
@@ -234,6 +239,9 @@ BRAND_EMAIL_STYLES = {
         "accent": "#2dd4bf", "on_accent": "#05302a",
         "dark": "#0e1319", "on_dark": "#edf2f4",
         "domain": "skillforgeaihub.com",
+        "logo_url": "https://skillforgeaihub.com/static/img/"
+                    "skillforge-ai-logo.png",
+        "logo_w": 110,
     },
     "stitchfolk": {
         "display": "Stitchfolk",
@@ -241,6 +249,8 @@ BRAND_EMAIL_STYLES = {
         "accent": "#7a3b54", "on_accent": "#ffffff",
         "dark": "#221418", "on_dark": "#f3e8e2",
         "domain": "",
+        "logo_url": "https://pushrodshop.com/static/img/stitchfolk-logo.png",
+        "logo_w": 110,
     },
     "everreadyfamily": {
         "display": "EverReady Family",
@@ -248,6 +258,9 @@ BRAND_EMAIL_STYLES = {
         "accent": "#c9a24b", "on_accent": "#211a05",
         "dark": "#141210", "on_dark": "#f3ede2",
         "domain": "everready-family.com",
+        "logo_url": "https://everready-family.com/static/img/"
+                    "everready-family-logo.png",
+        "logo_w": 110,
     },
     "pushrod": {
         "display": "PushRod",
@@ -255,6 +268,8 @@ BRAND_EMAIL_STYLES = {
         "accent": "#f59e0b", "on_accent": "#231600",
         "dark": "#14100c", "on_dark": "#f3ead8",
         "domain": "pushrodshop.com",
+        "logo_url": "https://pushrodshop.com/static/img/pushrod-logo.png",
+        "logo_w": 200,
     },
 }
 
@@ -343,8 +358,21 @@ def render_delivery_email(style, items, tail, intro):
     footer_brand = esc(style["display"])
     if style.get("domain"):
         footer_brand += f' &middot; {esc(style["domain"])}'
+    logo_row = ""
+    if style.get("logo_url"):
+        logo_row = (
+            '<tr><td align="center" style="background:#ffffff;'
+            'padding:20px 28px 4px;">'
+            f'<img src="{esc(style["logo_url"], quote=True)}" '
+            f'alt="{esc(style["display"])}" '
+            f'width="{int(style.get("logo_w", 110))}" '
+            f'style="display:block;margin:0 auto;width:'
+            f'{int(style.get("logo_w", 110))}px;height:auto;'
+            'border:0;"></td></tr>')
     return (
-        '<!DOCTYPE html><html><body style="margin:0;padding:0;">'
+        '<!DOCTYPE html><html><head><meta charset="utf-8">'
+        f'<title>{esc(style["display"])}</title></head>'
+        '<body style="margin:0;padding:0;">'
         '<table role="presentation" width="100%" cellpadding="0" '
         'cellspacing="0" style="background:#efe9df;">'
         '<tr><td align="center" style="padding:24px 12px;">'
@@ -352,6 +380,7 @@ def render_delivery_email(style, items, tail, intro):
         'cellspacing="0" style="max-width:600px;width:100%;background:'
         '#ffffff;border-radius:10px;overflow:hidden;font-family:'
         'Arial,Helvetica,sans-serif;">'
+        f'{logo_row}'
         f'<tr><td style="background:{dark};padding:22px 28px;">'
         f'<div style="font-size:24px;font-weight:bold;color:{on_dark};'
         f'letter-spacing:.4px;">{esc(style["display"])}</div>'

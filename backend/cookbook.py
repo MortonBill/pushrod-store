@@ -628,6 +628,11 @@ def build_book_pdf(book, out_path):
     c.setFont("Times-Roman", 11)
     c.drawCentredString(PAGE_W / 2, 120,
                         time.strftime("%B %Y"))
+    c.setFont("Times-Roman", 9.5)
+    c.setFillColorRGB(0.55, 0.42, 0.16)
+    c.drawCentredString(PAGE_W / 2, 84,
+                        "EverReady Family · everready-family.com")
+    c.setFillColorRGB(0, 0, 0)
     new_page()
 
     # How this book was made

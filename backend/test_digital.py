@@ -190,6 +190,9 @@ check("email addressed to buyer with brand subject",
 check("delivery email is branded (banner + brand accent)",
       sender.sent and "SkillForge AI" in sender.sent[0]["html"]
       and "#2dd4bf" in sender.sent[0]["html"])
+check("delivery email carries the brand logo",
+      sender.sent and "<img" in sender.sent[0]["html"]
+      and "skillforge-ai-logo.png" in sender.sent[0]["html"])
 check("delivery text opens with the brand banner",
       sender.sent and sender.sent[0]["text"].startswith("SkillForge AI"))
 check("email style resolves by store name",
