@@ -206,6 +206,174 @@ class BrevoSender:
             raise DigitalSendError(f"Brevo send failed: {e}")
 
 
+# ---------- branded delivery email ----------
+
+# Email identity per brand. The storefronts carry each brand's name,
+# colors, and tagline; the delivery email uses the same identity so a
+# buyer's inbox matches the store they just bought from (Bill
+# 2026-10-09: the bare black-and-white delivery email was the defect).
+# Inline styles only, no images — nothing for a mail client to block.
+BRAND_EMAIL_STYLES = {
+    "restorationessentials": {
+        "display": "RestoreEssentials",
+        "tagline": "American iron, restored right",
+        "accent": "#e8a020", "on_accent": "#1a1206",
+        "dark": "#101418", "on_dark": "#f0e9d8",
+        "domain": "restoreessentials.com",
+    },
+    "ironhead": {
+        "display": "IronHead",
+        "tagline": "Vintage iron, kept running",
+        "accent": "#c8402a", "on_accent": "#ffffff",
+        "dark": "#14100d", "on_dark": "#f0e9d8",
+        "domain": "ironheadguides.com",
+    },
+    "skillforgeai": {
+        "display": "SkillForge AI",
+        "tagline": "AI playbooks for people who work with their hands",
+        "accent": "#2dd4bf", "on_accent": "#05302a",
+        "dark": "#0e1319", "on_dark": "#edf2f4",
+        "domain": "skillforgeaihub.com",
+    },
+    "stitchfolk": {
+        "display": "Stitchfolk",
+        "tagline": "Handwork patterns, made to be made",
+        "accent": "#7a3b54", "on_accent": "#ffffff",
+        "dark": "#221418", "on_dark": "#f3e8e2",
+        "domain": "",
+    },
+    "everreadyfamily": {
+        "display": "EverReady Family",
+        "tagline": "Everything your family needs, ready before it's needed",
+        "accent": "#c9a24b", "on_accent": "#211a05",
+        "dark": "#141210", "on_dark": "#f3ede2",
+        "domain": "everready-family.com",
+    },
+    "pushrod": {
+        "display": "PushRod",
+        "tagline": "Garage-built gear for the air-cooled faithful",
+        "accent": "#f59e0b", "on_accent": "#231600",
+        "dark": "#14100c", "on_dark": "#f3ead8",
+        "domain": "pushrodshop.com",
+    },
+}
+
+# SKU prefix -> style key, so a mixed-brand service process still
+# brands the email by what was actually bought.
+_SKU_STYLE_KEYS = (
+    ("ER-", "everreadyfamily"),
+    ("SF-", "skillforgeai"),
+    ("ST-", "stitchfolk"),
+    ("IH-", "ironhead"),
+    ("RE-", "restorationessentials"),
+    ("PR-", "pushrod"),
+)
+
+_DEFAULT_EMAIL_STYLE = {
+    "display": "AI Tools for Today",
+    "tagline": "Your order is ready",
+    "accent": "#9a7b2d", "on_accent": "#ffffff",
+    "dark": "#1c1c1e", "on_dark": "#f5f0e6",
+    "domain": "",
+}
+
+
+def _style_key(name):
+    return "".join((name or "").replace("™", "").replace("®", "")
+                   .lower().split())
+
+
+def email_style_for(store_name="", skus=()):
+    """Resolve the brand identity for a delivery email.
+
+    Prefers the store name the caller passed; falls back to the first
+    recognized SKU prefix; defaults to the house identity. Never
+    raises — a delivery email must go out even if branding misses.
+    """
+    style = BRAND_EMAIL_STYLES.get(_style_key(store_name))
+    if style:
+        return style
+    for sku in skus or ():
+        upper = (sku or "").upper()
+        for prefix, key in _SKU_STYLE_KEYS:
+            if upper.startswith(prefix):
+                return BRAND_EMAIL_STYLES[key]
+    if store_name:
+        style = dict(_DEFAULT_EMAIL_STYLE)
+        style["display"] = store_name
+        return style
+    return _DEFAULT_EMAIL_STYLE
+
+
+def render_delivery_email(style, items, tail, intro):
+    """Branded, email-client-safe HTML for a delivery email.
+
+    items: list of (title, url, note). A None url renders a note row
+    (drive.py's set-up-by-hand SKUs). Titles and URLs are escaped.
+    """
+    esc = html.escape
+    accent, on_accent = style["accent"], style["on_accent"]
+    dark, on_dark = style["dark"], style["on_dark"]
+    rows = []
+    for title, url, note in items:
+        t = esc(title or "")
+        if url:
+            u = esc(url, quote=True)
+            rows.append(
+                '<tr><td style="padding:14px 0;border-bottom:1px solid '
+                '#e7e0d2;">'
+                f'<div style="font-size:15px;font-weight:bold;'
+                f'color:#1d1a14;">{t}</div>'
+                f'<a href="{u}" style="display:inline-block;margin-top:'
+                f'8px;background:{accent};color:{on_accent};font-size:'
+                f'14px;font-weight:bold;text-decoration:none;padding:'
+                f'10px 20px;border-radius:6px;">Download</a>'
+                f'<div style="margin-top:8px;font-size:11px;color:'
+                f'#8a8172;word-break:break-all;">{u}</div>'
+                '</td></tr>')
+        else:
+            note_html = (f'<div style="font-size:13px;color:#5c5546;'
+                         f'margin-top:4px;">{esc(note)}</div>'
+                         if note else "")
+            rows.append(
+                '<tr><td style="padding:14px 0;border-bottom:1px solid '
+                '#e7e0d2;">'
+                f'<div style="font-size:15px;font-weight:bold;'
+                f'color:#1d1a14;">{t}</div>{note_html}</td></tr>')
+    footer_brand = esc(style["display"])
+    if style.get("domain"):
+        footer_brand += f' &middot; {esc(style["domain"])}'
+    return (
+        '<!DOCTYPE html><html><body style="margin:0;padding:0;">'
+        '<table role="presentation" width="100%" cellpadding="0" '
+        'cellspacing="0" style="background:#efe9df;">'
+        '<tr><td align="center" style="padding:24px 12px;">'
+        '<table role="presentation" width="600" cellpadding="0" '
+        'cellspacing="0" style="max-width:600px;width:100%;background:'
+        '#ffffff;border-radius:10px;overflow:hidden;font-family:'
+        'Arial,Helvetica,sans-serif;">'
+        f'<tr><td style="background:{dark};padding:22px 28px;">'
+        f'<div style="font-size:24px;font-weight:bold;color:{on_dark};'
+        f'letter-spacing:.4px;">{esc(style["display"])}</div>'
+        f'<div style="font-size:13px;color:{accent};margin-top:4px;">'
+        f'{esc(style["tagline"])}</div>'
+        '</td></tr>'
+        f'<tr><td style="background:{accent};height:4px;font-size:0;">'
+        '&nbsp;</td></tr>'
+        '<tr><td style="padding:24px 28px;color:#241f16;font-size:15px;'
+        'line-height:1.55;">'
+        f'<p style="margin:0;">{esc(intro)}</p>'
+        '<table role="presentation" width="100%" cellpadding="0" '
+        f'cellspacing="0">{"".join(rows)}</table>'
+        f'<p style="margin:18px 0 0;font-size:13px;color:#5c5546;">'
+        f'{esc(tail)}</p>'
+        '</td></tr>'
+        f'<tr><td style="background:{dark};padding:16px 28px;'
+        f'font-size:12px;color:{on_dark};">{footer_brand}<br>'
+        'Questions? Just reply to this email.</td></tr>'
+        '</table></td></tr></table></body></html>')
+
+
 # ---------- Kit buyer tag ----------
 
 class KitTagger:
@@ -356,19 +524,23 @@ def fulfill_digital_lines(stripe_session_id, customer_email, digital_lines,
     ttl_days = int(os.environ.get("DIGITAL_LINK_TTL_DAYS", DEFAULT_TTL_DAYS))
     subject = (f"Your download from {store_name}" if store_name
                else "Your download links")
-    text_lines = ["Thanks for your order — your download(s) are ready:",
+    style = email_style_for(store_name,
+                            [line["sku"] for line in digital_lines])
+    if store_name:
+        # The banner carries the same resolved brand name as the
+        # subject; the style contributes colors, tagline, and domain.
+        style = {**style, "display": store_name}
+    text_lines = [f"{style['display']} — {style['tagline']}", "",
+                  "Thanks for your order — your download(s) are ready:",
                   ""]
-    html_items = []
     for title, url in items:
         text_lines.append(f"{title}\n{url}\n")
-        html_items.append(
-            f'<li><a href="{html.escape(url)}">{html.escape(title)}</a></li>')
     tail = (f"Links are tied to this email address and expire in "
             f"{ttl_days} days. Questions? Just reply to this email.")
     text_lines.append(tail)
-    html_content = ("<p>Thanks for your order — your download(s) are "
-                    f"ready:</p><ul>{''.join(html_items)}</ul>"
-                    f"<p>{html.escape(tail)}</p>")
+    html_content = render_delivery_email(
+        style, [(title, url, None) for title, url in items], tail,
+        "Thanks for your order — your download(s) are ready:")
 
     result = sender.send(customer_email, subject, html_content,
                          "\n".join(text_lines))

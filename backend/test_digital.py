@@ -187,6 +187,20 @@ check("one delivery email sent", len(sender.sent) == 1, len(sender.sent))
 check("email addressed to buyer with brand subject",
       sender.sent and sender.sent[0]["to"] == "buyer@example.com"
       and "SkillForge AI" in sender.sent[0]["subject"])
+check("delivery email is branded (banner + brand accent)",
+      sender.sent and "SkillForge AI" in sender.sent[0]["html"]
+      and "#2dd4bf" in sender.sent[0]["html"])
+check("delivery text opens with the brand banner",
+      sender.sent and sender.sent[0]["text"].startswith("SkillForge AI"))
+check("email style resolves by store name",
+      dmod.email_style_for("IronHead")["accent"] == "#c8402a"
+      and dmod.email_style_for("Restoration Essentials")["domain"]
+      == "restoreessentials.com")
+check("email style resolves by sku prefix when store name is off",
+      dmod.email_style_for("", ["ER-FRC-001"])["display"]
+      == "EverReady Family"
+      and dmod.email_style_for("", ["ST-MUSHROOM-001"])["display"]
+      == "Stitchfolk")
 
 # Delivery brand follows the PURCHASED product, not the service boot
 # brand: the shared service boots as SkillForge AI, but a

@@ -305,29 +305,29 @@ def fulfill_drive_lines(stripe_session_id, customer_email, drive_lines,
             drive_client.share_file(file_id, customer_email)
         shared[sku] = list(file_ids)
 
-    text_lines = ["Thanks for your order — your EverReady Family files "
+    style = digital_mod.email_style_for(
+        store_name, [line["sku"] for line in drive_lines])
+    text_lines = [f"{style['display']} — {style['tagline']}", "",
+                  "Thanks for your order — your EverReady Family files "
                   "are ready:", ""]
-    html_items = []
+    email_items = []
     for sku, file_ids in shared.items():
         for file_id in file_ids:
             url = drive_file_url(file_id)
             text_lines.append(f"{titles[sku]}\n{url}\n")
-            html_items.append(
-                f'<li><a href="{url}">{titles[sku]}</a></li>')
+            email_items.append((titles[sku], url, None))
     for sku in manual:
-        text_lines.append(
-            f"{titles[sku]}\nWe're setting this up for your family and "
-            "will email you as soon as it's ready.\n")
-        html_items.append(
-            f"<li>{titles[sku]} — we're setting this up for your family "
-            "and will email you as soon as it's ready.</li>")
+        note = ("We're setting this up for your family and will email "
+                "you as soon as it's ready.")
+        text_lines.append(f"{titles[sku]}\n{note}\n")
+        email_items.append((titles[sku], None, note))
     tail = ("Access is tied to this email address — sign in with the "
             "Google account that matches it. Questions? Just reply to "
             "this email.")
     text_lines.append(tail)
-    html_content = ("<p>Thanks for your order — your EverReady Family "
-                    f"files are ready:</p><ul>{''.join(html_items)}</ul>"
-                    f"<p>{html.escape(tail)}</p>")
+    html_content = digital_mod.render_delivery_email(
+        style, email_items, tail,
+        "Thanks for your order — your EverReady Family files are ready:")
 
     subject = f"Your files from {store_name}"
     result = sender.send(customer_email, subject, html_content,
