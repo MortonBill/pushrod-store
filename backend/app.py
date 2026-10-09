@@ -496,6 +496,8 @@ PUSHROD_PAGES = {
     "/about": "about.html",
     "/faq": "faq.html",
     "/contact": "contact.html",
+    "/blog": "blog.html",
+    "/blog/how-shop-signs-get-made": "blog-signs.html",
 }
 
 RE_PAGES = FACE_PAGES["restorationessentials"]["pages"]
@@ -659,7 +661,8 @@ def _face_page(path):
                                spec["pages"][path])
 
 
-_ALL_FACE_PATHS = {p for _s in FACE_PAGES.values() for p in _s["pages"]}
+_ALL_FACE_PATHS = ({p for _s in FACE_PAGES.values() for p in _s["pages"]}
+                   | set(PUSHROD_PAGES))
 
 
 @app.before_request
@@ -678,7 +681,8 @@ def _trim_trailing_slash():
     return None
 
 
-for _path in sorted({p for _s in FACE_PAGES.values() for p in _s["pages"]}):
+for _path in sorted({p for _s in FACE_PAGES.values() for p in _s["pages"]}
+                    | set(PUSHROD_PAGES)):
     app.add_url_rule(_path, endpoint="face" + _path.replace("/", "_"),
                      view_func=lambda p=_path: _face_page(p))
 
