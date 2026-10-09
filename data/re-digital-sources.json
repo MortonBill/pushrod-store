@@ -4,8 +4,8 @@
   "storage": {
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
-    "total_files": 392,
-    "total_bytes": 683266262
+    "total_files": 393,
+    "total_bytes": 684434025
   },
   "files": [
     {
@@ -2750,6 +2750,13 @@
       "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_1977-pontiac-trans-am.pdf",
       "bytes": 1167816,
       "key": "RE_1977-pontiac-trans-am.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1979-PONTIAC-TRANS-AM",
+      "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_1979-pontiac-trans-am.pdf",
+      "bytes": 1167763,
+      "key": "RE_1979-pontiac-trans-am.pdf",
       "size_verified_against_manifest": true
     }
   ],
