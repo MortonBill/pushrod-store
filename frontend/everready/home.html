@@ -108,6 +108,8 @@
   ol.docs li{counter-increment:doc;display:flex;gap:1rem;align-items:baseline;padding:.85rem 0;border-bottom:1px solid var(--line);font-size:1.08rem}
   ol.docs li:last-child{border-bottom:0}
   ol.docs li::before{content:counter(doc,decimal-leading-zero);font-family:Georgia,serif;font-weight:700;color:var(--accent);font-size:1.12rem;min-width:2.1rem}
+.sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
   footer.page{border-top:2px solid var(--accent2);background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2.6rem 0;margin-top:0}
   footer.page a{color:var(--muted)}
   .motto{font-family:Georgia,serif;font-size:clamp(1.4rem,3vw,1.8rem);color:var(--text);margin:0 0 .8rem}
@@ -125,6 +127,7 @@
     <a href="/faq">FAQ</a>
     <a href="/blog">Journal</a>
     <a href="/founder">Our Founder</a>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" placeholder="Search tools" aria-label="Search tools"></form>
     <a href="/contact">Contact</a>
   </nav>
 </div></header>
@@ -209,6 +212,12 @@
 </div></section>
 
 <section class="band"><div class="wrap">
+  <p class="eyebrow">Straight answers</p>
+  <h2>How buying here works</h2>
+  <p class="lede">Every tool is a digital download. Checkout runs on Stripe — we never see or store your card — and the moment payment confirms, your delivery email carries a signed download link for your file. Keep that email: it is your receipt and your way back to the file.</p>
+</div></section>
+
+<section class="band"><div class="wrap">
   <p class="eyebrow">At your own pace</p>
   <h2>Tools for the people who count on you</h2>
   <p class="lede">Build a family-ready plan at your own pace. Choose the resource that fits where you are now — each one is designed to make a difficult handoff more organized, more private, and easier to navigate.</p>
@@ -223,6 +232,13 @@
     <div class="good"><h3><a href="/guides/five-conversations-before-you-need-them">Five conversations to have before you need them</a></h3><p>A practical starting point for important family conversations.</p></div>
     <div class="good"><h3><a href="/guides/paperwork-after-someone-dies">Paperwork after someone dies</a></h3><p>A plain-language guide to the paperwork families may face.</p></div>
   </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <p class="eyebrow">From our families</p>
+  <h2>Words from the families we built this for</h2>
+  <p class="lede">EverReady tools are shaped by real families working through real handoffs. When a family tells us a tool helped — in their own words, with their permission — we share it here, word for word.</p>
+  <p>The first family stories are being gathered now. If one of these tools made a hard week easier at your house, we would be honored to hear how — <a href="/contact">tell us</a>, and we will only ever publish your words with your say-so.</p>
 </div></section>
 
 <section class="band sage"><div class="wrap">

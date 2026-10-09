@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Search the tools | EverReady Family</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Search the EverReady Family tools by need or title.">
+<style>
+  :root{--bg:#141210;--bg2:#1a1713;--card:#221e19;--accent:#c9a24b;--accent2:#7a9b5a;--text:#f3ede2;--muted:#a89e8d;--line:#2c2721}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:'Helvetica Neue',Arial,sans-serif;font-size:17px;line-height:1.65}
+  h1,h2,h3{font-family:Georgia,'Times New Roman',serif;line-height:1.18;margin:0 0 .7rem;font-weight:600}
+  h1{font-size:2.1rem}
+  p{margin:0 0 1rem}
+  a{color:var(--accent)} .wrap{max-width:1140px;margin:0 auto;padding:0 1.25rem}
+  header.top{background:var(--bg2);border-bottom:2px solid var(--accent2);position:sticky;top:0;z-index:40}
+  header.top .wrap{display:flex;align-items:center;gap:1.5rem;padding-top:.7rem;padding-bottom:.7rem;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:.7rem;font-family:Georgia,serif;font-size:1.3rem;color:var(--text);text-decoration:none}
+  .brand img{width:56px;height:56px;object-fit:contain;border-radius:.5rem;border:1px solid var(--accent);background:var(--text)}
+  .brand small{display:block;font-family:'Helvetica Neue',Arial,sans-serif;font-size:.72rem;color:var(--muted);letter-spacing:.04em}
+  nav.main{margin-left:auto;display:flex;gap:1.1rem;flex-wrap:wrap;align-items:center}
+  nav.main a{color:var(--text);text-decoration:none;font-size:.95rem} nav.main a:hover{color:var(--accent)}
+  main{padding:3rem 0}
+  .lede{font-size:1.1rem;color:var(--muted);max-width:42rem}
+  .btn{display:inline-block;background:var(--accent);color:#1a1503;text-decoration:none;font-weight:700;padding:.85rem 1.7rem;border-radius:.65rem;border:1px solid var(--accent);font-size:1rem;cursor:pointer}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin:1.2rem 0}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:.8rem;padding:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+  .pcard p{margin:0;color:var(--muted);font-size:.95rem}
+  .tag{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+  .price{color:var(--accent);font-weight:700;font-size:1.1rem}
+  .meta{color:var(--muted);font-size:.95rem}
+  footer.page{border-top:1px solid var(--line);background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2rem 0;margin-top:2rem}
+  footer.page a{color:var(--muted)}
+  .sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
+  .searchbig{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.6rem}
+  .searchbig input{flex:1 1 16rem;padding:.7rem 1rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:1rem}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/"><img src="/static/img/everready-family-logo.png" alt="EverReady Family"><span>EverReady Family<small>Online since 2026</small></span></a>
+  <nav class="main">
+    <a href="/products">Products</a>
+    <a href="/checklist">Free Checklist</a>
+    <a href="/faq">FAQ</a>
+    <a href="/blog">Journal</a>
+    <a href="/founder">Our Founder</a>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" value="" placeholder="Search tools" aria-label="Search tools"></form>
+    <a href="/contact">Contact</a>
+  </nav>
+</div></header>
+<main><div class="wrap">
+<form class="searchbig" action="/search" method="get" role="search">
+  <input type="search" name="q" value="" placeholder="Try “executor”, “cookbook”, or “inventory”" aria-label="Search the tools">
+  <button class="btn" type="submit">Search</button>
+</form>
+<!--SEARCH-RESULTS-->
+</div></main>
+<footer class="page"><div class="wrap">
+  <p class="motto">EverReady Family — Keep peace with family.</p>
+  <p><a href="/products">Products</a> · <a href="/checklist">Free family checklist</a> · <a href="/faq">FAQ</a> · <a href="/blog">Journal</a> · <a href="/founder">Our Founder</a> · <a href="/contact">Contact</a></p>
+  <p>© 2026 EverReady Family. All rights reserved.</p>
+</div></footer>
+</body>
+</html>

@@ -83,6 +83,8 @@
   .leadform-row{display:flex;gap:.7rem;flex-wrap:wrap;margin:.6rem 0 .2rem}
   .leadform-row label{flex:1;min-width:220px;font-size:.95rem}
   .leadform-row input[type=email],.leadform-row input[type=text]{display:block;width:100%;margin-top:.35rem;padding:.75rem .9rem;border-radius:.6rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:1rem}
+.sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
   footer.page{border-top:2px solid var(--accent2);background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2.6rem 0;margin-top:0}
   footer.page a{color:var(--muted)}
   .motto{font-family:Georgia,serif;font-size:clamp(1.4rem,3vw,1.8rem);color:var(--text);margin:0 0 .8rem}
@@ -97,6 +99,7 @@
     <a href="/checklist">Free Checklist</a>
     <a href="/faq">FAQ</a>
     <a href="/founder">Our Founder</a>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" placeholder="Search tools" aria-label="Search tools"></form>
     <a href="/contact">Contact</a>
   </nav>
 </div></header>
