@@ -49,7 +49,7 @@ import sys, os
 sys.path.insert(0, 'backend')
 os.environ['BRAND'] = 'gateway'
 import app
-assert len(app.PRODUCTS) == 642, f'expected 642 products, got {len(app.PRODUCTS)}'
+assert len(app.PRODUCTS) == 643, f'expected 642 products, got {len(app.PRODUCTS)}'
 assert all(p['price'] is not None for p in app.PRODUCTS), 'unpriced SKUs present'
 n_purch = sum(1 for p in app.PRODUCTS if p['purchasable'])
 print(f'catalog OK: {len(app.PRODUCTS)} products, all priced, {n_purch} purchasable')
