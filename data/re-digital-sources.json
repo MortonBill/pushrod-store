@@ -5,7 +5,7 @@
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
     "total_files": 386,
-    "total_bytes": 676251215
+    "total_bytes": 676251978
   },
   "files": [
     {
@@ -2706,7 +2706,7 @@
     {
       "sku": "RE-GD-1970-OLDSMOBILE-442",
       "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_1970-oldsmobile-442.pdf",
-      "bytes": 1173585,
+      "bytes": 1174348,
       "key": "RE_1970-oldsmobile-442.pdf",
       "size_verified_against_manifest": true
     }
