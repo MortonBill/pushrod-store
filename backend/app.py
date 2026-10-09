@@ -315,6 +315,8 @@ FACE_PAGES = {
             "/products": "products.html",
             "/faq": "faq.html",
             "/founder": "founder.html",
+            "/blog": "blog.html",
+            "/blog/executors-first-week": "blog-executors-first-week.html",
             "/checklist": "checklist.html",
             "/checklist-download": "checklist-download.html",
             "/pet-tribute": "pet-tribute.html",
