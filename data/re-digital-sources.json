@@ -4,8 +4,8 @@
   "storage": {
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
-    "total_files": 390,
-    "total_bytes": 680931724
+    "total_files": 391,
+    "total_bytes": 682098446
   },
   "files": [
     {
@@ -2736,6 +2736,13 @@
       "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_1987-buick-grand-national.pdf",
       "bytes": 1170530,
       "key": "RE_1987-buick-grand-national.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1986-BUICK-GRAND-NATIONAL",
+      "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_1986-buick-grand-national.pdf",
+      "bytes": 1166722,
+      "key": "RE_1986-buick-grand-national.pdf",
       "size_verified_against_manifest": true
     }
   ],
