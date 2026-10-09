@@ -50,6 +50,8 @@
   .vehiclepicker select{padding:.55rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:1rem;min-width:10rem}
   .vehiclepicker select:disabled{opacity:.55}
   .trustline{margin:.5rem 0 0;font-size:.92rem;color:var(--muted)}
+  .sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
 <meta property="og:title" content="Restoration Essentials | Restoration guides for muscle cars & classic trucks">
 <meta property="og:description" content="Restoration Essentials — Restoration guides for muscle cars & classic trucks. 345 guides for 1947–1993 American classics.">
 <meta property="og:image" content="https://restoreessentials.com/static/img/restoration-essentials-logo.png">
@@ -68,6 +70,7 @@
   <a class="brand" href="/"><img src="/static/img/restoration-essentials-logo.png" alt="Restoration Essentials"><span>Restoration Essentials<small>Restoration guides for muscle cars &amp; classic trucks</small></span></a>
   <nav class="main">
     <span class="navdd"><a href="/guides">Guides</a><button class="navdd-btn" type="button" aria-label="Guides by manufacturer" aria-expanded="false">&#9662;</button><span class="navdd-menu" data-re-makes><a href="/guides">All manufacturers</a><a href="/guides?make=amc">AMC</a><a href="/guides?make=buick">Buick</a><a href="/guides?make=cadillac">Cadillac</a><a href="/guides?make=chevrolet">Chevrolet</a><a href="/guides?make=chrysler">Chrysler</a><a href="/guides?make=dodge">Dodge</a><a href="/guides?make=ford">Ford</a><a href="/guides?make=mercury">Mercury</a><a href="/guides?make=oldsmobile">Oldsmobile</a><a href="/guides?make=plymouth">Plymouth</a><a href="/guides?make=pontiac">Pontiac</a><a href="/guides?make=shelby">Shelby</a><a href="/guides?make=studebaker">Studebaker</a></span></span>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" placeholder="Search guides" aria-label="Search guides"></form>
     <a href="/auctions">Auctions</a>
     <a href="/blog">Journal</a>
     <a href="/about">About</a>
@@ -107,6 +110,27 @@
     <p>Fragmented threads, secondhand scans, and overpriced publisher books full of fluff — that is what restoring a classic car or truck looks like today. Restoration Essentials is the alternative: structured, model-specific documentation at a fair price — the right parts, in the right order, with the right specs.</p>
   </div>
 
+  <div class="card">
+    <h2>What real readers say</h2>
+    <p>Every Restoration Essentials guide is read before it sells by owners restoring the real car — beta readers who get the guide free, work through it against their own project, and tell us what is wrong, what is missing, and what actually helped. Their words go here as they come in, verbatim and with their permission — never edited into marketing copy.</p>
+    <p>The first reader quotes are being collected now. Want to be one of them? Read a guide free for your honest feedback.</p>
+    <div class="btnrow"><a class="btn" href="https://bill-morton.kit.com/612f5dffc5">Become a beta reader</a></div>
+  </div>
+
+  <div class="card">
+    <h2>Built in Des Moines, Iowa</h2>
+    <p class="trustline">Restoration Essentials is run out of Des Moines, Iowa — a real shop with a real phone: <a href="tel:+15157784946">515-778-4946</a>. Checkout runs on Stripe. When you buy a guide, the download link lands in your email right after checkout — good for 7 days. No box, no truck, no waiting on the mail.</p>
+  </div>
+
+  <h2>Featured guides</h2>
+  <p>Start where most garages start — the flagships of the library.</p>
+  <div class="pgrid">
+    <div class="pcard"><span class="tag">Restoration guide</span><h3>1956 Studebaker Hawk Restoration Guide</h3><p>1956 Studebaker Hawk Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1956-STUDEBAKER-HAWK">View guide</a></div>
+    <div class="pcard"><span class="tag">Restoration guide</span><h3>1969 Chevrolet Chevelle Restoration Guide</h3><p>1969 Chevrolet Chevelle Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-CHEVROLET-CHEVELLE-1969">View guide</a></div>
+    <div class="pcard"><span class="tag">Restoration guide</span><h3>1969 Ford Mustang Restoration Guide</h3><p>1969 Ford Mustang Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-FORD-MUSTANG-1969">View guide</a></div>
+    <div class="pcard"><span class="tag">Restoration guide</span><h3>1969 Chevrolet Corvette Restoration Guide</h3><p>1969 Chevrolet Corvette Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-CHEVROLET-CORVETTE-1969">View guide</a></div>
+  </div>
+
   <h2>The guide library</h2>
   <p><span id="count">345</span> guides live today, one for the exact year and model — Chevrolet, Ford, Pontiac, Buick, Dodge, Plymouth, Oldsmobile, and the rest of the American classics. Every guide is a PDF delivered at checkout.</p>
   <div id="showcase"><div class="pgrid"><div class="pcard"><span class="tag">Restoration guide</span><h3>1956 Studebaker Hawk Restoration Guide</h3><p>1956 Studebaker Hawk Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1956-STUDEBAKER-HAWK">View guide</a></div><div class="pcard"><span class="tag">Restoration guide</span><h3>1957 Studebaker Hawk Restoration Guide</h3><p>1957 Studebaker Hawk Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1957-STUDEBAKER-HAWK">View guide</a></div><div class="pcard"><span class="tag">Restoration guide</span><h3>1958 Studebaker Hawk Restoration Guide</h3><p>1958 Studebaker Hawk Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1958-STUDEBAKER-HAWK">View guide</a></div><div class="pcard"><span class="tag">Restoration guide</span><h3>1960 Dodge Dart Restoration Guide</h3><p>1960 Dodge Dart Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1960-DODGE-DART">View guide</a></div><div class="pcard"><span class="tag">Restoration guide</span><h3>1961 Dodge Dart Restoration Guide</h3><p>1961 Dodge Dart Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1961-DODGE-DART">View guide</a></div><div class="pcard"><span class="tag">Restoration guide</span><h3>1962 Dodge Dart Restoration Guide</h3><p>1962 Dodge Dart Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1962-DODGE-DART">View guide</a></div><div class="pcard"><span class="tag">Restoration guide</span><h3>1962 Pontiac Grand Prix Restoration Guide</h3><p>1962 Pontiac Grand Prix Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1962-PONTIAC-GRAND-PRIX">View guide</a></div><div class="pcard"><span class="tag">Restoration guide</span><h3>1962 Studebaker Hawk Restoration Guide</h3><p>1962 Studebaker Hawk Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1962-STUDEBAKER-HAWK">View guide</a></div><div class="pcard"><span class="tag">Restoration guide</span><h3>1963 Buick Riviera Restoration Guide</h3><p>1963 Buick Riviera Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1963-BUICK-RIVIERA">View guide</a></div><div class="pcard"><span class="tag">Restoration guide</span><h3>1963 Dodge Dart Restoration Guide</h3><p>1963 Dodge Dart Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1963-DODGE-DART">View guide</a></div><div class="pcard"><span class="tag">Restoration guide</span><h3>1963 Pontiac Grand Prix Restoration Guide</h3><p>1963 Pontiac Grand Prix Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1963-PONTIAC-GRAND-PRIX">View guide</a></div><div class="pcard"><span class="tag">Restoration guide</span><h3>1963 Studebaker Hawk Restoration Guide</h3><p>1963 Studebaker Hawk Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/RE-GD-1963-STUDEBAKER-HAWK">View guide</a></div></div></div>
@@ -123,6 +147,19 @@
     <div class="card"><h3>Year- and model-specific</h3><p>Every guide is built around a specific year and model — not a generic template with a different name on the cover.</p></div>
     <div class="card"><h3>Delivered at checkout</h3><p>No waiting on shipping. Pay, and the PDF is yours — at the bench, on your phone, in the garage.</p></div>
     <div class="card"><h3>American iron, start to finish</h3><p>Muscle cars and classic trucks from 1947–1993 — the cars America actually built.</p></div>
+  </div>
+
+  <h2>What you get when you buy a guide</h2>
+  <div class="grid">
+    <div class="card"><h3>One guide, your exact car</h3><p>A restoration guide built for your year, make, and model — the parts, the order, the specs that apply to the car in your garage, not a chapter in a book about twenty other cars.</p></div>
+    <div class="card"><h3>Delivered by email</h3><p>Checkout takes a minute; your download link arrives by email right after and stays good for 7 days. Download it once and it is yours to keep.</p></div>
+    <div class="card"><h3>Reads anywhere</h3><p>It is a PDF — open it on your phone at the parts counter, a tablet at the bench, or your computer in the house. Print the pages you need for the job in front of you.</p></div>
+  </div>
+
+  <div class="card">
+    <h2>Read a guide free — be a beta reader</h2>
+    <p>Restoring an American classic? Beta readers get a guide free in exchange for honest feedback — what helped, what did not, what your car needed that the guide missed. No cost, no obligation to say nice things.</p>
+    <div class="btnrow"><a class="btn" href="https://bill-morton.kit.com/612f5dffc5">Claim your free guide</a></div>
   </div>
 
   <section class="merchshelf">
