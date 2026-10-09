@@ -4,8 +4,8 @@
   "storage": {
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
-    "total_files": 400,
-    "total_bytes": 692649946
+    "total_files": 401,
+    "total_bytes": 693833872
   },
   "files": [
     {
@@ -2806,6 +2806,13 @@
       "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_swap-lslt-fbody.pdf",
       "bytes": 1180842,
       "key": "RE_swap-lslt-fbody.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-SWAP-COYOTE-MUSTANG",
+      "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_swap-coyote-mustang.pdf",
+      "bytes": 1183926,
+      "key": "RE_swap-coyote-mustang.pdf",
       "size_verified_against_manifest": true
     }
   ],

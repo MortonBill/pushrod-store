@@ -74,6 +74,7 @@ assert all(p['price'] is not None for p in app.PRODUCTS), 'unpriced SKUs present
 _by_sku = {p['sku']: p for p in app.PRODUCTS}
 for _sku in ('RE-GD-1970-OLDSMOBILE-442',
              'RE-GD-SWAP-LSLT-FBODY',
+             'RE-GD-SWAP-COYOTE-MUSTANG',
              'IH-NORTON-COMMANDO',
              'IH-NORTON-COMMANDO-BUYERS-GUIDE'):
     _p = _by_sku.get(_sku)
