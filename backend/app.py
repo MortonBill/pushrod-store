@@ -2042,6 +2042,9 @@ def _re_card_html(r):
     hay = (r.get("title", "") + " " + r.get("sku", "")).lower()
     if r.get("owner_id") == "stitchfolk":
         tag = "Pattern"
+    elif r.get("owner_id") == "skillforge":
+        tag = {"playbook": "Playbook", "forms": "Forms pack",
+               "bundle": "Bundle"}.get(r.get("type") or "", "Guide")
     elif "buyer" in (r.get("title") or "").lower():
         tag = "Buyer's guide"
     else:
@@ -2088,7 +2091,7 @@ def _re_vehicle_block_html(rows, year, make, model, owner_id="restorationessenti
     return "\n".join(lines)
 
 
-FRONTDOOR_SEARCH_FACES = {"restorationessentials", "ironhead", "stitchfolk"}
+FRONTDOOR_SEARCH_FACES = {"restorationessentials", "ironhead", "stitchfolk", "skillforge"}
 
 
 def _search_norm(s):
@@ -2171,6 +2174,7 @@ _SEARCH_NOUNS = {
     "restorationessentials": ("guide", "guides"),
     "ironhead": ("guide", "guides"),
     "stitchfolk": ("pattern", "patterns"),
+    "skillforge": ("product", "products"),
 }
 
 

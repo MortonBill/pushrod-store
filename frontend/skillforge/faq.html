@@ -31,6 +31,8 @@
   .meta{color:var(--muted);font-size:.9rem}
   details.faq{border-bottom:1px solid var(--line);padding:.8rem 0}
   details.faq summary{cursor:pointer;font-weight:700}
+.sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
   footer.page{border-top:1px solid var(--line);background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2rem 0;margin-top:2rem}
   footer.page a{color:var(--muted)}
 </style>
@@ -42,6 +44,7 @@
     <a href="/playbooks">Playbooks</a>
     <a href="/about">About</a>
     <a href="/faq">FAQ</a>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" placeholder="Search playbooks" aria-label="Search playbooks"></form>
     <a href="/contact">Contact</a>
   </nav>
 </div></header>

@@ -53,6 +53,8 @@
   .founder img{width:150px;height:auto;border-radius:.8rem;border:1px solid var(--line)}
   details.faq{border-bottom:1px solid var(--line);padding:.8rem 0}
   details.faq summary{cursor:pointer;font-weight:700}
+.sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
   footer.page{border-top:1px solid var(--line);background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2rem 0;margin-top:2rem}
   footer.page a{color:var(--muted)}
   input.search{width:100%;padding:.7rem 1rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:1rem}
@@ -69,6 +71,7 @@
     <a href="/blog">Blog</a>
     <a href="/about">About</a>
     <a href="/faq">FAQ</a>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" placeholder="Search playbooks" aria-label="Search playbooks"></form>
     <a href="/contact">Contact</a>
   </nav>
 </div></header>
@@ -107,6 +110,18 @@
       <div class="pcard"><a href="https://pushrodshop.com/product/PR-H010"><img src="https://pushrodshop.com/img/pushrod/hats/pr-h010-shop-wisdom.webp" alt="Shop Wisdom hat" loading="lazy"></a><h3>Shop Wisdom hat</h3><span class="price">$24.00</span><a class="btn ghost" href="https://pushrodshop.com/product/PR-H010">See it at PushrodShop</a></div>
     </div>
   </section>
+
+  <div class="card">
+    <h2>What real shop owners say</h2>
+    <p>SkillForge playbooks are read by working shops before quotes go up from them — beta readers who get a playbook free, run the workflows against real work in their trade, and tell us what didn't hold up. Their words go up here verbatim and with their permission.</p>
+    <p>The first verified reader quotes are being gathered now. Want to be one? Join the list and read a playbook free for your honest feedback.</p>
+    <div class="btnrow"><a class="btn" href="https://bill-morton.kit.com/5b33261b97">Join the SkillForge list</a><a class="btn ghost" href="/playbooks">Browse the playbooks</a></div>
+  </div>
+
+  <div class="card">
+    <h2>Built in Des Moines, Iowa</h2>
+    <p>SkillForge AI is run out of Des Moines, Iowa. Checkout runs on Stripe — we never see or store your card — and your PDFs arrive as signed download links in your delivery email right after checkout.</p>
+  </div>
 
   <h2>Start with a bundle</h2>
   <div class="pgrid">

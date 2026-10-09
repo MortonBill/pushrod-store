@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Search the playbooks | SkillForge AI</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Search the SkillForge AI library by trade, software, or title.">
+<style>
+  :root{--bg:#0e1319;--bg2:#131a21;--card:#1b242e;--accent:#2dd4bf;--accent2:#56ccf2;--text:#edf2f4;--muted:#93a1ad;--line:#2a3644}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.6}
+  h1,h2,h3{line-height:1.25;margin:0 0 .6rem}
+  a{color:var(--accent2)} .wrap{max-width:960px;margin:0 auto;padding:0 1.25rem}
+  header.top{background:var(--bg2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  header.top .wrap{display:flex;align-items:center;gap:1.2rem;padding-top:.7rem;padding-bottom:.7rem;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:.7rem;font-size:1.25rem;font-weight:800;color:var(--text);text-decoration:none}
+  .brand img{width:46px;height:46px;border-radius:.5rem;border:1px solid var(--line)}
+  .brand small{display:block;font-weight:400;font-size:.72rem;color:var(--muted);letter-spacing:.04em}
+  nav.main{margin-left:auto;display:flex;gap:1.05rem;flex-wrap:wrap;align-items:center}
+  nav.main a{color:var(--text);text-decoration:none;font-size:.95rem} nav.main a:hover{color:var(--accent2)}
+  main{padding:2.5rem 0 3rem}
+  .hero h1{font-size:2.3rem} .lede{font-size:1.12rem;color:var(--muted);max-width:44rem}
+  .btn{display:inline-block;background:var(--accent);color:#06281f;text-decoration:none;font-weight:700;padding:.7rem 1.3rem;border-radius:.5rem}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin:1.2rem 0}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:.8rem;padding:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+  .pcard h3{font-size:1.05rem;margin:0}
+  .pcard p{margin:0;color:var(--muted);font-size:.92rem}
+  .tag{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--accent2)}
+  .price{color:var(--accent2);font-weight:700;font-size:1.15rem}
+  .meta{color:var(--muted);font-size:.9rem}
+  footer.page{border-top:1px solid var(--line);background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2rem 0;margin-top:2rem}
+  footer.page a{color:var(--muted)}
+  .sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
+  .searchbig{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.6rem}
+  .searchbig input{flex:1 1 16rem;padding:.7rem 1rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:1rem}
+  .searchbig button{cursor:pointer;border:0}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/"><img src="/static/img/skillforge-ai-logo.png" alt="SkillForge AI"><span>SkillForge AI<small>AI playbooks for people who work with their hands</small></span></a>
+  <nav class="main">
+    <a href="/playbooks">Playbooks</a>
+    <a href="/blog">Blog</a>
+    <a href="/about">About</a>
+    <a href="/faq">FAQ</a>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" value="" placeholder="Search playbooks" aria-label="Search playbooks"></form>
+    <a href="/contact">Contact</a>
+  </nav>
+</div></header>
+<main><div class="wrap">
+<form class="searchbig" action="/search" method="get" role="search">
+  <input type="search" name="q" value="" placeholder="Try “hvac”, “quickbooks”, or a trade" aria-label="Search the library">
+  <button class="btn" type="submit">Search</button>
+</form>
+<!--SEARCH-RESULTS-->
+</div></main>
+<footer class="page"><div class="wrap">
+  <p><strong>SkillForge AI</strong> — AI playbooks for people who work with their hands.<br>
+  Digital playbooks and forms packs, delivered as PDFs at checkout.</p>
+  <p><a href="/playbooks">Playbooks</a> · <a href="/about">About</a> · <a href="/faq">FAQ</a> · <a href="/contact">Contact</a></p>
+  <p>© 2026 SkillForge AI. All rights reserved.</p>
+</div></footer>
+</body>
+</html>
