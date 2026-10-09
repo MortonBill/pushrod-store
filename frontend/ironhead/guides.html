@@ -54,6 +54,8 @@
   .navdd-menu a{display:block;padding:.42rem 1rem;color:var(--text);text-decoration:none;font-size:.92rem;white-space:nowrap}
   .navdd-menu a:hover{color:var(--accent2);background:var(--card)}
   .navdd:hover .navdd-menu,.navdd:focus-within .navdd-menu,.navdd.open .navdd-menu{display:block}
+  .sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
 
   .filterbar{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:.8rem;padding:1rem 1.2rem;margin:1.2rem 0}
   .filterbar label{margin:0;font-weight:700}
@@ -79,6 +81,7 @@
     <a href="/workshop">Workshop</a>
     <a href="/faq">FAQ</a>
     <a href="/about">About</a>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" placeholder="Search guides" aria-label="Search guides"></form>
     <a href="/contact">Contact</a>
   </nav>
 </div></header>
@@ -213,6 +216,21 @@ function setupFilter(ps){
 fetch('/api/products').then(function(r){return r.json();}).then(function(ps){
   var live = ps.filter(function(p){ return p.purchasable; });
   render(live);
+  var qs = new URLSearchParams(window.location.search);
+  if (qs.get('year') || qs.get('model')) {
+    /* Shop by bike: the server-rendered #vehResults block below
+       #makeResults is the result view. Keep the family slots hidden
+       (server CSS) and leave the make filter populated but inert. */
+    if(window.IHMakes){
+      var sel = document.getElementById('makeSel');
+      window.IHMakes.summarize(live).forEach(function(m){
+        var o = document.createElement('option');
+        o.value = m.slug; o.textContent = m.name + ' (' + m.count + ')';
+        sel.appendChild(o);
+      });
+    }
+    return;
+  }
   if(window.IHMakes){ setupFilter(live); }
   else { document.addEventListener('DOMContentLoaded', function(){ setupFilter(live); }); }
 }).catch(function(){

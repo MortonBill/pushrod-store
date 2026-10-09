@@ -54,6 +54,8 @@
   .navdd-menu a{display:block;padding:.42rem 1rem;color:var(--text);text-decoration:none;font-size:.92rem;white-space:nowrap}
   .navdd-menu a:hover{color:var(--accent2);background:var(--card)}
   .navdd:hover .navdd-menu,.navdd:focus-within .navdd-menu,.navdd.open .navdd-menu{display:block}
+  .sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
 </style>
 
 <meta property="og:type" content="website">
@@ -75,6 +77,7 @@
     <a href="/workshop">Workshop</a>
     <a href="/faq">FAQ</a>
     <a href="/about">About</a>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" placeholder="Search guides" aria-label="Search guides"></form>
     <a href="/contact">Contact</a>
   </nav>
 </div></header>

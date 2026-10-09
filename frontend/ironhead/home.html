@@ -63,6 +63,13 @@
   .navdd-menu a{display:block;padding:.42rem 1rem;color:var(--text);text-decoration:none;font-size:.92rem;white-space:nowrap}
   .navdd-menu a:hover{color:var(--accent2);background:var(--card)}
   .navdd:hover .navdd-menu,.navdd:focus-within .navdd-menu,.navdd.open .navdd-menu{display:block}
+  .vehiclepicker{display:flex;flex-wrap:wrap;gap:.7rem;align-items:flex-end;margin:1.2rem 0 .4rem;text-align:left}
+  .vehiclepicker label{display:flex;flex-direction:column;gap:.3rem;font-weight:700;font-size:.85rem}
+  .vehiclepicker select{padding:.55rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg2);color:var(--text);font-size:1rem;min-width:10rem}
+  .vehiclepicker select:disabled{opacity:.55}
+  .trustline{margin:.5rem 0 0;font-size:.92rem;color:var(--muted)}
+  .sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
 </style>
 
 <meta property="og:type" content="website">
@@ -84,6 +91,7 @@
     <a href="/workshop">Workshop</a>
     <a href="/faq">FAQ</a>
     <a href="/about">About</a>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" placeholder="Search guides" aria-label="Search guides"></form>
     <a href="/contact">Contact</a>
   </nav>
 </div></header>
@@ -96,11 +104,49 @@
       <a class="btn" href="/guides">Browse the guides</a>
       <a class="btn ghost" href="/pricing">See pricing</a>
     </div>
+    <div class="card">
+      <h2>Shop by bike</h2>
+      <p class="meta">Pick the machine in your garage — every option below comes straight from the live catalog.</p>
+      <form class="vehiclepicker" id="vpicker" action="/guides" method="get">
+        <label>Year
+          <select id="vpYear" name="year"><option value="">Any year</option></select>
+        </label>
+        <label>Make
+          <select id="vpMake" name="make" disabled><option value="">Any make</option></select>
+        </label>
+        <label>Model
+          <select id="vpModel" name="model" disabled><option value="">Any model</option></select>
+        </label>
+        <button class="btn" type="submit">Show my guides</button>
+        <span class="meta" id="vpCount" aria-live="polite"></span>
+      </form>
+    </div>
   </section>
 
   <div class="card">
     <h2>Forum threads go dead. Shop manuals go for $200. Neither gives you what you need.</h2>
     <p>Fragmented threads, secondhand PDFs, and overpriced publisher guides full of fluff — that is what restoring a classic motorcycle looks like today. IronHead is the alternative: structured, model-specific documentation at a fair price — the right parts, in the right order, with the right specs.</p>
+  </div>
+
+  <div class="card">
+    <h2>What real riders say</h2>
+    <p>IronHead guides are read before they sell by riders restoring the real machine — beta testers who get a guide free, work through it against their own bike, and tell us what is wrong, what is missing, and what actually helped. Their words go on the workshop wall verbatim and with their permission — never edited into marketing copy.</p>
+    <p>The first approved reader builds and quotes are being gathered now. Want to be one of them? Read a guide free for your honest feedback.</p>
+    <div class="btnrow"><a class="btn" href="https://bill-morton.kit.com/3b635485d5">Become a beta tester</a><a class="btn ghost" href="/testimonials">Reader builds &amp; testimonials</a></div>
+  </div>
+
+  <div class="card">
+    <h2>Built in Des Moines, Iowa</h2>
+    <p class="trustline">IronHead is run out of Des Moines, Iowa — a real shop with a real phone: <a href="tel:+15157784946">515-778-4946</a>. Checkout runs on Stripe. When you buy a guide, the download link lands in your email right after checkout — good for 7 days. And if a file is materially defective, we make it right.</p>
+  </div>
+
+  <h2>Featured guides</h2>
+  <p>Start where most garages start — the flagships of the library.</p>
+  <div class="pgrid">
+    <div class="pcard"><span class="tag">Buyer's guide</span><h3>1957 Harley-Davidson Sportster Buyer's Guide</h3><p>1957 Harley-Davidson Sportster Buyer's Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/IH-HARLEY-SPORTSTER-1957">View guide</a></div>
+    <div class="pcard"><span class="tag">Restoration guide</span><h3>Norton Commando 750/850 Restoration Guide</h3><p>Norton Commando 750/850 Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/IH-NORTON-COMMANDO">View guide</a></div>
+    <div class="pcard"><span class="tag">Restoration guide</span><h3>Honda CB750 SOHC Restoration Guide</h3><p>Honda CB750 SOHC Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/IH-CB750-SOHC">View guide</a></div>
+    <div class="pcard"><span class="tag">Restoration guide</span><h3>Kawasaki KZ1000 Restoration Guide</h3><p>Kawasaki KZ1000 Restoration Guide. PDF download delivered at checkout.</p><span class="price">$29.95</span><a class="btn" href="/product/IH-KZ1000">View guide</a></div>
   </div>
 
   <h2>Everything the factory published, organized.</h2>
@@ -131,6 +177,13 @@
     <div class="btnrow"><a class="btn" href="/guides">Find your bike</a><a class="btn ghost" href="/blog">Read the journal</a></div>
   </div>
 
+  <h2>What you get when you buy a guide</h2>
+  <div class="grid">
+    <div class="card"><h3>One guide, your exact machine</h3><p>Single-year buyer's guides and all-years restoration guides built for your year, make, and model — the parts, the order, the specs that apply to the bike in your garage.</p></div>
+    <div class="card"><h3>Delivered by email</h3><p>Checkout takes a minute; your download link arrives by email right after and stays good for 7 days. Download it once and it is yours to keep.</p></div>
+    <div class="card"><h3>Reads anywhere</h3><p>It is a PDF — open it on your phone at the parts counter, a tablet at the bench, or your computer in the house. Print the pages you need for the job in front of you.</p></div>
+  </div>
+
   <section class="merchshelf">
     <h2>Gear for the ride</h2>
     <p>Hats, tees, and shop gear with the bikes on them. Sold through PushrodShop — the guides stay right here.</p>
@@ -157,5 +210,67 @@
   <p>© 2026 IronHead. All rights reserved.</p>
 </div></footer>
 <script src="/static/js/ih-makes.js" defer></script>
+<script>
+(function(){
+  var Y=document.getElementById('vpYear'), M=document.getElementById('vpMake'),
+      D=document.getElementById('vpModel'), C=document.getElementById('vpCount'),
+      F=document.getElementById('vpicker');
+  if(!Y || !M || !D || !F) return;
+  fetch('/api/vehicles').then(function(r){return r.json();}).then(function(f){
+    var rows = f.vehicles || [];
+    function inYear(r,y){ return !y || (r.year_start !== null && y >= r.year_start && y <= r.year_end); }
+    (f.years || []).forEach(function(y){
+      var o=document.createElement('option');
+      o.value=y.year; o.textContent = y.year + ' (' + y.count + ')';
+      Y.appendChild(o);
+    });
+    function updateCount(){
+      var y=parseInt(Y.value,10)||0, ms=M.value, md=D.value;
+      var n = rows.filter(function(r){
+        return inYear(r,y) && (!ms || r.make_slug===ms) && (!md || r.model===md);
+      }).length;
+      C.textContent = y||ms||md ? n + ' guide' + (n===1?'':'s') + ' match' : '';
+    }
+    function fillMakes(){
+      M.innerHTML='<option value="">Any make</option>';
+      D.innerHTML='<option value="">Any model</option>';
+      D.disabled = true;
+      var y=parseInt(Y.value,10)||0;
+      (f.makes || []).forEach(function(m){
+        var n = rows.filter(function(r){ return inYear(r,y) && r.make_slug===m.slug; }).length;
+        if(!n) return;
+        var o=document.createElement('option');
+        o.value=m.slug; o.textContent = m.name + ' (' + n + ')';
+        M.appendChild(o);
+      });
+      M.disabled = M.children.length <= 1;
+      updateCount();
+    }
+    function fillModels(){
+      D.innerHTML='<option value="">Any model</option>';
+      var y=parseInt(Y.value,10)||0, ms=M.value;
+      var mods = {};
+      rows.forEach(function(r){
+        if(inYear(r,y) && (!ms || r.make_slug===ms) && r.model) mods[r.model]=(mods[r.model]||0)+1;
+      });
+      Object.keys(mods).sort().forEach(function(k){
+        var o=document.createElement('option');
+        o.value=k; o.textContent = k + ' (' + mods[k] + ')';
+        D.appendChild(o);
+      });
+      D.disabled = D.children.length <= 1;
+      updateCount();
+    }
+    Y.addEventListener('change',function(){ fillMakes(); fillModels(); });
+    M.addEventListener('change',function(){ fillModels(); });
+    D.addEventListener('change',updateCount);
+    F.addEventListener('submit',function(){
+      [Y,M,D].forEach(function(s){ if(!s.value) s.disabled = true; });
+    });
+  }).catch(function(){
+    C.textContent = 'Browse the full catalog below.';
+  });
+})();
+</script>
 </body>
 </html>

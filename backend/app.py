@@ -740,12 +740,12 @@ def _face_page(path):
         resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                    spec["pages"][path])
         return _sr_pricing_billing_gate(resp)
-    if (cfg["brand"]["id"] == "restorationessentials" and path == "/guides"):
+    if (cfg["brand"]["id"] in FRONTDOOR_VEHICLE_FACES and path == "/guides"):
         # Shop by Vehicle: ?year=&make=&model= lands here with the
         # server-rendered vehicle results block inline (matched guides
         # + honest empty state); without vehicle params the page is
         # served unchanged.
-        return _re_guides_vehicle_page()
+        return _guides_vehicle_page(cfg["brand"]["id"])
     return send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                spec["pages"][path])
 
@@ -1789,7 +1789,7 @@ def api_product(sku):
 # from the CURRENT in-memory catalog on every call, so filters and
 # counts always track the data the face is actually selling.
 
-FRONTDOOR_VEHICLE_FACES = {"restorationessentials"}
+FRONTDOOR_VEHICLE_FACES = {"restorationessentials", "ironhead"}
 
 _VEH_YEAR_RE = re.compile(r"^(19|20)\d\d$")
 _VEH_YEAR_LEAD_RE = re.compile(r"^\d{4}(\s*[\u2013\u2014-]\s*\d{2,4})?\s+")
@@ -1872,6 +1872,84 @@ def _veh_parse(p):
     return year_start, year_end, make_slug, model
 
 
+# IronHead marque derivation (mirror of ih-makes.js — one source of
+# truth for "which manufacturer is this guide for", verified 2026-10-07
+# to bucket 100% of the purchasable IronHead guides).
+_IH_MAKE_BY_SLUG = {
+    "bmw": "BMW", "bsa": "BSA", "ducati": "Ducati",
+    "harley-davidson": "Harley-Davidson", "honda": "Honda",
+    "indian": "Indian", "kawasaki": "Kawasaki", "moto-guzzi": "Moto Guzzi",
+    "norton": "Norton", "suzuki": "Suzuki", "triumph": "Triumph",
+    "yamaha": "Yamaha",
+}
+_IH_SKU_TOKEN_MAKE = {
+    "HARLEY": "harley-davidson", "SHOVELHEAD": "harley-davidson",
+    "PANHEAD": "harley-davidson", "IRONHEAD": "harley-davidson",
+    "INDIAN": "indian", "TRIUMPH": "triumph", "BONNEVILLE": "triumph",
+    "BMW": "bmw", "BSA": "bsa", "DUCATI": "ducati",
+    "KAWASAKI": "kawasaki", "SUZUKI": "suzuki", "YAMAHA": "yamaha",
+    "HONDA": "honda", "MOTO": "moto-guzzi", "NORTON": "norton",
+}
+_IH_TITLE_MAKE = [
+    ("harley-davidson", "harley-davidson"), ("moto guzzi", "moto-guzzi"),
+    ("bonneville", "triumph"), ("honda", "honda"), ("indian", "indian"),
+    ("triumph", "triumph"), ("ducati", "ducati"), ("kawasaki", "kawasaki"),
+    ("suzuki", "suzuki"), ("yamaha", "yamaha"), ("norton", "norton"),
+    ("bmw", "bmw"), ("bsa", "bsa"),
+]
+
+
+def _veh_parse_ih(p):
+    """IronHead (year_start, year_end, make_slug, model) — mirror of
+    ih-makes.js deriveMake plus title-derived model and SKU year."""
+    sku = (p.get("sku") or "").strip()
+    title = (p.get("title") or "").strip()
+    toks = [t for t in sku.split("-") if t]
+    years = [int(t) for t in toks if _VEH_YEAR_RE.match(t)]
+    year_start = min(years) if years else None
+    year_end = max(years) if years else None
+    make_slug = None
+    t1 = toks[1] if len(toks) > 1 else ""
+    if t1 in _IH_SKU_TOKEN_MAKE:
+        make_slug = _IH_SKU_TOKEN_MAKE[t1]
+    elif re.match(r"^CB\d", t1):
+        make_slug = "honda"
+    elif re.match(r"^KZ\d", t1) or t1 == "H2":
+        make_slug = "kawasaki"
+    elif re.match(r"^GS\d", t1):
+        make_slug = "suzuki"
+    elif re.match(r"^XS\d", t1):
+        make_slug = "yamaha"
+    if make_slug is None:
+        low = title.lower()
+        for needle, slug in _IH_TITLE_MAKE:
+            if needle in low:
+                make_slug = slug
+                break
+    model = _VEH_YEAR_LEAD_RE.sub("", title)
+    words = model.split(" ")
+    if make_slug and words:
+        w0 = re.sub(r"[^A-Za-z-]", "", words[0]).lower()
+        disp = _IH_MAKE_BY_SLUG.get(make_slug, "").lower()
+        if w0 == disp:
+            model = " ".join(words[1:])
+    model = re.sub(r"(\s+Restoration Guide|\s+Buyer's Guide|\s+Restoration|\s+Guide)\s*$",
+                   "", model).strip()
+    model = re.sub(r"\s+\d{4}(\s+\d{4})?\s*$", "", model).strip()
+    model = model or title
+    return year_start, year_end, make_slug, model
+
+
+_VEH_PARSERS = {
+    "restorationessentials": _veh_parse,
+    "ironhead": _veh_parse_ih,
+}
+_VEH_MAKE_MAPS = {
+    "restorationessentials": _VEH_MAKE_BY_SLUG,
+    "ironhead": _IH_MAKE_BY_SLUG,
+}
+
+
 def _face_products_for(owner_id):
     if owner_id:
         return [p for p in PRODUCTS if p.get("owner") == owner_id]
@@ -1881,11 +1959,13 @@ def _face_products_for(owner_id):
 def _vehicle_inventory(owner_id):
     """Fresh vehicle rows for one owner's listed, purchasable catalog
     (the same set /api/products serves on that face)."""
+    parser = _VEH_PARSERS.get(owner_id, _veh_parse)
+    make_map = _VEH_MAKE_MAPS.get(owner_id, _VEH_MAKE_BY_SLUG)
     rows = []
     for p in _face_products_for(owner_id):
         if not p.get("listed", True) or not p.get("purchasable"):
             continue
-        year_start, year_end, make_slug, model = _veh_parse(p)
+        year_start, year_end, make_slug, model = parser(p)
         rows.append({
             "sku": p.get("sku") or "",
             "title": p.get("title") or "",
@@ -1893,7 +1973,7 @@ def _vehicle_inventory(owner_id):
             "price": p.get("price"),
             "type": p.get("type") or "",
             "make_slug": make_slug,
-            "make": _VEH_MAKE_BY_SLUG.get(make_slug),
+            "make": make_map.get(make_slug),
             "model": model,
             "year_start": year_start,
             "year_end": year_end,
@@ -1959,22 +2039,24 @@ def _price_str(price):
 def _re_card_html(r):
     desc = (r.get("description") or "")[:150]
     hay = (r.get("title", "") + " " + r.get("sku", "")).lower()
+    tag = "Buyer's guide" if "buyer" in (r.get("title") or "").lower() else "Restoration guide"
     return (
         f'<div class="pcard" data-title="{_html_escape(hay, quote=True)}">'
-        '<span class="tag">Restoration guide</span>'
+        f'<span class="tag">{tag}</span>'
         f'<h3>{_html_escape(r.get("title", ""))}</h3>'
         f'<p>{_html_escape(desc)}</p>'
         f'<span class="price">{_price_str(r.get("price"))}</span>'
         f'<a class="btn" href="/product/{_html_escape(r.get("sku", ""), quote=True)}">View guide</a></div>')
 
 
-def _re_vehicle_block_html(rows, year, make, model):
+def _re_vehicle_block_html(rows, year, make, model, owner_id="restorationessentials"):
     """Server-rendered vehicle results block for /guides (RE face):
     the matching guides with an honest count, or an honest
     no-guides-yet state — never a claim the catalog can't back."""
+    make_map = _VEH_MAKE_MAPS.get(owner_id, _VEH_MAKE_BY_SLUG)
     label = " ".join(x for x in [
         str(year) if year else "",
-        _VEH_MAKE_BY_SLUG.get(make, "") if make else "",
+        make_map.get(make, "") if make else "",
         model or "",
     ] if x)
     head = f"Guides for {label}" if label else "Shop by vehicle"
@@ -2000,7 +2082,7 @@ def _re_vehicle_block_html(rows, year, make, model):
     return "\n".join(lines)
 
 
-FRONTDOOR_SEARCH_FACES = {"restorationessentials"}
+FRONTDOOR_SEARCH_FACES = {"restorationessentials", "ironhead"}
 
 
 def _search_norm(s):
@@ -2053,13 +2135,14 @@ def _search_products(rows, q):
     return [r for _s, _t, r in scored]
 
 
-def _re_search_body_html(q, results, total_catalog):
+def _search_body_html(q, results, total_catalog, noun=("guide", "guides")):
     """Server-rendered body for the RE /search page: results with an
     honest count, or an honest zero-result state with ways back."""
+    sg, pl = noun
     lines = ['<section class="hero">',
-             "<h1>Search the guides</h1>",
+             f"<h1>Search the {pl}</h1>",
              f'<p class="lede"><span id="searchCount">{len(results)}</span> '
-             f'guide{"s" if len(results) != 1 else ""} matched '
+             f'{sg if len(results) == 1 else pl} matched '
              f'&ldquo;{_html_escape(q)}&rdquo;.</p>',
              "</section>"]
     if results:
@@ -2069,14 +2152,19 @@ def _re_search_body_html(q, results, total_catalog):
         lines.append("</div>")
     else:
         lines.append(
-            "<p>No guide in the library matched that search yet — try a "
-            "year, a make, or a model (for example "
-            "&ldquo;1969 Chevelle&rdquo;), or "
+            f"<p>No {sg} in the library matched that search yet — try a "
+            "year, a make, or a model, or "
             '<a href="/guides">browse the full catalog</a> and '
-            '<a href="/contact">tell us what you are restoring</a>.</p>')
-        lines.append(f'<p class="meta">{total_catalog} guides in the '
+            '<a href="/contact">tell us what you are looking for</a>.</p>')
+        lines.append(f'<p class="meta">{total_catalog} {pl} in the '
                      "library today; the library grows model by model.</p>")
     return "\n".join(lines)
+
+
+_SEARCH_NOUNS = {
+    "restorationessentials": ("guide", "guides"),
+    "ironhead": ("guide", "guides"),
+}
 
 
 @app.get("/search")
@@ -2088,8 +2176,9 @@ def site_search():
     q = (request.args.get("q") or "").strip()
     rows = _vehicle_inventory(face_id)
     results = _search_products(rows, q) if q else []
-    body = _re_search_body_html(q, results, len(rows))
-    spec = FACE_PAGES["restorationessentials"]
+    body = _search_body_html(q, results, len(rows),
+                             _SEARCH_NOUNS.get(face_id, ("guide", "guides")))
+    spec = FACE_PAGES[face_id]
     resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]), "search.html")
     resp.direct_passthrough = False
     html_text = resp.get_data(as_text=True)
@@ -2114,7 +2203,18 @@ def api_vehicles():
     return jsonify(facets)
 
 
-def _re_guides_vehicle_page():
+_VEH_HIDE_SNIPPETS = {
+    "restorationessentials": [
+        ('<div id="groups">', '<div id="groups" hidden>'),
+        ('<section id="static-catalog">', '<section id="static-catalog" hidden>'),
+    ],
+    "ironhead": [
+        ("</style>", "</style><style>.fam-h,.pgrid-slot{display:none!important}</style>"),
+    ],
+}
+
+
+def _guides_vehicle_page(owner_id):
     """RE /guides with a vehicle filter (year/make/model query params):
     serve the guides page with the server-rendered vehicle results
     block inline and the unfiltered catalog hidden, so the filtered
@@ -2123,23 +2223,21 @@ def _re_guides_vehicle_page():
     year = request.args.get("year", type=int)
     make = (request.args.get("make") or "").strip().lower() or None
     model = (request.args.get("model") or "").strip().lower() or None
-    spec = FACE_PAGES["restorationessentials"]
+    spec = FACE_PAGES[owner_id]
     resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]),
                                spec["pages"]["/guides"])
     if not (year or model):
         return resp
-    rows = _resolve_vehicle(_vehicle_inventory("restorationessentials"),
+    rows = _resolve_vehicle(_vehicle_inventory(owner_id),
                             year=year, make=make, model=model)
-    block = _re_vehicle_block_html(rows, year, make, model)
+    block = _re_vehicle_block_html(rows, year, make, model, owner_id)
     resp.direct_passthrough = False
     html_text = resp.get_data(as_text=True)
     anchor = '<div id="makeResults"></div>'
     if anchor in html_text and 'id="vehResults"' not in html_text:
         html_text = html_text.replace(anchor, anchor + "\n" + block, 1)
-    html_text = html_text.replace('<div id="groups">',
-                                  '<div id="groups" hidden>', 1)
-    html_text = html_text.replace('<section id="static-catalog">',
-                                  '<section id="static-catalog" hidden>', 1)
+    for _old, _new in _VEH_HIDE_SNIPPETS.get(owner_id, []):
+        html_text = html_text.replace(_old, _new, 1)
     resp.set_data(html_text)
     resp.content_length = len(resp.get_data())
     resp.headers.pop("ETag", None)
