@@ -4,8 +4,8 @@
   "storage": {
     "backend": "s3-compatible (DIGITAL_STORAGE_BACKEND=s3)",
     "key_rule": "object key = basename of the source PDF (= catalog delivery_file basename), under the optional DIGITAL_S3_PREFIX",
-    "total_files": 388,
-    "total_bytes": 678593935
+    "total_files": 389,
+    "total_bytes": 679761194
   },
   "files": [
     {
@@ -2722,6 +2722,13 @@
       "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_1957-ford-thunderbird.pdf",
       "bytes": 1171040,
       "key": "RE_1957-ford-thunderbird.pdf",
+      "size_verified_against_manifest": true
+    },
+    {
+      "sku": "RE-GD-1955-FORD-THUNDERBIRD",
+      "source": "/home/hatch/workspace/goals/re-coverage-build-2026-10-09/finished/RE_1955-ford-thunderbird.pdf",
+      "bytes": 1167259,
+      "key": "RE_1955-ford-thunderbird.pdf",
       "size_verified_against_manifest": true
     }
   ],
