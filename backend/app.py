@@ -198,6 +198,95 @@ ORDER_PREFIX = store_cfg.get("order_prefix", "pushrod")
 STRIPE_WEBHOOK_SECRET = os.environ.get(
     store_cfg.get("stripe_webhook_secret_env", "STRIPE_WEBHOOK_SECRET"), "")
 
+
+def _webhook_secret_env_names():
+    """Ordered env-var names that may hold the Stripe webhook signing secret.
+
+    The boot brand's configured name comes first (this brand's
+    store.stripe_webhook_secret_env); STRIPE_WEBHOOK_SECRET — the name the
+    runbook/dashboard flow writes — and every other brand's configured name
+    follow, so a secret written under any of the store's known names is
+    honored without a code change. Names only: values are read per request
+    in _verify_stripe_event (never at import), so a dashboard update takes
+    effect without waiting for a restart.
+    """
+    names = []
+    configured = store_cfg.get("stripe_webhook_secret_env",
+                               "STRIPE_WEBHOOK_SECRET")
+    for name in [configured, "STRIPE_WEBHOOK_SECRET"]:
+        if name and name not in names:
+            names.append(name)
+    try:
+        for fn in sorted(os.listdir(os.path.join(ROOT, "brands"))):
+            if fn.endswith(".yaml"):
+                try:
+                    cfg = load_brand(fn[:-len(".yaml")])
+                    env_name = (cfg.get("store") or {}).get(
+                        "stripe_webhook_secret_env")
+                    if env_name and env_name not in names:
+                        names.append(env_name)
+                except Exception:  # noqa: BLE001 — a bad yaml must not break webhooks
+                    continue
+    except Exception:  # noqa: BLE001 — the first two candidates still apply
+        pass
+    return names
+
+
+def _verify_stripe_event(payload, sig_header):
+    """Verify Stripe-Signature against the EXACT raw request body bytes.
+
+    Stripe's documented method: the HMAC covers "<timestamp>.<raw payload>"
+    under the endpoint's signing secret, so the payload is request.data
+    untouched — any re-serialization of the JSON breaks verification. Every
+    configured candidate secret is tried in order (Stripe itself keeps two
+    secrets live during a roll, and a dashboard rename must not strand us).
+    Secret VALUES are never logged or returned.
+
+    Returns (event, verified_env_name) on success, or (None, exc) where exc
+    is the last verification error — or None when no candidate is set at all.
+    """
+    last_exc = None
+    for name in _webhook_secret_env_names():
+        value = (os.environ.get(name) or "").strip()
+        if not value:
+            continue
+        try:
+            return stripe.Webhook.construct_event(payload, sig_header,
+                                                  value), name
+        except Exception as e:  # noqa: BLE001 — try the next candidate
+            last_exc = e
+    return None, last_exc
+
+
+def _log_webhook_sig_failure(payload, sig_header, exc):
+    """Safe failure diagnostics: event shape and sizes only.
+
+    NEVER logs a secret value, a signature value, or the payload body
+    (customer data). The next Stripe delivery then tells us what arrived:
+    event type, exact byte length, whether the signature header and its
+    timestamp were present, and which candidate env names were set.
+    """
+    event_type = "?"
+    try:
+        event_type = json.loads(payload).get("type", "?")
+    except Exception:  # noqa: BLE001 — diagnostics only
+        pass
+    parts = {}
+    for kv in sig_header.split(","):
+        if "=" in kv:
+            k, v = kv.split("=", 1)
+            parts.setdefault(k.strip(), []).append(v)
+    tried = ",".join(
+        "%s:%s" % (n, "set" if (os.environ.get(n) or "").strip() else "unset")
+        for n in _webhook_secret_env_names())
+    log.warning(
+        "stripe webhook signature FAILED: type=%s bytes=%d sig_header=%s "
+        "sig_timestamp=%s sig_v1_count=%d content_type=%s candidates=%s "
+        "error=%s",
+        event_type, len(payload), bool(sig_header), bool(parts.get("t")),
+        len(parts.get("v1", [])), request.headers.get("Content-Type", "?"),
+        tried, exc)
+
 # ---------- Stripe: test/live mode switch ----------
 # STRIPE_MODE=live selects the LIVE keypair (Bill 2026-10-01: "turn it all the
 # way up" — the store takes real orders). Live mode refuses to boot unless
@@ -2353,16 +2442,18 @@ def api_fulfill():
 @app.post("/api/stripe/webhook")
 def stripe_webhook():
     """Production fulfillment path: Stripe calls this on checkout.session.completed."""
-    secret = STRIPE_WEBHOOK_SECRET
-    if not secret:
-        # Fail closed: an unsigned webhook must never trigger fulfillment.
-        # Set STRIPE_WEBHOOK_SECRET on Render to enable this endpoint.
-        return jsonify({"error": "webhook secret not configured"}), 503
     payload, sig = request.data, request.headers.get("Stripe-Signature", "")
-    try:
-        event = stripe.Webhook.construct_event(payload, sig, secret)
-    except Exception as e:
-        return jsonify({"error": f"bad signature: {e}"}), 400
+    event, verified = _verify_stripe_event(payload, sig)
+    if event is None:
+        if verified is None:
+            # Fail closed: an unsigned webhook must never trigger fulfillment.
+            # Set STRIPE_WEBHOOK_SECRET (or the brand's configured
+            # stripe_webhook_secret_env name) on Render to enable this endpoint.
+            return jsonify({"error": "webhook secret not configured"}), 503
+        _log_webhook_sig_failure(payload, sig, verified)
+        return jsonify({"error": f"bad signature: {verified}"}), 400
+    log.info("stripe webhook verified via env %s; event %s",
+             verified, _sget(event, "type"))
     if _sget(event, "type") == "checkout.session.completed":
         session = _sget(event, "data", {}) or {}
         session = _sget(session, "object", {}) or {}
