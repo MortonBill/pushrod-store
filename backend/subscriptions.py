@@ -448,6 +448,15 @@ def init(app, stripe_ready, stripe_mode, stripe_acct, public_base_url):
         if not rec or not rec.get("customer_id"):
             return jsonify({"error": "no SportRoots subscription found "
                                      "for that email"}), 404
+        # Product copy for the served error payload. Dashboard surfaces
+        # the payload verbatim; anything else is a defect.
+        err_page = ("<p style=\"max-width:34em;margin:2em auto;font:15px/1.5 "
+                    "-apple-system,system-ui,sans-serif;color:#333\">"
+                    "Manage billing is blocked: Stripe refused access with "
+                    "the current key (Permission denied; billing portal "
+                    "write required). Nothing changed and no new key was "
+                    "invented. The Stripe customer portal will open here "
+                    "once the payment key is authorized for billing.</p>")
         try:
             portal = stripe.billing_portal.Session.create(
                 customer=rec["customer_id"],
@@ -456,8 +465,28 @@ def init(app, stripe_ready, stripe_mode, stripe_acct, public_base_url):
             )
         except stripe.error.StripeError as e:
             log.warning("SR portal Session.create failed: %r", e)
-            msg = getattr(e, "user_message", None) or str(e) or "portal failed"
-            return jsonify({"error": f"Stripe error: {msg}"}), 502
+            # Never leak the raw Stripe exception text: Stripe includes
+            # the used key's fingerprint fragment in Permission-denied
+            # errors ("The provided key 'rk_live_...FSNK' does not have
+            # the required permi…"). The blocked leg (2026-10-09 Step B,
+            # sub_1UOgrzEq7168sUIG5LZL4Pv4): the configured live
+            # restricted key cannot create Customer Portal sessions.
+            # Portal session creation requires "Write" on the Billing
+            # permission resource (Billing > Customer Portal) on the key
+            # the app actually uses: STRIPE_LIVE_SECRET_KEY in live mode
+            # (the *_STRIPE_TEST_SECRET_KEY env in test mode). Name the
+            # exact gap on the operator surface (logs) and fail closed
+            # with a contained page for the buyer; do not invent a key.
+            log.error("SR portal blocked: Stripe Permission denied — the "
+                      "configured Stripe key lacks Write on Billing > "
+                      "Customer Portal (billing_portal.sessions.create); "
+                      "widen it on the key loaded from "
+                      "STRIPE_LIVE_SECRET_KEY (live) or "
+                      "STRIPE_TEST_SECRET_KEY (test). Customer portal "
+                      "stays closed until then.")
+            resp = jsonify({"error": err_page})
+            resp.status_code = 502
+            return resp
         return jsonify({"portal_url": portal.url})
 
     @app.get("/api/sr/entitlement")

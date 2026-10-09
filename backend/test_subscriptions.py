@@ -205,6 +205,54 @@ else:
     r = client.post("/api/sr/portal", json={"email": "ghost@example.com"})
     check("portal unknown email -> 404", r.status_code == 404)
 
+    # --- portal: restricted-key Permission denied fails closed ---
+    # 2026-10-09 go-live proof (Step B): the live restricted key the app
+    # loads cannot create Customer Portal sessions — Stripe answered
+    # Permission denied and the raw exception text (which embeds the
+    # key fingerprint fragment) was served to the buyer. The route must
+    # fail closed instead: HTTP 502, the exact approved product copy,
+    # and no leak of the raw exception text or the key fragment anywhere
+    # in the response body.
+    _raw_exc = ("Permission denied. The provided key 'rk_live_...FSNK' "
+                "does not have the required permissions for this "
+                "endpoint on account acct_test.")
+
+    _exc = store_app.stripe.error.PermissionError(_raw_exc)
+
+    def _denied_portal(**kw):
+        raise _exc
+
+    _orig_portal = store_app.stripe.billing_portal.Session.create
+    store_app.stripe.billing_portal.Session.create = _denied_portal
+    try:
+        r = client.post("/api/sr/portal", json={"email": "fam@example.com"})
+        _body = r.get_data(as_text=True) or ""
+        _json = r.get_json() or {}
+        _err = _json.get("error") or ""
+        _approved = (
+            "Manage billing is blocked: Stripe refused access with "
+            "the current key (Permission denied; billing portal write "
+            "required). Nothing changed and no new key was invented. "
+            "The Stripe customer portal will open here once the "
+            "payment key is authorized for billing.")
+        check("portal denied: 502", r.status_code == 502,
+              str(r.status_code))
+        check("portal denied: approved copy verbatim",
+              _err == (
+                  "<p style=\"max-width:34em;margin:2em auto;font:15px/1.5 "
+                  "-apple-system,system-ui,sans-serif;color:#333\">"
+                  "Manage billing is blocked: Stripe refused access with "
+                  "the current key (Permission denied; billing portal "
+                  "write required). Nothing changed and no new key was "
+                  "invented. The Stripe customer portal will open here "
+                  "once the payment key is authorized for billing.</p>")
+              and _approved in _err.replace("&quot;", '"'), _err[:80])
+        check("portal denied: no raw exception leak",
+              "rk_live" not in _body and "FSNK" not in _body
+              and "The provided key" not in _body, _body[:120])
+    finally:
+        store_app.stripe.billing_portal.Session.create = _orig_portal
+
     # --- regression (2026-10-09 go-live proof): multi-worker store ---
     # gunicorn runs --workers 2 (render.yaml): the webhook write lands in
     # one worker's EntitlementStore, the buyer's /api/sr/portal lookup in
