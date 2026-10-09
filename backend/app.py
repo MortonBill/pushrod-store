@@ -1210,6 +1210,18 @@ def _face_product_chrome(resp, cfg):
     html_text = html_text.replace(
         " — garage-built gear.",
         f" — {_html_escape(b['tagline'])}.", 1)
+    if b["id"] in FRONTDOOR_SEARCH_FACES:
+        # Site search (front-door standard): the shared product shell
+        # carries no search; face product pages get the face search
+        # box server-rendered into the header.
+        form = ('<form class="sitesearch" action="/search" method="get" '
+                'role="search" style="margin-left:auto">'
+                '<input type="search" name="q" placeholder="Search guides" '
+                'aria-label="Search guides"></form>')
+        if 'class="sitesearch"' not in html_text:
+            html_text = html_text.replace(
+                '<div class="tagline" id="tagline"></div>',
+                form + '<div class="tagline" id="tagline"></div>', 1)
     resp.set_data(html_text)
     resp.content_length = len(resp.get_data())
     resp.headers.pop("ETag", None)
@@ -1897,6 +1909,108 @@ def _re_vehicle_block_html(rows, year, make, model):
             '<a href="/contact">tell us what you are restoring</a>.</p>')
     lines.append("</section>")
     return "\n".join(lines)
+
+
+FRONTDOOR_SEARCH_FACES = {"restorationessentials"}
+
+
+def _search_norm(s):
+    return re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).strip()
+
+
+def _search_tokens(s):
+    out = []
+    for t in _search_norm(s).split():
+        if len(t) > 3 and t.endswith("s"):
+            t = t[:-1]
+        out.append(t)
+    return out
+
+
+def _search_products(rows, q):
+    """Exact-token site search over title / make / model / year / SKU,
+    computed from the live catalog rows on every request (no index).
+    A guide matches when EVERY query token hits its title, SKU, make,
+    model, or — for a 4-digit year token — its covered year range."""
+    qtokens = _search_tokens(q)
+    if not qtokens:
+        return []
+    phrase = _search_norm(q)
+    scored = []
+    for r in rows:
+        hay = " ".join([
+            _search_norm(r.get("title")), _search_norm(r.get("sku")),
+            _search_norm(r.get("make")), _search_norm(r.get("model")),
+        ])
+        htoks = set(_search_tokens(hay))
+        ok = True
+        for t in qtokens:
+            if t in htoks:
+                continue
+            if (len(t) == 4 and t.isdigit() and r["year_start"] is not None
+                    and r["year_start"] <= int(t) <= r["year_end"]):
+                continue
+            ok = False
+            break
+        if not ok:
+            continue
+        score = 0
+        if phrase and phrase in _search_norm(r.get("title")):
+            score += 3
+        if r["year_start"] is not None:
+            score += 1
+        scored.append((score, r.get("title") or "", r))
+    scored.sort(key=lambda x: (-x[0], x[1]))
+    return [r for _s, _t, r in scored]
+
+
+def _re_search_body_html(q, results, total_catalog):
+    """Server-rendered body for the RE /search page: results with an
+    honest count, or an honest zero-result state with ways back."""
+    lines = ['<section class="hero">',
+             "<h1>Search the guides</h1>",
+             f'<p class="lede"><span id="searchCount">{len(results)}</span> '
+             f'guide{"s" if len(results) != 1 else ""} matched '
+             f'&ldquo;{_html_escape(q)}&rdquo;.</p>',
+             "</section>"]
+    if results:
+        lines.append('<div class="pgrid">')
+        for r in results:
+            lines.append(_re_card_html(r))
+        lines.append("</div>")
+    else:
+        lines.append(
+            "<p>No guide in the library matched that search yet — try a "
+            "year, a make, or a model (for example "
+            "&ldquo;1969 Chevelle&rdquo;), or "
+            '<a href="/guides">browse the full catalog</a> and '
+            '<a href="/contact">tell us what you are restoring</a>.</p>')
+        lines.append(f'<p class="meta">{total_catalog} guides in the '
+                     "library today; the library grows model by model.</p>")
+    return "\n".join(lines)
+
+
+@app.get("/search")
+def site_search():
+    cfg, _products = _face()
+    face_id = cfg["brand"]["id"]
+    if face_id not in FRONTDOOR_SEARCH_FACES:
+        return "Not found", 404
+    q = (request.args.get("q") or "").strip()
+    rows = _vehicle_inventory(face_id)
+    results = _search_products(rows, q) if q else []
+    body = _re_search_body_html(q, results, len(rows))
+    spec = FACE_PAGES["restorationessentials"]
+    resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]), "search.html")
+    resp.direct_passthrough = False
+    html_text = resp.get_data(as_text=True)
+    html_text = html_text.replace("<!--SEARCH-RESULTS-->", body, 1)
+    if q:
+        html_text = html_text.replace('value=""', 'value="' + _html_escape(q, quote=True) + '"', 1)
+    resp.set_data(html_text)
+    resp.content_length = len(resp.get_data())
+    resp.headers.pop("ETag", None)
+    return resp
 
 
 @app.get("/api/vehicles")

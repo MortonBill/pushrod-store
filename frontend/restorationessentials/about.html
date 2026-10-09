@@ -40,6 +40,8 @@
   .navdd-menu a{display:block;padding:.42rem 1rem;color:var(--text);text-decoration:none;font-size:.92rem;white-space:nowrap}
   .navdd-menu a:hover{color:var(--accent);background:var(--card)}
   .navdd:hover .navdd-menu,.navdd:focus-within .navdd-menu,.navdd.open .navdd-menu{display:block}
+  .sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
 <meta property="og:title" content="About | Restoration Essentials">
 <meta property="og:description" content="About Restoration Essentials: restoration guides for muscle cars & classic trucks, plus classic-car auctions — built by a restorer, for people putting American classics back together.">
 <meta property="og:image" content="https://restoreessentials.com/static/img/restoration-essentials-logo.png">
@@ -52,6 +54,7 @@
   <a class="brand" href="/"><img src="/static/img/restoration-essentials-logo.png" alt="Restoration Essentials"><span>Restoration Essentials<small>Restoration guides for muscle cars &amp; classic trucks</small></span></a>
   <nav class="main">
     <span class="navdd"><a href="/guides">Guides</a><button class="navdd-btn" type="button" aria-label="Guides by manufacturer" aria-expanded="false">&#9662;</button><span class="navdd-menu" data-re-makes><a href="/guides">All manufacturers</a><a href="/guides?make=amc">AMC</a><a href="/guides?make=buick">Buick</a><a href="/guides?make=cadillac">Cadillac</a><a href="/guides?make=chevrolet">Chevrolet</a><a href="/guides?make=chrysler">Chrysler</a><a href="/guides?make=dodge">Dodge</a><a href="/guides?make=ford">Ford</a><a href="/guides?make=mercury">Mercury</a><a href="/guides?make=oldsmobile">Oldsmobile</a><a href="/guides?make=plymouth">Plymouth</a><a href="/guides?make=pontiac">Pontiac</a><a href="/guides?make=shelby">Shelby</a><a href="/guides?make=studebaker">Studebaker</a></span></span>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" placeholder="Search guides" aria-label="Search guides"></form>
     <a href="/auctions">Auctions</a>
     <a href="/about">About</a>
     <a href="/contact">Contact</a>
