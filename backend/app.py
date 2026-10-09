@@ -388,6 +388,8 @@ FACE_PAGES = {
             "/drills/weight-training": "drills-weight-training.html",
             "/drills/wrestling": "drills-wrestling.html",
             "/coaches": "coaches.html",
+            "/blog": "blog.html",
+            "/blog/soccer-first-touch": "blog-soccer-first-touch.html",
             "/book": "book.html",
             "/free-drills": "free-drills.html",
             "/free-drills-download": "free-drills-download.html",
