@@ -421,6 +421,7 @@ FACE_PAGES = {
             "/blog/ironhead-sportster-buying-guide": "blog-sportster.html",
             "/blog/ironhead-bmw-airhead-buying-guide": "blog-bmw-airhead.html",
             "/blog/ironhead-honda-cb750-buying-guide": "blog-honda-cb750.html",
+            "/blog/ironhead-norton-commando-buying-guide": "blog-norton-commando.html",
             "/legal": "legal.html",
             "/legal/disclosure-summary": "legal-disclosure-summary.html",
             "/legal/terms": "legal-terms.html",
