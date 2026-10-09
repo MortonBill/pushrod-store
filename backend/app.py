@@ -460,6 +460,8 @@ FACE_PAGES = {
         "home": "home.html",
         "pages": {
             "/guides": "guides.html",
+            "/blog": "blog.html",
+            "/blog/ls-swap-a-body-primer": "blog-ls-swap-a-body-primer.html",
             "/about": "about.html",
             "/contact": "contact.html",
             # Cross-face route (2026-10-09): the EverReady Pet Tribute
@@ -488,6 +490,7 @@ PUSHROD_PAGES = {
     "/contact": "contact.html",
 }
 
+RE_PAGES = FACE_PAGES["restorationessentials"]["pages"]
 ER_PAGES = FACE_PAGES["everready"]["pages"]
 ST_PAGES = FACE_PAGES["stitchfolk"]["pages"]
 SR_PAGES = FACE_PAGES["sportroots"]["pages"]
@@ -688,6 +691,14 @@ BRAND_SITEMAP_FILES = {
 
 
 def _brand_sitemap_paths(bid, products):
+    if bid == "restorationessentials":
+        # Home, the face content pages, and the RE-owned product
+        # listing (exactly the set the default /sitemap.xml branch
+        # below lists, plus the face pages it never carried).
+        return ["/"] + sorted(RE_PAGES) + [
+            f"/product/{p['sku']}" for p in products
+            if (p.get("listed", True) and p["purchasable"]
+                    and p.get("owner") == "restorationessentials")]
     """Sitemap path list for one face brand, or None when the brand has
     no face sitemap (restorationessentials, gateway, pushrod: the
     default /sitemap.xml below already lists exactly their products).
