@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Search the drills | SportRoots</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Search the SportRoots drill library and coaching pages by sport or topic.">
+<style>
+  :root{--bg:#0c1a12;--bg2:#10231a;--card:#14301f;--accent:#8bd450;--accent2:#f2b138;--text:#eef7ee;--muted:#a7bfa9}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.6}
+  h1,h2,h3{font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.25;margin:0 0 .6rem}
+  a{color:var(--accent)} .wrap{max-width:960px;margin:0 auto;padding:0 1.25rem}
+  header.top{background:var(--bg2);border-bottom:1px solid #1e3a28;position:sticky;top:0;z-index:5}
+  header.top .wrap{display:flex;align-items:center;gap:1.5rem;padding-top:.8rem;padding-bottom:.8rem;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:.7rem;font-size:1.3rem;font-weight:800;color:var(--text);text-decoration:none}
+  .brand img{width:46px;height:46px;border-radius:.5rem;border:1px solid #1e3a28}
+  .brand small{display:block;font-weight:400;font-size:.72rem;color:var(--muted);letter-spacing:.04em}
+  nav.main{margin-left:auto;display:flex;gap:1.1rem;flex-wrap:wrap;align-items:center}
+  nav.main a{color:var(--text);text-decoration:none;font-size:.95rem} nav.main a:hover{color:var(--accent)}
+  main{padding:2.5rem 0 3rem}
+  .hero h1{font-size:2.3rem} .lede{font-size:1.12rem;color:var(--muted);max-width:44rem}
+  .btn{display:inline-block;background:var(--accent);color:#0c1a12;text-decoration:none;font-weight:700;padding:.7rem 1.3rem;border-radius:.5rem}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin:1.2rem 0}
+  .pcard{background:var(--card);border:1px solid #1e3a28;border-radius:.8rem;padding:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+  .pcard p{margin:0;color:var(--muted);font-size:.92rem}
+  .tag{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--accent2)}
+  .meta{color:var(--muted);font-size:.9rem}
+  footer.page{border-top:1px solid #1e3a28;background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2rem 0;margin-top:2rem}
+  footer.page a{color:var(--muted)}
+  .sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid #1e3a28;background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
+  .searchbig{display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.6rem}
+  .searchbig input{flex:1 1 16rem;padding:.7rem 1rem;border-radius:.5rem;border:1px solid #1e3a28;background:var(--bg2);color:var(--text);font-size:1rem}
+  .searchbig button{cursor:pointer;border:0}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/"><img src="/static/img/sportroots-logo.jpg" alt="SportRoots"><span>SportRoots<small>Youth sports coaching and training</small></span></a>
+  <nav class="main">
+    <a href="/sports">Sports</a>
+    <a href="/drills">Drill Library</a>
+    <a href="/blog">Coaching Notes</a>
+    <a href="/coaches">Coaches</a>
+    <a href="/book">Coach Waitlist</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/faq">FAQ</a>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" value="" placeholder="Search drills" aria-label="Search drills"></form>
+  </nav>
+</div></header>
+<main><div class="wrap">
+<form class="searchbig" action="/search" method="get" role="search">
+  <input type="search" name="q" value="" placeholder="Try a sport — “soccer”, “basketball”, “golf”" aria-label="Search the drill library">
+  <button class="btn" type="submit">Search</button>
+</form>
+<!--SEARCH-RESULTS-->
+</div></main>
+<footer class="page"><div class="wrap">
+  <p><strong style="color:var(--text)">SportRoots</strong> — Youth sports coaching and training.</p>
+  <p><a href="/sports">Sports</a> · <a href="/drills">Drill Library</a> · <a href="/coaches">Coaches</a> · <a href="/book">Coach Waitlist</a> · <a href="/faq">FAQ</a></p>
+  <p>© 2026 SportRoots. All rights reserved.</p>
+</div></footer>
+</body>
+</html>

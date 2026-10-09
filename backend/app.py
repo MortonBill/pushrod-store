@@ -2094,7 +2094,7 @@ def _re_vehicle_block_html(rows, year, make, model, owner_id="restorationessenti
     return "\n".join(lines)
 
 
-FRONTDOOR_SEARCH_FACES = {"restorationessentials", "ironhead", "stitchfolk", "skillforge", "everready"}
+FRONTDOOR_SEARCH_FACES = {"restorationessentials", "ironhead", "stitchfolk", "skillforge", "everready", "sportroots"}
 
 
 def _search_norm(s):
@@ -2147,7 +2147,14 @@ def _search_products(rows, q):
     return [r for _s, _t, r in scored]
 
 
-def _search_body_html(q, results, total_catalog, noun=("guide", "guides")):
+def _html_unescape(text):
+    return (text.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
+            .replace("&quot;", '"').replace("&#39;", "'").replace("&rsquo;", "'")
+            .replace("&lsquo;", "'").replace("&ldquo;", '"').replace("&rdquo;", '"')
+            .replace("&mdash;", "—").replace("&ndash;", "–"))
+
+
+def _search_body_html(q, results, total_catalog, noun=("guide", "guides"), card_fn=None):
     """Server-rendered body for the RE /search page: results with an
     honest count, or an honest zero-result state with ways back."""
     sg, pl = noun
@@ -2160,7 +2167,7 @@ def _search_body_html(q, results, total_catalog, noun=("guide", "guides")):
     if results:
         lines.append('<div class="pgrid">')
         for r in results:
-            lines.append(_re_card_html(r))
+            lines.append((card_fn or _re_card_html)(r))
         lines.append("</div>")
     else:
         lines.append(
@@ -2179,7 +2186,74 @@ _SEARCH_NOUNS = {
     "stitchfolk": ("pattern", "patterns"),
     "skillforge": ("product", "products"),
     "everready": ("tool", "tools"),
+    "sportroots": ("page", "pages"),
 }
+
+
+_SR_CONTENT_EXCLUDE = {"search.html", "privacy.html", "terms.html"}
+_META_DESC_RE = re.compile(r'<meta name="description" content="([^"]*)"')
+_PAGE_TITLE_RE = re.compile(r"<title>(.*?)</title>", re.IGNORECASE | re.DOTALL)
+
+
+def _content_index(face_id):
+    """Index of a content-first face's public pages (title +
+    description from the live templates) for site search — used by
+    faces whose catalog is content, not products (SportRoots drill
+    library). Routes come from the face's own PAGE map."""
+    spec = FACE_PAGES[face_id]
+    file_to_path = {}
+    for path, fname in spec.get("pages", {}).items():
+        file_to_path.setdefault(fname, path)
+    base = os.path.join(FRONTEND, spec["dir"])
+    rows = []
+    for fname in sorted(os.listdir(base)):
+        if not fname.endswith(".html") or fname in _SR_CONTENT_EXCLUDE:
+            continue
+        path = file_to_path.get(fname)
+        if not path:
+            continue
+        try:
+            with open(os.path.join(base, fname), encoding="utf-8") as fh:
+                text = fh.read(20000)
+        except OSError:
+            continue
+        tm = _PAGE_TITLE_RE.search(text)
+        dm = _META_DESC_RE.search(text)
+        title = _html_unescape((tm.group(1) if tm else fname).strip())
+        title = title.split("|")[0].strip() or title
+        desc = _html_unescape((dm.group(1) if dm else "").strip())
+        rows.append({"path": path, "title": title, "description": desc,
+                     "hay": _search_norm(title + " " + desc + " " +
+                                         fname.replace("-", " "))})
+    return rows
+
+
+def _search_content(rows, q):
+    toks = [t for t in _search_norm(q).split() if t]
+    if not toks:
+        return []
+    hits = []
+    for r in rows:
+        hay_tokens = set(r["hay"].split())
+        score = 0
+        for t in toks:
+            if t in hay_tokens:
+                score += 1
+            elif any(x.startswith(t) for x in hay_tokens):
+                score += 0.5
+        if score == len(toks):
+            hits.append((score, r))
+    hits.sort(key=lambda x: (-x[0], x[1]["title"]))
+    return [r for _s, r in hits]
+
+
+def _sr_card_html(r):
+    title = _html_escape(r.get("title") or "")
+    desc = _html_escape((r.get("description") or "")[:150])
+    path = _html_escape(r.get("path") or "/", quote=True)
+    return (f'<div class="pcard"><span class="tag">Drills &amp; coaching</span>'
+            f"<h3>{title}</h3><p>{desc}</p>"
+            f'<a class="btn" href="{path}">Open page</a></div>')
 
 
 @app.get("/search")
@@ -2190,9 +2264,18 @@ def site_search():
         return "Not found", 404
     q = (request.args.get("q") or "").strip()
     rows = _vehicle_inventory(face_id)
-    results = _search_products(rows, q) if q else []
-    body = _search_body_html(q, results, len(rows),
-                             _SEARCH_NOUNS.get(face_id, ("guide", "guides")))
+    if face_id == "sportroots" and not rows:
+        # Content-first face (drill library, billing dark): search the
+        # real public pages instead of an empty product catalog.
+        index = _content_index(face_id)
+        results = _search_content(index, q) if q else []
+        body = _search_body_html(q, results, len(index),
+                                 _SEARCH_NOUNS.get(face_id, ("page", "pages")),
+                                 card_fn=_sr_card_html)
+    else:
+        results = _search_products(rows, q) if q else []
+        body = _search_body_html(q, results, len(rows),
+                                 _SEARCH_NOUNS.get(face_id, ("guide", "guides")))
     spec = FACE_PAGES[face_id]
     resp = send_from_directory(os.path.join(FRONTEND, spec["dir"]), "search.html")
     resp.direct_passthrough = False

@@ -50,6 +50,8 @@
   input.search{width:100%;padding:.7rem 1rem;border-radius:.5rem;border:1px solid #1e3a28;background:var(--bg2);color:var(--text);font-size:1rem}
   details.faq{border-bottom:1px solid #1e3a28;padding:.8rem 0}
   details.faq summary{cursor:pointer;font-weight:700}
+.sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid #1e3a28;background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
   footer.page{border-top:1px solid #1e3a28;background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2rem 0;margin-top:2rem}
   footer.page a{color:var(--muted)}
   label{display:block;margin:.8rem 0 .3rem;font-weight:600}
@@ -67,6 +69,8 @@
     <a href="/book">Coach Waitlist</a>
     <a href="/pricing">Pricing</a>
     <a href="/faq">FAQ</a>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" placeholder="Search drills" aria-label="Search drills"></form>
+
   </nav>
 </div></header>
 <main><div class="wrap">
@@ -113,7 +117,19 @@
   </section>
 
   <section class="card">
-    <h2>How SportRoots works</h2>
+    <div class="card">
+    <h2>What real parents say</h2>
+    <p>SportRoots is being built with the families who'll actually run these drills in the yard. Parent beta testers get 5 free drills to try tonight, run them with their player, and tell us plainly what worked and what didn't. When a parent gives us words worth sharing — verbatim and with their permission — they go right here.</p>
+    <p>The first parent reviews are being gathered now. Want your family in on the first round?</p>
+    <div class="btnrow"><a class="btn" href="/free-drills">Get the free drills</a><a class="btn ghost" href="/coaches">Meet the coaches</a></div>
+  </div>
+
+  <div class="card">
+    <h2>Run out of Des Moines, Iowa</h2>
+    <p>SportRoots is run by a real family shop in Des Moines, Iowa — the same folks behind the drill library and the coach waitlist. Browsing the library is always free: no account, no card, no trial clock just to look around. When paid enrollment opens, it'll be announced here first — never sprung on you at a paywall.</p>
+  </div>
+
+  <h2>How SportRoots works</h2>
     <div class="grid">
       <div><h3>1. Browse free</h3><p>Every drill in the library is listed by sport and age band — U6–U8, U10–U12, U14–U16, and U18. No account, no card, no trial clock just to look around.</p></div>
       <div><h3>2. Join the coach waitlist</h3><p>Tell us your athlete’s sport and what they’re working on — we’ll email you the day verified founding coaches open. Joining is free.</p></div>

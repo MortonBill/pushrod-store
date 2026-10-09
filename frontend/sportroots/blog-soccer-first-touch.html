@@ -50,6 +50,8 @@
   input.search{width:100%;padding:.7rem 1rem;border-radius:.5rem;border:1px solid #1e3a28;background:var(--bg2);color:var(--text);font-size:1rem}
   details.faq{border-bottom:1px solid #1e3a28;padding:.8rem 0}
   details.faq summary{cursor:pointer;font-weight:700}
+.sitesearch{display:flex;align-items:center}
+  .sitesearch input{padding:.5rem .8rem;border-radius:.5rem;border:1px solid #1e3a28;background:var(--bg);color:var(--text);font-size:.95rem;width:11.5rem}
   footer.page{border-top:1px solid #1e3a28;background:var(--bg2);color:var(--muted);font-size:.88rem;padding:2rem 0;margin-top:2rem}
   footer.page a{color:var(--muted)}
   label{display:block;margin:.8rem 0 .3rem;font-weight:600}
@@ -67,6 +69,8 @@
     <a href="/book">Coach Waitlist</a>
     <a href="/pricing">Pricing</a>
     <a href="/faq">FAQ</a>
+    <form class="sitesearch" action="/search" method="get" role="search"><input type="search" name="q" placeholder="Search drills" aria-label="Search drills"></form>
+
   </nav>
 </div></header>
 <main><div class="wrap">
