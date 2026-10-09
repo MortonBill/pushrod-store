@@ -1589,6 +1589,10 @@
     {
       "sku": "RE-GD-SWAP-LSLT-ABODY",
       "msrp": 29.95
+    },
+    {
+      "sku": "RE-GD-SWAP-LSLT-SQUAREBODY",
+      "msrp": 29.95
     }
   ]
 }
