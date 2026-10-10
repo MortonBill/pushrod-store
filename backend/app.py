@@ -771,6 +771,21 @@ _ALL_FACE_PATHS = ({p for _s in FACE_PAGES.values() for p in _s["pages"]}
                    | set(PUSHROD_PAGES))
 
 
+# Path aliases: each face has ONE canonical URL for its legal/blog/shop
+# pages; the alternate spelling a customer (or an old link) may carry
+# gets a permanent redirect to it instead of a 404. Keyed by the brand
+# the request host resolves to (see _face), so an alias can never fire
+# on the wrong brand's domain.
+_FACE_PATH_ALIASES = {
+    "restorationessentials": {
+        "/legal/refunds-cancellations": "/refund-policy",
+    },
+    "ironhead": {
+        "/refund-policy": "/legal/refunds-cancellations",
+    },
+}
+
+
 @app.before_request
 def _trim_trailing_slash():
     # Face pages and product pages are registered without trailing
@@ -779,6 +794,15 @@ def _trim_trailing_slash():
     # served fine. Redirect the slash variant to the canonical URL.
     if request.method in ("GET", "HEAD"):
         _p = request.path
+        _key = _p.rstrip("/") or "/"
+        try:
+            _cfg, _prods = _face()
+            _alias = _FACE_PATH_ALIASES.get(_cfg["brand"]["id"], {}).get(_key)
+        except Exception:
+            _alias = None
+        if _alias:
+            _qs = request.query_string.decode("utf-8", "ignore")
+            return redirect(_alias + ("?" + _qs if _qs else ""), code=301)
         if len(_p) > 1 and _p.endswith("/"):
             _t = _p.rstrip("/")
             if _t in _ALL_FACE_PATHS or _t.startswith("/product/") or _t == "/auctions" or _t == "/search":
