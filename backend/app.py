@@ -488,6 +488,7 @@ FACE_PAGES = {
             "/contact": "contact.html",
             "/privacy": "privacy.html",
             "/terms": "terms.html",
+            "/legal/refunds-cancellations": "legal-refunds-cancellations.html",
         },
     },
     "ironhead": {
@@ -787,6 +788,9 @@ _FACE_PATH_ALIASES = {
     },
     "pushrod": {
         "/shop": "/",
+    },
+    "sportroots": {
+        "/refund-policy": "/legal/refunds-cancellations",
     },
 }
 
