@@ -781,7 +781,7 @@ def _trim_trailing_slash():
         _p = request.path
         if len(_p) > 1 and _p.endswith("/"):
             _t = _p.rstrip("/")
-            if _t in _ALL_FACE_PATHS or _t.startswith("/product/") or _t == "/auctions":
+            if _t in _ALL_FACE_PATHS or _t.startswith("/product/") or _t == "/auctions" or _t == "/search":
                 _qs = request.query_string.decode("utf-8", "ignore")
                 return redirect(_t + ("?" + _qs if _qs else ""), code=301)
     return None
