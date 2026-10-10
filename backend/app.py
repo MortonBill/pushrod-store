@@ -1295,22 +1295,42 @@ def _inject_pushrod_catalog_index(resp, products, doors):
     return resp
 
 
-def _inject_product_h1(resp, title):
-    """Seed #pdetail with a server-rendered <h1> (the product name).
+def _inject_product_h1(resp, title, price=None, purchasable=False):
+    """Seed #pdetail with the server-rendered product essentials.
 
     frontend/product.html ships an empty #pdetail, so the raw bytes
-    carry no <h1> at all. store.js renderDetail() replaces #pdetail's
-    innerHTML wholesale on hydration, so the server <h1> is replaced
-    (never duplicated) after boot; it is the one a non-JS crawler sees.
+    carried no <h1>, no price, and no buy control at all — the product
+    was invisible to a non-JS crawler's first pass (name/price exist in
+    the JSON-LD, but nothing readable). Seed the same essentials
+    store.js renderDetail() paints (name, honest price state, and the
+    Add to cart button for purchasable items, mirroring its markup);
+    hydration replaces #pdetail's innerHTML wholesale, so the seed is
+    replaced (never duplicated) after boot.
     """
     resp.direct_passthrough = False
     html_text = resp.get_data(as_text=True)
     anchor = '<div class="detail" id="pdetail"></div>'
     if anchor in html_text:
+        seed = f'<h1>{_html_escape(title)}</h1>'
+        _amount = price.get("amount") if isinstance(price, dict) else None
+        if purchasable and _amount is not None:
+            _draft = (' <span class="draft">intro price</span>'
+                      if price.get("status") == "draft" else "")
+            seed += (f'<span class="price">{_html_escape(_price_str(price))}'
+                     f'</span>{_draft}'
+                     '<div class="qtyrow"><label>Qty</label>'
+                     '<input id="qty" type="number" value="1" min="1" max="99"></div>'
+                     '<button class="btn" id="addbtn">Add to cart</button>')
+        elif _amount is not None:
+            seed += ('<span class="tbd">Unavailable</span>'
+                     '<div class="notice">This item isn\'t currently for sale.</div>')
+        else:
+            seed += ('<span class="tbd">Price TBD</span>'
+                     '<div class="notice">Price coming soon — this item '
+                     'isn\'t for sale yet.</div>')
         html_text = html_text.replace(
             anchor,
-            f'<div class="detail" id="pdetail">'
-            f'<h1>{_html_escape(title)}</h1></div>', 1)
+            f'<div class="detail" id="pdetail">{seed}</div>', 1)
     resp.set_data(html_text)
     resp.content_length = len(resp.get_data())
     resp.headers.pop("ETag", None)
@@ -1613,7 +1633,8 @@ def product_page(sku):
         seo_brand_name = "PushRod"
         seo_canonical = f"https://pushrodshop.com/product/{sku}"
     # The shell ships an empty #pdetail; seed it with the product <h1>.
-    resp = _inject_product_h1(resp, p["title"])
+    resp = _inject_product_h1(resp, p["title"], p.get("price"),
+                              bool(p.get("purchasable")))
     if seo_brand_name and seo_canonical:
         resp = _inject_product_seo(resp, p, seo_brand_name, seo_canonical)
     if _request_host_key() in HOST_FACES:
