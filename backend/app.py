@@ -786,7 +786,9 @@ _FACE_PATH_ALIASES = {
         "/refund-policy": "/legal/refunds-cancellations",
         "/journal": "/blog",
     },
-    "pushrod": {
+    # The storefront process brand is "gateway" (brands/gateway.yaml):
+    # pushrodshop.com is its home; /shop lands on the catalog at /.
+    "gateway": {
         "/shop": "/",
     },
     "sportroots": {
