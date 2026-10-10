@@ -779,9 +779,11 @@ _ALL_FACE_PATHS = ({p for _s in FACE_PAGES.values() for p in _s["pages"]}
 _FACE_PATH_ALIASES = {
     "restorationessentials": {
         "/legal/refunds-cancellations": "/refund-policy",
+        "/journal": "/blog",
     },
     "ironhead": {
         "/refund-policy": "/legal/refunds-cancellations",
+        "/journal": "/blog",
     },
 }
 
