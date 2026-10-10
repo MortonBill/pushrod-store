@@ -785,6 +785,9 @@ _FACE_PATH_ALIASES = {
         "/refund-policy": "/legal/refunds-cancellations",
         "/journal": "/blog",
     },
+    "pushrod": {
+        "/shop": "/",
+    },
 }
 
 
